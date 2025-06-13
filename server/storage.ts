@@ -1,4 +1,6 @@
 import { users, startupIdeas, type User, type InsertUser, type StartupIdea, type InsertStartupIdea } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -11,68 +13,50 @@ export interface IStorage {
   getStartupIdeasByEmail(email: string): Promise<StartupIdea[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private startupIdeas: Map<number, StartupIdea>;
-  private currentUserId: number;
-  private currentIdeaId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.startupIdeas = new Map();
-    this.currentUserId = 1;
-    this.currentIdeaId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async createStartupIdea(insertIdea: InsertStartupIdea): Promise<StartupIdea> {
-    const id = this.currentIdeaId++;
-    const idea: StartupIdea = { 
-      ...insertIdea, 
-      id,
-      analysis: null,
-      businessPlan: null,
-      pitchDeck: null,
-      createdAt: new Date()
-    };
-    this.startupIdeas.set(id, idea);
+    const [idea] = await db
+      .insert(startupIdeas)
+      .values(insertIdea)
+      .returning();
     return idea;
   }
 
   async getStartupIdea(id: number): Promise<StartupIdea | undefined> {
-    return this.startupIdeas.get(id);
+    const [idea] = await db.select().from(startupIdeas).where(eq(startupIdeas.id, id));
+    return idea || undefined;
   }
 
   async updateStartupIdea(id: number, updates: Partial<StartupIdea>): Promise<StartupIdea | undefined> {
-    const existing = this.startupIdeas.get(id);
-    if (!existing) return undefined;
-    
-    const updated = { ...existing, ...updates };
-    this.startupIdeas.set(id, updated);
-    return updated;
+    const [updatedIdea] = await db
+      .update(startupIdeas)
+      .set(updates)
+      .where(eq(startupIdeas.id, id))
+      .returning();
+    return updatedIdea || undefined;
   }
 
   async getStartupIdeasByEmail(email: string): Promise<StartupIdea[]> {
-    return Array.from(this.startupIdeas.values()).filter(
-      (idea) => idea.email === email
-    );
+    return await db.select().from(startupIdeas).where(eq(startupIdeas.email, email));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
