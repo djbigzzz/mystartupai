@@ -21,6 +21,9 @@ import {
   Github
 } from "lucide-react";
 import IdeaForm from "@/components/idea-form";
+import AnimatedDemo from "@/components/animated-demo";
+import HeroStats from "@/components/hero-stats";
+import SuccessShowcase from "@/components/success-showcase";
 
 export default function Home() {
   const [showIdeaForm, setShowIdeaForm] = useState(false);
@@ -188,15 +191,7 @@ export default function Home() {
               </Button>
             </div>
             
-            <div className="mt-12 flex flex-wrap justify-center items-center gap-8 text-slate-500">
-              <span className="text-sm">Trusted by founders from:</span>
-              <div className="flex items-center space-x-6">
-                <span className="font-semibold">Y Combinator</span>
-                <span className="font-semibold">Techstars</span>
-                <span className="font-semibold">500 Startups</span>
-                <span className="font-semibold">AngelList</span>
-              </div>
-            </div>
+            <HeroStats />
           </div>
         </div>
       </section>
@@ -309,52 +304,9 @@ export default function Home() {
               </div>
               
               <div className="relative">
-                <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
-                  <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
-                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
-                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
-                      <span className="text-white text-sm ml-4 font-medium">MyStartup.ai Dashboard</span>
-                    </div>
-                  </div>
-                  
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-slate-900">EcoFlow Analysis</h4>
-                      <Badge className="bg-green-100 text-green-800">87/100 Score</Badge>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-blue-50 p-3 rounded-lg">
-                        <div className="text-blue-600 font-semibold text-sm">Market Size</div>
-                        <div className="text-slate-900 font-bold">$2.1B</div>
-                      </div>
-                      <div className="bg-emerald-50 p-3 rounded-lg">
-                        <div className="text-emerald-600 font-semibold text-sm">Feasibility</div>
-                        <div className="text-slate-900 font-bold">92%</div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" style={{ width: '87%' }}></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-slate-500">
-                        <span>Viability Score</span>
-                        <span>87/100</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline" className="flex-1">Analysis</Button>
-                      <Button size="sm" variant="outline" className="flex-1">Business Plan</Button>
-                      <Button size="sm" variant="outline" className="flex-1">Pitch Deck</Button>
-                    </div>
-                  </div>
-                </div>
+                <AnimatedDemo />
                 
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse">
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse shadow-lg">
                   <span className="text-white font-bold text-sm">LIVE</span>
                 </div>
               </div>
