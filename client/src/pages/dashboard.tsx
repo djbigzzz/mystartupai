@@ -15,16 +15,19 @@ import {
   Loader2,
   Mail,
   Search,
-  Plus
+  Plus,
+  Play
 } from "lucide-react";
 import AnalysisResults from "@/components/analysis-results";
 import BusinessPlanViewer from "@/components/business-plan-viewer";
+import DemoTour from "@/components/demo-tour";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
   const [userEmail, setUserEmail] = useState("");
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [showDemoTour, setShowDemoTour] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -269,6 +272,44 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Demo Banner */}
+      {isDemoMode && (
+        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white py-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                  <Play className="w-3 h-3" />
+                </div>
+                <div>
+                  <p className="font-medium">Live Demo Mode</p>
+                  <p className="text-sm text-blue-100">Experience the full MyStartup.ai workflow with sample data</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Link href="/">
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-white/10">
+                    Submit Your Own Idea
+                  </Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-white hover:bg-white/10"
+                  onClick={() => {
+                    localStorage.removeItem("demoMode");
+                    localStorage.removeItem("currentIdeaId");
+                    window.location.reload();
+                  }}
+                >
+                  Exit Demo
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -281,7 +322,10 @@ export default function Dashboard() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-xl font-bold text-slate-900">Dashboard</h1>
+                <h1 className="text-xl font-bold text-slate-900">
+                  Dashboard
+                  {isDemoMode && <span className="text-blue-600 text-sm ml-2">(Demo)</span>}
+                </h1>
                 <p className="text-sm text-slate-600">{userEmail}</p>
               </div>
             </div>
@@ -388,16 +432,23 @@ export default function Dashboard() {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle>{currentIdea.ideaTitle}</CardTitle>
+                        <CardTitle className="flex items-center gap-3">
+                          {displayIdea.ideaTitle}
+                          {isDemoMode && (
+                            <Badge variant="secondary" className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                              Live Demo
+                            </Badge>
+                          )}
+                        </CardTitle>
                         <div className="flex items-center space-x-2 mt-2">
-                          <Badge>{currentIdea.industry}</Badge>
-                          <Badge variant="outline">{currentIdea.stage}</Badge>
+                          <Badge>{displayIdea.industry}</Badge>
+                          <Badge variant="outline">{displayIdea.stage}</Badge>
                         </div>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-slate-700">{currentIdea.description}</p>
+                    <p className="text-slate-700">{displayIdea.description}</p>
                   </CardContent>
                 </Card>
 
@@ -407,19 +458,19 @@ export default function Dashboard() {
                       <Brain className="w-4 h-4 mr-2" />
                       AI Analysis
                     </TabsTrigger>
-                    <TabsTrigger value="business-plan" disabled={!currentIdea.analysis}>
+                    <TabsTrigger value="business-plan" disabled={!displayIdea.analysis}>
                       <FileText className="w-4 h-4 mr-2" />
                       Business Plan
                     </TabsTrigger>
-                    <TabsTrigger value="pitch-deck" disabled={!currentIdea.businessPlan}>
+                    <TabsTrigger value="pitch-deck" disabled={!displayIdea.businessPlan}>
                       <Presentation className="w-4 h-4 mr-2" />
                       Pitch Deck
                     </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="analysis" className="mt-6">
-                    {currentIdea.analysis ? (
-                      <AnalysisResults analysis={currentIdea.analysis as any} />
+                    {displayIdea.analysis ? (
+                      <AnalysisResults analysis={displayIdea.analysis as any} />
                     ) : (
                       <Card>
                         <CardContent className="py-8 text-center">
@@ -432,8 +483,8 @@ export default function Dashboard() {
                   </TabsContent>
 
                   <TabsContent value="business-plan" className="mt-6">
-                    {currentIdea.businessPlan ? (
-                      <BusinessPlanViewer businessPlan={currentIdea.businessPlan as any} />
+                    {displayIdea.businessPlan ? (
+                      <BusinessPlanViewer businessPlan={displayIdea.businessPlan as any} />
                     ) : (
                       <Card>
                         <CardContent className="py-8 text-center">
@@ -446,7 +497,7 @@ export default function Dashboard() {
                           </p>
                           <Button 
                             onClick={handleGenerateBusinessPlan}
-                            disabled={generateBusinessPlanMutation.isPending}
+                            disabled={generateBusinessPlanMutation.isPending || isDemoMode}
                           >
                             {generateBusinessPlanMutation.isPending ? (
                               <>
@@ -456,7 +507,7 @@ export default function Dashboard() {
                             ) : (
                               <>
                                 <FileText className="w-4 h-4 mr-2" />
-                                Generate Business Plan
+                                {isDemoMode ? "Available in Demo" : "Generate Business Plan"}
                               </>
                             )}
                           </Button>
@@ -466,7 +517,7 @@ export default function Dashboard() {
                   </TabsContent>
 
                   <TabsContent value="pitch-deck" className="mt-6">
-                    {currentIdea.pitchDeck ? (
+                    {displayIdea.pitchDeck ? (
                       <Card>
                         <CardHeader>
                           <CardTitle className="flex items-center">
@@ -476,7 +527,7 @@ export default function Dashboard() {
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
-                            {(currentIdea.pitchDeck as any).slides?.map((slide: any, index: number) => (
+                            {(displayIdea.pitchDeck as any).slides?.map((slide: any, index: number) => (
                               <Card key={index}>
                                 <CardHeader>
                                   <CardTitle className="text-lg">
@@ -513,7 +564,7 @@ export default function Dashboard() {
                           </p>
                           <Button 
                             onClick={handleGeneratePitchDeck}
-                            disabled={generatePitchDeckMutation.isPending}
+                            disabled={generatePitchDeckMutation.isPending || isDemoMode}
                           >
                             {generatePitchDeckMutation.isPending ? (
                               <>
@@ -523,7 +574,7 @@ export default function Dashboard() {
                             ) : (
                               <>
                                 <Presentation className="w-4 h-4 mr-2" />
-                                Generate Pitch Deck
+                                {isDemoMode ? "Available in Demo" : "Generate Pitch Deck"}
                               </>
                             )}
                           </Button>
