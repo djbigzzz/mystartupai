@@ -41,6 +41,12 @@ export default function Dashboard() {
     if (demoMode === "true") {
       setIsDemoMode(true);
       setCurrentIdeaId(1); // Use demo idea
+      // Show demo tour for first-time demo users
+      const hasSeenTour = localStorage.getItem("hasSeenDemoTour");
+      if (!hasSeenTour) {
+        setTimeout(() => setShowDemoTour(true), 1000);
+        localStorage.setItem("hasSeenDemoTour", "true");
+      }
     }
   }, []);
 
@@ -594,6 +600,11 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Demo Tour */}
+      {showDemoTour && (
+        <DemoTour onComplete={() => setShowDemoTour(false)} />
+      )}
     </div>
   );
 }

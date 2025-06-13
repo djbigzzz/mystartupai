@@ -250,41 +250,131 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Demo Section */}
+      {/* Interactive Demo Section */}
       <section id="demo" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              See MyStartup.ai in Action
+              Experience the Complete Platform
             </h2>
-            <p className="text-lg text-slate-600">
-              Watch how our AI transforms a simple idea into a comprehensive business plan
+            <p className="text-lg text-slate-600 mb-8">
+              Try our full AI workflow with a real startup example - from idea analysis to investor pitch deck
             </p>
           </div>
           
-          <div className="bg-slate-900 rounded-2xl p-8 relative overflow-hidden">
-            <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl relative flex items-center justify-center">
-              <Button size="lg" className="w-20 h-20 rounded-full">
-                <Play className="w-8 h-8 ml-1" />
-              </Button>
+          <div className="bg-gradient-to-br from-blue-50 via-white to-cyan-50 rounded-3xl p-8 border border-blue-100">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="mb-6">
+                  <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white mb-4">
+                    Live Interactive Demo
+                  </Badge>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-4">
+                    EcoFlow: Smart Water Management Platform
+                  </h3>
+                  <p className="text-slate-600 mb-6">
+                    See how our AI analyzed this CleanTech startup idea and generated a complete business strategy with 87/100 viability score.
+                  </p>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-bold text-sm">1</span>
+                    </div>
+                    <span className="text-slate-700">Comprehensive AI Analysis & Scoring</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                      <span className="text-emerald-600 font-bold text-sm">2</span>
+                    </div>
+                    <span className="text-slate-700">12-Section Investor-Ready Business Plan</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center">
+                      <span className="text-cyan-600 font-bold text-sm">3</span>
+                    </div>
+                    <span className="text-slate-700">Professional 12-Slide Pitch Deck</span>
+                  </div>
+                </div>
+                
+                <Button 
+                  size="lg" 
+                  onClick={tryDemo} 
+                  className="w-full text-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600"
+                >
+                  <Play className="w-5 h-5 mr-2" />
+                  Launch Interactive Demo
+                </Button>
+              </div>
               
-              <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-                <span className="text-white text-sm font-medium">3:24 Demo Video</span>
+              <div className="relative">
+                <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
+                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
+                      <div className="w-3 h-3 bg-white/30 rounded-full"></div>
+                      <span className="text-white text-sm ml-4 font-medium">MyStartup.ai Dashboard</span>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold text-slate-900">EcoFlow Analysis</h4>
+                      <Badge className="bg-green-100 text-green-800">87/100 Score</Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <div className="text-blue-600 font-semibold text-sm">Market Size</div>
+                        <div className="text-slate-900 font-bold">$2.1B</div>
+                      </div>
+                      <div className="bg-emerald-50 p-3 rounded-lg">
+                        <div className="text-emerald-600 font-semibold text-sm">Feasibility</div>
+                        <div className="text-slate-900 font-bold">92%</div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" style={{ width: '87%' }}></div>
+                      </div>
+                      <div className="flex justify-between text-xs text-slate-500">
+                        <span>Viability Score</span>
+                        <span>87/100</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="outline" className="flex-1">Analysis</Button>
+                      <Button size="sm" variant="outline" className="flex-1">Business Plan</Button>
+                      <Button size="sm" variant="outline" className="flex-1">Pitch Deck</Button>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse">
+                  <span className="text-white font-bold text-sm">LIVE</span>
+                </div>
               </div>
             </div>
             
-            <div className="mt-8 grid md:grid-cols-3 gap-6 text-white">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400 mb-2">60s</div>
-                <p className="text-slate-300">Idea Analysis</p>
+            <div className="mt-12 grid md:grid-cols-3 gap-6 text-center">
+              <div className="bg-white p-6 rounded-xl border border-slate-200">
+                <div className="text-3xl font-bold text-blue-600 mb-2">60s</div>
+                <p className="text-slate-600 font-medium">AI Analysis Complete</p>
+                <p className="text-slate-500 text-sm mt-1">Y Combinator standards</p>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-emerald-400 mb-2">5min</div>
-                <p className="text-slate-300">Business Plan</p>
+              <div className="bg-white p-6 rounded-xl border border-slate-200">
+                <div className="text-3xl font-bold text-emerald-600 mb-2">5min</div>
+                <p className="text-slate-600 font-medium">Business Plan Ready</p>
+                <p className="text-slate-500 text-sm mt-1">12 comprehensive sections</p>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-cyan-400 mb-2">10min</div>
-                <p className="text-slate-300">Pitch Deck</p>
+              <div className="bg-white p-6 rounded-xl border border-slate-200">
+                <div className="text-3xl font-bold text-cyan-600 mb-2">10min</div>
+                <p className="text-slate-600 font-medium">Pitch Deck Created</p>
+                <p className="text-slate-500 text-sm mt-1">Investor-ready presentation</p>
               </div>
             </div>
           </div>
