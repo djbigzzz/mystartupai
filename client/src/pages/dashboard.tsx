@@ -21,6 +21,7 @@ import {
 import AnalysisResults from "@/components/analysis-results";
 import BusinessPlanViewer from "@/components/business-plan-viewer";
 import DemoTour from "@/components/demo-tour";
+import PremiumDashboard from "@/components/premium-dashboard";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
@@ -476,7 +477,11 @@ export default function Dashboard() {
 
                   <TabsContent value="analysis" className="mt-6">
                     {displayIdea.analysis ? (
-                      <AnalysisResults analysis={displayIdea.analysis as any} />
+                      isDemoMode ? (
+                        <PremiumDashboard ideaData={displayIdea} />
+                      ) : (
+                        <AnalysisResults analysis={displayIdea.analysis as any} />
+                      )
                     ) : (
                       <Card>
                         <CardContent className="py-8 text-center">
