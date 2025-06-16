@@ -27,7 +27,8 @@ import {
   ShoppingCart,
   MessageSquare,
   BarChart3,
-  Shield
+  Shield,
+  ArrowLeft
 } from "lucide-react";
 
 interface MVPTemplate {
@@ -60,9 +61,10 @@ interface CodeGenerator {
 interface MVPBuilderProps {
   companyData: any;
   businessPlan?: any;
+  onBack?: () => void;
 }
 
-export default function MVPBuilder({ companyData, businessPlan }: MVPBuilderProps) {
+export default function MVPBuilder({ companyData, businessPlan, onBack }: MVPBuilderProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<MVPTemplate | null>(null);
   const [selectedGenerator, setSelectedGenerator] = useState<CodeGenerator | null>(null);
   const [buildProgress, setBuildProgress] = useState(0);
@@ -293,6 +295,15 @@ const response = await aiService.generateText({
 
   return (
     <div className="space-y-8">
+      {onBack && (
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" onClick={onBack}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Modules
+          </Button>
+        </div>
+      )}
+      
       <div className="text-center">
         <h2 className="text-3xl font-bold text-slate-900 mb-4">MVP Builder & Code Generator</h2>
         <p className="text-lg text-slate-600 max-w-3xl mx-auto">

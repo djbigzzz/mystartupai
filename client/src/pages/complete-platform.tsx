@@ -171,9 +171,21 @@ export default function CompletePlatform() {
           <ModuleDashboard 
             companyData={companyData}
             onModuleSelect={(moduleId) => {
-              console.log("Module selected:", moduleId);
-              // Here you would navigate to the specific module
+              if (moduleId === "mvp-builder") {
+                setCurrentStep("mvp-builder");
+              } else {
+                console.log("Module selected:", moduleId);
+                // Handle other modules
+              }
             }}
+          />
+        )}
+
+        {currentStep === "mvp-builder" && (
+          <MVPBuilder 
+            companyData={companyData}
+            businessPlan={null} // Would be populated from completed modules
+            onBack={() => setCurrentStep("modules")}
           />
         )}
 
