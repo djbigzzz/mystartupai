@@ -168,16 +168,16 @@ export default function Home() {
             </Badge>
             
             <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-              Turn Your{" "}
+              Complete{" "}
               <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                Startup Idea
+                AI-Powered
               </span>
-              <br />Into an Investor-Ready Business
+              <br />Startup Development Platform
             </h1>
             
             <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              From ideation to execution, generate comprehensive business plans, pitch decks, and financial models in minutes. 
-              Your AI co-pilot for the entire startup journey.
+              12 specialized AI modules, 1-click website builder, intelligent investor matching, and networking hub. 
+              Everything you need from idea to funding in one comprehensive platform.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

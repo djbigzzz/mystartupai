@@ -170,7 +170,7 @@ export default function NetworkingPlatform({ companyData }: NetworkingPlatformPr
     }
   ]);
 
-  const [mentors] = useState<Mentor[]>([
+  const mentors: Mentor[] = [
     {
       id: "1",
       name: "Robert Kim",
@@ -210,7 +210,7 @@ export default function NetworkingPlatform({ companyData }: NetworkingPlatformPr
       avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
       bio: "Led investments in 25+ climate tech companies including 3 unicorns. Deep expertise in clean technology market dynamics and fundraising."
     }
-  ]);
+  ];
 
   const getEventTypeColor = (type: string) => {
     switch (type) {
