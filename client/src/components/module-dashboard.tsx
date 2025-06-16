@@ -21,7 +21,8 @@ import {
   Lock,
   ArrowRight,
   Sparkles,
-  Zap
+  Zap,
+  Code
 } from "lucide-react";
 
 interface ModuleStatus {
@@ -173,6 +174,17 @@ export default function ModuleDashboard({ companyData, onModuleSelect }: ModuleD
       estimatedTime: "22 min",
       dependencies: ["team-building"],
       aiFeatures: ["Process Mapping", "System Integration", "Efficiency Analysis"]
+    },
+    {
+      id: "mvp-builder",
+      name: "MVP Builder",
+      description: "Build working prototypes with code generators and proven templates",
+      icon: Code,
+      status: "available",
+      progress: 0,
+      estimatedTime: "25 min",
+      dependencies: ["product-development"],
+      aiFeatures: ["Code Generation", "Template Selection", "Deployment Automation"]
     }
   ]);
 

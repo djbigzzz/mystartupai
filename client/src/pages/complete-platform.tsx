@@ -23,6 +23,7 @@ import ModuleDashboard from "@/components/module-dashboard";
 import InvestorMatching from "@/components/investor-matching";
 import WebsiteBuilder from "@/components/website-builder";
 import NetworkingPlatform from "@/components/networking-platform";
+import MVPBuilder from "@/components/mvp-builder";
 
 interface CompanyData {
   companyName: string;
