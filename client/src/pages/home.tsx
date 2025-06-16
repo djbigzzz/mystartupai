@@ -185,6 +185,12 @@ export default function Home() {
                 <Play className="w-5 h-5 mr-2" />
                 Try Live Demo
               </Button>
+              <Link href="/platform">
+                <Button size="lg" className="text-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Full Platform Experience
+                </Button>
+              </Link>
               <Button variant="outline" size="lg" onClick={scrollToIdeaForm} className="text-lg">
                 <Rocket className="w-5 h-5 mr-2" />
                 Submit Your Idea
