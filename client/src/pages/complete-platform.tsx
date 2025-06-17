@@ -15,7 +15,8 @@ import {
   Clock,
   ArrowRight,
   Sparkles,
-  Play
+  Play,
+  Rocket
 } from "lucide-react";
 
 import ComprehensiveOnboarding from "@/components/comprehensive-onboarding";
