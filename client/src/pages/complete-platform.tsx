@@ -25,6 +25,7 @@ import WebsiteBuilder from "@/components/website-builder";
 import NetworkingPlatform from "@/components/networking-platform";
 import MVPBuilder from "@/components/mvp-builder";
 import SidebarNavigation from "@/components/sidebar-navigation";
+import DataRoom from "@/components/data-room";
 
 interface CompanyData {
   companyName: string;
@@ -125,11 +126,20 @@ export default function CompletePlatform() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-xl font-bold text-slate-900">
-                {currentStep === "modules" ? "Business Modules" :
+                {currentStep === "modules" ? "Business Strategy" :
+                 currentStep === "profile" ? "Company Setup" :
+                 currentStep === "product" ? "Product Development" :
+                 currentStep === "financial" ? "Financial Planning" :
+                 currentStep === "marketing" ? "Marketing Strategy" :
+                 currentStep === "legal" ? "Legal Foundation" :
                  currentStep === "mvp-builder" ? "MVP Builder" :
-                 currentStep === "website" ? "Website Builder" :
-                 currentStep === "investors" ? "Investor Matching" :
-                 currentStep === "networking" ? "Networking Hub" :
+                 currentStep === "website" ? "AI Website Builder" :
+                 currentStep === "pitch-deck" ? "Pitch Builder" :
+                 currentStep === "investors" ? "Funding & Investment" :
+                 currentStep === "funding" ? "Funding & Investment" :
+                 currentStep === "networking" ? "Launch & Scale" :
+                 currentStep === "launch" ? "Launch & Scale" :
+                 currentStep === "data-room" ? "Data Room" :
                  "MyStartup.ai Platform"}
               </h1>
               <p className="text-sm text-slate-600">{companyData.companyName}</p>
@@ -174,10 +184,66 @@ export default function CompletePlatform() {
           )}
 
           {currentStep === "website" && (
-            <WebsiteBuilder 
-              companyData={companyData}
-              businessPlan={null}
-            />
+            <div className="space-y-8">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold text-slate-900 mb-4">AI Website Builder</h2>
+                <p className="text-lg text-slate-600 max-w-3xl mx-auto">
+                  Generate a complete professional website with a single click. Our AI analyzes your business plan 
+                  and creates beautiful, responsive frontend designs tailored to your brand and industry.
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8">
+                <div className="max-w-4xl mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Target className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-slate-900 mb-2">AI Analysis</h3>
+                      <p className="text-sm text-slate-600">
+                        Analyzes your business plan, industry, and target audience
+                      </p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Globe className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-slate-900 mb-2">Design Generation</h3>
+                      <p className="text-sm text-slate-600">
+                        Creates responsive designs with modern UI components and layouts
+                      </p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Rocket className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="font-semibold text-slate-900 mb-2">One-Click Deploy</h3>
+                      <p className="text-sm text-slate-600">
+                        Instantly deploys your website with hosting and domain setup
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-4">
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Generate My Website with AI
+                    </Button>
+                    <p className="text-sm text-slate-500 mt-4">
+                      Complete website ready in under 60 seconds
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <WebsiteBuilder 
+                companyData={companyData}
+                businessPlan={null}
+              />
+            </div>
           )}
 
           {currentStep === "investors" && (
@@ -190,6 +256,26 @@ export default function CompletePlatform() {
 
           {currentStep === "funding" && (
             <InvestorMatching companyData={companyData} />
+          )}
+
+          {currentStep === "data-room" && (
+            <DataRoom companyData={companyData} />
+          )}
+
+          {currentStep === "pitch-deck" && (
+            <div className="text-center py-16">
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">Pitch Builder</h2>
+              <p className="text-slate-600 mb-8">
+                AI-powered pitch deck generator will create compelling investor presentations from your business plan data.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 max-w-2xl mx-auto">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4">Coming Soon</h3>
+                <p className="text-blue-700">
+                  Our AI will automatically generate professional pitch decks with compelling narratives, 
+                  market analysis, financial projections, and investor-ready slides tailored to your business.
+                </p>
+              </div>
+            </div>
           )}
         </div>
       </div>

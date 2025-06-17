@@ -58,23 +58,24 @@ export default function SidebarNavigation({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const mainNavItems: NavigationItem[] = [
+  const workflowSteps: NavigationItem[] = [
     { id: "home", name: "Home", icon: Home, type: "main" },
-    { id: "profile", name: "Company Profile", icon: User, type: "main" },
-    { id: "modules", name: "Business Strategy", icon: Target, type: "main" },
-    { id: "product", name: "Product Development", icon: Lightbulb, type: "main" },
-    { id: "financial", name: "Financial Planning", icon: TrendingUp, type: "main" },
-    { id: "marketing", name: "Marketing Strategy", icon: Target, type: "main" },
-    { id: "legal", name: "Legal Foundation", icon: Scale, type: "main" },
-    { id: "funding", name: "Funding & Investment", icon: DollarSign, type: "main" },
-    { id: "mvp-builder", name: "Build MVP", icon: Code, type: "main" },
-    { id: "launch", name: "Launch & Scale", icon: Rocket, type: "main" }
+    { id: "profile", name: "1. Company Setup", icon: Building2, type: "main" },
+    { id: "modules", name: "2. Business Strategy", icon: Target, type: "main" },
+    { id: "product", name: "3. Product Development", icon: Lightbulb, type: "main" },
+    { id: "financial", name: "4. Financial Planning", icon: TrendingUp, type: "main" },
+    { id: "marketing", name: "5. Marketing Strategy", icon: Target, type: "main" },
+    { id: "legal", name: "6. Legal Foundation", icon: Scale, type: "main" },
+    { id: "pitch-builder", name: "7. Pitch Builder", icon: Presentation, type: "main" },
+    { id: "mvp-builder", name: "8. AI Website Builder", icon: Globe, type: "main" },
+    { id: "funding", name: "9. Funding & Investment", icon: DollarSign, type: "main" },
+    { id: "launch", name: "10. Launch & Scale", icon: Rocket, type: "main" }
   ];
 
-  const quickActions: NavigationItem[] = [
-    { id: "documents", name: "Documents", icon: FolderOpen, type: "tool" },
+  const resourcesAndTools: NavigationItem[] = [
+    { id: "data-room", name: "Data Room", icon: FolderOpen, type: "tool" },
     { id: "events", name: "Events & Networking", icon: Calendar, type: "tool" },
-    { id: "partners", name: "Partners & Team", icon: UserPlus, type: "tool" },
+    { id: "partners", name: "Team & Partners", icon: UserPlus, type: "tool" },
     { id: "settings", name: "Settings", icon: Settings, type: "tool" }
   ];
 
@@ -85,7 +86,9 @@ export default function SidebarNavigation({
       } else if (item.id === "modules") {
         onStepChange("modules");
       } else if (item.id === "mvp-builder") {
-        onStepChange("mvp-builder");
+        onStepChange("website");
+      } else if (item.id === "pitch-builder") {
+        onStepChange("pitch-deck");
       } else if (item.id === "funding") {
         onStepChange("investors");
       } else if (item.id === "launch") {
@@ -96,13 +99,15 @@ export default function SidebarNavigation({
     } else if (item.type === "tool") {
       if (item.id === "events") {
         onStepChange("networking");
+      } else if (item.id === "data-room") {
+        onStepChange("data-room");
       } else {
         onStepChange(item.id);
       }
     }
   };
 
-  const filteredItems = mainNavItems.filter(item => 
+  const filteredItems = workflowSteps.filter(item => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -151,13 +156,14 @@ export default function SidebarNavigation({
       {/* Navigation Items */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-1">
-          {(searchQuery ? filteredItems : mainNavItems).map((item) => {
+          {(searchQuery ? filteredItems : workflowSteps).map((item) => {
             const IconComponent = item.icon;
             const isActive = currentStep === item.id || 
               (item.id === "modules" && currentStep === "modules") ||
               (item.id === "funding" && currentStep === "investors") ||
               (item.id === "launch" && currentStep === "networking") ||
-              (item.id === "mvp-builder" && currentStep === "mvp-builder");
+              (item.id === "mvp-builder" && currentStep === "website") ||
+              (item.id === "pitch-builder" && currentStep === "pitch-deck");
             
             return (
               <button
@@ -175,19 +181,6 @@ export default function SidebarNavigation({
                     <span className="text-sm font-medium">{item.name}</span>
                   )}
                 </div>
-                
-                {!isCollapsed && (
-                  <div className="flex items-center space-x-2">
-                    {item.badge === "active" && (
-                      <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                    )}
-                    {item.count && (
-                      <Badge variant="secondary" className="text-xs">
-                        {item.count}
-                      </Badge>
-                    )}
-                  </div>
-                )}
               </button>
             );
           })}
@@ -197,20 +190,20 @@ export default function SidebarNavigation({
           <>
             <Separator className="mx-4" />
             
-            {/* Quick Actions Section */}
+            {/* Resources & Tools Section */}
             <div className="p-4">
               <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                Quick Actions
+                Resources & Tools
               </h3>
               <div className="space-y-1">
-                {quickActions.map((action) => {
-                  const IconComponent = action.icon;
-                  const isActive = currentStep === action.id;
+                {resourcesAndTools.map((resource) => {
+                  const IconComponent = resource.icon;
+                  const isActive = currentStep === resource.id;
                   
                   return (
                     <button
-                      key={action.id}
-                      onClick={() => handleNavClick(action)}
+                      key={resource.id}
+                      onClick={() => handleNavClick(resource)}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                         isActive 
                           ? 'bg-blue-50 text-blue-700' 
@@ -218,7 +211,7 @@ export default function SidebarNavigation({
                       }`}
                     >
                       <IconComponent className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                      <span className="text-sm">{action.name}</span>
+                      <span className="text-sm">{resource.name}</span>
                     </button>
                   );
                 })}
