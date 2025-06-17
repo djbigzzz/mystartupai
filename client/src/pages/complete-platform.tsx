@@ -184,7 +184,15 @@ export default function CompletePlatform() {
             <ProductDevelopment companyData={companyData} />
           )}
 
-          {(currentStep === "financial" || currentStep === "marketing" || currentStep === "legal") && (
+          {currentStep === "financial" && (
+            <FinancialPlanning companyData={companyData} />
+          )}
+
+          {currentStep === "marketing" && (
+            <MarketingStrategy companyData={companyData} />
+          )}
+
+          {currentStep === "legal" && (
             <ModuleDashboard 
               companyData={companyData}
               onModuleSelect={(moduleId) => {
