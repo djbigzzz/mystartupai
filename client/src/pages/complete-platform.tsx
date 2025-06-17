@@ -150,7 +150,9 @@ export default function CompletePlatform() {
 
         {/* Main Content */}
         <div className="flex-1 overflow-auto p-6">
-          {currentStep === "modules" && (
+          {(currentStep === "modules" || currentStep === "profile" || 
+            currentStep === "product" || currentStep === "financial" || 
+            currentStep === "marketing" || currentStep === "legal") && (
             <ModuleDashboard 
               companyData={companyData}
               onModuleSelect={(moduleId) => {
@@ -182,8 +184,12 @@ export default function CompletePlatform() {
             <InvestorMatching companyData={companyData} />
           )}
 
-          {currentStep === "networking" && (
+          {(currentStep === "networking" || currentStep === "launch" || currentStep === "events") && (
             <NetworkingPlatform companyData={companyData} />
+          )}
+
+          {currentStep === "funding" && (
+            <InvestorMatching companyData={companyData} />
           )}
         </div>
       </div>

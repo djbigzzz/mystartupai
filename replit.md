@@ -119,6 +119,11 @@ MyStartup.ai is a comprehensive AI-powered platform that transforms startup idea
   - Added business modules categorization and development tools section
   - Integrated seamless navigation between all platform features (modules, MVP builder, website builder, investor matching, networking)
   - Replaced horizontal navigation with modern vertical sidebar layout matching enterprise design standards
+- June 16, 2025: Simplified navigation structure based on startup workflow
+  - Streamlined main navigation to core startup stages: Profile, Business Strategy, Product Development, Financial Planning, Marketing, Legal, Funding & Investment, MVP Builder, Launch & Scale
+  - Removed duplicate sections and consolidated related features
+  - Added Quick Actions section for documents, events, partners, and settings
+  - Aligned navigation with natural startup development progression from ideation to scaling
 
 ## User Preferences
 

@@ -60,33 +60,22 @@ export default function SidebarNavigation({
 
   const mainNavItems: NavigationItem[] = [
     { id: "home", name: "Home", icon: Home, type: "main" },
-    { id: "profile", name: "Mystartup profile", icon: User, count: 3, type: "main" },
-    { id: "modules", name: "Business", icon: Building2, count: 6, type: "main" },
-    { id: "marketing", name: "Marketing", icon: Target, count: 8, type: "main" },
-    { id: "legal", name: "Legal", icon: Scale, count: 8, type: "main" },
-    { id: "roadmap", name: "Roadmap", icon: Map, count: 8, type: "main" },
-    { id: "pitch-deck", name: "Pitch deck", icon: Presentation, count: 7, type: "main" },
-    { id: "documents", name: "Document", icon: FolderOpen, count: 5, type: "main" },
-    { id: "funding", name: "Funding", icon: DollarSign, count: 5, type: "main" },
-    { id: "events", name: "Events", icon: Calendar, count: 9, badge: "active", type: "main" },
-    { id: "partners", name: "Partners", icon: UserPlus, count: 6, type: "main" },
-    { id: "mvp-builder", name: "Build your MVP", icon: Code, count: 3, type: "main" }
+    { id: "profile", name: "Company Profile", icon: User, type: "main" },
+    { id: "modules", name: "Business Strategy", icon: Target, type: "main" },
+    { id: "product", name: "Product Development", icon: Lightbulb, type: "main" },
+    { id: "financial", name: "Financial Planning", icon: TrendingUp, type: "main" },
+    { id: "marketing", name: "Marketing Strategy", icon: Target, type: "main" },
+    { id: "legal", name: "Legal Foundation", icon: Scale, type: "main" },
+    { id: "funding", name: "Funding & Investment", icon: DollarSign, type: "main" },
+    { id: "mvp-builder", name: "Build MVP", icon: Code, type: "main" },
+    { id: "launch", name: "Launch & Scale", icon: Rocket, type: "main" }
   ];
 
-  const businessModules: NavigationItem[] = [
-    { id: "business-strategy", name: "Business Strategy", icon: Target, type: "module", category: "business" },
-    { id: "financial-modeling", name: "Financial Modeling", icon: TrendingUp, type: "module", category: "business" },
-    { id: "product-development", name: "Product Development", icon: Lightbulb, type: "module", category: "development" },
-    { id: "market-analysis", name: "Market Analysis", icon: TrendingUp, type: "module", category: "business" },
-    { id: "team-building", name: "Team Building", icon: Users, type: "module", category: "operations" },
-    { id: "market-expansion", name: "Market Expansion", icon: Globe, type: "module", category: "growth" }
-  ];
-
-  const tools: NavigationItem[] = [
-    { id: "website", name: "Website Builder", icon: Globe, type: "tool" },
-    { id: "investors", name: "Investor Matching", icon: DollarSign, type: "tool" },
-    { id: "networking", name: "Networking Hub", icon: Users, type: "tool" },
-    { id: "mvp-builder", name: "MVP Builder", icon: Code, type: "tool" }
+  const quickActions: NavigationItem[] = [
+    { id: "documents", name: "Documents", icon: FolderOpen, type: "tool" },
+    { id: "events", name: "Events & Networking", icon: Calendar, type: "tool" },
+    { id: "partners", name: "Partners & Team", icon: UserPlus, type: "tool" },
+    { id: "settings", name: "Settings", icon: Settings, type: "tool" }
   ];
 
   const handleNavClick = (item: NavigationItem) => {
@@ -97,15 +86,19 @@ export default function SidebarNavigation({
         onStepChange("modules");
       } else if (item.id === "mvp-builder") {
         onStepChange("mvp-builder");
-      } else if (item.id === "events") {
+      } else if (item.id === "funding") {
+        onStepChange("investors");
+      } else if (item.id === "launch") {
         onStepChange("networking");
       } else {
         onStepChange(item.id);
       }
-    } else if (item.type === "module" && onModuleSelect) {
-      onModuleSelect(item.id);
     } else if (item.type === "tool") {
-      onStepChange(item.id);
+      if (item.id === "events") {
+        onStepChange("networking");
+      } else {
+        onStepChange(item.id);
+      }
     }
   };
 
@@ -162,7 +155,8 @@ export default function SidebarNavigation({
             const IconComponent = item.icon;
             const isActive = currentStep === item.id || 
               (item.id === "modules" && currentStep === "modules") ||
-              (item.id === "events" && currentStep === "networking") ||
+              (item.id === "funding" && currentStep === "investors") ||
+              (item.id === "launch" && currentStep === "networking") ||
               (item.id === "mvp-builder" && currentStep === "mvp-builder");
             
             return (
@@ -203,20 +197,20 @@ export default function SidebarNavigation({
           <>
             <Separator className="mx-4" />
             
-            {/* Business Modules Section */}
+            {/* Quick Actions Section */}
             <div className="p-4">
               <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                Business Modules
+                Quick Actions
               </h3>
               <div className="space-y-1">
-                {businessModules.map((module) => {
-                  const IconComponent = module.icon;
-                  const isActive = currentStep === module.id;
+                {quickActions.map((action) => {
+                  const IconComponent = action.icon;
+                  const isActive = currentStep === action.id;
                   
                   return (
                     <button
-                      key={module.id}
-                      onClick={() => handleNavClick(module)}
+                      key={action.id}
+                      onClick={() => handleNavClick(action)}
                       className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                         isActive 
                           ? 'bg-blue-50 text-blue-700' 
@@ -224,37 +218,7 @@ export default function SidebarNavigation({
                       }`}
                     >
                       <IconComponent className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                      <span className="text-sm">{module.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <Separator className="mx-4" />
-            
-            {/* Tools Section */}
-            <div className="p-4">
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-                Development Tools
-              </h3>
-              <div className="space-y-1">
-                {tools.map((tool) => {
-                  const IconComponent = tool.icon;
-                  const isActive = currentStep === tool.id;
-                  
-                  return (
-                    <button
-                      key={tool.id}
-                      onClick={() => handleNavClick(tool)}
-                      className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                        isActive 
-                          ? 'bg-blue-50 text-blue-700' 
-                          : 'text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      <IconComponent className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                      <span className="text-sm">{tool.name}</span>
+                      <span className="text-sm">{action.name}</span>
                     </button>
                   );
                 })}
