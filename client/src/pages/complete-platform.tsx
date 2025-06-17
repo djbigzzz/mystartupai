@@ -27,6 +27,11 @@ import NetworkingPlatform from "@/components/networking-platform";
 import MVPBuilder from "@/components/mvp-builder";
 import SidebarNavigation from "@/components/sidebar-navigation";
 import DataRoom from "@/components/data-room";
+import CompanySetup from "@/components/company-setup";
+import BusinessStrategy from "@/components/business-strategy";
+import ProductDevelopment from "@/components/product-development";
+import FinancialPlanning from "@/components/financial-planning";
+import MarketingStrategy from "@/components/marketing-strategy";
 
 interface CompanyData {
   companyName: string;
@@ -161,9 +166,25 @@ export default function CompletePlatform() {
 
         {/* Main Content */}
         <div className="flex-1 overflow-auto p-6">
-          {(currentStep === "modules" || currentStep === "profile" || 
-            currentStep === "product" || currentStep === "financial" || 
-            currentStep === "marketing" || currentStep === "legal") && (
+          {currentStep === "profile" && (
+            <CompanySetup 
+              companyData={companyData}
+              onUpdate={(data) => {
+                setCompanyData(prev => ({ ...prev, ...data }));
+                localStorage.setItem("platformCompanyData", JSON.stringify({ ...companyData, ...data }));
+              }}
+            />
+          )}
+
+          {currentStep === "modules" && (
+            <BusinessStrategy companyData={companyData} />
+          )}
+
+          {currentStep === "product" && (
+            <ProductDevelopment companyData={companyData} />
+          )}
+
+          {(currentStep === "financial" || currentStep === "marketing" || currentStep === "legal") && (
             <ModuleDashboard 
               companyData={companyData}
               onModuleSelect={(moduleId) => {
