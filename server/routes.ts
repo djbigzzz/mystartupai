@@ -244,6 +244,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Authentication routes
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { name, email, password } = req.body;
+      
+      if (!name || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+
+      // Hash password (simple implementation for demo)
+      const hashedPassword = password; // TODO: Implement proper hashing
+
+      const user = await storage.createUser({
+        username: email,
+        password: hashedPassword,
+      });
+
+      // Set session
+      req.session = { userId: user.id };
+
+      res.json({ id: user.id, username: user.username });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+      }
+
+      const user = await storage.getUserByUsername(email);
+      if (!user || user.password !== password) { // TODO: Implement proper password verification
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Set session
+      req.session = { userId: user.id };
+
+      res.json({ id: user.id, username: user.username });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      const userId = req.session?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ id: user.id, username: user.username });
+    } catch (error) {
+      console.error("Auth check error:", error);
+      res.status(500).json({ message: "Authentication check failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      req.session = null;
+      res.json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ message: "Logout failed" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
