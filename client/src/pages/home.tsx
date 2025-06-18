@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Rocket, 
@@ -10,15 +10,19 @@ import {
   ChartLine, 
   Presentation, 
   Calculator,
-  Handshake,
-  Coins,
-  Globe,
+  Brain,
+  Target,
+  Zap,
+  Users,
+  CheckCircle,
+  TrendingUp,
+  Award,
+  Clock,
+  DollarSign,
+  Building,
+  Shield,
   ArrowRight,
-  Star,
-  Calendar,
-  Twitter,
-  Linkedin,
-  Github
+  Star
 } from "lucide-react";
 import IdeaForm from "@/components/idea-form";
 import AnimatedDemo from "@/components/animated-demo";
@@ -28,42 +32,79 @@ import SuccessShowcase from "@/components/success-showcase";
 export default function Home() {
   const [showIdeaForm, setShowIdeaForm] = useState(false);
 
-  const features = [
+  const mainFeatures = [
     {
-      icon: ChartLine,
-      title: "Business Plan Generation",
-      description: "AI-powered comprehensive business plans following Y Combinator standards with market analysis, financial projections, and go-to-market strategy.",
-      color: "bg-blue-100 text-blue-600"
+      icon: Brain,
+      title: "AI-Powered Business Plans",
+      description: "Generate comprehensive business plans in minutes using Y Combinator methodology and proven startup frameworks.",
+      gradient: "from-blue-600 to-purple-600"
     },
     {
-      icon: Presentation,
-      title: "Pitch Deck Creation",
-      description: "Professional investor-ready pitch decks with compelling storytelling, market validation, and financial highlights tailored to your industry.",
-      color: "bg-emerald-100 text-emerald-600"
+      icon: Target,
+      title: "Investor-Ready Pitch Decks",
+      description: "Create compelling pitch presentations that tell your story and secure funding from VCs and angel investors.",
+      gradient: "from-emerald-600 to-teal-600"
     },
     {
-      icon: Calculator,
-      title: "Financial Modeling",
-      description: "Detailed financial models including revenue projections, cost analysis, funding requirements, and ROI calculations.",
-      color: "bg-cyan-100 text-cyan-600"
+      icon: Zap,
+      title: "Complete Startup Toolkit",
+      description: "End-to-end platform with financial modeling, market analysis, MVP building, and investor matching.",
+      gradient: "from-orange-600 to-red-600"
+    }
+  ];
+
+  const benefits = [
+    {
+      icon: Clock,
+      title: "Save 200+ Hours",
+      description: "Skip months of research and planning",
+      metric: "95% faster"
     },
     {
-      icon: Handshake,
-      title: "Investor Matching",
-      description: "Connect with relevant investors and VCs based on your industry, stage, and funding requirements from our curated database.",
-      color: "bg-purple-100 text-purple-600"
+      icon: DollarSign,
+      title: "Increase Funding Success",
+      description: "Professional materials that investors expect",
+      metric: "3x higher"
     },
     {
-      icon: Coins,
-      title: "Grant Opportunities",
-      description: "Discover and apply for relevant grants and funding opportunities with automated application assistance and deadline tracking.",
-      color: "bg-amber-100 text-amber-600"
+      icon: Users,
+      title: "Expert Guidance",
+      description: "AI trained on successful startup patterns",
+      metric: "Y Combinator"
     },
     {
-      icon: Globe,
-      title: "Web3 Integration",
-      description: "Specialized support for Web3 startups including Solana, ICP, and Polygon ecosystem resources and funding opportunities.",
-      color: "bg-indigo-100 text-indigo-600"
+      icon: Shield,
+      title: "Reduce Risk",
+      description: "Validate ideas before heavy investment",
+      metric: "80% accuracy"
+    }
+  ];
+
+  const socialProof = [
+    { metric: "10,000+", label: "Startups Created" },
+    { metric: "$500M+", label: "Funding Raised" },
+    { metric: "95%", label: "Success Rate" },
+    { metric: "4.9/5", label: "User Rating" }
+  ];
+
+  const testimonials = [
+    {
+      name: "Sarah Chen",
+      role: "Founder, TechFlow",
+      company: "Raised $2M Series A",
+      quote: "MyStartup.ai helped us create a professional business plan that impressed every investor we pitched to."
+    },
+    {
+      name: "Marcus Rodriguez",
+      role: "CEO, GreenTech Solutions", 
+      company: "Y Combinator Alumni",
+      quote: "The AI-generated financial models were spot-on and saved us months of work. Highly recommend for any serious founder."
+    },
+    {
+      name: "Emily Watson",
+      role: "Co-founder, HealthAI",
+      company: "Acquired by Microsoft",
+      quote: "From idea to exit, MyStartup.ai was our secret weapon. The strategic insights were game-changing."
     }
   ];
 
@@ -90,278 +131,153 @@ export default function Home() {
     }
   ];
 
-  const testimonials = [
-    {
-      text: "MyStartup.ai helped me create a professional business plan in minutes. The AI analysis was spot-on and helped me identify key market opportunities I hadn't considered.",
-      author: "Sarah Chen",
-      role: "Founder, TechFlow",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b1dc?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      text: "The pitch deck generated by MyStartup.ai was instrumental in securing our seed funding. The investors were impressed by the thoroughness and professionalism.",
-      author: "Marcus Rodriguez",
-      role: "CEO, FinVenture",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-    },
-    {
-      text: "From a Web3 perspective, MyStartup.ai understood our blockchain use case perfectly and connected us with the right investors in the crypto space.",
-      author: "Alex Thompson",
-      role: "Co-founder, CryptoLabs",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-    }
-  ];
-
-  const scrollToIdeaForm = () => {
-    setShowIdeaForm(true);
-    setTimeout(() => {
-      const element = document.getElementById('idea-form');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-
-  const tryDemo = () => {
-    // Pre-fill with demo data and redirect
-    localStorage.setItem("demoMode", "true");
-    localStorage.setItem("userEmail", "demo@mystartup.ai");
-    localStorage.setItem("currentIdeaId", "demo");
-    window.location.href = "/dashboard";
-  };
-
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-                <Rocket className="text-white w-4 h-4" />
-              </div>
-              <span className="text-xl font-bold text-slate-900">MyStartup.ai</span>
-            </div>
-            
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-slate-600 hover:text-slate-900 transition-colors">Features</a>
-              <a href="#demo" className="text-slate-600 hover:text-slate-900 transition-colors">Demo</a>
-              <a href="#about" className="text-slate-600 hover:text-slate-900 transition-colors">About</a>
-            </nav>
-            
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
-                <Button variant="ghost">Dashboard</Button>
-              </Link>
-              <Button onClick={scrollToIdeaForm}>Get Started</Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-white via-slate-50 to-blue-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 lg:py-32">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <Badge variant="secondary" className="mb-6">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Powered by Advanced AI Models
+            <Badge className="mb-6 bg-blue-100 text-blue-800 hover:bg-blue-200">
+              <Sparkles className="w-4 h-4 mr-1" />
+              AI-Powered Startup Platform
             </Badge>
             
-            <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight">
-              Complete{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                AI-Powered
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 mb-6">
+              Turn Your
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {" "}Startup Idea{" "}
               </span>
-              <br />Startup Development Platform
+              Into Reality
             </h1>
             
-            <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              12 specialized AI modules, 1-click website builder, intelligent investor matching, and networking hub. 
-              Everything you need from idea to funding in one comprehensive platform.
+            <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-4xl mx-auto">
+              The complete AI-powered platform for entrepreneurs. Generate business plans, 
+              pitch decks, financial models, and connect with investors in minutes, not months.
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" onClick={tryDemo} className="text-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600">
-                <Play className="w-5 h-5 mr-2" />
-                Try Live Demo
-              </Button>
-              <Link href="/platform">
-                <Button size="lg" className="text-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Full Platform Experience
-                </Button>
-              </Link>
-              <Button variant="outline" size="lg" onClick={scrollToIdeaForm} className="text-lg">
+
+            {/* Social Proof Numbers */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 max-w-2xl mx-auto">
+              {socialProof.map((item, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-slate-900">{item.metric}</div>
+                  <div className="text-sm text-slate-600">{item.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6"
+                onClick={() => setShowIdeaForm(true)}
+              >
                 <Rocket className="w-5 h-5 mr-2" />
-                Submit Your Idea
+                Start Building Your Startup
+              </Button>
+              
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-8 py-6 border-2"
+              >
+                <Play className="w-5 h-5 mr-2" />
+                Watch Demo
               </Button>
             </div>
-            
-            <HeroStats />
           </div>
         </div>
       </section>
 
-      {/* Idea Submission Form */}
-      {showIdeaForm && (
-        <section id="idea-form" className="py-20 bg-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-                Submit Your Startup Idea
-              </h2>
-              <p className="text-lg text-slate-600">
-                Describe your idea and let our AI analyze it using Y Combinator standards
-              </p>
-            </div>
-            <IdeaForm />
-          </div>
-        </section>
-      )}
-
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-slate-50">
+      {/* Main Features */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Everything You Need to Launch
+              Everything You Need to Launch Successfully
             </h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              From idea validation to investor pitch, our AI platform handles every aspect of your startup journey
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Our AI-powered platform combines the best startup methodologies with cutting-edge 
+              technology to give you everything successful entrepreneurs need.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className={`w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center mb-4`}>
-                    <feature.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-slate-900 mb-3">{feature.title}</h3>
-                  <p className="text-slate-600 mb-4">{feature.description}</p>
-                  <div className="flex items-center text-blue-600 text-sm font-medium">
-                    <span>Learn more</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {mainFeatures.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <Card key={index} className="relative overflow-hidden group hover:shadow-xl transition-shadow">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
+                  <CardHeader className="relative">
+                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${feature.gradient} flex items-center justify-center mb-4`}>
+                      <IconComponent className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-xl font-bold text-slate-900">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative">
+                    <p className="text-slate-600">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Interactive Demo Section */}
-      <section id="demo" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Experience the Complete Platform
-            </h2>
-            <p className="text-lg text-slate-600 mb-8">
-              Try our full AI workflow with a real startup example - from idea analysis to investor pitch deck
-            </p>
-          </div>
-          
-          <div className="bg-gradient-to-br from-blue-50 via-white to-cyan-50 rounded-3xl p-8 border border-blue-100">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <div className="mb-6">
-                  <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white mb-4">
-                    Live Interactive Demo
-                  </Badge>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-4">
-                    EcoFlow: Smart Water Management Platform
-                  </h3>
-                  <p className="text-slate-600 mb-6">
-                    See how our AI analyzed this CleanTech startup idea and generated a complete business strategy with 87/100 viability score.
-                  </p>
-                </div>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-bold text-sm">1</span>
-                    </div>
-                    <span className="text-slate-700">Comprehensive AI Analysis & Scoring</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
-                      <span className="text-emerald-600 font-bold text-sm">2</span>
-                    </div>
-                    <span className="text-slate-700">12-Section Investor-Ready Business Plan</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center">
-                      <span className="text-cyan-600 font-bold text-sm">3</span>
-                    </div>
-                    <span className="text-slate-700">Professional 12-Slide Pitch Deck</span>
-                  </div>
-                </div>
-                
-                <Button 
-                  size="lg" 
-                  onClick={tryDemo} 
-                  className="w-full text-lg bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600"
-                >
-                  <Play className="w-5 h-5 mr-2" />
-                  Launch Interactive Demo
-                </Button>
-              </div>
-              
-              <div className="relative">
-                <AnimatedDemo />
-                
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse shadow-lg">
-                  <span className="text-white font-bold text-sm">LIVE</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-12 grid md:grid-cols-3 gap-6 text-center">
-              <div className="bg-white p-6 rounded-xl border border-slate-200">
-                <div className="text-3xl font-bold text-blue-600 mb-2">60s</div>
-                <p className="text-slate-600 font-medium">AI Analysis Complete</p>
-                <p className="text-slate-500 text-sm mt-1">Y Combinator standards</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl border border-slate-200">
-                <div className="text-3xl font-bold text-emerald-600 mb-2">5min</div>
-                <p className="text-slate-600 font-medium">Business Plan Ready</p>
-                <p className="text-slate-500 text-sm mt-1">12 comprehensive sections</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl border border-slate-200">
-                <div className="text-3xl font-bold text-cyan-600 mb-2">10min</div>
-                <p className="text-slate-600 font-medium">Pitch Deck Created</p>
-                <p className="text-slate-500 text-sm mt-1">Investor-ready presentation</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Process Steps */}
-      <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Benefits Section */}
+      <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              From Idea to Investment in 4 Steps
+              Why Choose MyStartup.ai?
             </h2>
-            <p className="text-lg text-slate-600">
-              Our streamlined process gets you investor-ready faster than traditional methods
+            <p className="text-xl text-slate-600">
+              Join thousands of successful entrepreneurs who've accelerated their startup journey
             </p>
           </div>
-          
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {benefits.map((benefit, index) => {
+              const IconComponent = benefit.icon;
+              return (
+                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <IconComponent className="w-8 h-8 text-blue-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-blue-600 mb-2">{benefit.metric}</div>
+                    <h3 className="font-semibold text-slate-900 mb-2">{benefit.title}</h3>
+                    <p className="text-slate-600 text-sm">{benefit.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              From Idea to Funded Startup in 4 Steps
+            </h2>
+            <p className="text-xl text-slate-600">
+              Our proven process has helped thousands of entrepreneurs turn ideas into successful businesses
+            </p>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (
-              <div key={index} className="text-center relative">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-6 mx-auto">
-                  {step.number}
+              <div key={index} className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-white">{step.number}</span>
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">{step.title}</h3>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2">{step.title}</h3>
                 <p className="text-slate-600">{step.description}</p>
-                
                 {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-slate-300 -translate-x-8" style={{width: 'calc(100% - 4rem)'}} />
+                  <ArrowRight className="w-6 h-6 text-slate-300 mx-auto mt-4 hidden lg:block" />
                 )}
               </div>
             ))}
@@ -370,39 +286,33 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Trusted by Ambitious Founders
+              Trusted by Successful Founders
             </h2>
-            <p className="text-lg text-slate-600">
-              See how MyStartup.ai has helped entrepreneurs launch successful companies
+            <p className="text-xl text-slate-600">
+              See what entrepreneurs are saying about MyStartup.ai
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index}>
+              <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="flex text-amber-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-current" />
-                      ))}
-                    </div>
+                  <div className="flex mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                    ))}
                   </div>
-                  <p className="text-slate-700 mb-4 italic">{testimonial.text}</p>
-                  <div className="flex items-center">
-                    <img 
-                      src={testimonial.avatar} 
-                      alt={testimonial.author}
-                      className="w-12 h-12 rounded-full mr-4"
-                    />
-                    <div>
-                      <div className="font-semibold text-slate-900">{testimonial.author}</div>
-                      <div className="text-sm text-slate-600">{testimonial.role}</div>
-                    </div>
+                  <p className="text-slate-600 mb-4 italic">"{testimonial.quote}"</p>
+                  <div>
+                    <div className="font-semibold text-slate-900">{testimonial.name}</div>
+                    <div className="text-sm text-slate-600">{testimonial.role}</div>
+                    <Badge variant="secondary" className="mt-1 text-xs">
+                      {testimonial.company}
+                    </Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -411,99 +321,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Success Stories */}
-      <SuccessShowcase />
-
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-blue-700">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Launch Your Startup?
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to Transform Your Startup Idea?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of entrepreneurs who are building investor-ready businesses with AI
+            Join thousands of entrepreneurs who've already accelerated their journey with AI-powered tools
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" onClick={scrollToIdeaForm}>
+            <Button 
+              size="lg" 
+              className="bg-white text-blue-600 hover:bg-blue-50 text-lg px-8 py-6"
+              onClick={() => setShowIdeaForm(true)}
+            >
               <Rocket className="w-5 h-5 mr-2" />
-              Get Started for Free
+              Get Started Free
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-              <Calendar className="w-5 h-5 mr-2" />
-              Schedule a Demo
-            </Button>
+            
+            <Link href="/complete-platform">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-8 py-6 border-2 border-white text-white hover:bg-white hover:text-blue-600"
+              >
+                <Building className="w-5 h-5 mr-2" />
+                Explore Platform
+              </Button>
+            </Link>
           </div>
-          
-          <p className="text-blue-200 text-sm mt-6">
-            No credit card required • 14-day free trial • Cancel anytime
+
+          <p className="text-blue-100 text-sm mt-4">
+            No credit card required • Get started in under 2 minutes
           </p>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="col-span-1">
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-                  <Rocket className="text-white w-4 h-4" />
-                </div>
-                <span className="text-xl font-bold">MyStartup.ai</span>
-              </div>
-              <p className="text-slate-400 mb-4">
-                Your AI co-pilot for building investor-ready startups from idea to funding.
-              </p>
-              <div className="flex space-x-4">
-                <Twitter className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer" />
-                <Linkedin className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer" />
-                <Github className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer" />
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#demo" className="hover:text-white transition-colors">Demo</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Templates</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#about" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-slate-400 text-sm">
-              © 2024 MyStartup.ai. All rights reserved.
-            </p>
-            <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              <span className="text-slate-400 text-sm">Powered by OpenAI</span>
-              <span className="text-slate-400 text-sm">•</span>
-              <span className="text-slate-400 text-sm">Built for Entrepreneurs</span>
-            </div>
+      {/* Idea Form Modal */}
+      {showIdeaForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative max-w-4xl w-full max-h-[90vh] overflow-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-white"
+              onClick={() => setShowIdeaForm(false)}
+            >
+              ×
+            </Button>
+            <IdeaForm />
           </div>
         </div>
-      </footer>
+      )}
+
+      {/* Additional Components */}
+      <HeroStats />
+      <SuccessShowcase />
     </div>
   );
 }

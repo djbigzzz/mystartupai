@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertStartupIdeaSchema } from "@shared/schema";
+import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -130,6 +130,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to generate pitch deck" 
       });
+    }
+  });
+
+  // Company management routes
+  app.post("/api/companies", async (req, res) => {
+    try {
+      const validatedData = insertCompanySchema.parse(req.body);
+      const userId = req.body.userId || 1; // TODO: Get from session/auth
+      
+      const company = await storage.createCompany({ ...validatedData, userId });
+      res.json(company);
+    } catch (error) {
+      console.error("Error creating company:", error);
+      res.status(400).json({ 
+        message: error instanceof Error ? error.message : "Failed to create company" 
+      });
+    }
+  });
+
+  app.get("/api/companies/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const company = await storage.getCompany(id);
+      
+      if (!company) {
+        return res.status(404).json({ message: "Company not found" });
+      }
+      
+      res.json(company);
+    } catch (error) {
+      console.error("Error fetching company:", error);
+      res.status(500).json({ message: "Failed to fetch company" });
+    }
+  });
+
+  app.put("/api/companies/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const company = await storage.updateCompany(id, updates);
+      
+      if (!company) {
+        return res.status(404).json({ message: "Company not found" });
+      }
+      
+      res.json(company);
+    } catch (error) {
+      console.error("Error updating company:", error);
+      res.status(500).json({ message: "Failed to update company" });
+    }
+  });
+
+  // Document management routes
+  app.post("/api/companies/:companyId/documents", async (req, res) => {
+    try {
+      const companyId = parseInt(req.params.companyId);
+      const validatedData = insertDocumentSchema.parse({ ...req.body, companyId });
+      
+      const document = await storage.createDocument(validatedData);
+      res.json(document);
+    } catch (error) {
+      console.error("Error creating document:", error);
+      res.status(400).json({ 
+        message: error instanceof Error ? error.message : "Failed to create document" 
+      });
+    }
+  });
+
+  app.get("/api/companies/:companyId/documents", async (req, res) => {
+    try {
+      const companyId = parseInt(req.params.companyId);
+      const documents = await storage.getDocumentsByCompany(companyId);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  app.put("/api/documents/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const document = await storage.updateDocument(id, updates);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      res.json(document);
+    } catch (error) {
+      console.error("Error updating document:", error);
+      res.status(500).json({ message: "Failed to update document" });
+    }
+  });
+
+  app.delete("/api/documents/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteDocument(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      res.json({ message: "Document deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      res.status(500).json({ message: "Failed to delete document" });
     }
   });
 
