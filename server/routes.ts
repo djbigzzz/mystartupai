@@ -268,7 +268,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Set session
-      req.session = { userId: user.id };
+      (req.session as any).userId = user.id;
 
       res.json({ id: user.id, username: user.username });
     } catch (error) {
@@ -291,7 +291,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Set session
-      req.session = { userId: user.id };
+      (req.session as any).userId = user.id;
 
       res.json({ id: user.id, username: user.username });
     } catch (error) {
@@ -302,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/me", async (req, res) => {
     try {
-      const userId = req.session?.userId;
+      const userId = (req.session as any)?.userId;
       
       if (!userId) {
         return res.status(401).json({ message: "Not authenticated" });
@@ -322,7 +322,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/logout", async (req, res) => {
     try {
-      req.session = null;
+      req.session?.destroy((err: any) => {
+        if (err) {
+          console.error("Session destroy error:", err);
+        }
+      });
+      res.clearCookie('connect.sid');
       res.json({ message: "Logged out successfully" });
     } catch (error) {
       console.error("Logout error:", error);
