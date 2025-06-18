@@ -285,7 +285,17 @@ export default function ComprehensiveOnboarding({ onComplete }: ComprehensiveOnb
                     <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                     <p className="text-slate-600 mb-2">Upload your logo</p>
                     <p className="text-sm text-slate-500">PNG, JPG up to 5MB</p>
-                    <input type="file" className="hidden" accept="image/*" />
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*" 
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          updateFormData("logo", file);
+                        }
+                      }}
+                    />
                   </div>
                 </div>
                 
