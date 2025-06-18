@@ -15,9 +15,11 @@ import {
   CheckCircle
 } from "lucide-react";
 import IdeaForm from "@/components/idea-form";
+import InteractivePreview from "@/components/interactive-preview";
 
 export default function Home() {
   const [showIdeaForm, setShowIdeaForm] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const features = [
     {
@@ -101,9 +103,10 @@ export default function Home() {
                 size="lg" 
                 variant="outline" 
                 className="text-lg px-8 py-4 border-2"
+                onClick={() => setShowPreview(true)}
               >
                 <Play className="w-5 h-5 mr-2" />
-                Watch Demo
+                See AI in Action
               </Button>
             </div>
 
@@ -217,6 +220,23 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* Interactive Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative max-w-5xl w-full max-h-[90vh] overflow-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/20 text-gray-600"
+              onClick={() => setShowPreview(false)}
+            >
+              ×
+            </Button>
+            <InteractivePreview />
+          </div>
+        </div>
+      )}
 
       {/* Idea Form Modal */}
       {showIdeaForm && (
