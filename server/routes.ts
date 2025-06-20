@@ -1,10 +1,100 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import session from "express-session";
+import passport from "./auth";
 import { storage } from "./storage";
-import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema } from "@shared/schema";
+import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
+import bcrypt from "bcryptjs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Session configuration
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
+
+  // Initialize Passport middleware
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Authentication middleware
+  const requireAuth = (req: any, res: any, next: any) => {
+    if (req.isAuthenticated()) {
+      return next();
+    }
+    res.status(401).json({ message: "Not authenticated" });
+  };
+
+  // Auth routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, name, password } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user
+      const user = await storage.createUser({
+        email,
+        name,
+        password: hashedPassword,
+        emailVerified: false
+      });
+
+      res.json({ message: "User created successfully", userId: user.id });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+
+  app.post("/api/auth/login", passport.authenticate('local'), (req, res) => {
+    res.json({ user: req.user });
+  });
+
+  app.post("/api/auth/logout", (req: any, res) => {
+    req.logout((err: any) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get("/api/auth/me", (req, res) => {
+    if (req.isAuthenticated()) {
+      res.json(req.user);
+    } else {
+      res.status(401).json({ message: "Not authenticated" });
+    }
+  });
+
+  // Google OAuth routes
+  app.get("/api/auth/google", 
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+  );
+
+  app.get("/api/auth/google/callback",
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => {
+      // Successful authentication, redirect to dashboard
+      res.redirect('/dashboard');
+    }
+  );
   
   // Submit startup idea for analysis
   app.post("/api/ideas", async (req, res) => {
