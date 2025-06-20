@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import GoogleSignIn from "./google-sign-in";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -84,7 +85,21 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
+        {/* Google OAuth */}
+        <GoogleSignIn disabled={loginMutation.isPending} />
+        
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              Or continue with email
+            </span>
+          </div>
+        </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField

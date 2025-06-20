@@ -334,7 +334,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Authentication routes
+  // Legacy authentication routes (will be replaced by Passport routes)
   app.post("/api/auth/signup", async (req, res) => {
     try {
       const { name, email, password } = req.body;
@@ -349,8 +349,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User already exists" });
       }
 
-      // Hash password (simple implementation for demo)
-      const hashedPassword = password; // TODO: Implement proper hashing
+      // Hash password with bcrypt
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       const user = await storage.createUser({
         email,
@@ -362,14 +362,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Set session
       (req.session as any).userId = user.id;
 
-      res.json({ id: user.id, username: user.username });
+      res.json({ id: user.id, email: user.email, name: user.name });
     } catch (error) {
       console.error("Signup error:", error);
       res.status(500).json({ message: "Failed to create account" });
     }
   });
 
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login-legacy", async (req, res) => {
     try {
       const { email, password } = req.body;
       
@@ -378,14 +378,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.getUserByEmail(email);
-      if (!user || user.password !== password) { // TODO: Implement proper password verification
+      if (!user || !user.password) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Verify password with bcrypt
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       // Set session
       (req.session as any).userId = user.id;
 
-      res.json({ id: user.id, username: user.username });
+      res.json({ id: user.id, email: user.email, name: user.name });
     } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ message: "Login failed" });
