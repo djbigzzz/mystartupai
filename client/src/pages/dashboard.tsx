@@ -49,7 +49,7 @@ export default function Dashboard() {
     company: "TechStartup Inc.",
     website: "https://techstartup.com",
     bio: "Serial entrepreneur with 10+ years experience in SaaS and fintech. Passionate about building solutions that solve real problems.",
-    avatar: null,
+    avatar: undefined,
     plan: "Pro",
     joinedAt: "2024-01-15",
     linkedin: "https://linkedin.com/in/johnentrepreneur",
