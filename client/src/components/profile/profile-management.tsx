@@ -92,10 +92,7 @@ export default function ProfileManagement({ user }: ProfileManagementProps) {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
-      return await apiRequest(`/api/users/${user.id}/profile`, {
-        method: "PATCH",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest(`/api/users/${user.id}/profile`, "PATCH", data);
     },
     onSuccess: () => {
       toast({
