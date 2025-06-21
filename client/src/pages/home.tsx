@@ -102,23 +102,32 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <nav className="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="flex items-center group">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">MyStartup.ai</span>
+              <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">MyStartup.ai</span>
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">How it Works</a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
-              <Button variant="ghost" size="sm">Sign In</Button>
+              <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group">
+                Features
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group">
+                How it Works
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group">
+                Pricing
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">Sign In</Button>
               <Link href="/dashboard">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover-glow">
                   Get Started
                 </Button>
               </Link>
@@ -128,8 +137,24 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-gray-50 to-white py-20 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 lg:py-32">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+          
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          
+          {/* Floating Particles */}
+          <div className="absolute top-10 left-10 w-2 h-2 bg-blue-400 rounded-full animate-float"></div>
+          <div className="absolute top-1/3 right-20 w-3 h-3 bg-purple-400 rounded-full animate-float animation-delay-1000"></div>
+          <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-pink-400 rounded-full animate-float animation-delay-3000"></div>
+          <div className="absolute top-3/4 left-1/4 w-3 h-3 bg-blue-500 rounded-full animate-float animation-delay-2000"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Badge variant="outline" className="mb-8 text-blue-600 border-blue-200 bg-blue-50">
               <Sparkles className="w-3 h-3 mr-1" />
@@ -138,7 +163,7 @@ export default function Home() {
             
             <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               Turn Your Ideas Into{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-shift">
                 Funded Startups
               </span>
             </h1>
@@ -151,7 +176,7 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/dashboard">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-4 text-lg shadow-lg hover-glow transform transition-all duration-200 hover:scale-105">
                   <Rocket className="w-5 h-5 mr-2" />
                   Start Building Now
                 </Button>
@@ -159,7 +184,7 @@ export default function Home() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="px-8 py-4 text-lg"
+                className="px-8 py-4 text-lg border-2 border-blue-200 hover:border-blue-400 glass-effect hover-glow"
                 onClick={() => setShowGetStarted(!showGetStarted)}
               >
                 <Play className="w-5 h-5 mr-2" />
@@ -171,12 +196,14 @@ export default function Home() {
           {/* Stats */}
           <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-gray-600 text-lg">
-                  {stat.label}
+              <div key={index} className="text-center group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover-glow border border-white/20">
+                  <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
+                    {stat.number}
+                  </div>
+                  <div className="text-gray-600 text-lg font-medium">
+                    {stat.label}
+                  </div>
                 </div>
               </div>
             ))}
@@ -185,8 +212,12 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="features" className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-0 left-1/2 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute bottom-0 right-1/2 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               Everything You Need to Launch
@@ -200,12 +231,12 @@ export default function Home() {
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+                <Card key={index} className="border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover-glow group bg-white/80 backdrop-blur-sm">
                   <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                       <IconComponent className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">{feature.title}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">{feature.title}</h3>
                     <p className="text-gray-600 leading-relaxed">{feature.description}</p>
                   </CardContent>
                 </Card>
@@ -216,11 +247,15 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="how-it-works" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute top-1/4 right-0 w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mix-blend-multiply filter blur-2xl opacity-10 animate-blob"></div>
+        <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-2xl opacity-10 animate-blob animation-delay-3000"></div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <Badge variant="outline" className="mb-6">
+              <Badge variant="outline" className="mb-6 glass-effect border-blue-200">
                 Roadmap
               </Badge>
               <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
@@ -234,13 +269,13 @@ export default function Home() {
                 {processSteps.map((step, index) => {
                   const IconComponent = step.icon;
                   return (
-                    <div key={index} className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div key={index} className="flex items-start space-x-4 group">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                         <IconComponent className="w-6 h-6 text-white" />
                       </div>
-                      <div>
+                      <div className="group-hover:translate-x-2 transition-transform duration-300">
                         <div className="text-sm font-medium text-blue-600 mb-1">{step.step}</div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{step.title}</h3>
                         <p className="text-gray-600 leading-relaxed">{step.description}</p>
                       </div>
                     </div>
@@ -250,10 +285,23 @@ export default function Home() {
             </div>
             
             <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center">
-                <div className="w-32 h-32 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <Rocket className="w-16 h-16 text-white" />
+              {/* Floating decorative elements */}
+              <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-400 rounded-full animate-float opacity-60"></div>
+              <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-purple-400 rounded-full animate-float animation-delay-1000 opacity-60"></div>
+              <div className="absolute top-1/4 -right-8 w-4 h-4 bg-pink-400 rounded-full animate-float animation-delay-2000 opacity-60"></div>
+              
+              <div className="aspect-square bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-3xl transition-shadow duration-500 relative overflow-hidden">
+                {/* Animated gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 animate-gradient-shift"></div>
+                
+                <div className="w-32 h-32 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 animate-float">
+                  <Rocket className="w-16 h-16 text-white drop-shadow-lg" />
                 </div>
+                
+                {/* Sparkle effects */}
+                <div className="absolute top-8 left-8 w-2 h-2 bg-white rounded-full animate-sparkle"></div>
+                <div className="absolute bottom-12 right-12 w-3 h-3 bg-white rounded-full animate-sparkle animation-delay-1000"></div>
+                <div className="absolute top-1/2 right-8 w-2 h-2 bg-white rounded-full animate-sparkle animation-delay-2000"></div>
               </div>
             </div>
           </div>
@@ -261,9 +309,22 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+        </div>
+        
+        {/* Floating particles */}
+        <div className="absolute top-20 left-20 w-3 h-3 bg-white rounded-full animate-float opacity-60"></div>
+        <div className="absolute top-1/3 right-32 w-2 h-2 bg-blue-200 rounded-full animate-float animation-delay-1000 opacity-60"></div>
+        <div className="absolute bottom-32 left-1/3 w-4 h-4 bg-purple-200 rounded-full animate-float animation-delay-2000 opacity-60"></div>
+        <div className="absolute bottom-20 right-20 w-2 h-2 bg-pink-200 rounded-full animate-float animation-delay-3000 opacity-60"></div>
+        
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 animate-gradient-shift">
             Ready to Build Your Startup?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
@@ -271,7 +332,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/dashboard">
-              <Button size="lg" variant="secondary" className="px-8 py-4 text-lg bg-white text-blue-600 hover:bg-gray-50">
+              <Button size="lg" variant="secondary" className="px-8 py-4 text-lg bg-white text-blue-600 hover:bg-gray-50 shadow-2xl hover-glow transform transition-all duration-200 hover:scale-105">
                 <Rocket className="w-5 h-5 mr-2" />
                 Start Building Now
               </Button>
@@ -279,7 +340,7 @@ export default function Home() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-blue-600"
+              className="px-8 py-4 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-600 glass-effect hover-glow transform transition-all duration-200 hover:scale-105"
             >
               Learn More
             </Button>
