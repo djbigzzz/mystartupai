@@ -23,9 +23,16 @@ export const startupIdeas = pgTable("startup_ideas", {
   description: text("description").notNull(),
   industry: text("industry").notNull(),
   stage: text("stage").notNull(),
+  targetMarket: text("target_market"),
+  problemStatement: text("problem_statement"),
+  solutionApproach: text("solution_approach"),
+  competitiveAdvantage: text("competitive_advantage"),
+  revenueModel: text("revenue_model"),
   analysis: jsonb("analysis"),
   businessPlan: jsonb("business_plan"),
   pitchDeck: jsonb("pitch_deck"),
+  validationScore: integer("validation_score"),
+  analysisStatus: text("analysis_status").default("pending"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -70,6 +77,11 @@ export const insertStartupIdeaSchema = createInsertSchema(startupIdeas).pick({
   description: true,
   industry: true,
   stage: true,
+  targetMarket: true,
+  problemStatement: true,
+  solutionApproach: true,
+  competitiveAdvantage: true,
+  revenueModel: true,
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({
