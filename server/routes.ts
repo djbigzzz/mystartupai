@@ -481,6 +481,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate pitch deck
+  app.post("/api/startup-ideas/:id/pitch-deck", async (req, res) => {
+    try {
+      const ideaId = parseInt(req.params.id);
+      const idea = await storage.getStartupIdea(ideaId);
+      
+      if (!idea) {
+        return res.status(404).json({ message: "Startup idea not found" });
+      }
+
+      const businessPlan = idea.businessPlan as any;
+      const pitchDeck = await generatePitchDeck(
+        idea.ideaTitle,
+        idea.description,
+        idea.industry,
+        businessPlan
+      );
+
+      // Convert pitch deck to slide-based format
+      const slidesData = {
+        "title": {
+          content: `${idea.ideaTitle}\n\nTransforming ${idea.industry} through innovation`,
+          notes: "Introduce your company with confidence. Mention the problem you solve and why now is the right time."
+        },
+        "problem": {
+          content: idea.problemStatement || pitchDeck.slides[1]?.content || "Market problem definition...",
+          notes: pitchDeck.slides[1]?.notes || "Explain the pain point your target customers face daily."
+        },
+        "solution": {
+          content: idea.solutionApproach || pitchDeck.slides[2]?.content || "Our innovative solution...",
+          notes: pitchDeck.slides[2]?.notes || "Demonstrate how your solution uniquely addresses the problem."
+        },
+        "market": {
+          content: pitchDeck.slides[3]?.content || "Market opportunity and size...",
+          notes: pitchDeck.slides[3]?.notes || "Show the market size and growth potential."
+        },
+        "business-model": {
+          content: pitchDeck.slides[4]?.content || "Revenue model and strategy...",
+          notes: pitchDeck.slides[4]?.notes || "Explain how you make money and your unit economics."
+        },
+        "traction": {
+          content: pitchDeck.slides[5]?.content || "Growth metrics and achievements...",
+          notes: pitchDeck.slides[5]?.notes || "Show your progress and validation to date."
+        },
+        "team": {
+          content: pitchDeck.slides[6]?.content || "Founding team and expertise...",
+          notes: pitchDeck.slides[6]?.notes || "Highlight why your team can execute this vision."
+        },
+        "financial": {
+          content: pitchDeck.slides[7]?.content || "Financial projections...",
+          notes: pitchDeck.slides[7]?.notes || "Present realistic financial forecasts and key metrics."
+        },
+        "funding": {
+          content: pitchDeck.slides[8]?.content || "Investment request and use of funds...",
+          notes: pitchDeck.slides[8]?.notes || "Clearly state your ask and how funds will be used."
+        },
+        "closing": {
+          content: pitchDeck.slides[9]?.content || "Thank you and next steps...",
+          notes: pitchDeck.slides[9]?.notes || "End with a strong call to action and contact information."
+        }
+      };
+
+      await storage.updateStartupIdea(ideaId, {
+        pitchDeck
+      });
+
+      res.json(slidesData);
+    } catch (error) {
+      console.error("Error generating pitch deck:", error);
+      res.status(500).json({ message: "Failed to generate pitch deck" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

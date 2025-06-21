@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  FileText, 
+  Presentation, 
   ArrowLeft, 
   Download, 
   Share2, 
@@ -19,13 +19,14 @@ import {
   Shield,
   Lightbulb,
   BarChart3,
-  Zap
+  Zap,
+  Play
 } from "lucide-react";
 import { Link } from "wouter";
-import BusinessPlanGenerator from "@/components/business-plan-generator";
+import PitchDeckGenerator from "@/components/pitch-deck-generator";
 import IdeaAnalysisDashboard from "@/components/idea-analysis-dashboard";
 
-export default function BusinessPlan() {
+export default function PitchDeck() {
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
@@ -42,33 +43,33 @@ export default function BusinessPlan() {
     enabled: !!currentIdeaId,
   });
 
-  const idea = ideaData as any;
-
   const { data: userIdeas = [] } = useQuery({
     queryKey: [`/api/ideas?email=${userEmail}`],
     enabled: !!userEmail,
   });
 
+  const idea = ideaData as any;
+
   const benefits = [
     {
-      icon: FileText,
-      title: "Comprehensive Documentation",
-      description: "12-section business plan covering all investor requirements"
+      icon: Presentation,
+      title: "Professional Slides",
+      description: "10 investor-ready slides following proven pitch formats"
     },
     {
       icon: Brain,
       title: "AI-Generated Content",
-      description: "Intelligent content creation based on your validated idea"
+      description: "Smart content creation based on your business plan"
+    },
+    {
+      icon: Play,
+      title: "Interactive Presentation",
+      description: "Full-screen presentation mode with speaker notes"
     },
     {
       icon: Target,
-      title: "Market-Focused Strategy",
-      description: "Detailed market analysis and competitive positioning"
-    },
-    {
-      icon: DollarSign,
-      title: "Financial Projections",
-      description: "Realistic revenue forecasts and funding requirements"
+      title: "Investor-Focused",
+      description: "Structured to address key investor concerns and questions"
     }
   ];
 
@@ -76,7 +77,7 @@ export default function BusinessPlan() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Brain className="w-12 h-12 text-blue-600 animate-pulse mx-auto mb-4" />
+          <Presentation className="w-12 h-12 text-purple-600 animate-pulse mx-auto mb-4" />
           <p className="text-gray-600">Loading your startup data...</p>
         </div>
       </div>
@@ -98,8 +99,8 @@ export default function BusinessPlan() {
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Business Plan Generator</h1>
-                  <p className="text-gray-600">Create comprehensive, investor-ready business plans</p>
+                  <h1 className="text-2xl font-bold text-gray-900">Pitch Deck Generator</h1>
+                  <p className="text-gray-600">Create professional investor presentations</p>
                 </div>
               </div>
             </div>
@@ -110,26 +111,26 @@ export default function BusinessPlan() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <Card className="border-0 shadow-lg">
             <CardContent className="text-center py-16">
-              <FileText className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+              <Presentation className="w-16 h-16 text-gray-300 mx-auto mb-6" />
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 No Startup Idea Selected
               </h2>
               <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                To generate a business plan, you need to submit and validate a startup idea first. 
-                Our AI will use your validated idea to create a comprehensive business plan.
+                To generate a pitch deck, you need to submit and validate a startup idea first. 
+                Our AI will use your validated idea to create a professional investor presentation.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/submit-idea">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Button className="bg-purple-600 hover:bg-purple-700">
                     <Lightbulb className="w-4 h-4 mr-2" />
                     Submit New Idea
                   </Button>
                 </Link>
-                <Link href="/dashboard">
+                <Link href="/business-plan">
                   <Button variant="outline">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Dashboard
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Business Plan First
                   </Button>
                 </Link>
               </div>
@@ -173,8 +174,8 @@ export default function BusinessPlan() {
                 return (
                   <Card key={index} className="border-0 shadow-sm">
                     <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                        <IconComponent className="w-6 h-6 text-blue-600" />
+                      <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <IconComponent className="w-6 h-6 text-purple-600" />
                       </div>
                       <h3 className="font-semibold text-gray-900 mb-2">{benefit.title}</h3>
                       <p className="text-gray-600 text-sm">{benefit.description}</p>
@@ -203,8 +204,8 @@ export default function BusinessPlan() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Business Plan Generator</h1>
-                <p className="text-gray-600">Creating plan for: {idea?.ideaTitle}</p>
+                <h1 className="text-2xl font-bold text-gray-900">Pitch Deck Generator</h1>
+                <p className="text-gray-600">Creating presentation for: {idea?.ideaTitle}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -219,14 +220,15 @@ export default function BusinessPlan() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="generator" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="generator">Business Plan Generator</TabsTrigger>
+            <TabsTrigger value="generator">Pitch Deck Generator</TabsTrigger>
             <TabsTrigger value="analysis">Idea Analysis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="generator" className="space-y-6">
-            <BusinessPlanGenerator 
+            <PitchDeckGenerator 
               ideaId={currentIdeaId} 
-              ideaData={idea} 
+              ideaData={idea}
+              businessPlan={idea?.businessPlan}
             />
           </TabsContent>
 
