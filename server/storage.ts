@@ -85,7 +85,11 @@ export class DatabaseStorage implements IStorage {
   async createStartupIdea(insertIdea: InsertStartupIdea): Promise<StartupIdea> {
     const [idea] = await db
       .insert(startupIdeas)
-      .values(insertIdea)
+      .values({
+        ...insertIdea,
+        analysisStatus: "pending",
+        validationScore: null
+      })
       .returning();
     return idea;
   }

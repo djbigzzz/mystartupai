@@ -184,13 +184,13 @@ export default function Home() {
             
             {/* Refined Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Link href="/dashboard">
+              <Link href="/submit-idea">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-10 py-4 text-lg font-semibold text-white rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-200 hover:scale-105"
                 >
                   <Rocket className="w-5 h-5 mr-2" />
-                  Start Building Now
+                  Submit Your Idea
                 </Button>
               </Link>
               
@@ -441,19 +441,21 @@ export default function Home() {
             Start building your startup with AI-powered business planning tools and proven methodologies used by successful companies.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/dashboard">
+            <Link href="/submit-idea">
               <Button size="lg" variant="secondary" className="px-8 py-4 text-lg bg-white text-blue-600 hover:bg-gray-50 shadow-lg hover:shadow-xl transform transition-all duration-200 hover:scale-105">
                 <Rocket className="w-5 h-5 mr-2" />
-                Start Building Now
+                Submit Your Idea
               </Button>
             </Link>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="px-8 py-4 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm transform transition-all duration-200 hover:scale-105"
-            >
-              Learn More
-            </Button>
+            <Link href="/dashboard">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="px-8 py-4 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm transform transition-all duration-200 hover:scale-105"
+              >
+                Dashboard
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
