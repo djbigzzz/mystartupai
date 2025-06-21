@@ -137,72 +137,121 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 lg:py-32">
-        {/* Animated Background Elements */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-20 lg:py-32 min-h-screen flex items-center">
+        {/* Luxury Aurora Background */}
+        <div className="absolute inset-0 aurora-bg opacity-30"></div>
+        
+        {/* Premium Animated Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-          <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob luxury-pulse"></div>
+          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000 luxury-pulse"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-4000 luxury-pulse"></div>
           
-          {/* Grid Pattern */}
-          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+          {/* Holographic Grid */}
+          <div className="absolute inset-0 holographic opacity-10"></div>
           
-          {/* Floating Particles */}
-          <div className="absolute top-10 left-10 w-2 h-2 bg-blue-400 rounded-full animate-float"></div>
-          <div className="absolute top-1/3 right-20 w-3 h-3 bg-purple-400 rounded-full animate-float animation-delay-1000"></div>
-          <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-pink-400 rounded-full animate-float animation-delay-3000"></div>
-          <div className="absolute top-3/4 left-1/4 w-3 h-3 bg-blue-500 rounded-full animate-float animation-delay-2000"></div>
+          {/* Luxury Floating Particles */}
+          <div className="absolute top-20 left-20 w-4 h-4 luxury-particle diamond-float"></div>
+          <div className="absolute top-1/3 right-32 w-6 h-6 luxury-particle diamond-float animation-delay-1000"></div>
+          <div className="absolute bottom-1/4 right-1/3 w-3 h-3 luxury-particle diamond-float animation-delay-3000"></div>
+          <div className="absolute top-3/4 left-1/4 w-5 h-5 luxury-particle diamond-float animation-delay-2000"></div>
+          <div className="absolute top-1/2 left-1/2 w-4 h-4 luxury-particle diamond-float animation-delay-1500"></div>
+          <div className="absolute bottom-1/3 left-1/5 w-3 h-3 luxury-particle diamond-float animation-delay-3500"></div>
+          
+          {/* Premium Light Rays */}
+          <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-white to-transparent opacity-20 animate-float"></div>
+          <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-purple-300 to-transparent opacity-20 animate-float animation-delay-2000"></div>
+          <div className="absolute top-0 left-2/3 w-px h-full bg-gradient-to-b from-transparent via-blue-300 to-transparent opacity-20 animate-float animation-delay-4000"></div>
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="text-center">
-            <Badge variant="outline" className="mb-8 text-blue-600 border-blue-200 bg-blue-50">
-              <Sparkles className="w-3 h-3 mr-1" />
-              AI-Powered Startup Platform
-            </Badge>
+            {/* Premium Badge */}
+            <div className="inline-block mb-8">
+              <div className="luxury-border">
+                <div className="bg-black/90 backdrop-blur-xl px-6 py-3 rounded-2xl">
+                  <div className="flex items-center text-white">
+                    <div className="w-6 h-6 premium-glow rounded-full bg-gradient-to-r from-blue-400 to-purple-400 flex items-center justify-center mr-2">
+                      <Sparkles className="w-3 h-3" />
+                    </div>
+                    <span className="text-luxury font-medium">AI-Powered Startup Platform</span>
+                  </div>
+                </div>
+              </div>
+            </div>
             
-            <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Turn Your Ideas Into{" "}
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-shift">
+            {/* Luxury Headline */}
+            <h1 className="text-6xl lg:text-8xl font-black mb-8 leading-tight">
+              <span className="text-white drop-shadow-2xl">Turn Your Ideas Into</span>
+              <br />
+              <span className="text-luxury metallic-gradient bg-clip-text text-transparent relative">
                 Funded Startups
+                <div className="absolute inset-0 luxury-shimmer"></div>
               </span>
             </h1>
             
-            <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            {/* Premium Description */}
+            <p className="text-xl lg:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
               The complete AI platform for entrepreneurs. Generate business plans, pitch 
               decks, and financial models. Connect with investors and turn your startup dream 
               into reality.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* Luxury Buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Link href="/dashboard">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-4 text-lg shadow-lg hover-glow transform transition-all duration-200 hover:scale-105">
-                  <Rocket className="w-5 h-5 mr-2" />
+                <Button 
+                  size="lg" 
+                  className="btn-luxury px-12 py-6 text-xl font-bold text-white border-0 rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-110 hover:shadow-3xl"
+                >
+                  <Rocket className="w-6 h-6 mr-3" />
                   Start Building Now
                 </Button>
               </Link>
+              
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="px-8 py-4 text-lg border-2 border-blue-200 hover:border-blue-400 glass-effect hover-glow"
+                className="glass-luxury px-12 py-6 text-xl font-bold text-white border-2 border-white/30 rounded-2xl hover:border-white/50 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
                 onClick={() => setShowGetStarted(!showGetStarted)}
               >
-                <Play className="w-5 h-5 mr-2" />
+                <Play className="w-6 h-6 mr-3" />
                 See AI in Action
               </Button>
             </div>
+            
+            {/* Trust Indicators */}
+            <div className="mt-16 flex items-center justify-center space-x-8 text-gray-400">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-green-400" />
+                <span className="text-sm font-medium">Trusted by 10,000+ Startups</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Star className="w-5 h-5 text-yellow-400" />
+                <span className="text-sm font-medium">4.9/5 Rating</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Target className="w-5 h-5 text-blue-400" />
+                <span className="text-sm font-medium">95% Success Rate</span>
+              </div>
+            </div>
           </div>
           
-          {/* Stats */}
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Luxury Stats */}
+          <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-12">
             {stats.map((stat, index) => (
               <div key={index} className="text-center group">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover-glow border border-white/20">
-                  <div className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">
-                    {stat.number}
-                  </div>
-                  <div className="text-gray-600 text-lg font-medium">
-                    {stat.label}
+                <div className="luxury-border">
+                  <div className="luxury-card rounded-2xl p-10 transform transition-all duration-500 group-hover:scale-110 premium-glow">
+                    <div className="text-5xl lg:text-6xl font-black text-luxury mb-4 group-hover:scale-125 transition-transform duration-500">
+                      {stat.number}
+                    </div>
+                    <div className="text-white/80 text-xl font-medium uppercase tracking-wider">
+                      {stat.label}
+                    </div>
+                    {/* Decorative elements */}
+                    <div className="absolute top-4 right-4 w-3 h-3 luxury-particle diamond-float opacity-60"></div>
+                    <div className="absolute bottom-4 left-4 w-2 h-2 luxury-particle diamond-float animation-delay-1000 opacity-40"></div>
                   </div>
                 </div>
               </div>
@@ -211,35 +260,61 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-0 left-1/2 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute bottom-0 right-1/2 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      {/* Luxury Features Section */}
+      <section id="features" className="py-32 bg-gradient-to-b from-slate-900 to-black relative overflow-hidden">
+        {/* Premium Background Elements */}
+        <div className="absolute inset-0 aurora-bg opacity-20"></div>
+        <div className="absolute top-0 left-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-full mix-blend-screen filter blur-3xl animate-blob luxury-pulse"></div>
+        <div className="absolute bottom-0 right-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-600/30 to-pink-500/30 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-3000 luxury-pulse"></div>
+        
+        {/* Floating luxury particles */}
+        <div className="absolute top-20 left-20 w-4 h-4 luxury-particle diamond-float"></div>
+        <div className="absolute top-40 right-32 w-3 h-3 luxury-particle diamond-float animation-delay-2000"></div>
+        <div className="absolute bottom-32 left-1/3 w-5 h-5 luxury-particle diamond-float animation-delay-4000"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              Everything You Need to Launch
+          <div className="text-center mb-20">
+            <h2 className="text-5xl lg:text-7xl font-black text-white mb-8">
+              Everything You Need to{" "}
+              <span className="text-luxury metallic-gradient bg-clip-text text-transparent">
+                Launch
+              </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-2xl text-gray-300 max-w-4xl mx-auto font-light">
               Our AI platform combines the best startup methodologies with cutting-edge technology
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover-glow group bg-white/80 backdrop-blur-sm">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                      <IconComponent className="w-6 h-6 text-white" />
+                <div key={index} className="group">
+                  <div className="luxury-border">
+                    <div className="luxury-card rounded-3xl p-10 h-full transform transition-all duration-500 group-hover:scale-105 premium-glow relative overflow-hidden">
+                      {/* Shimmer effect */}
+                      <div className="absolute inset-0 luxury-shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-125 transition-transform duration-500 premium-glow">
+                          <IconComponent className="w-8 h-8 text-white drop-shadow-lg" />
+                        </div>
+                        
+                        <h3 className="text-2xl font-bold text-white mb-6 group-hover:text-luxury transition-colors duration-500">
+                          {feature.title}
+                        </h3>
+                        
+                        <p className="text-gray-300 leading-relaxed text-lg font-light group-hover:text-white transition-colors duration-500">
+                          {feature.description}
+                        </p>
+                      </div>
+                      
+                      {/* Decorative corner elements */}
+                      <div className="absolute top-4 right-4 w-2 h-2 luxury-particle diamond-float opacity-40"></div>
+                      <div className="absolute bottom-4 left-4 w-3 h-3 luxury-particle diamond-float animation-delay-1000 opacity-30"></div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">{feature.title}</h3>
-                    <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -308,42 +383,92 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 relative overflow-hidden">
-        {/* Animated background elements */}
+      {/* Luxury CTA Section */}
+      <section className="py-32 bg-gradient-to-br from-black via-purple-900 to-black relative overflow-hidden">
+        {/* Ultra-premium background */}
+        <div className="absolute inset-0 aurora-bg opacity-40"></div>
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-full mix-blend-screen filter blur-3xl animate-blob luxury-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-[800px] h-[800px] bg-gradient-to-r from-purple-600/20 to-pink-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000 luxury-pulse"></div>
+          <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-gradient-to-r from-pink-500/20 to-orange-500/20 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-4000 luxury-pulse"></div>
         </div>
         
-        {/* Floating particles */}
-        <div className="absolute top-20 left-20 w-3 h-3 bg-white rounded-full animate-float opacity-60"></div>
-        <div className="absolute top-1/3 right-32 w-2 h-2 bg-blue-200 rounded-full animate-float animation-delay-1000 opacity-60"></div>
-        <div className="absolute bottom-32 left-1/3 w-4 h-4 bg-purple-200 rounded-full animate-float animation-delay-2000 opacity-60"></div>
-        <div className="absolute bottom-20 right-20 w-2 h-2 bg-pink-200 rounded-full animate-float animation-delay-3000 opacity-60"></div>
+        {/* Premium floating elements */}
+        <div className="absolute top-32 left-32 w-6 h-6 luxury-particle diamond-float"></div>
+        <div className="absolute top-1/3 right-48 w-4 h-4 luxury-particle diamond-float animation-delay-1000"></div>
+        <div className="absolute bottom-48 left-1/3 w-8 h-8 luxury-particle diamond-float animation-delay-2000"></div>
+        <div className="absolute bottom-32 right-32 w-5 h-5 luxury-particle diamond-float animation-delay-3000"></div>
+        <div className="absolute top-1/4 left-3/4 w-3 h-3 luxury-particle diamond-float animation-delay-1500"></div>
         
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 animate-gradient-shift">
-            Ready to Build Your Startup?
+        {/* Light rays */}
+        <div className="absolute top-0 left-1/3 w-px h-full bg-gradient-to-b from-transparent via-white/30 to-transparent animate-float"></div>
+        <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-purple-300/30 to-transparent animate-float animation-delay-2000"></div>
+        
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="luxury-border mb-12">
+            <div className="bg-black/80 backdrop-blur-xl px-8 py-4 rounded-3xl inline-block">
+              <span className="text-luxury text-lg font-bold uppercase tracking-wider">Exclusive Opportunity</span>
+            </div>
+          </div>
+          
+          <h2 className="text-6xl lg:text-8xl font-black text-white mb-8 leading-tight">
+            Ready to Build Your{" "}
+            <span className="text-luxury metallic-gradient bg-clip-text text-transparent relative">
+              Empire?
+              <div className="absolute inset-0 luxury-shimmer"></div>
+            </span>
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of entrepreneurs who have turned their ideas into successful businesses with our AI-powered platform.
+          
+          <p className="text-2xl text-gray-300 mb-16 max-w-4xl mx-auto font-light leading-relaxed">
+            Join the elite circle of entrepreneurs who have transformed their visions into 
+            billion-dollar enterprises with our exclusive AI-powered platform.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          
+          <div className="flex flex-col sm:flex-row gap-8 justify-center items-center">
             <Link href="/dashboard">
-              <Button size="lg" variant="secondary" className="px-8 py-4 text-lg bg-white text-blue-600 hover:bg-gray-50 shadow-2xl hover-glow transform transition-all duration-200 hover:scale-105">
-                <Rocket className="w-5 h-5 mr-2" />
-                Start Building Now
+              <Button 
+                size="lg" 
+                className="btn-luxury px-16 py-8 text-2xl font-black text-white border-0 rounded-3xl shadow-2xl transform transition-all duration-500 hover:scale-125 hover:shadow-3xl relative overflow-hidden"
+              >
+                <div className="relative z-10 flex items-center">
+                  <Rocket className="w-8 h-8 mr-4" />
+                  Start Your Empire
+                </div>
               </Button>
             </Link>
+            
             <Button 
-              size="lg" 
               variant="outline" 
-              className="px-8 py-4 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-600 glass-effect hover-glow transform transition-all duration-200 hover:scale-105"
+              size="lg" 
+              className="glass-luxury px-16 py-8 text-2xl font-bold text-white border-2 border-white/40 rounded-3xl hover:border-white/60 transform transition-all duration-500 hover:scale-110 hover:shadow-2xl backdrop-blur-2xl"
             >
-              Learn More
+              <Play className="w-8 h-8 mr-4" />
+              Watch Preview
             </Button>
+          </div>
+          
+          {/* Premium guarantee */}
+          <div className="mt-20 inline-block">
+            <div className="luxury-border">
+              <div className="bg-black/60 backdrop-blur-xl px-8 py-6 rounded-2xl">
+                <div className="flex items-center justify-center space-x-6 text-white/80">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-6 h-6 text-green-400" />
+                    <span className="text-lg font-medium">30-Day Money Back</span>
+                  </div>
+                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="flex items-center space-x-2">
+                    <Star className="w-6 h-6 text-yellow-400" />
+                    <span className="text-lg font-medium">Enterprise Grade</span>
+                  </div>
+                  <div className="w-px h-8 bg-white/20"></div>
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-6 h-6 text-blue-400" />
+                    <span className="text-lg font-medium">Exclusive Access</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
