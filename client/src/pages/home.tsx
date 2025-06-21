@@ -26,16 +26,16 @@ export default function Home() {
 
   const stats = [
     {
-      number: "10,000+",
-      label: "Startups Created"
+      number: "AI-Powered",
+      label: "Business Planning"
     },
     {
-      number: "$500M+",
-      label: "Funding Raised"
+      number: "10-Step",
+      label: "Startup Framework"
     },
     {
-      number: "95%",
-      label: "Success Rate"
+      number: "GPT-4",
+      label: "Technology"
     }
   ];
 
@@ -70,32 +70,32 @@ export default function Home() {
     {
       icon: Brain,
       title: "AI Business Plans",
-      description: "Generate comprehensive business plans in minutes using proven frameworks"
+      description: "Generate comprehensive business plans using GPT-4 technology and proven frameworks"
     },
     {
       icon: Target,
-      title: "Market Analysis",
-      description: "Deep market research and competitor analysis powered by AI"
+      title: "Idea Analysis",
+      description: "Analyze your startup concept with AI-powered insights and market considerations"
     },
     {
       icon: Presentation,
-      title: "Pitch Decks",
-      description: "Professional investor presentations that get funding"
+      title: "Pitch Deck Generation",
+      description: "Create professional investor presentations following proven formats"
     },
     {
-      icon: Users,
-      title: "Investor Network",
-      description: "Connect with verified investors matched to your industry"
+      icon: FileText,
+      title: "Document Templates",
+      description: "Access structured templates based on successful startup methodologies"
     },
     {
       icon: DollarSign,
-      title: "Financial Models",
-      description: "Detailed financial projections and funding requirements"
+      title: "Financial Planning",
+      description: "Generate financial projections and funding requirement estimates"
     },
     {
       icon: Rocket,
-      title: "MVP Builder",
-      description: "Build and launch your minimum viable product faster"
+      title: "Step-by-Step Guidance",
+      description: "Follow a 10-step framework from idea validation to launch preparation"
     }
   ];
 
@@ -176,11 +176,10 @@ export default function Home() {
               </span>
             </h1>
             
-            {/* Premium Description */}
+            {/* Honest Description */}
             <p className="text-xl lg:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-              The complete AI platform for entrepreneurs. Generate business plans, pitch 
-              decks, and financial models. Connect with investors and turn your startup dream 
-              into reality.
+              Transform your startup ideas into professional business plans, investor-ready pitch decks, 
+              and comprehensive financial models using advanced AI technology and proven startup methodologies.
             </p>
             
             {/* Refined Buttons */}
@@ -345,6 +344,38 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              How <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">MyStartup.ai</span> Works
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our platform guides you through the essential steps of startup development using AI-powered tools and proven frameworks.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {processSteps.map((step, index) => {
+              const IconComponent = step.icon;
+              return (
+                <div key={index} className="text-center">
+                  <div className="mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-sm font-semibold text-blue-600 mb-2">{step.step}</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Refined CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 relative overflow-hidden">
         {/* Subtle background elements */}
@@ -359,7 +390,7 @@ export default function Home() {
             Ready to Build Your Startup?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of entrepreneurs who have turned their ideas into successful businesses with our AI-powered platform.
+            Start building your startup with AI-powered business planning tools and proven methodologies used by successful companies.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/dashboard">
