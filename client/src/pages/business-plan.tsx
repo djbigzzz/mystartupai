@@ -42,7 +42,9 @@ export default function BusinessPlan() {
     enabled: !!currentIdeaId,
   });
 
-  const { data: userIdeas } = useQuery({
+  const idea = ideaData as any;
+
+  const { data: userIdeas = [] } = useQuery({
     queryKey: [`/api/ideas?email=${userEmail}`],
     enabled: !!userEmail,
   });
@@ -132,7 +134,7 @@ export default function BusinessPlan() {
                 </Link>
               </div>
 
-              {userIdeas && userIdeas.length > 0 && (
+              {Array.isArray(userIdeas) && userIdeas.length > 0 && (
                 <div className="mt-12">
                   <h3 className="text-lg font-semibold text-gray-900 mb-6">
                     Your Previous Ideas
@@ -202,12 +204,12 @@ export default function BusinessPlan() {
               </Link>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Business Plan Generator</h1>
-                <p className="text-gray-600">Creating plan for: {ideaData.ideaTitle}</p>
+                <p className="text-gray-600">Creating plan for: {idea?.ideaTitle}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="secondary">{ideaData.industry}</Badge>
-              <Badge variant="outline">{ideaData.stage}</Badge>
+              <Badge variant="secondary">{idea?.industry}</Badge>
+              <Badge variant="outline">{idea?.stage}</Badge>
             </div>
           </div>
         </div>

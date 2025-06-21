@@ -175,16 +175,28 @@ export async function generateBusinessPlan(
   targetMarket?: string,
   analysis?: IdeaAnalysis
 ): Promise<BusinessPlan> {
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("OPENAI_API_KEY not found, returning demo business plan");
+    return getDemoBusinessPlan(ideaTitle, description, industry);
+  }
+
   try {
+    const contextInfo = [
+      `Industry: ${industry}`,
+      problemStatement ? `Problem: ${problemStatement}` : '',
+      solutionApproach ? `Solution: ${solutionApproach}` : '',
+      targetMarket ? `Target Market: ${targetMarket}` : '',
+      analysis ? `Validation Score: ${analysis.score}/100` : ''
+    ].filter(Boolean).join('\n');
+
     const prompt = `
-      Generate a comprehensive business plan for this startup idea. Use the analysis provided to create a detailed, investor-ready business plan.
+      Generate a comprehensive business plan for this startup idea.
       
       Startup Idea: ${ideaTitle}
       Description: ${description}
-      Industry: ${industry}
-      Stage: ${stage}
+      ${contextInfo}
       
-      Analysis insights: ${JSON.stringify(analysis)}
+      ${analysis ? `Analysis insights: ${JSON.stringify(analysis)}` : ''}
       
       Create a detailed business plan in JSON format with these sections:
       - executiveSummary: string (compelling 2-3 paragraph summary)
