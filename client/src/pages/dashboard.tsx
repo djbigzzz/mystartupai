@@ -40,6 +40,17 @@ interface RecentActivity {
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("overview");
+  const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const ideaId = localStorage.getItem("currentIdeaId");
+    if (ideaId) setCurrentIdeaId(parseInt(ideaId));
+  }, []);
+
+  const { data: ideaData } = useQuery({
+    queryKey: [`/api/ideas/${currentIdeaId}`],
+    enabled: !!currentIdeaId,
+  });
 
   // Mock user data for testing - will be replaced with real authentication
   const user = {
