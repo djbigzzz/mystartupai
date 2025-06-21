@@ -170,8 +170,10 @@ export async function generateBusinessPlan(
   ideaTitle: string,
   description: string,
   industry: string,
-  stage: string,
-  analysis: IdeaAnalysis
+  problemStatement?: string,
+  solutionApproach?: string,
+  targetMarket?: string,
+  analysis?: IdeaAnalysis
 ): Promise<BusinessPlan> {
   try {
     const prompt = `

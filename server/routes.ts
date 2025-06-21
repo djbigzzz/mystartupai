@@ -158,6 +158,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate comprehensive business plan
+  app.post("/api/startup-ideas/:id/business-plan", async (req, res) => {
+    try {
+      const ideaId = parseInt(req.params.id);
+      const idea = await storage.getStartupIdea(ideaId);
+      
+      if (!idea) {
+        return res.status(404).json({ message: "Startup idea not found" });
+      }
+
+      const analysis = idea.analysis as any;
+      const businessPlan = await generateBusinessPlan(
+        idea.ideaTitle,
+        idea.description,
+        idea.industry,
+        idea.problemStatement || undefined,
+        idea.solutionApproach || undefined,
+        idea.targetMarket || undefined,
+        analysis
+      );
+
+      // Convert business plan to section-based format for the component
+      const sectionsData = {
+        "executive-summary": businessPlan.executiveSummary,
+        "problem-statement": businessPlan.problemStatement,
+        "solution-overview": businessPlan.solutionDescription,
+        "market-analysis": businessPlan.marketAnalysis,
+        "business-model": businessPlan.businessModel,
+        "marketing-strategy": businessPlan.marketingStrategy,
+        "operations-plan": businessPlan.operationalPlan,
+        "management-team": businessPlan.managementTeam,
+        "financial-projections": businessPlan.financialProjections,
+        "funding-request": businessPlan.fundingRequirements,
+        "risk-analysis": businessPlan.riskAnalysis,
+        "implementation-timeline": businessPlan.timeline
+      };
+
+      await storage.updateStartupIdea(ideaId, {
+        businessPlan
+      });
+
+      res.json(sectionsData);
+    } catch (error) {
+      console.error("Error generating business plan:", error);
+      res.status(500).json({ message: "Failed to generate business plan" });
+    }
+  });
+
   // Generate business plan for an idea
   app.post("/api/ideas/:id/business-plan", async (req, res) => {
     try {
