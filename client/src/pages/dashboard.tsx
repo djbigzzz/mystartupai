@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ import {
 } from "lucide-react";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
+import StartupWorkflowDashboard from "@/components/startup-workflow-dashboard";
 
 interface DashboardStats {
   totalIdeas: number;

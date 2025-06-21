@@ -10,6 +10,7 @@ import SubmitIdea from "@/pages/submit-idea";
 import BusinessPlan from "@/pages/business-plan";
 import PitchDeck from "@/pages/pitch-deck";
 import FinancialModelingPage from "@/pages/financial-modeling";
+import MarketResearchPage from "@/pages/market-research";
 import CompletePlatform from "@/pages/complete-platform";
 import NotFound from "@/pages/not-found";
 
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/business-plan" component={BusinessPlan} />
       <Route path="/pitch-deck" component={PitchDeck} />
       <Route path="/financial-modeling" component={FinancialModelingPage} />
+      <Route path="/market-research" component={MarketResearchPage} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/platform" component={CompletePlatform} />
       <Route component={NotFound} />
