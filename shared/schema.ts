@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -114,6 +114,140 @@ export const insertDocumentSchema = createInsertSchema(documents).pick({
   fileUrl: true,
 });
 
+// Events and networking schemas
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  type: text("type").notNull(), // startup, tech, networking, demo_day, conference
+  category: text("category").notNull(), // workshop, pitch_competition, networking, conference
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  location: text("location"),
+  isVirtual: boolean("is_virtual").default(false),
+  virtualLink: text("virtual_link"),
+  organizerName: text("organizer_name"),
+  organizerEmail: text("organizer_email"),
+  maxAttendees: integer("max_attendees"),
+  currentAttendees: integer("current_attendees").default(0),
+  price: text("price").default("0.00"),
+  registrationUrl: text("registration_url"),
+  tags: text("tags").array(),
+  imageUrl: text("image_url"),
+  requirements: text("requirements"),
+  agenda: jsonb("agenda"), // Array of agenda items
+  speakers: jsonb("speakers"), // Array of speaker objects
+  benefits: text("benefits").array(),
+  status: text("status").default("upcoming"), // upcoming, ongoing, completed, cancelled
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const eventRegistrations = pgTable("event_registrations", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").references(() => events.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  registrationDate: timestamp("registration_date").defaultNow(),
+  status: text("status").default("registered"), // registered, attended, cancelled
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const connections = pgTable("connections", {
+  id: serial("id").primaryKey(),
+  requesterId: integer("requester_id").references(() => users.id).notNull(),
+  receiverId: integer("receiver_id").references(() => users.id).notNull(),
+  status: text("status").default("pending"), // pending, accepted, declined, blocked
+  message: text("message"),
+  connectionDate: timestamp("connection_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const networkingProfiles = pgTable("networking_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  bio: text("bio"),
+  interests: text("interests").array(),
+  skills: text("skills").array(),
+  industries: text("industries").array(),
+  lookingFor: text("looking_for").array(), // mentor, cofounder, investor, advisor, customer
+  stage: text("stage"), // idea, mvp, growth, scaling
+  availableForMentoring: boolean("available_for_mentoring").default(false),
+  seekingMentorship: boolean("seeking_mentorship").default(false),
+  openToCollaboration: boolean("open_to_collaboration").default(false),
+  linkedinUrl: text("linkedin_url"),
+  twitterUrl: text("twitter_url"),
+  githubUrl: text("github_url"),
+  websiteUrl: text("website_url"),
+  location: text("location"),
+  timezone: text("timezone"),
+  preferredContactMethod: text("preferred_contact_method").default("platform"), // platform, email, linkedin
+  visibility: text("visibility").default("public"), // public, connections, private
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertEventSchema = createInsertSchema(events).pick({
+  title: true,
+  description: true,
+  type: true,
+  category: true,
+  startDate: true,
+  endDate: true,
+  location: true,
+  isVirtual: true,
+  virtualLink: true,
+  organizerName: true,
+  organizerEmail: true,
+  maxAttendees: true,
+  price: true,
+  registrationUrl: true,
+  tags: true,
+  imageUrl: true,
+  requirements: true,
+  agenda: true,
+  speakers: true,
+  benefits: true,
+  status: true,
+});
+
+export const insertEventRegistrationSchema = createInsertSchema(eventRegistrations).pick({
+  eventId: true,
+  userId: true,
+  status: true,
+  notes: true,
+});
+
+export const insertConnectionSchema = createInsertSchema(connections).pick({
+  requesterId: true,
+  receiverId: true,
+  status: true,
+  message: true,
+  connectionDate: true,
+});
+
+export const insertNetworkingProfileSchema = createInsertSchema(networkingProfiles).pick({
+  userId: true,
+  bio: true,
+  interests: true,
+  skills: true,
+  industries: true,
+  lookingFor: true,
+  stage: true,
+  availableForMentoring: true,
+  seekingMentorship: true,
+  openToCollaboration: true,
+  linkedinUrl: true,
+  twitterUrl: true,
+  githubUrl: true,
+  websiteUrl: true,
+  location: true,
+  timezone: true,
+  preferredContactMethod: true,
+  visibility: true,
+});
+
 export type InsertStartupIdea = z.infer<typeof insertStartupIdeaSchema>;
 export type StartupIdea = typeof startupIdeas.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -122,3 +256,11 @@ export type InsertCompany = z.infer<typeof insertCompanySchema>;
 export type Company = typeof companies.$inferSelect;
 export type InsertDocument = z.infer<typeof insertDocumentSchema>;
 export type Document = typeof documents.$inferSelect;
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+export type Event = typeof events.$inferSelect;
+export type InsertEventRegistration = z.infer<typeof insertEventRegistrationSchema>;
+export type EventRegistration = typeof eventRegistrations.$inferSelect;
+export type InsertConnection = z.infer<typeof insertConnectionSchema>;
+export type Connection = typeof connections.$inferSelect;
+export type InsertNetworkingProfile = z.infer<typeof insertNetworkingProfileSchema>;
+export type NetworkingProfile = typeof networkingProfiles.$inferSelect;

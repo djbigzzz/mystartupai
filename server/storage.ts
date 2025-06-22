@@ -3,6 +3,10 @@ import {
   startupIdeas, 
   companies, 
   documents,
+  events,
+  eventRegistrations,
+  connections,
+  networkingProfiles,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -10,7 +14,15 @@ import {
   type Company,
   type InsertCompany,
   type Document,
-  type InsertDocument
+  type InsertDocument,
+  type Event,
+  type InsertEvent,
+  type EventRegistration,
+  type InsertEventRegistration,
+  type Connection,
+  type InsertConnection,
+  type NetworkingProfile,
+  type InsertNetworkingProfile
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -42,6 +54,33 @@ export interface IStorage {
   getDocumentsByCompany(companyId: number): Promise<Document[]>;
   updateDocument(id: number, updates: Partial<Document>): Promise<Document | undefined>;
   deleteDocument(id: number): Promise<boolean>;
+  
+  // Event operations
+  createEvent(event: InsertEvent): Promise<Event>;
+  getEvent(id: number): Promise<Event | undefined>;
+  getEvents(filters?: { type?: string; category?: string; location?: string }): Promise<Event[]>;
+  updateEvent(id: number, updates: Partial<Event>): Promise<Event | undefined>;
+  deleteEvent(id: number): Promise<boolean>;
+  
+  // Event registration operations
+  registerForEvent(registration: InsertEventRegistration): Promise<EventRegistration>;
+  getEventRegistration(eventId: number, userId: number): Promise<EventRegistration | undefined>;
+  getEventRegistrations(eventId: number): Promise<EventRegistration[]>;
+  getUserRegistrations(userId: number): Promise<EventRegistration[]>;
+  updateEventRegistration(id: number, updates: Partial<EventRegistration>): Promise<EventRegistration | undefined>;
+  
+  // Connection operations
+  createConnection(connection: InsertConnection): Promise<Connection>;
+  getConnection(id: number): Promise<Connection | undefined>;
+  getUserConnections(userId: number): Promise<Connection[]>;
+  getPendingConnections(userId: number): Promise<Connection[]>;
+  updateConnection(id: number, updates: Partial<Connection>): Promise<Connection | undefined>;
+  
+  // Networking profile operations
+  createNetworkingProfile(profile: InsertNetworkingProfile): Promise<NetworkingProfile>;
+  getNetworkingProfile(userId: number): Promise<NetworkingProfile | undefined>;
+  getNetworkingProfiles(filters?: { stage?: string; industries?: string[]; lookingFor?: string[] }): Promise<NetworkingProfile[]>;
+  updateNetworkingProfile(userId: number, updates: Partial<NetworkingProfile>): Promise<NetworkingProfile | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
