@@ -209,6 +209,133 @@ export class DatabaseStorage implements IStorage {
     const result = await db.delete(documents).where(eq(documents.id, id));
     return (result.rowCount || 0) > 0;
   }
+
+  // Event operations
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    const [event] = await db
+      .insert(events)
+      .values(insertEvent)
+      .returning();
+    return event;
+  }
+
+  async getEvent(id: number): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event;
+  }
+
+  async getEvents(filters?: { type?: string; category?: string; location?: string }): Promise<Event[]> {
+    return await db.select().from(events);
+  }
+
+  async updateEvent(id: number, updates: Partial<Event>): Promise<Event | undefined> {
+    const [event] = await db
+      .update(events)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(events.id, id))
+      .returning();
+    return event;
+  }
+
+  async deleteEvent(id: number): Promise<boolean> {
+    const result = await db.delete(events).where(eq(events.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  // Event registration operations
+  async registerForEvent(insertRegistration: InsertEventRegistration): Promise<EventRegistration> {
+    const [registration] = await db
+      .insert(eventRegistrations)
+      .values(insertRegistration)
+      .returning();
+    return registration;
+  }
+
+  async getEventRegistration(eventId: number, userId: number): Promise<EventRegistration | undefined> {
+    const [registration] = await db
+      .select()
+      .from(eventRegistrations)
+      .where(and(eq(eventRegistrations.eventId, eventId), eq(eventRegistrations.userId, userId)));
+    return registration;
+  }
+
+  async getEventRegistrations(eventId: number): Promise<EventRegistration[]> {
+    return await db.select().from(eventRegistrations).where(eq(eventRegistrations.eventId, eventId));
+  }
+
+  async getUserRegistrations(userId: number): Promise<EventRegistration[]> {
+    return await db.select().from(eventRegistrations).where(eq(eventRegistrations.userId, userId));
+  }
+
+  async updateEventRegistration(id: number, updates: Partial<EventRegistration>): Promise<EventRegistration | undefined> {
+    const [registration] = await db
+      .update(eventRegistrations)
+      .set(updates)
+      .where(eq(eventRegistrations.id, id))
+      .returning();
+    return registration;
+  }
+
+  // Connection operations
+  async createConnection(insertConnection: InsertConnection): Promise<Connection> {
+    const [connection] = await db
+      .insert(connections)
+      .values(insertConnection)
+      .returning();
+    return connection;
+  }
+
+  async getConnection(id: number): Promise<Connection | undefined> {
+    const [connection] = await db.select().from(connections).where(eq(connections.id, id));
+    return connection;
+  }
+
+  async getUserConnections(userId: number): Promise<Connection[]> {
+    return await db.select().from(connections).where(eq(connections.status, "accepted"));
+  }
+
+  async getPendingConnections(userId: number): Promise<Connection[]> {
+    return await db
+      .select()
+      .from(connections)
+      .where(and(eq(connections.receiverId, userId), eq(connections.status, "pending")));
+  }
+
+  async updateConnection(id: number, updates: Partial<Connection>): Promise<Connection | undefined> {
+    const [connection] = await db
+      .update(connections)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(connections.id, id))
+      .returning();
+    return connection;
+  }
+
+  // Networking profile operations
+  async createNetworkingProfile(insertProfile: InsertNetworkingProfile): Promise<NetworkingProfile> {
+    const [profile] = await db
+      .insert(networkingProfiles)
+      .values(insertProfile)
+      .returning();
+    return profile;
+  }
+
+  async getNetworkingProfile(userId: number): Promise<NetworkingProfile | undefined> {
+    const [profile] = await db.select().from(networkingProfiles).where(eq(networkingProfiles.userId, userId));
+    return profile;
+  }
+
+  async getNetworkingProfiles(filters?: { stage?: string; industries?: string[]; lookingFor?: string[] }): Promise<NetworkingProfile[]> {
+    return await db.select().from(networkingProfiles).where(eq(networkingProfiles.visibility, "public"));
+  }
+
+  async updateNetworkingProfile(userId: number, updates: Partial<NetworkingProfile>): Promise<NetworkingProfile | undefined> {
+    const [profile] = await db
+      .update(networkingProfiles)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(networkingProfiles.userId, userId))
+      .returning();
+    return profile;
+  }
 }
 
 export const storage = new DatabaseStorage();
