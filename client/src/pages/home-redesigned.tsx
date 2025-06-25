@@ -117,18 +117,20 @@ export default function HomeRedesigned() {
                 How it Works
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
-              <a href="#pricing" className="text-gray-700 hover:text-blue-600 transition-colors font-semibold text-lg relative group">
-                Pricing
+              <Link href="/waitlist" className="text-gray-700 hover:text-blue-600 transition-colors font-semibold text-lg relative group">
+                Join Waitlist
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-              </a>
+              </Link>
               
               <div className="flex items-center space-x-4">
-                <Button variant="ghost" className="text-gray-700 hover:text-blue-600 font-semibold text-lg">
-                  Sign In
-                </Button>
                 <Link href="/submit-idea">
+                  <Button variant="ghost" className="text-gray-700 hover:text-blue-600 font-semibold text-lg">
+                    Try Demo
+                  </Button>
+                </Link>
+                <Link href="/waitlist">
                   <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 px-6 py-3 text-lg font-semibold">
-                    Get Started
+                    Join Waitlist
                   </Button>
                 </Link>
               </div>
@@ -183,25 +185,26 @@ export default function HomeRedesigned() {
             {/* Powerful Call-to-Action */}
             <div className="space-y-10">
               <div className="flex flex-col sm:flex-row gap-8 justify-center items-center">
-                <Link href="/submit-idea">
+                <Link href="/waitlist">
                   <Button size="lg" className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-14 py-8 text-2xl font-black rounded-3xl shadow-2xl hover:shadow-purple-500/30 transition-all duration-300 transform hover:scale-110">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-3xl blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
                     <div className="relative flex items-center">
                       <Rocket className="w-8 h-8 mr-4 group-hover:animate-bounce" />
-                      Start Building Now
+                      Join the Waitlist
                     </div>
                   </Button>
                 </Link>
                 
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-3 border-white/40 text-white hover:bg-white/10 px-14 py-8 text-2xl font-black rounded-3xl backdrop-blur-xl shadow-2xl transition-all duration-300 transform hover:scale-110"
-                  onClick={() => setShowDemo(true)}
-                >
-                  <Play className="w-8 h-8 mr-4" />
-                  See the Magic
-                </Button>
+                <Link href="/submit-idea">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="border-3 border-white/40 text-white hover:bg-white/10 px-14 py-8 text-2xl font-black rounded-3xl backdrop-blur-xl shadow-2xl transition-all duration-300 transform hover:scale-110"
+                  >
+                    <Play className="w-8 h-8 mr-4" />
+                    Try Demo
+                  </Button>
+                </Link>
               </div>
 
               {/* Trust Indicators */}
