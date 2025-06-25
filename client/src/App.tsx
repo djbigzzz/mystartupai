@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/auth-context";
-import Home from "@/pages/home-redesigned";
+import Home from "@/pages/landing-new";
 import Dashboard from "@/pages/dashboard";
 import SubmitIdea from "@/pages/submit-idea";
 import BusinessPlan from "@/pages/business-plan";
