@@ -264,3 +264,32 @@ export type InsertConnection = z.infer<typeof insertConnectionSchema>;
 export type Connection = typeof connections.$inferSelect;
 export type InsertNetworkingProfile = z.infer<typeof insertNetworkingProfileSchema>;
 export type NetworkingProfile = typeof networkingProfiles.$inferSelect;
+
+// Waitlist table for building in public launch
+export const waitlist = pgTable("waitlist", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 255 }).unique(),
+  name: varchar("name", { length: 255 }),
+  walletAddress: varchar("wallet_address", { length: 42 }).unique(),
+  googleId: varchar("google_id", { length: 255 }).unique(),
+  source: varchar("source", { length: 50 }).notNull().default("email"), // email, google, wallet
+  earlyAccess: boolean("early_access").default(false),
+  referralCode: varchar("referral_code", { length: 20 }),
+  referredBy: varchar("referred_by", { length: 20 }),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertWaitlistSchema = createInsertSchema(waitlist).pick({
+  email: true,
+  name: true,
+  walletAddress: true,
+  googleId: true,
+  source: true,
+  referralCode: true,
+  referredBy: true,
+  metadata: true,
+});
+
+export type InsertWaitlist = z.infer<typeof insertWaitlistSchema>;
+export type Waitlist = typeof waitlist.$inferSelect;

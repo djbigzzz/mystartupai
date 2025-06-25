@@ -81,6 +81,14 @@ export interface IStorage {
   getNetworkingProfile(userId: number): Promise<NetworkingProfile | undefined>;
   getNetworkingProfiles(filters?: { stage?: string; industries?: string[]; lookingFor?: string[] }): Promise<NetworkingProfile[]>;
   updateNetworkingProfile(userId: number, updates: Partial<NetworkingProfile>): Promise<NetworkingProfile | undefined>;
+  
+  // Waitlist operations
+  createWaitlistEntry(entry: InsertWaitlist): Promise<Waitlist>;
+  getWaitlistEntry(email: string): Promise<Waitlist | undefined>;
+  getWaitlistByWallet(walletAddress: string): Promise<Waitlist | undefined>;
+  getWaitlistByGoogleId(googleId: string): Promise<Waitlist | undefined>;
+  getWaitlistCount(): Promise<number>;
+  getWaitlistEntries(): Promise<Waitlist[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -335,6 +343,39 @@ export class DatabaseStorage implements IStorage {
       .where(eq(networkingProfiles.userId, userId))
       .returning();
     return profile;
+  }
+
+  // Waitlist operations
+  async createWaitlistEntry(insertEntry: InsertWaitlist): Promise<Waitlist> {
+    const [entry] = await db
+      .insert(waitlist)
+      .values(insertEntry)
+      .returning();
+    return entry;
+  }
+
+  async getWaitlistEntry(email: string): Promise<Waitlist | undefined> {
+    const [entry] = await db.select().from(waitlist).where(eq(waitlist.email, email));
+    return entry;
+  }
+
+  async getWaitlistByWallet(walletAddress: string): Promise<Waitlist | undefined> {
+    const [entry] = await db.select().from(waitlist).where(eq(waitlist.walletAddress, walletAddress));
+    return entry;
+  }
+
+  async getWaitlistByGoogleId(googleId: string): Promise<Waitlist | undefined> {
+    const [entry] = await db.select().from(waitlist).where(eq(waitlist.googleId, googleId));
+    return entry;
+  }
+
+  async getWaitlistCount(): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)` }).from(waitlist);
+    return result[0]?.count || 0;
+  }
+
+  async getWaitlistEntries(): Promise<Waitlist[]> {
+    return await db.select().from(waitlist).orderBy(desc(waitlist.createdAt));
   }
 }
 

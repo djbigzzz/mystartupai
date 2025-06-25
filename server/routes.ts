@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import session from "express-session";
 import passport from "./auth";
 import { storage } from "./storage";
-import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema } from "@shared/schema";
+import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
 import bcrypt from "bcryptjs";
 
