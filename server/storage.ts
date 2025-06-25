@@ -7,6 +7,7 @@ import {
   eventRegistrations,
   connections,
   networkingProfiles,
+  waitlist,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -22,10 +23,12 @@ import {
   type Connection,
   type InsertConnection,
   type NetworkingProfile,
-  type InsertNetworkingProfile
+  type InsertNetworkingProfile,
+  type Waitlist,
+  type InsertWaitlist,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations

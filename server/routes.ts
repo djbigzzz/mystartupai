@@ -554,6 +554,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Waitlist API routes
+  app.post("/api/waitlist/email", async (req, res) => {
+    try {
+      const validatedData = insertWaitlistSchema.parse({
+        ...req.body,
+        source: "email"
+      });
+      
+      // Check if email already exists
+      const existing = await storage.getWaitlistEntry(validatedData.email!);
+      if (existing) {
+        return res.status(400).json({ message: "Email already on waitlist" });
+      }
+
+      const entry = await storage.createWaitlistEntry(validatedData);
+      res.json(entry);
+    } catch (error: any) {
+      console.error("Waitlist email signup error:", error);
+      res.status(400).json({ message: error.message || "Failed to join waitlist" });
+    }
+  });
+
+  app.post("/api/waitlist/wallet", async (req, res) => {
+    try {
+      const { walletAddress } = req.body;
+      
+      if (!walletAddress) {
+        return res.status(400).json({ message: "Wallet address required" });
+      }
+
+      // Check if wallet already exists
+      const existing = await storage.getWaitlistByWallet(walletAddress);
+      if (existing) {
+        return res.status(400).json({ message: "Wallet already on waitlist" });
+      }
+
+      const entry = await storage.createWaitlistEntry({
+        walletAddress,
+        source: "wallet"
+      });
+      
+      res.json(entry);
+    } catch (error: any) {
+      console.error("Waitlist wallet signup error:", error);
+      res.status(400).json({ message: error.message || "Failed to join waitlist" });
+    }
+  });
+
+  app.get("/api/waitlist/count", async (req, res) => {
+    try {
+      const count = await storage.getWaitlistCount();
+      res.json({ count });
+    } catch (error: any) {
+      console.error("Waitlist count error:", error);
+      res.status(500).json({ message: "Failed to get waitlist count" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
