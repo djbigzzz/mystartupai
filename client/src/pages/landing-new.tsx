@@ -38,40 +38,40 @@ export default function LandingNew() {
   const features = [
     {
       icon: Brain,
-      title: "AI-Powered Validation",
-      description: "Get instant feedback on your startup idea with comprehensive analysis powered by GPT-4"
+      title: "Smart Idea Validation",
+      description: "Get instant feedback on your startup concept with detailed analysis that spots opportunities and risks"
     },
     {
       icon: FileText,
       title: "Professional Business Plans",
-      description: "Generate investor-ready business plans with 12 comprehensive sections in minutes"
+      description: "Create comprehensive business plans that investors actually want to read - in minutes, not weeks"
     },
     {
       icon: Presentation,
       title: "Pitch Deck Builder",
-      description: "Create stunning investor presentations with professional templates and AI content"
+      description: "Build compelling investor presentations with proven templates that get meetings booked"
     },
     {
       icon: BarChart3,
-      title: "Financial Modeling",
-      description: "Build 5-year projections, unit economics, and funding scenarios with ease"
+      title: "Financial Forecasting",
+      description: "Generate realistic 5-year projections and funding scenarios that make sense to VCs"
     },
     {
       icon: Target,
-      title: "Market Research",
-      description: "Comprehensive competitive analysis and market sizing with AI insights"
+      title: "Market Intelligence",
+      description: "Understand your competition and market size with research that guides your strategy"
     },
     {
       icon: Users,
-      title: "Networking Hub",
-      description: "Connect with co-founders, investors, and mentors in our startup community"
+      title: "Founder Network",
+      description: "Connect with co-founders, advisors, and investors who can help take your startup to the next level"
     }
   ];
 
   const stats = [
-    { number: "10", label: "Core Features", suffix: "" },
-    { number: "4", label: "AI Models", suffix: "" },
-    { number: "100", label: "Success Rate", suffix: "%" }
+    { number: "10", label: "Smart Tools", suffix: "" },
+    { number: "4", label: "Simple Steps", suffix: "" },
+    { number: "24", label: "Hour Support", suffix: "/7" }
   ];
 
   return (
@@ -158,22 +158,22 @@ export default function LandingNew() {
             {/* Left Content */}
             <div className="text-left">
               <Badge className="mb-6 bg-purple-500/20 text-purple-300 border-purple-500/30 backdrop-blur-xl">
-                🚀 AI-Powered Startup Platform
+                🚀 Your Startup Success Platform
               </Badge>
               
               <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
                 <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
-                  Transform Ideas
+                  Turn Your Idea
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                  Into Businesses
+                  Into Investment
                 </span>
               </h1>
               
               <p className="text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
-                The complete AI-powered platform that generates business plans, pitch decks, and financial models 
-                using proven frameworks from Y Combinator and top accelerators.
+                The smart platform that creates professional business plans, investor presentations, and financial forecasts 
+                using proven strategies that actually get funded.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -199,11 +199,11 @@ export default function LandingNew() {
               <div className="flex items-center space-x-8">
                 <div className="flex items-center space-x-2">
                   <Zap className="w-5 h-5 text-yellow-400" />
-                  <span className="text-gray-300 font-medium">GPT-4 Powered</span>
+                  <span className="text-gray-300 font-medium">Smart Analysis</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Target className="w-5 h-5 text-green-400" />
-                  <span className="text-gray-300 font-medium">YC Framework</span>
+                  <span className="text-gray-300 font-medium">Proven Methods</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-blue-400" />
@@ -261,7 +261,7 @@ export default function LandingNew() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-8">
             <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-              See MyStartup.ai in Action
+              Watch How It Works
             </span>
           </h2>
           
@@ -294,12 +294,12 @@ export default function LandingNew() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                Everything You Need to Build a Startup
+                Everything You Need to Get Funded
               </span>
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              From initial idea validation to investor presentations, our AI-powered platform 
-              guides you through every step of startup development.
+              From validating your idea to pitching investors, we help you build the foundation 
+              every successful startup needs.
             </p>
           </div>
 
@@ -337,20 +337,20 @@ export default function LandingNew() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent">
-                From Idea to Investment in 4 Steps
+                From Napkin Sketch to Funding
               </span>
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Our streamlined process takes you from initial concept to investor-ready materials in record time.
+              Our proven process transforms raw ideas into polished, fundable businesses that investors take seriously.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { step: "01", title: "Submit Your Idea", description: "Tell us about your startup concept through our guided form", icon: Lightbulb },
-              { step: "02", title: "AI Analysis", description: "Get instant validation with SWOT analysis and market insights", icon: Brain },
-              { step: "03", title: "Generate Documents", description: "Create business plans and pitch decks with AI assistance", icon: FileText },
-              { step: "04", title: "Launch & Scale", description: "Access our network of investors, mentors, and co-founders", icon: Rocket }
+              { step: "01", title: "Share Your Vision", description: "Tell us about your startup idea through our simple guided questions", icon: Lightbulb },
+              { step: "02", title: "Get Smart Feedback", description: "Receive detailed analysis that shows what works and what needs fixing", icon: Brain },
+              { step: "03", title: "Build Your Pitch", description: "Generate professional business plans and investor presentations instantly", icon: FileText },
+              { step: "04", title: "Connect & Grow", description: "Access our network of successful founders, advisors, and potential investors", icon: Rocket }
             ].map((step, index) => (
               <div 
                 key={index} 
@@ -390,32 +390,32 @@ export default function LandingNew() {
       {/* Social Proof */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12">
-            Built with Proven Methodologies
+          <h2 className="text-3xl font-bold text-white mb-12">
+            Why Founders Choose MyStartup.ai
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="flex items-center justify-center p-6">
+            <div className="flex items-center justify-center p-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl">
               <div className="text-center">
-                <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900">Y Combinator Framework</h3>
-                <p className="text-gray-600">Proven methodologies from the world's top accelerator</p>
+                <Star className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-white">Battle-Tested Methods</h3>
+                <p className="text-gray-300">Based on frameworks used by the world's most successful startups</p>
               </div>
             </div>
             
-            <div className="flex items-center justify-center p-6">
+            <div className="flex items-center justify-center p-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl">
               <div className="text-center">
-                <Zap className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900">GPT-4 Powered</h3>
-                <p className="text-gray-600">Advanced AI for intelligent business insights</p>
+                <Zap className="w-12 h-12 text-cyan-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-white">Smart Technology</h3>
+                <p className="text-gray-300">Advanced algorithms that understand what investors really want to see</p>
               </div>
             </div>
             
-            <div className="flex items-center justify-center p-6">
+            <div className="flex items-center justify-center p-6 bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl">
               <div className="text-center">
-                <TrendingUp className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900">Investor Ready</h3>
-                <p className="text-gray-600">Professional outputs that impress VCs and investors</p>
+                <TrendingUp className="w-12 h-12 text-green-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-white">Funding Success</h3>
+                <p className="text-gray-300">Documents and presentations that consistently get meetings and deals</p>
               </div>
             </div>
           </div>
@@ -431,11 +431,11 @@ export default function LandingNew() {
             <div className="relative z-10">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
-                  Ready to Build the Future?
+                  Turn Your Idea Into Reality
                 </span>
               </h2>
               <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join the next generation of entrepreneurs who are transforming their ideas into successful businesses with AI.
+                Join thousands of founders who have built successful companies using our proven framework and expert guidance.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
