@@ -442,10 +442,10 @@ export default function DemoJourney() {
           setCompletedSteps(prev => [...prev, step.id]);
           return 100;
         }
-        // Much slower progress: 0.5% per interval instead of ~2%
-        return prev + 0.5;
+        // Faster progress: 1% per interval for 30-second completion
+        return prev + 1;
       });
-    }, 300); // Slower interval: 300ms instead of 100ms
+    }, 300); // 30 seconds total (100 intervals * 300ms)
   };
 
   const currentStepData = demoSteps[currentStep];
@@ -590,7 +590,7 @@ export default function DemoJourney() {
                       </div>
                       <Progress value={progress} className="h-3" />
                       <p className="text-xs text-gray-500 text-center">
-                        {Math.max(0, Math.round((100 - progress) * 60 / 100))} seconds remaining • Watch the AI research in real-time
+                        {Math.max(0, Math.round((100 - progress) * 30 / 100))} seconds remaining • Watch the AI research in real-time
                       </p>
                     </div>
 
@@ -602,15 +602,14 @@ export default function DemoJourney() {
                       </div>
                       
                       {/* Dynamic Research Steps */}
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                      <div className="space-y-2">
                         {[
-                          { task: "🌐 Scanning 500+ fitness app databases", website: "App Store, Google Play", status: progress > 8 ? "complete" : progress > 2 ? "active" : "pending" },
-                          { task: "📊 Analyzing MyFitnessPal market data", website: "200M users, $125M revenue", status: progress > 20 ? "complete" : progress > 8 ? "active" : "pending" },
-                          { task: "🏃 Researching Nike Training Club", website: "50M+ users, free model", status: progress > 35 ? "complete" : progress > 20 ? "active" : "pending" },
-                          { task: "💪 Evaluating Peloton Digital strategy", website: "6M users, $400M revenue", status: progress > 50 ? "complete" : progress > 35 ? "active" : "pending" },
-                          { task: "⭐ Processing 15,000+ user reviews", website: "Sentiment & feature analysis", status: progress > 70 ? "complete" : progress > 50 ? "active" : "pending" },
+                          { task: "🌐 Scanning 500+ fitness app databases", website: "App Store, Google Play", status: progress > 15 ? "complete" : progress > 5 ? "active" : "pending" },
+                          { task: "📊 Analyzing MyFitnessPal market data", website: "200M users, $125M revenue", status: progress > 30 ? "complete" : progress > 15 ? "active" : "pending" },
+                          { task: "🏃 Researching Nike Training Club", website: "50M+ users, free model", status: progress > 50 ? "complete" : progress > 30 ? "active" : "pending" },
+                          { task: "💪 Evaluating Peloton Digital strategy", website: "6M users, $400M revenue", status: progress > 70 ? "complete" : progress > 50 ? "active" : "pending" },
                           { task: "🧠 Generating competitive matrix", website: "AI-powered positioning", status: progress > 95 ? "complete" : progress > 70 ? "active" : "pending" }
-                        ].map((step, i) => (
+                        ].slice(0, 4).map((step, i) => (
                           <div key={i} className={`flex items-center justify-between p-3 rounded-lg transition-all duration-700 ${
                             step.status === "complete" ? "bg-green-100 border-l-4 border-green-500 transform scale-105" :
                             step.status === "active" ? "bg-blue-100 border-l-4 border-blue-500 animate-pulse" :
@@ -649,55 +648,8 @@ export default function DemoJourney() {
                         ))}
                       </div>
                       
-                      {/* Live Data Discovery Stream */}
-                      {progress > 25 && (
-                        <div className="mt-4 p-3 bg-white rounded-lg border border-blue-200 shadow-sm">
-                          <div className="flex items-center space-x-2 mb-3">
-                            <Globe className="w-4 h-4 text-green-500" />
-                            <span className="text-sm font-semibold text-gray-900">Live Market Intelligence</span>
-                            <div className="flex space-x-1">
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.7s'}}></div>
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '1.4s'}}></div>
-                            </div>
-                          </div>
-                          <div className="space-y-2 text-xs">
-                            {progress > 30 && (
-                              <div className="flex justify-between items-center p-2 bg-green-50 rounded animate-slideIn">
-                                <span className="text-gray-700">📈 Market size: $96B global fitness → $4.5B app segment</span>
-                                <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
-                              </div>
-                            )}
-                            {progress > 45 && (
-                              <div className="flex justify-between items-center p-2 bg-blue-50 rounded animate-slideIn" style={{animationDelay: '2s'}}>
-                                <span className="text-gray-700">👥 User retention: 22% industry avg, 78% churn in 6 months</span>
-                                <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
-                              </div>
-                            )}
-                            {progress > 60 && (
-                              <div className="flex justify-between items-center p-2 bg-purple-50 rounded animate-slideIn" style={{animationDelay: '3s'}}>
-                                <span className="text-gray-700">💰 Pricing models: $9.99-$29.99/month premium tiers</span>
-                                <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
-                              </div>
-                            )}
-                            {progress > 75 && (
-                              <div className="flex justify-between items-center p-2 bg-orange-50 rounded animate-slideIn" style={{animationDelay: '4s'}}>
-                                <span className="text-gray-700">🎯 Target market: 150M tech-savvy fitness enthusiasts</span>
-                                <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
-                              </div>
-                            )}
-                            {progress > 85 && (
-                              <div className="flex justify-between items-center p-2 bg-pink-50 rounded animate-slideIn" style={{animationDelay: '5s'}}>
-                                <span className="text-gray-700">🔍 Key insights: Premium features drive 85% of revenue</span>
-                                <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      
                       {/* AI Neural Network Processing */}
-                      {progress > 50 && (
+                      {progress > 40 && (
                         <div className="mt-4 p-3 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg border border-purple-200">
                           <div className="flex items-center space-x-2 mb-3">
                             <Brain className="w-4 h-4 text-purple-600 animate-pulse" />
@@ -772,7 +724,7 @@ export default function DemoJourney() {
                 <CardTitle className="text-gray-900">Live Preview</CardTitle>
               </CardHeader>
               
-              <CardContent>
+              <CardContent className="h-[600px] overflow-hidden">
                 {/* Content based on current step */}
                 {currentStepData.id === "idea" && (
                   <div className="space-y-4">
@@ -791,6 +743,118 @@ export default function DemoJourney() {
                         </div>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* Live Research Results - Appears during generation */}
+                {isGenerating && (
+                  <div className="space-y-4">
+                    <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
+                      <Eye className="w-5 h-5 mr-2 text-blue-600" />
+                      Research Results Appearing Live
+                    </h3>
+
+                    {/* Market Intelligence */}
+                    {progress > 20 && (
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200 animate-slideIn">
+                        <h4 className="text-green-800 font-semibold mb-2 flex items-center">
+                          <Globe className="w-4 h-4 mr-2" />
+                          Market Intelligence Discovered
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-700">Total Market Size</span>
+                            <span className="font-bold text-green-700">$96B</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-700">App Market Segment</span>
+                            <span className="font-bold text-green-700">$4.5B</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-700">Growth Rate</span>
+                            <span className="font-bold text-green-700">14.7% annually</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Competitor Analysis */}
+                    {progress > 40 && (
+                      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200 animate-slideIn">
+                        <h4 className="text-blue-800 font-semibold mb-3 flex items-center">
+                          <Users className="w-4 h-4 mr-2" />
+                          Top Competitors Found
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="bg-white rounded p-3 border border-blue-100">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <div className="font-semibold text-gray-900 text-sm">MyFitnessPal</div>
+                                <div className="text-xs text-gray-600">200M+ users</div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">$125M Revenue</Badge>
+                            </div>
+                          </div>
+                          <div className="bg-white rounded p-3 border border-blue-100">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <div className="font-semibold text-gray-900 text-sm">Nike Training Club</div>
+                                <div className="text-xs text-gray-600">50M+ users</div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">Free Model</Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SWOT Analysis */}
+                    {progress > 60 && (
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200 animate-slideIn">
+                        <h4 className="text-purple-800 font-semibold mb-3 flex items-center">
+                          <Target className="w-4 h-4 mr-2" />
+                          SWOT Analysis Generated
+                        </h4>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="bg-green-100 rounded p-2 border-l-2 border-green-500">
+                            <div className="text-green-800 font-medium text-xs mb-1">Strengths</div>
+                            <div className="text-green-700 text-xs">AI personalization advantage</div>
+                          </div>
+                          <div className="bg-blue-100 rounded p-2 border-l-2 border-blue-500">
+                            <div className="text-blue-800 font-medium text-xs mb-1">Opportunities</div>
+                            <div className="text-blue-700 text-xs">Corporate wellness market</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Final Score */}
+                    {progress > 80 && (
+                      <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200 animate-slideIn">
+                        <h4 className="text-orange-800 font-semibold mb-3 flex items-center">
+                          <Star className="w-4 h-4 mr-2" />
+                          Viability Score Calculated
+                        </h4>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-orange-600 mb-1">8.5/10</div>
+                          <div className="text-sm text-gray-600">High potential for success</div>
+                          <div className="grid grid-cols-3 gap-2 mt-3">
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-blue-600">8.5</div>
+                              <div className="text-xs text-gray-600">Technical</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-green-600">8.0</div>
+                              <div className="text-xs text-gray-600">Market</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-lg font-bold text-purple-600">8.0</div>
+                              <div className="text-xs text-gray-600">Financial</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -950,7 +1014,7 @@ export default function DemoJourney() {
                     </div>
                     
                     {/* Sections with expandable content */}
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
                       {currentStepData.content.sections.map((section: any, i: number) => (
                         <details key={i} className="bg-gray-50 rounded-lg border">
                           <summary className="p-3 cursor-pointer hover:bg-gray-100 transition-colors">
@@ -1012,7 +1076,7 @@ export default function DemoJourney() {
                         <TabsTrigger value="details" className="text-xs">Slide Details</TabsTrigger>
                       </TabsList>
                       
-                      <TabsContent value="slides" className="space-y-2 mt-4 max-h-48 overflow-y-auto">
+                      <TabsContent value="slides" className="space-y-2 mt-4 max-h-40 overflow-y-auto">
                         <div className="grid grid-cols-2 gap-2">
                           {currentStepData.content.slides.slice(0, 6).map((slide: any, i: number) => (
                             <div key={i} className="bg-gray-50 rounded-lg p-2 aspect-video flex flex-col justify-center border hover:border-green-500 transition-colors cursor-pointer">
@@ -1026,7 +1090,7 @@ export default function DemoJourney() {
                         </div>
                       </TabsContent>
                       
-                      <TabsContent value="details" className="space-y-2 mt-4 max-h-48 overflow-y-auto">
+                      <TabsContent value="details" className="space-y-2 mt-4 max-h-40 overflow-y-auto">
                         {currentStepData.content.slides.slice(0, 4).map((slide: any, i: number) => (
                           <details key={i} className="bg-gray-50 rounded-lg border">
                             <summary className="p-2 cursor-pointer hover:bg-gray-100 transition-colors">
