@@ -451,6 +451,19 @@ export default function DemoJourney() {
   const currentStepData = demoSteps[currentStep];
   const isStepCompleted = completedSteps.includes(currentStepData?.id);
 
+  // Mouse tracking for 3D effects
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const nextStep = () => {
     if (currentStep < demoSteps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -465,9 +478,149 @@ export default function DemoJourney() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+      {/* Animated 3D Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Large floating gradient orbs that follow mouse */}
+        <div 
+          className="absolute w-96 h-96 bg-gradient-to-r from-purple-400/30 to-blue-400/30 rounded-full blur-3xl transition-transform duration-1000 ease-out"
+          style={{
+            transform: `translate(${mousePosition.x * 0.8 - 100}px, ${mousePosition.y * 0.6 - 80}px)`,
+            left: '15%',
+            top: '25%'
+          }}
+        />
+        <div 
+          className="absolute w-80 h-80 bg-gradient-to-r from-cyan-400/25 to-purple-400/25 rounded-full blur-3xl transition-transform duration-1200 ease-out"
+          style={{
+            transform: `translate(${mousePosition.x * -0.5 + 60}px, ${mousePosition.y * -0.7 + 70}px)`,
+            right: '20%',
+            bottom: '30%'
+          }}
+        />
+        <div 
+          className="absolute w-64 h-64 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl transition-transform duration-800 ease-out"
+          style={{
+            transform: `translate(${mousePosition.x * 0.3 - 30}px, ${mousePosition.y * 0.8 - 50}px)`,
+            left: '65%',
+            top: '15%'
+          }}
+        />
+
+        {/* Medium floating orbs */}
+        <div 
+          className="absolute w-48 h-48 bg-gradient-to-r from-pink-400/15 to-purple-400/15 rounded-full blur-2xl transition-transform duration-1000 ease-out"
+          style={{
+            transform: `translate(${mousePosition.x * 0.4}px, ${mousePosition.y * -0.3}px)`,
+            left: '10%',
+            bottom: '10%'
+          }}
+        />
+        <div 
+          className="absolute w-40 h-40 bg-gradient-to-r from-indigo-400/15 to-blue-400/15 rounded-full blur-2xl transition-transform duration-900 ease-out"
+          style={{
+            transform: `translate(${mousePosition.x * -0.2}px, ${mousePosition.y * 0.4}px)`,
+            right: '10%',
+            top: '40%'
+          }}
+        />
+
+        {/* Floating particles */}
+        <div className="absolute inset-0">
+          {Array.from({ length: 30 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full opacity-40 animate-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 8}s`,
+                animationDuration: `${4 + Math.random() * 6}s`,
+                transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Geometric shapes with 3D transforms */}
+        <div 
+          className="absolute w-32 h-32 border-2 border-purple-300/40 rounded-xl transition-transform duration-1000 ease-out"
+          style={{
+            transform: `perspective(1000px) translate3d(${mousePosition.x * 0.15}px, ${mousePosition.y * 0.15}px, 0) rotateX(${mousePosition.y * 0.2 - 10}deg) rotateY(${mousePosition.x * 0.2 - 10}deg) rotateZ(${45 + mousePosition.x * 0.1}deg)`,
+            right: '15%',
+            top: '20%'
+          }}
+        />
+        <div 
+          className="absolute w-24 h-24 border-2 border-cyan-300/40 rounded-full transition-transform duration-1000 ease-out"
+          style={{
+            transform: `perspective(800px) translate3d(${mousePosition.x * -0.12}px, ${mousePosition.y * 0.18}px, 0) rotateX(${mousePosition.y * 0.15}deg) rotateY(${mousePosition.x * 0.15}deg)`,
+            left: '25%',
+            bottom: '25%'
+          }}
+        />
+        <div 
+          className="absolute w-20 h-20 border-2 border-blue-300/35 rounded-lg transition-transform duration-800 ease-out"
+          style={{
+            transform: `perspective(600px) translate3d(${mousePosition.x * 0.08}px, ${mousePosition.y * -0.10}px, 0) rotateX(${mousePosition.y * -0.1}deg) rotateY(${mousePosition.x * 0.1}deg) rotateZ(${mousePosition.x * 0.05}deg)`,
+            right: '40%',
+            bottom: '15%'
+          }}
+        />
+
+        {/* Floating lines and connectors */}
+        <svg className="absolute inset-0 w-full h-full opacity-20">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#8B5CF6" />
+              <stop offset="100%" stopColor="#06B6D4" />
+            </linearGradient>
+          </defs>
+          <line 
+            x1="20%" 
+            y1="30%" 
+            x2={`${30 + mousePosition.x * 0.1}%`} 
+            y2={`${60 + mousePosition.y * 0.1}%`}
+            stroke="url(#lineGradient)" 
+            strokeWidth="2"
+            className="transition-all duration-1000 ease-out"
+          />
+          <line 
+            x1="70%" 
+            y1="20%" 
+            x2={`${80 + mousePosition.x * -0.08}%`} 
+            y2={`${50 + mousePosition.y * 0.08}%`}
+            stroke="url(#lineGradient)" 
+            strokeWidth="1.5"
+            className="transition-all duration-1200 ease-out"
+          />
+        </svg>
+
+        {/* Depth layers with parallax */}
+        <div className="absolute inset-0">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className={`absolute w-3 h-3 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full opacity-${30 - i * 5}`}
+              style={{
+                left: `${20 + i * 15}%`,
+                top: `${30 + i * 10}%`,
+                transform: `translate(${mousePosition.x * (0.05 + i * 0.02)}px, ${mousePosition.y * (0.03 + i * 0.015)}px)`,
+                animationDelay: `${i * 0.5}s`
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <div className="bg-white/85 backdrop-blur-xl border-b border-gray-200/60 sticky top-0 z-50 shadow-lg">
+        <div 
+          className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-cyan-500/5 transition-transform duration-500"
+          style={{
+            transform: `translateX(${mousePosition.x * 0.02}px)`
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
