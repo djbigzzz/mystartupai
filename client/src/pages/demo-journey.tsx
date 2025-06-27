@@ -207,27 +207,27 @@ export default function DemoJourney() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-black/50 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50">
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
-              <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              <span className="ml-3 text-2xl font-bold text-gray-900">
                 MyStartup.ai Demo
               </span>
             </div>
             
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="border-purple-500/50 text-purple-300">
+              <Badge variant="outline" className="border-purple-500 text-purple-600">
                 <Clock className="w-4 h-4 mr-1" />
                 ~5 minutes
               </Badge>
               <Link href="/">
-                <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   Exit Demo
                 </Button>
               </Link>
@@ -240,14 +240,14 @@ export default function DemoJourney() {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-white">Complete Startup Journey Demo</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Complete Startup Journey Demo</h1>
             <div className="text-right">
-              <div className="text-white font-semibold">Step {currentStep + 1} of {demoSteps.length}</div>
-              <div className="text-gray-400 text-sm">{Math.round((currentStep / (demoSteps.length - 1)) * 100)}% Complete</div>
+              <div className="text-gray-900 font-semibold">Step {currentStep + 1} of {demoSteps.length}</div>
+              <div className="text-gray-600 text-sm">{Math.round((currentStep / (demoSteps.length - 1)) * 100)}% Complete</div>
             </div>
           </div>
           
-          <div className="w-full bg-white/10 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
               className="bg-gradient-to-r from-purple-500 to-cyan-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${(currentStep / (demoSteps.length - 1)) * 100}%` }}
@@ -262,10 +262,10 @@ export default function DemoJourney() {
               key={step.id}
               className={`relative p-3 rounded-xl border transition-all duration-300 cursor-pointer ${
                 index === currentStep 
-                  ? 'border-purple-500 bg-purple-500/20' 
+                  ? 'border-purple-500 bg-purple-50' 
                   : completedSteps.includes(step.id)
-                  ? 'border-green-500/50 bg-green-500/10'
-                  : 'border-white/20 bg-white/5'
+                  ? 'border-green-500 bg-green-50'
+                  : 'border-gray-200 bg-white'
               }`}
               onClick={() => setCurrentStep(index)}
             >
@@ -275,16 +275,19 @@ export default function DemoJourney() {
                     ? 'bg-green-500' 
                     : index === currentStep 
                     ? `bg-gradient-to-r ${step.color}` 
-                    : 'bg-white/20'
+                    : 'bg-gray-200'
                 }`}>
                   {completedSteps.includes(step.id) ? (
                     <CheckCircle className="w-4 h-4 text-white" />
                   ) : (
-                    <step.icon className="w-4 h-4 text-white" />
+                    <step.icon className={`w-4 h-4 ${index === currentStep ? 'text-white' : 'text-gray-600'}`} />
                   )}
                 </div>
                 <div className="hidden md:block">
-                  <div className="text-white text-xs font-semibold">{step.title}</div>
+                  <div className={`text-xs font-semibold ${
+                    index === currentStep ? 'text-purple-700' : 
+                    completedSteps.includes(step.id) ? 'text-green-700' : 'text-gray-700'
+                  }`}>{step.title}</div>
                 </div>
               </div>
             </div>
@@ -295,15 +298,15 @@ export default function DemoJourney() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Column - Step Info & Controls */}
           <div>
-            <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20">
+            <Card className="bg-white border border-gray-200 shadow-xl">
               <CardHeader>
                 <div className="flex items-center space-x-4">
                   <div className={`w-16 h-16 bg-gradient-to-r ${currentStepData.color} rounded-2xl flex items-center justify-center`}>
                     <currentStepData.icon className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl text-white">{currentStepData.title}</CardTitle>
-                    <p className="text-gray-300">{currentStepData.description}</p>
+                    <CardTitle className="text-2xl text-gray-900">{currentStepData.title}</CardTitle>
+                    <p className="text-gray-600">{currentStepData.description}</p>
                   </div>
                 </div>
               </CardHeader>
@@ -313,8 +316,8 @@ export default function DemoJourney() {
                 {isGenerating && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-white font-medium">Generating...</span>
-                      <span className="text-purple-400">{Math.round(progress)}%</span>
+                      <span className="text-gray-900 font-medium">Generating...</span>
+                      <span className="text-purple-600">{Math.round(progress)}%</span>
                     </div>
                     <Progress value={progress} className="h-2" />
                   </div>
@@ -325,7 +328,7 @@ export default function DemoJourney() {
                   {!isStepCompleted && !isGenerating && (
                     <Button 
                       onClick={startGeneration}
-                      className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700"
+                      className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white"
                     >
                       <Play className="w-4 h-4 mr-2" />
                       Generate {currentStepData.title}
@@ -335,7 +338,7 @@ export default function DemoJourney() {
                   {isStepCompleted && currentStep < demoSteps.length - 1 && (
                     <Button 
                       onClick={nextStep}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
                     >
                       Next Step
                       <ArrowRight className="w-4 h-4 ml-2" />
@@ -344,7 +347,7 @@ export default function DemoJourney() {
 
                   {currentStep === demoSteps.length - 1 && isStepCompleted && (
                     <Link href="/waitlist">
-                      <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700">
+                      <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white">
                         <Sparkles className="w-4 h-4 mr-2" />
                         Join Waitlist
                       </Button>
@@ -353,7 +356,7 @@ export default function DemoJourney() {
                 </div>
 
                 {/* Time Estimate */}
-                <div className="flex items-center space-x-2 text-gray-400">
+                <div className="flex items-center space-x-2 text-gray-500">
                   <Clock className="w-4 h-4" />
                   <span className="text-sm">Estimated time: {currentStepData.duration} seconds</span>
                 </div>
@@ -363,9 +366,9 @@ export default function DemoJourney() {
 
           {/* Right Column - Generated Content Preview */}
           <div>
-            <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 h-full">
+            <Card className="bg-white border border-gray-200 shadow-xl h-full">
               <CardHeader>
-                <CardTitle className="text-white">Live Preview</CardTitle>
+                <CardTitle className="text-gray-900">Live Preview</CardTitle>
               </CardHeader>
               
               <CardContent>
@@ -373,15 +376,15 @@ export default function DemoJourney() {
                 {currentStepData.id === "idea" && (
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-white font-semibold mb-2">Startup Concept</h3>
-                      <div className="bg-white/10 rounded-lg p-4">
-                        <h4 className="text-purple-300 font-medium">{currentStepData.content.title}</h4>
-                        <p className="text-gray-300 text-sm mt-2">{currentStepData.content.description}</p>
+                      <h3 className="text-gray-900 font-semibold mb-2">Startup Concept</h3>
+                      <div className="bg-gray-50 rounded-lg p-4 border">
+                        <h4 className="text-purple-600 font-medium">{currentStepData.content.title}</h4>
+                        <p className="text-gray-700 text-sm mt-2">{currentStepData.content.description}</p>
                         <div className="flex flex-wrap gap-2 mt-3">
-                          <Badge variant="outline" className="border-purple-500/50 text-purple-300">
+                          <Badge variant="outline" className="border-purple-500 text-purple-600">
                             {currentStepData.content.industry}
                           </Badge>
-                          <Badge variant="outline" className="border-blue-500/50 text-blue-300">
+                          <Badge variant="outline" className="border-blue-500 text-blue-600">
                             {currentStepData.content.targetMarket}
                           </Badge>
                         </div>
@@ -393,22 +396,22 @@ export default function DemoJourney() {
                 {currentStepData.id === "analysis" && isStepCompleted && (
                   <div className="space-y-4">
                     <div className="text-center mb-4">
-                      <div className="text-3xl font-bold text-green-400 mb-1">
+                      <div className="text-3xl font-bold text-green-600 mb-1">
                         {currentStepData.content.score}/10
                       </div>
-                      <div className="text-gray-300">Viability Score</div>
+                      <div className="text-gray-600">Viability Score</div>
                     </div>
                     
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-white font-medium mb-2 flex items-center">
-                          <TrendingUp className="w-4 h-4 mr-2 text-green-400" />
+                        <h4 className="text-gray-900 font-medium mb-2 flex items-center">
+                          <TrendingUp className="w-4 h-4 mr-2 text-green-600" />
                           Key Strengths
                         </h4>
                         <ul className="space-y-1">
                           {currentStepData.content.strengths.slice(0, 2).map((strength: string, i: number) => (
-                            <li key={i} className="text-gray-300 text-sm flex items-start">
-                              <CheckCircle className="w-3 h-3 text-green-400 mr-2 mt-1 flex-shrink-0" />
+                            <li key={i} className="text-gray-700 text-sm flex items-start">
+                              <CheckCircle className="w-3 h-3 text-green-600 mr-2 mt-1 flex-shrink-0" />
                               {strength}
                             </li>
                           ))}
@@ -416,8 +419,8 @@ export default function DemoJourney() {
                       </div>
                       
                       <div>
-                        <h4 className="text-white font-medium mb-2">Market Size</h4>
-                        <p className="text-purple-300 text-sm">{currentStepData.content.marketSize}</p>
+                        <h4 className="text-gray-900 font-medium mb-2">Market Size</h4>
+                        <p className="text-purple-600 text-sm">{currentStepData.content.marketSize}</p>
                       </div>
                     </div>
                   </div>
@@ -427,19 +430,19 @@ export default function DemoJourney() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <div className="text-white font-semibold">Business Plan Generated</div>
-                        <div className="text-gray-400 text-sm">{currentStepData.content.wordCount} words, {currentStepData.content.pageCount} pages</div>
+                        <div className="text-gray-900 font-semibold">Business Plan Generated</div>
+                        <div className="text-gray-600 text-sm">{currentStepData.content.wordCount} words, {currentStepData.content.pageCount} pages</div>
                       </div>
                     </div>
                     
                     <div className="space-y-2">
                       {currentStepData.content.sections.map((section: any, i: number) => (
-                        <div key={i} className="bg-white/10 rounded-lg p-3">
+                        <div key={i} className="bg-gray-50 rounded-lg p-3 border">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-white text-sm font-medium">{section.name}</span>
-                            <CheckCircle className="w-4 h-4 text-green-400" />
+                            <span className="text-gray-900 text-sm font-medium">{section.name}</span>
+                            <CheckCircle className="w-4 h-4 text-green-600" />
                           </div>
-                          <p className="text-gray-300 text-xs">{section.preview}</p>
+                          <p className="text-gray-700 text-xs">{section.preview}</p>
                         </div>
                       ))}
                     </div>
@@ -530,10 +533,10 @@ export default function DemoJourney() {
 
                 {!isStepCompleted && !isGenerating && (
                   <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <currentStepData.icon className="w-8 h-8 text-gray-400" />
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <currentStepData.icon className="w-8 h-8 text-gray-500" />
                     </div>
-                    <p className="text-gray-400">Click "Generate" to see the magic happen</p>
+                    <p className="text-gray-600">Click "Generate" to see the magic happen</p>
                   </div>
                 )}
               </CardContent>
