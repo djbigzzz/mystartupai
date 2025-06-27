@@ -256,34 +256,153 @@ export default function LandingNew() {
         </div>
       </section>
 
-      {/* Demo Video Section */}
+      {/* Complete Platform Overview */}
       <section className="relative z-10 py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-8">
-            <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-              Watch How It Works
-            </span>
-          </h2>
-          
-          <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl group hover:border-purple-500/50 transition-all duration-500">
-            <div className="aspect-video flex items-center justify-center relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              {!isPlaying ? (
-                <Button 
-                  size="lg" 
-                  className="relative z-10 bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 rounded-full w-24 h-24 shadow-2xl shadow-purple-500/30 transform hover:scale-110 transition-all duration-300"
-                  onClick={() => setIsPlaying(true)}
-                >
-                  <Play className="w-10 h-10 ml-1 text-white" />
-                </Button>
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:250px_250px] animate-pulse" />
-                  <p className="text-white text-xl font-medium">Demo video playing...</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                Your Complete Startup Toolkit
+              </span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Everything you need to transform your idea into an investor-ready business - all in one platform
+            </p>
+          </div>
+
+          {/* Value Proposition Grid */}
+          <div className="grid lg:grid-cols-3 gap-8 mb-16">
+            {/* Left Column - Time & Cost Savings */}
+            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="w-8 h-8 text-white" />
                 </div>
-              )}
+                <h3 className="text-2xl font-bold text-white mb-2">Save Time & Money</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-gray-300">Business Plan</span>
+                  <div className="text-right">
+                    <div className="text-gray-400 line-through text-sm">6-8 weeks</div>
+                    <div className="text-green-400 font-semibold">2 hours</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-gray-300">Pitch Deck</span>
+                  <div className="text-right">
+                    <div className="text-gray-400 line-through text-sm">$5,000</div>
+                    <div className="text-green-400 font-semibold">Included</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-gray-300">Financial Model</span>
+                  <div className="text-right">
+                    <div className="text-gray-400 line-through text-sm">$3,000</div>
+                    <div className="text-green-400 font-semibold">Included</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-white/10">
+                  <span className="text-gray-300">Market Research</span>
+                  <div className="text-right">
+                    <div className="text-gray-400 line-through text-sm">$2,500</div>
+                    <div className="text-green-400 font-semibold">Included</div>
+                  </div>
+                </div>
+                <div className="pt-4 text-center">
+                  <div className="text-2xl font-bold text-green-400">Save $10,500+</div>
+                  <div className="text-gray-300 text-sm">Plus 3+ months of work</div>
+                </div>
+              </div>
             </div>
+
+            {/* Center Column - Platform Preview */}
+            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 lg:col-span-2">
+              <h3 className="text-2xl font-bold text-white mb-6 text-center">Complete Platform Access</h3>
+              
+              {/* Module Grid */}
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { name: "Smart Idea Validation", icon: Brain, status: "Instant Analysis", color: "from-purple-500 to-pink-500" },
+                  { name: "Business Plan Generator", icon: FileText, status: "12 Sections", color: "from-blue-500 to-cyan-500" },
+                  { name: "Pitch Deck Builder", icon: Presentation, status: "10 Pro Slides", color: "from-cyan-500 to-blue-500" },
+                  { name: "Financial Modeling", icon: BarChart3, status: "5-Year Projections", color: "from-green-500 to-emerald-500" },
+                  { name: "Market Research", icon: Target, status: "Competitive Analysis", color: "from-orange-500 to-red-500" },
+                  { name: "Founder Network", icon: Users, status: "Connect & Grow", color: "from-purple-500 to-blue-500" }
+                ].map((module, index) => (
+                  <div key={index} className="group relative">
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-4 hover:border-purple-500/50 transition-all duration-300 cursor-pointer">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 bg-gradient-to-r ${module.color} rounded-lg flex items-center justify-center`}>
+                          <module.icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-white font-semibold text-sm">{module.name}</div>
+                          <div className="text-gray-400 text-xs">{module.status}</div>
+                        </div>
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Value Summary */}
+              <div className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-xl p-4 text-center">
+                <div className="text-white font-semibold mb-1">Complete Startup Development Suite</div>
+                <div className="text-gray-300 text-sm">From idea validation to investor presentations - everything included</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Journey Timeline */}
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 mb-16">
+            <h3 className="text-2xl font-bold text-white mb-8 text-center">Your Journey to Funding</h3>
+            
+            <div className="grid md:grid-cols-4 gap-6">
+              {[
+                { week: "Week 1", title: "Validate & Plan", deliverables: ["Idea Analysis", "Business Plan", "Market Research"], color: "from-purple-500 to-pink-500" },
+                { week: "Week 2", title: "Build & Design", deliverables: ["Pitch Deck", "Financial Model", "MVP Strategy"], color: "from-blue-500 to-cyan-500" },
+                { week: "Week 3", title: "Refine & Polish", deliverables: ["Document Review", "Presentation Prep", "Investor Research"], color: "from-cyan-500 to-green-500" },
+                { week: "Week 4", title: "Launch & Connect", deliverables: ["Investor Outreach", "Network Building", "Feedback Integration"], color: "from-green-500 to-yellow-500" }
+              ].map((phase, index) => (
+                <div key={index} className="relative">
+                  {index < 3 && (
+                    <div className="hidden md:block absolute top-6 left-full w-full h-0.5 bg-gradient-to-r from-purple-500 to-cyan-500 z-0" />
+                  )}
+                  
+                  <div className="relative z-10 text-center">
+                    <div className={`w-12 h-12 bg-gradient-to-r ${phase.color} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                      <span className="text-white font-bold text-sm">{index + 1}</span>
+                    </div>
+                    
+                    <h4 className="text-white font-semibold mb-1">{phase.week}</h4>
+                    <h5 className="text-purple-300 font-medium mb-3">{phase.title}</h5>
+                    
+                    <div className="space-y-1">
+                      {phase.deliverables.map((item, i) => (
+                        <div key={i} className="text-gray-300 text-sm flex items-center justify-center">
+                          <CheckCircle className="w-3 h-3 text-green-400 mr-2" />
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Demo CTA */}
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Ready to See It in Action?</h3>
+            <p className="text-gray-300 mb-6">Try our interactive demo and see how your idea transforms into an investor-ready business</p>
+            <Link href="/submit-idea">
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 px-8 py-4 text-lg font-bold shadow-2xl shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
+                <Play className="mr-2 h-5 w-5" />
+                Try Interactive Demo
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
