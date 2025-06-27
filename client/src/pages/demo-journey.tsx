@@ -748,60 +748,80 @@ export default function DemoJourney() {
 
                 {/* Live Research Results - Appears during generation */}
                 {isGenerating && (
-                  <div className="space-y-4">
-                    <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
-                      <Eye className="w-5 h-5 mr-2 text-blue-600" />
-                      Research Results Appearing Live
-                    </h3>
+                  <div className="space-y-3">
+                    <div className="text-center mb-4">
+                      <h3 className="text-gray-900 font-bold text-lg mb-2 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3 animate-pulse">
+                          <Eye className="w-4 h-4 text-white" />
+                        </div>
+                        AI Research Results
+                      </h3>
+                      <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+                    </div>
 
                     {/* Market Intelligence */}
                     {progress > 20 && (
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200 animate-slideIn">
-                        <h4 className="text-green-800 font-semibold mb-2 flex items-center">
-                          <Globe className="w-4 h-4 mr-2" />
-                          Market Intelligence Discovered
-                        </h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-700">Total Market Size</span>
-                            <span className="font-bold text-green-700">$96B</span>
+                      <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 rounded-xl p-4 border border-emerald-200 shadow-lg animate-slideIn">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-emerald-800 font-bold text-sm flex items-center">
+                            <div className="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center mr-2">
+                              <Globe className="w-3 h-3 text-white" />
+                            </div>
+                            Market Intelligence
+                          </h4>
+                          <Badge className="bg-emerald-100 text-emerald-700 border-0">Live</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-white rounded-lg p-3 border border-emerald-100 shadow-sm">
+                            <div className="text-2xl font-bold text-emerald-600">$96B</div>
+                            <div className="text-xs text-gray-600">Total Market</div>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-700">App Market Segment</span>
-                            <span className="font-bold text-green-700">$4.5B</span>
+                          <div className="bg-white rounded-lg p-3 border border-emerald-100 shadow-sm">
+                            <div className="text-2xl font-bold text-emerald-600">$4.5B</div>
+                            <div className="text-xs text-gray-600">App Segment</div>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-700">Growth Rate</span>
-                            <span className="font-bold text-green-700">14.7% annually</span>
-                          </div>
+                        </div>
+                        <div className="mt-2 text-center">
+                          <span className="text-xs text-emerald-700 font-semibold">14.7% Annual Growth</span>
                         </div>
                       </div>
                     )}
 
                     {/* Competitor Analysis */}
                     {progress > 40 && (
-                      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200 animate-slideIn">
-                        <h4 className="text-blue-800 font-semibold mb-3 flex items-center">
-                          <Users className="w-4 h-4 mr-2" />
-                          Top Competitors Found
-                        </h4>
-                        <div className="space-y-3">
-                          <div className="bg-white rounded p-3 border border-blue-100">
+                      <div className="bg-gradient-to-br from-blue-50 via-cyan-50 to-indigo-50 rounded-xl p-4 border border-blue-200 shadow-lg animate-slideIn">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-blue-800 font-bold text-sm flex items-center">
+                            <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-2">
+                              <Users className="w-3 h-3 text-white" />
+                            </div>
+                            Top Competitors
+                          </h4>
+                          <Badge className="bg-blue-100 text-blue-700 border-0">2 Found</Badge>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
                             <div className="flex justify-between items-center">
                               <div>
-                                <div className="font-semibold text-gray-900 text-sm">MyFitnessPal</div>
-                                <div className="text-xs text-gray-600">200M+ users</div>
+                                <div className="font-bold text-gray-900 text-sm">MyFitnessPal</div>
+                                <div className="text-xs text-blue-600">200M+ users</div>
                               </div>
-                              <Badge variant="outline" className="text-xs">$125M Revenue</Badge>
+                              <div className="text-right">
+                                <div className="text-sm font-bold text-green-600">$125M</div>
+                                <div className="text-xs text-gray-500">Revenue</div>
+                              </div>
                             </div>
                           </div>
-                          <div className="bg-white rounded p-3 border border-blue-100">
+                          <div className="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
                             <div className="flex justify-between items-center">
                               <div>
-                                <div className="font-semibold text-gray-900 text-sm">Nike Training Club</div>
-                                <div className="text-xs text-gray-600">50M+ users</div>
+                                <div className="font-bold text-gray-900 text-sm">Nike Training</div>
+                                <div className="text-xs text-blue-600">50M+ users</div>
                               </div>
-                              <Badge variant="outline" className="text-xs">Free Model</Badge>
+                              <div className="text-right">
+                                <div className="text-sm font-bold text-orange-600">Free</div>
+                                <div className="text-xs text-gray-500">Model</div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -810,18 +830,23 @@ export default function DemoJourney() {
 
                     {/* SWOT Analysis */}
                     {progress > 60 && (
-                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-200 animate-slideIn">
-                        <h4 className="text-purple-800 font-semibold mb-3 flex items-center">
-                          <Target className="w-4 h-4 mr-2" />
-                          SWOT Analysis Generated
-                        </h4>
+                      <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 rounded-xl p-4 border border-purple-200 shadow-lg animate-slideIn">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-purple-800 font-bold text-sm flex items-center">
+                            <div className="w-6 h-6 bg-purple-500 rounded-lg flex items-center justify-center mr-2">
+                              <Target className="w-3 h-3 text-white" />
+                            </div>
+                            SWOT Analysis
+                          </h4>
+                          <Badge className="bg-purple-100 text-purple-700 border-0">Complete</Badge>
+                        </div>
                         <div className="grid grid-cols-2 gap-2">
-                          <div className="bg-green-100 rounded p-2 border-l-2 border-green-500">
-                            <div className="text-green-800 font-medium text-xs mb-1">Strengths</div>
+                          <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg p-3 border-l-4 border-green-500 shadow-sm">
+                            <div className="text-green-800 font-bold text-xs mb-1">STRENGTHS</div>
                             <div className="text-green-700 text-xs">AI personalization advantage</div>
                           </div>
-                          <div className="bg-blue-100 rounded p-2 border-l-2 border-blue-500">
-                            <div className="text-blue-800 font-medium text-xs mb-1">Opportunities</div>
+                          <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg p-3 border-l-4 border-blue-500 shadow-sm">
+                            <div className="text-blue-800 font-bold text-xs mb-1">OPPORTUNITIES</div>
                             <div className="text-blue-700 text-xs">Corporate wellness market</div>
                           </div>
                         </div>
@@ -830,27 +855,35 @@ export default function DemoJourney() {
 
                     {/* Final Score */}
                     {progress > 80 && (
-                      <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200 animate-slideIn">
-                        <h4 className="text-orange-800 font-semibold mb-3 flex items-center">
-                          <Star className="w-4 h-4 mr-2" />
-                          Viability Score Calculated
-                        </h4>
-                        <div className="text-center">
-                          <div className="text-3xl font-bold text-orange-600 mb-1">8.5/10</div>
-                          <div className="text-sm text-gray-600">High potential for success</div>
-                          <div className="grid grid-cols-3 gap-2 mt-3">
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-blue-600">8.5</div>
-                              <div className="text-xs text-gray-600">Technical</div>
+                      <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 rounded-xl p-4 border border-orange-200 shadow-lg animate-slideIn">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-orange-800 font-bold text-sm flex items-center">
+                            <div className="w-6 h-6 bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg flex items-center justify-center mr-2">
+                              <Star className="w-3 h-3 text-white" />
                             </div>
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-green-600">8.0</div>
-                              <div className="text-xs text-gray-600">Market</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-lg font-bold text-purple-600">8.0</div>
-                              <div className="text-xs text-gray-600">Financial</div>
-                            </div>
+                            Viability Score
+                          </h4>
+                          <Badge className="bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 border-0">Final</Badge>
+                        </div>
+                        <div className="text-center mb-3">
+                          <div className="relative">
+                            <div className="text-4xl font-black bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">8.5</div>
+                            <div className="text-lg text-gray-500 font-medium">/ 10</div>
+                          </div>
+                          <div className="text-sm font-semibold text-orange-700 mb-2">High Potential for Success</div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="bg-white rounded-lg p-2 border border-orange-100 shadow-sm text-center">
+                            <div className="text-lg font-bold text-blue-600">8.5</div>
+                            <div className="text-xs text-gray-600 font-medium">Technical</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-2 border border-orange-100 shadow-sm text-center">
+                            <div className="text-lg font-bold text-green-600">8.0</div>
+                            <div className="text-xs text-gray-600 font-medium">Market</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-2 border border-orange-100 shadow-sm text-center">
+                            <div className="text-lg font-bold text-purple-600">8.0</div>
+                            <div className="text-xs text-gray-600 font-medium">Financial</div>
                           </div>
                         </div>
                       </div>
