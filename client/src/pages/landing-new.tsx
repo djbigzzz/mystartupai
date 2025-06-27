@@ -140,7 +140,7 @@ export default function LandingNew() {
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-300 hover:text-white font-medium transition-colors">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-white font-medium transition-colors">How it Works</a>
-              <Link href="/submit-idea" className="text-gray-300 hover:text-white font-medium transition-colors">Demo</Link>
+              <Link href="/demo" className="text-gray-300 hover:text-white font-medium transition-colors">Demo</Link>
               <Link href="/waitlist">
                 <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 shadow-lg shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
                   Join Waitlist
@@ -187,7 +187,7 @@ export default function LandingNew() {
                   </Button>
                 </Link>
                 
-                <Link href="/submit-idea">
+                <Link href="/demo">
                   <Button size="lg" variant="outline" className="border-2 border-purple-500/30 text-white hover:bg-purple-500/10 px-8 py-4 text-lg font-bold backdrop-blur-xl transform hover:scale-105 transition-all duration-300">
                     <Play className="mr-2 h-5 w-5" />
                     Try Demo
@@ -397,7 +397,7 @@ export default function LandingNew() {
           <div className="text-center">
             <h3 className="text-2xl font-bold text-white mb-4">Ready to See It in Action?</h3>
             <p className="text-gray-300 mb-6">Try our interactive demo and see how your idea transforms into an investor-ready business</p>
-            <Link href="/submit-idea">
+            <Link href="/demo">
               <Button size="lg" className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 px-8 py-4 text-lg font-bold shadow-2xl shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
                 <Play className="mr-2 h-5 w-5" />
                 Try Interactive Demo
@@ -565,7 +565,7 @@ export default function LandingNew() {
                   </Button>
                 </Link>
                 
-                <Link href="/submit-idea">
+                <Link href="/demo">
                   <Button size="lg" variant="outline" className="border-2 border-purple-500/50 text-white hover:bg-purple-500/10 px-8 py-4 text-lg font-bold backdrop-blur-xl transform hover:scale-105 transition-all duration-300">
                     Try Demo Now
                     <ArrowRight className="ml-2 h-5 w-5" />

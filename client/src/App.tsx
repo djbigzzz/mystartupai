@@ -14,6 +14,7 @@ import MarketResearchPage from "@/pages/market-research";
 import EventsNetworking from "@/pages/events-networking";
 import CompletePlatform from "@/pages/complete-platform";
 import Waitlist from "@/pages/waitlist";
+import DemoJourney from "@/pages/demo-journey";
 import NotFound from "@/pages/not-found";
 
 function Router() {
