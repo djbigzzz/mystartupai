@@ -38,33 +38,33 @@ export default function LandingNew() {
   const features = [
     {
       icon: Brain,
-      title: "Smart Idea Validation",
-      description: "Get instant feedback on your startup concept with detailed analysis that spots opportunities and risks"
+      title: "Live AI Research Engine",
+      description: "Watch AI scan 500+ databases, analyze competitors like MyFitnessPal and Nike Training, and generate insights in real-time"
     },
     {
       icon: FileText,
-      title: "Professional Business Plans",
-      description: "Create comprehensive business plans that investors actually want to read - in minutes, not weeks"
+      title: "Comprehensive Business Plans",
+      description: "Generate 12-section, 3,000+ word business plans with market analysis, financial projections, and risk assessment"
     },
     {
       icon: Presentation,
-      title: "Pitch Deck Builder",
-      description: "Build compelling investor presentations with proven templates that get meetings booked"
+      title: "Investor Pitch Decks",
+      description: "Create 10-slide presentations with speaker notes, financial charts, and competitive positioning for Series A funding"
     },
     {
       icon: BarChart3,
-      title: "Financial Forecasting",
-      description: "Generate realistic 5-year projections and funding scenarios that make sense to VCs"
+      title: "Advanced Financial Models",
+      description: "Build 5-year projections with unit economics, LTV/CAC ratios, and funding requirements that VCs trust"
     },
     {
       icon: Target,
-      title: "Market Intelligence",
-      description: "Understand your competition and market size with research that guides your strategy"
+      title: "Competitive Intelligence",
+      description: "Deep-dive SWOT analysis with TAM/SAM/SOM calculations, user personas, and strategic recommendations"
     },
     {
       icon: Users,
-      title: "Founder Network",
-      description: "Connect with co-founders, advisors, and investors who can help take your startup to the next level"
+      title: "Complete Startup Ecosystem",
+      description: "Access networking, events, document management, and investor matching - everything in one platform"
     }
   ];
 
@@ -393,10 +393,126 @@ export default function LandingNew() {
             </div>
           </div>
 
+          {/* Live Demo Preview */}
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 mb-16">
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-bold text-white mb-4">Watch AI Research in Real-Time</h3>
+              <p className="text-gray-300 text-lg">See how our AI analyzes your startup idea by researching competitors, market data, and industry insights</p>
+            </div>
+
+            {/* Demo Preview Grid */}
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Left: AI Research Preview */}
+              <div className="bg-black/30 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center animate-spin">
+                    <Brain className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-semibold">AI Research Engine</h4>
+                    <p className="text-gray-400 text-sm">Live competitor analysis</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3 p-3 bg-green-100/10 rounded-lg border-l-4 border-green-500">
+                    <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
+                    <div className="flex-1">
+                      <div className="text-white text-sm font-medium">🌐 Scanning 500+ fitness app databases</div>
+                      <div className="text-gray-400 text-xs">App Store, Google Play</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-3 bg-blue-100/10 rounded-lg border-l-4 border-blue-500 animate-pulse">
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <div className="text-white text-sm font-medium">📊 Analyzing MyFitnessPal market data</div>
+                      <div className="text-gray-400 text-xs">200M users, $125M revenue</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-3 bg-gray-50/5 rounded-lg border-l-4 border-gray-300">
+                    <div className="w-4 h-4 border border-gray-400 rounded-full flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <div className="text-gray-300 text-sm">🏃 Researching Nike Training Club</div>
+                      <div className="text-gray-500 text-xs">50M+ users, free model</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 p-3 bg-white/5 rounded-lg border border-blue-200/30">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-white text-sm font-medium">Live Market Intelligence</span>
+                  </div>
+                  <div className="text-xs text-gray-300">📈 Market size: $96B global fitness → $4.5B app segment</div>
+                </div>
+              </div>
+
+              {/* Right: Generated Results Preview */}
+              <div className="space-y-6">
+                <div className="bg-black/30 backdrop-blur-xl border border-green-500/30 rounded-2xl p-6">
+                  <h4 className="text-white font-semibold mb-4 flex items-center">
+                    <Target className="w-5 h-5 mr-2 text-green-400" />
+                    SWOT Analysis Results
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-green-50/10 rounded p-3 border-l-2 border-green-500">
+                      <div className="text-green-400 font-medium text-xs mb-1">Strengths</div>
+                      <div className="text-gray-300 text-xs">Large market opportunity, AI differentiation</div>
+                    </div>
+                    <div className="bg-blue-50/10 rounded p-3 border-l-2 border-blue-500">
+                      <div className="text-blue-400 font-medium text-xs mb-1">Opportunities</div>
+                      <div className="text-gray-300 text-xs">Corporate wellness programs</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-black/30 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6">
+                  <h4 className="text-white font-semibold mb-4 flex items-center">
+                    <FileText className="w-5 h-5 mr-2 text-purple-400" />
+                    Business Plan Generated
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300 text-sm">Word Count</span>
+                      <span className="text-white font-medium">3,142 words</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-300 text-sm">Sections</span>
+                      <span className="text-white font-medium">12 complete</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-300 text-sm">Quality Score</span>
+                      <span className="text-green-400 font-medium">9.2/10</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-black/30 backdrop-blur-xl border border-cyan-500/30 rounded-2xl p-6">
+                  <h4 className="text-white font-semibold mb-4 flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2 text-cyan-400" />
+                    Financial Projections
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-cyan-400">$100M</div>
+                      <div className="text-gray-400 text-xs">Year 5 ARR</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">7.2x</div>
+                      <div className="text-gray-400 text-xs">LTV/CAC Ratio</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Demo CTA */}
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">Ready to See It in Action?</h3>
-            <p className="text-gray-300 mb-6">Try our interactive demo and see how your idea transforms into an investor-ready business</p>
+            <h3 className="text-3xl font-bold text-white mb-4">Ready to Experience This Live?</h3>
+            <p className="text-gray-300 mb-8 text-lg">Watch the AI research process in real-time and see your complete startup package generated in minutes</p>
             <Link href="/demo">
               <Button size="lg" className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 px-8 py-4 text-lg font-bold shadow-2xl shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
                 <Play className="mr-2 h-5 w-5" />
