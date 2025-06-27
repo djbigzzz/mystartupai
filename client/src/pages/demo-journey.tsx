@@ -719,7 +719,7 @@ export default function DemoJourney() {
 
           {/* Right Column - Generated Content Preview */}
           <div>
-            <Card className="bg-white border border-gray-200 shadow-xl h-full">
+            <Card className="bg-white/90 backdrop-blur-xl border border-gray-200/50 shadow-xl h-full">
               <CardHeader>
                 <CardTitle className="text-gray-900">Live Preview</CardTitle>
               </CardHeader>
