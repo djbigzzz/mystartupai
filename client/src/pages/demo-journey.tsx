@@ -452,15 +452,15 @@ export default function DemoJourney() {
                 {currentStepData.id === "pitch-deck" && isStepCompleted && (
                   <div className="space-y-4">
                     <div className="text-center mb-4">
-                      <div className="text-white font-semibold">Investor Pitch Deck</div>
-                      <div className="text-gray-400 text-sm">{currentStepData.content.slides.length} professional slides</div>
+                      <div className="text-gray-900 font-semibold">Investor Pitch Deck</div>
+                      <div className="text-gray-600 text-sm">{currentStepData.content.slides.length} professional slides</div>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-2">
                       {currentStepData.content.slides.slice(0, 4).map((slide: any, i: number) => (
-                        <div key={i} className="bg-white/10 rounded-lg p-3 aspect-video flex flex-col justify-center">
-                          <div className="text-white text-xs font-medium mb-1">{slide.title}</div>
-                          <div className="text-gray-300 text-xs">{slide.content}</div>
+                        <div key={i} className="bg-gray-50 rounded-lg p-3 aspect-video flex flex-col justify-center border">
+                          <div className="text-gray-900 text-xs font-medium mb-1">{slide.title}</div>
+                          <div className="text-gray-700 text-xs">{slide.content}</div>
                         </div>
                       ))}
                     </div>
@@ -470,32 +470,32 @@ export default function DemoJourney() {
                 {currentStepData.id === "financial" && isStepCompleted && (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white/10 rounded-lg p-3 text-center">
-                        <div className="text-green-400 font-bold text-lg">
+                      <div className="bg-gray-50 rounded-lg p-3 text-center border">
+                        <div className="text-green-600 font-bold text-lg">
                           ${(currentStepData.content.revenue.year5 / 1000000).toFixed(1)}M
                         </div>
-                        <div className="text-gray-300 text-xs">Year 5 Revenue</div>
+                        <div className="text-gray-600 text-xs">Year 5 Revenue</div>
                       </div>
-                      <div className="bg-white/10 rounded-lg p-3 text-center">
-                        <div className="text-blue-400 font-bold text-lg">
+                      <div className="bg-gray-50 rounded-lg p-3 text-center border">
+                        <div className="text-blue-600 font-bold text-lg">
                           {(currentStepData.content.users.year5 / 1000).toFixed(0)}K
                         </div>
-                        <div className="text-gray-300 text-xs">Users</div>
+                        <div className="text-gray-600 text-xs">Users</div>
                       </div>
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300 text-sm">LTV/CAC Ratio</span>
-                        <span className="text-white font-medium">{(currentStepData.content.metrics.ltv / currentStepData.content.metrics.cac).toFixed(1)}x</span>
+                        <span className="text-gray-700 text-sm">LTV/CAC Ratio</span>
+                        <span className="text-gray-900 font-medium">{(currentStepData.content.metrics.ltv / currentStepData.content.metrics.cac).toFixed(1)}x</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300 text-sm">Gross Margin</span>
-                        <span className="text-white font-medium">{currentStepData.content.metrics.grossMargin}%</span>
+                        <span className="text-gray-700 text-sm">Gross Margin</span>
+                        <span className="text-gray-900 font-medium">{currentStepData.content.metrics.grossMargin}%</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-300 text-sm">Funding Need</span>
-                        <span className="text-white font-medium">${(currentStepData.content.fundingNeeds / 1000000).toFixed(1)}M</span>
+                        <span className="text-gray-700 text-sm">Funding Need</span>
+                        <span className="text-gray-900 font-medium">${(currentStepData.content.fundingNeeds / 1000000).toFixed(1)}M</span>
                       </div>
                     </div>
                   </div>
@@ -504,18 +504,18 @@ export default function DemoJourney() {
                 {currentStepData.id === "complete" && isStepCompleted && (
                   <div className="space-y-4">
                     <div className="text-center mb-4">
-                      <div className="text-white font-semibold">Investor Package Complete</div>
-                      <div className="text-gray-400 text-sm">Professional documents ready for download</div>
+                      <div className="text-gray-900 font-semibold">Investor Package Complete</div>
+                      <div className="text-gray-600 text-sm">Professional documents ready for download</div>
                     </div>
                     
                     <div className="space-y-2">
                       {currentStepData.content.documents.map((doc: string, i: number) => (
-                        <div key={i} className="flex items-center justify-between bg-white/10 rounded-lg p-3">
+                        <div key={i} className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border">
                           <div className="flex items-center space-x-3">
-                            <FileText className="w-4 h-4 text-purple-400" />
-                            <span className="text-white text-sm">{doc}</span>
+                            <FileText className="w-4 h-4 text-purple-600" />
+                            <span className="text-gray-900 text-sm">{doc}</span>
                           </div>
-                          <Button size="sm" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                          <Button size="sm" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-100">
                             <Download className="w-3 h-3 mr-1" />
                             Download
                           </Button>
@@ -523,10 +523,10 @@ export default function DemoJourney() {
                       ))}
                     </div>
                     
-                    <div className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-lg p-4 text-center">
-                      <div className="text-white font-semibold">Total Value Generated</div>
-                      <div className="text-green-400 text-lg font-bold">{currentStepData.content.totalValue}</div>
-                      <div className="text-gray-300 text-sm">if done with consultants</div>
+                    <div className="bg-gradient-to-r from-purple-100 to-cyan-100 rounded-lg p-4 text-center border">
+                      <div className="text-gray-900 font-semibold">Total Value Generated</div>
+                      <div className="text-green-600 text-lg font-bold">{currentStepData.content.totalValue}</div>
+                      <div className="text-gray-700 text-sm">if done with consultants</div>
                     </div>
                   </div>
                 )}
