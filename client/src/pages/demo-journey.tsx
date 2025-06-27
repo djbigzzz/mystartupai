@@ -442,9 +442,10 @@ export default function DemoJourney() {
           setCompletedSteps(prev => [...prev, step.id]);
           return 100;
         }
-        return prev + (100 / (step.duration / 2));
+        // Much slower progress: 0.5% per interval instead of ~2%
+        return prev + 0.5;
       });
-    }, 100);
+    }, 300); // Slower interval: 300ms instead of 100ms
   };
 
   const currentStepData = demoSteps[currentStep];
@@ -589,7 +590,7 @@ export default function DemoJourney() {
                       </div>
                       <Progress value={progress} className="h-3" />
                       <p className="text-xs text-gray-500 text-center">
-                        {Math.max(0, Math.round((100 - progress) * currentStepData.duration / 100))} seconds remaining
+                        {Math.max(0, Math.round((100 - progress) * 60 / 100))} seconds remaining • Watch the AI research in real-time
                       </p>
                     </div>
 
@@ -603,12 +604,12 @@ export default function DemoJourney() {
                       {/* Dynamic Research Steps */}
                       <div className="space-y-2 max-h-48 overflow-y-auto">
                         {[
-                          { task: "🌐 Scanning 500+ fitness app databases", website: "App Store, Google Play", status: progress > 15 ? "complete" : progress > 5 ? "active" : "pending" },
-                          { task: "📊 Analyzing MyFitnessPal market data", website: "200M users, $125M revenue", status: progress > 30 ? "complete" : progress > 15 ? "active" : "pending" },
-                          { task: "🏃 Researching Nike Training Club", website: "50M+ users, free model", status: progress > 45 ? "complete" : progress > 30 ? "active" : "pending" },
-                          { task: "💪 Evaluating Peloton Digital strategy", website: "6M users, $400M revenue", status: progress > 60 ? "complete" : progress > 45 ? "active" : "pending" },
-                          { task: "⭐ Processing 15,000+ user reviews", website: "Sentiment & feature analysis", status: progress > 75 ? "complete" : progress > 60 ? "active" : "pending" },
-                          { task: "🧠 Generating competitive matrix", website: "AI-powered positioning", status: progress > 90 ? "complete" : progress > 75 ? "active" : "pending" }
+                          { task: "🌐 Scanning 500+ fitness app databases", website: "App Store, Google Play", status: progress > 8 ? "complete" : progress > 2 ? "active" : "pending" },
+                          { task: "📊 Analyzing MyFitnessPal market data", website: "200M users, $125M revenue", status: progress > 20 ? "complete" : progress > 8 ? "active" : "pending" },
+                          { task: "🏃 Researching Nike Training Club", website: "50M+ users, free model", status: progress > 35 ? "complete" : progress > 20 ? "active" : "pending" },
+                          { task: "💪 Evaluating Peloton Digital strategy", website: "6M users, $400M revenue", status: progress > 50 ? "complete" : progress > 35 ? "active" : "pending" },
+                          { task: "⭐ Processing 15,000+ user reviews", website: "Sentiment & feature analysis", status: progress > 70 ? "complete" : progress > 50 ? "active" : "pending" },
+                          { task: "🧠 Generating competitive matrix", website: "AI-powered positioning", status: progress > 95 ? "complete" : progress > 70 ? "active" : "pending" }
                         ].map((step, i) => (
                           <div key={i} className={`flex items-center justify-between p-3 rounded-lg transition-all duration-700 ${
                             step.status === "complete" ? "bg-green-100 border-l-4 border-green-500 transform scale-105" :
@@ -649,33 +650,45 @@ export default function DemoJourney() {
                       </div>
                       
                       {/* Live Data Discovery Stream */}
-                      {progress > 35 && (
+                      {progress > 25 && (
                         <div className="mt-4 p-3 bg-white rounded-lg border border-blue-200 shadow-sm">
                           <div className="flex items-center space-x-2 mb-3">
                             <Globe className="w-4 h-4 text-green-500" />
                             <span className="text-sm font-semibold text-gray-900">Live Market Intelligence</span>
                             <div className="flex space-x-1">
                               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '0.7s'}}></div>
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{animationDelay: '1.4s'}}></div>
                             </div>
                           </div>
                           <div className="space-y-2 text-xs">
-                            {progress > 40 && (
+                            {progress > 30 && (
                               <div className="flex justify-between items-center p-2 bg-green-50 rounded animate-slideIn">
                                 <span className="text-gray-700">📈 Market size: $96B global fitness → $4.5B app segment</span>
                                 <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
                               </div>
                             )}
-                            {progress > 55 && (
-                              <div className="flex justify-between items-center p-2 bg-blue-50 rounded animate-slideIn" style={{animationDelay: '1s'}}>
+                            {progress > 45 && (
+                              <div className="flex justify-between items-center p-2 bg-blue-50 rounded animate-slideIn" style={{animationDelay: '2s'}}>
                                 <span className="text-gray-700">👥 User retention: 22% industry avg, 78% churn in 6 months</span>
                                 <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
                               </div>
                             )}
-                            {progress > 70 && (
-                              <div className="flex justify-between items-center p-2 bg-purple-50 rounded animate-slideIn" style={{animationDelay: '2s'}}>
+                            {progress > 60 && (
+                              <div className="flex justify-between items-center p-2 bg-purple-50 rounded animate-slideIn" style={{animationDelay: '3s'}}>
                                 <span className="text-gray-700">💰 Pricing models: $9.99-$29.99/month premium tiers</span>
+                                <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
+                              </div>
+                            )}
+                            {progress > 75 && (
+                              <div className="flex justify-between items-center p-2 bg-orange-50 rounded animate-slideIn" style={{animationDelay: '4s'}}>
+                                <span className="text-gray-700">🎯 Target market: 150M tech-savvy fitness enthusiasts</span>
+                                <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
+                              </div>
+                            )}
+                            {progress > 85 && (
+                              <div className="flex justify-between items-center p-2 bg-pink-50 rounded animate-slideIn" style={{animationDelay: '5s'}}>
+                                <span className="text-gray-700">🔍 Key insights: Premium features drive 85% of revenue</span>
                                 <Zap className="w-3 h-3 text-yellow-500 animate-pulse" />
                               </div>
                             )}
@@ -684,7 +697,7 @@ export default function DemoJourney() {
                       )}
                       
                       {/* AI Neural Network Processing */}
-                      {progress > 60 && (
+                      {progress > 50 && (
                         <div className="mt-4 p-3 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg border border-purple-200">
                           <div className="flex items-center space-x-2 mb-3">
                             <Brain className="w-4 h-4 text-purple-600 animate-pulse" />
@@ -725,9 +738,10 @@ export default function DemoJourney() {
                   {isStepCompleted && currentStep < demoSteps.length - 1 && (
                     <Button 
                       onClick={nextStep}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white animate-pulse"
                     >
-                      Next Step
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Continue to Next Step
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   )}
