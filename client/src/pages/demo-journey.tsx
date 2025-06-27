@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Brain, 
   FileText, 
@@ -17,7 +18,23 @@ import {
   Sparkles,
   Clock,
   TrendingUp,
-  DollarSign
+  DollarSign,
+  LineChart,
+  PieChart,
+  Building,
+  Globe,
+  Zap,
+  Shield,
+  Award,
+  Rocket,
+  Star,
+  Eye,
+  ThumbsUp,
+  AlertTriangle,
+  Lightbulb,
+  Calculator,
+  Search,
+  Layers
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -67,20 +84,46 @@ export default function DemoJourney() {
           "Large and growing market ($96B global fitness market)",
           "AI personalization addresses real user pain points",
           "Strong potential for recurring revenue model",
-          "Low initial technical barriers to entry"
+          "Low initial technical barriers to entry",
+          "High user engagement potential with gamification",
+          "Scalable business model with network effects"
+        ],
+        weaknesses: [
+          "High customer acquisition costs in crowded market",
+          "Requires significant initial data for AI training",
+          "Seasonal usage patterns may affect retention"
         ],
         opportunities: [
           "Partner with fitness equipment manufacturers",
           "Corporate wellness programs integration",
-          "Expansion into nutrition and mental health"
+          "Expansion into nutrition and mental health",
+          "International market expansion",
+          "B2B2C partnerships with gyms and trainers"
         ],
-        risks: [
+        threats: [
           "High competition from established fitness apps",
           "User retention challenges in fitness industry",
-          "Need for significant user data to train AI effectively"
+          "Potential regulatory changes around health data",
+          "Economic downturns affecting discretionary spending"
         ],
         marketSize: "$96B global fitness market, $4.5B fitness app segment",
-        feasibilityScore: 8.2
+        tam: 96000000000,
+        sam: 4500000000,
+        som: 450000000,
+        feasibilityScore: 8.2,
+        technicalFeasibility: 8.5,
+        marketFeasibility: 8.0,
+        financialFeasibility: 8.0,
+        competitorAnalysis: [
+          { name: "MyFitnessPal", users: "200M+", revenue: "$125M", strengths: "Large user base, nutrition focus" },
+          { name: "Nike Training Club", users: "50M+", revenue: "Unknown", strengths: "Brand recognition, free model" },
+          { name: "Peloton Digital", users: "6M+", revenue: "$400M", strengths: "Premium content, community" }
+        ],
+        userPersonas: [
+          { name: "Busy Professional", age: "28-45", painPoint: "Limited time for workouts", motivation: "Efficiency and results" },
+          { name: "Fitness Beginner", age: "25-35", painPoint: "Intimidated by gym culture", motivation: "Confidence building" },
+          { name: "Health Enthusiast", age: "30-50", painPoint: "Plateauing progress", motivation: "Optimization and variety" }
+        ]
       }
     },
     {
@@ -92,15 +135,95 @@ export default function DemoJourney() {
       color: "from-cyan-500 to-blue-500",
       content: {
         sections: [
-          { name: "Executive Summary", status: "completed", preview: "AI-Powered Fitness Coach revolutionizes personal fitness through intelligent, adaptive coaching..." },
-          { name: "Problem Statement", status: "completed", preview: "78% of fitness app users abandon their apps within 6 months due to lack of personalization..." },
-          { name: "Solution Overview", status: "completed", preview: "Our AI-driven platform creates dynamic, personalized workout and nutrition plans..." },
-          { name: "Market Analysis", status: "completed", preview: "The global fitness market is valued at $96B and growing at 7.8% CAGR..." },
-          { name: "Business Model", status: "completed", preview: "Freemium subscription model with premium AI coaching features..." },
-          { name: "Marketing Strategy", status: "completed", preview: "Multi-channel approach targeting fitness communities and health influencers..." }
+          { 
+            name: "Executive Summary", 
+            status: "completed", 
+            preview: "AI-Powered Fitness Coach revolutionizes personal fitness through intelligent, adaptive coaching...",
+            fullContent: "FitAI represents a paradigm shift in personal fitness, leveraging advanced machine learning algorithms to deliver hyper-personalized workout and nutrition guidance. Our platform addresses the critical gap in the $96B fitness market where 78% of users abandon traditional fitness apps within 6 months due to generic, one-size-fits-all approaches. By implementing real-time adaptation based on user performance, preferences, and biometric data, FitAI creates a truly personalized fitness journey that evolves with each user.",
+            wordCount: 156
+          },
+          { 
+            name: "Problem Statement", 
+            status: "completed", 
+            preview: "78% of fitness app users abandon their apps within 6 months due to lack of personalization...",
+            fullContent: "The fitness industry faces a fundamental personalization crisis. Despite billions invested in fitness technology, user retention remains abysmal with 78% abandoning fitness apps within 6 months. Current solutions offer generic workout plans that fail to account for individual fitness levels, preferences, equipment availability, time constraints, and progress rates. This one-size-fits-all approach leads to frustration, plateaus, and ultimately, abandonment. Users are left feeling overwhelmed by choice paralysis or underwhelmed by results, creating a massive opportunity for intelligent personalization.",
+            wordCount: 324
+          },
+          { 
+            name: "Solution Overview", 
+            status: "completed", 
+            preview: "Our AI-driven platform creates dynamic, personalized workout and nutrition plans...",
+            fullContent: "FitAI employs a sophisticated AI engine that analyzes over 150 data points to create truly personalized fitness experiences. Our platform continuously learns from user interactions, performance metrics, and feedback to adapt workouts in real-time. The system considers equipment availability, time constraints, fitness goals, injury history, and personal preferences to generate optimal workout sequences. Advanced computer vision technology provides form correction, while natural language processing enables conversational coaching that motivates and guides users through their fitness journey.",
+            wordCount: 287
+          },
+          { 
+            name: "Market Analysis", 
+            status: "completed", 
+            preview: "The global fitness market is valued at $96B and growing at 7.8% CAGR...",
+            fullContent: "The global fitness market represents a $96B opportunity growing at 7.8% CAGR, driven by increasing health consciousness and digital adoption. The fitness app segment specifically accounts for $4.5B and is expanding at 14.7% annually. Key market drivers include rising obesity rates, aging populations prioritizing health, and the normalization of digital fitness post-COVID. Our target market of tech-savvy fitness enthusiasts aged 25-45 represents 150M potential users in primary markets, with willingness to pay $15-30 monthly for premium personalized experiences.",
+            wordCount: 298
+          },
+          { 
+            name: "Business Model", 
+            status: "completed", 
+            preview: "Freemium subscription model with premium AI coaching features...",
+            fullContent: "FitAI operates on a freemium SaaS model with multiple revenue streams. The free tier includes basic workouts and limited AI features, converting 8-12% of users to premium subscriptions at $19.99/month. Premium features include unlimited AI coaching, advanced analytics, nutrition planning, and priority support. Additional revenue streams include corporate wellness partnerships ($50-100 per employee annually), premium content creator partnerships (30% revenue share), and white-label licensing to gyms and fitness professionals ($500-2000 monthly per location).",
+            wordCount: 312
+          },
+          { 
+            name: "Marketing Strategy", 
+            status: "completed", 
+            preview: "Multi-channel approach targeting fitness communities and health influencers...",
+            fullContent: "Our go-to-market strategy focuses on digital-first acquisition through fitness influencer partnerships, content marketing, and community building. Primary channels include Instagram and TikTok collaborations with micro-influencers (10K-100K followers) who demonstrate authentic product usage. SEO-optimized content targets high-intent keywords while our referral program incentivizes organic growth. Corporate partnerships with wellness-focused companies provide B2B revenue and user acquisition. Paid acquisition targets lookalike audiences of existing premium fitness app users with strong LTV:CAC ratios.",
+            wordCount: 298
+          },
+          { 
+            name: "Operations Plan", 
+            status: "completed", 
+            preview: "Lean team structure with focus on AI development and user experience...",
+            fullContent: "FitAI maintains a lean operational structure focused on core competencies. The founding team includes AI/ML expertise, fitness industry knowledge, and proven startup execution experience. Key operational priorities include maintaining 99.9% uptime, ensuring data security compliance (HIPAA, GDPR), and scaling AI infrastructure. Customer support utilizes AI chatbots for tier-1 issues with human escalation. Development follows agile methodologies with 2-week sprints, continuous integration, and A/B testing for all major features.",
+            wordCount: 245
+          },
+          { 
+            name: "Management Team", 
+            status: "completed", 
+            preview: "Experienced team combining AI expertise with fitness industry knowledge...",
+            fullContent: "The founding team brings together complementary expertise essential for FitAI's success. CEO Sarah Chen previously scaled a health tech startup from $0 to $50M revenue and has deep fitness industry connections. CTO Michael Rodriguez led AI initiatives at Google Health and holds a PhD in Machine Learning from Stanford. Head of Fitness Dr. Amanda Foster is a certified trainer and sports scientist with 15 years of experience designing evidence-based fitness programs. The team is advised by fitness industry veterans and AI luminaries.",
+            wordCount: 278
+          },
+          { 
+            name: "Financial Projections", 
+            status: "completed", 
+            preview: "Path to $100M ARR by Year 5 with strong unit economics...",
+            fullContent: "FitAI projects strong growth with path to $100M ARR by Year 5. Year 1 focuses on product-market fit with 10K users and $0.5M revenue. Years 2-3 emphasize growth with 100K users and $12M ARR, achieving gross margins of 85%. Years 4-5 target market expansion reaching 500K users and $100M ARR. Key metrics include $180 LTV, $25 CAC (7.2:1 ratio), 15% monthly churn improving to 8%, and 40% gross margins on blended revenue. Break-even achieved in Month 18 with 24 months of runway from Series A funding.",
+            wordCount: 334
+          },
+          { 
+            name: "Funding Requirements", 
+            status: "completed", 
+            preview: "$3M Series A to accelerate growth and AI development...",
+            fullContent: "FitAI seeks $3M Series A funding to accelerate product development and market expansion. Funding allocation: 40% engineering and AI development, 30% marketing and user acquisition, 20% operations and team expansion, 10% working capital. Key milestones include launching core AI features, achieving 50K MAU, proving strong unit economics, and establishing strategic partnerships. This funding provides 24 months runway to reach Series B readiness with $10M+ ARR and clear path to profitability.",
+            wordCount: 234
+          },
+          { 
+            name: "Risk Analysis", 
+            status: "completed", 
+            preview: "Comprehensive risk assessment with mitigation strategies...",
+            fullContent: "Primary risks include competitive pressure from well-funded incumbents, user acquisition costs escalation, and technical challenges in AI personalization. Mitigation strategies include focusing on superior personalization as key differentiator, diversifying acquisition channels, and maintaining technical excellence through top-tier hiring. Market risks include economic downturns affecting discretionary spending and potential regulatory changes around health data. Product risks involve ensuring AI recommendations remain safe and effective while scaling personalization algorithms.",
+            wordCount: 267
+          },
+          { 
+            name: "Implementation Timeline", 
+            status: "completed", 
+            preview: "18-month roadmap from MVP to market leadership...",
+            fullContent: "Phase 1 (Months 1-6): Complete MVP development, beta testing with 1K users, refine AI algorithms, establish content partnerships. Phase 2 (Months 7-12): Public launch, scale to 25K users, implement premium features, raise Series A funding. Phase 3 (Months 13-18): Expand feature set, international markets, corporate partnerships, prepare Series B. Key milestones include iOS/Android launches, achieving 10% monthly growth, establishing strategic partnerships, and reaching $5M ARR.",
+            wordCount: 289
+          }
         ],
-        wordCount: 8450,
-        pageCount: 28
+        wordCount: 3142,
+        pageCount: 42,
+        completionTime: "2 hours 15 minutes",
+        qualityScore: 9.2
       }
     },
     {
@@ -112,14 +235,148 @@ export default function DemoJourney() {
       color: "from-green-500 to-emerald-500",
       content: {
         slides: [
-          { title: "Problem", content: "78% of fitness apps fail to retain users beyond 6 months", notes: "Start with the pain point that resonates with everyone" },
-          { title: "Solution", content: "AI-powered personalized fitness coaching that adapts to user progress", notes: "Highlight the unique AI personalization aspect" },
-          { title: "Market Opportunity", content: "$96B global fitness market, $4.5B app segment growing 14% annually", notes: "Show the massive market potential" },
-          { title: "Business Model", content: "Freemium with premium AI coaching at $19.99/month", notes: "Clear monetization strategy with attractive unit economics" },
-          { title: "Traction", content: "Beta testing with 500 users showing 85% retention rate", notes: "Early validation and strong product-market fit indicators" },
-          { title: "Funding Ask", content: "$2M Series A for AI development and user acquisition", notes: "Specific ask with clear use of funds" }
+          { 
+            title: "The Problem", 
+            content: "78% of fitness apps fail to retain users beyond 6 months", 
+            details: {
+              stats: ["200M+ downloads of top fitness apps", "Average user session: 3.2 minutes", "Monthly churn: 25-40%"],
+              painPoints: ["Generic one-size-fits-all workouts", "No real-time adaptation", "Lack of motivation", "Progress plateaus"],
+              marketImpact: "$2.3B wasted on ineffective fitness solutions annually"
+            },
+            notes: "Hook the audience with a problem everyone in fitness tech knows. Show the massive opportunity hidden in this failure rate.",
+            visualType: "animated_statistics"
+          },
+          { 
+            title: "Our Solution", 
+            content: "AI-powered personal trainer that learns and adapts in real-time", 
+            details: {
+              keyFeatures: ["Real-time form correction", "Adaptive workout difficulty", "Personalized nutrition plans", "Motivational AI coaching"],
+              technology: ["Computer vision for form analysis", "ML for preference learning", "NLP for conversational coaching"],
+              differentiators: ["150+ data points analyzed", "Millisecond adaptation", "Proven retention: 85%+"]
+            },
+            notes: "Demonstrate clear technological superiority. Show actual product screenshots and user testimonials.",
+            visualType: "product_demo"
+          },
+          { 
+            title: "Market Opportunity", 
+            content: "$96B fitness market with 4.5B app segment growing 14.7% annually", 
+            details: {
+              marketSize: { tam: 96000, sam: 4500, som: 450 },
+              growth: ["Post-COVID digital adoption: +300%", "Health consciousness rising", "AI acceptance growing"],
+              targetUsers: "150M tech-savvy fitness enthusiasts willing to pay premium for personalization"
+            },
+            notes: "Emphasize the massive TAM and our specific SAM. Show clear path to significant market share.",
+            visualType: "market_charts"
+          },
+          { 
+            title: "Business Model", 
+            content: "Multi-revenue stream SaaS with strong unit economics", 
+            details: {
+              pricing: { free: "Basic workouts", premium: "$19.99/month", corporate: "$50-100/employee/year" },
+              economics: { ltv: 180, cac: 25, ratio: "7.2:1", churn: "8% monthly" },
+              revenue: ["Subscriptions (70%)", "Corporate wellness (20%)", "Partnerships (10%)"]
+            },
+            notes: "Show proven unit economics and multiple revenue streams for stability and growth.",
+            visualType: "revenue_model"
+          },
+          { 
+            title: "Competitive Advantage", 
+            content: "Superior AI personalization with proven retention rates", 
+            details: {
+              vsCompetitors: [
+                { name: "MyFitnessPal", advantage: "Real-time adaptation vs static plans" },
+                { name: "Nike Training", advantage: "Personalization vs one-size-fits-all" },
+                { name: "Peloton", advantage: "AI coaching vs human-only instruction" }
+              ],
+              moats: ["Proprietary AI algorithms", "Data network effects", "User behavior insights", "Partnership ecosystem"]
+            },
+            notes: "Position against known competitors. Emphasize our technological moats and data advantages.",
+            visualType: "competitive_matrix"
+          },
+          { 
+            title: "Traction & Validation", 
+            content: "Strong early metrics proving product-market fit", 
+            details: {
+              metrics: {
+                users: "5,000 beta users",
+                retention: "85% monthly retention",
+                nps: "Net Promoter Score: 72",
+                growth: "40% monthly user growth"
+              },
+              partnerships: ["3 gym chain pilots", "2 corporate wellness agreements", "15 fitness influencer ambassadors"],
+              testimonials: ["Game-changing personalization", "Finally, workouts that adapt to me", "Best fitness app I've ever used"]
+            },
+            notes: "Show strong product-market fit with concrete metrics. Include actual user testimonials and partnership validation.",
+            visualType: "traction_metrics"
+          },
+          { 
+            title: "Go-to-Market Strategy", 
+            content: "Multi-channel acquisition with focus on organic growth", 
+            details: {
+              channels: {
+                influencer: "Micro-influencer partnerships (10K-100K followers)",
+                content: "SEO-optimized fitness content marketing",
+                referral: "Viral referral program with workout buddy features",
+                b2b: "Corporate wellness partnerships"
+              },
+              timeline: ["Month 1-3: Influencer launch", "Month 4-6: Content marketing", "Month 7-12: B2B expansion"],
+              targets: { cac: "$25", ltv: "$180", payback: "4.2 months" }
+            },
+            notes: "Show diversified acquisition strategy with proven channels and metrics.",
+            visualType: "gtm_funnel"
+          },
+          { 
+            title: "Financial Projections", 
+            content: "Path to $100M ARR with strong margins and growth", 
+            details: {
+              projections: {
+                year1: { users: 10000, revenue: 500000, expenses: 2000000 },
+                year3: { users: 100000, revenue: 12000000, expenses: 8000000 },
+                year5: { users: 500000, revenue: 100000000, expenses: 60000000 }
+              },
+              keyMetrics: { grossMargin: "85%", burnRate: "$200K/month", runway: "24 months" },
+              milestones: ["Break-even: Month 18", "Profitability: Month 24", "IPO-ready: Year 5"]
+            },
+            notes: "Show realistic but ambitious growth with clear path to profitability and scale.",
+            visualType: "financial_charts"
+          },
+          { 
+            title: "Team & Advisors", 
+            content: "World-class team with proven track record", 
+            details: {
+              founders: [
+                { name: "Sarah Chen", role: "CEO", background: "Scaled health tech startup 0→$50M" },
+                { name: "Michael Rodriguez", role: "CTO", background: "AI Lead at Google Health, Stanford PhD" },
+                { name: "Dr. Amanda Foster", role: "Head of Fitness", background: "15 years sports science, certified trainer" }
+              ],
+              advisors: ["Former Peloton VP Product", "MyFitnessPal co-founder", "AI researcher from DeepMind"],
+              expertise: ["Domain knowledge", "Technical excellence", "Go-to-market experience", "Fundraising track record"]
+            },
+            notes: "Emphasize team's unique combination of AI expertise and fitness industry knowledge.",
+            visualType: "team_profiles"
+          },
+          { 
+            title: "Funding Ask", 
+            content: "$3M Series A to accelerate growth and AI development", 
+            details: {
+              useOfFunds: {
+                engineering: "40% - AI development & platform scaling",
+                marketing: "30% - User acquisition & partnerships",
+                team: "20% - Key hires in AI and product",
+                operations: "10% - Infrastructure & working capital"
+              },
+              milestones: ["Launch core AI features", "50K monthly active users", "Prove unit economics", "Strategic partnerships"],
+              timeline: "24 months runway to Series B readiness",
+              valuation: "Pre-money: $12M based on comparable AI health companies"
+            },
+            notes: "Clear funding ask with specific use of funds and measurable milestones. Show path to next round.",
+            visualType: "funding_breakdown"
+          }
         ],
-        designTheme: "Modern fitness-focused with data visualizations"
+        designTheme: "Modern fitness-focused with data visualizations and interactive elements",
+        totalSlides: 10,
+        estimatedPresentationTime: "12-15 minutes",
+        targetAudience: "Series A investors in health tech and AI"
       }
     },
     {
@@ -394,109 +651,416 @@ export default function DemoJourney() {
                 )}
 
                 {currentStepData.id === "analysis" && isStepCompleted && (
-                  <div className="space-y-4">
-                    <div className="text-center mb-4">
-                      <div className="text-3xl font-bold text-green-600 mb-1">
+                  <div className="space-y-6">
+                    {/* Overall Score */}
+                    <div className="text-center">
+                      <div className="text-4xl font-bold text-green-600 mb-2">
                         {currentStepData.content.score}/10
                       </div>
-                      <div className="text-gray-600">Viability Score</div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="text-gray-900 font-medium mb-2 flex items-center">
-                          <TrendingUp className="w-4 h-4 mr-2 text-green-600" />
-                          Key Strengths
-                        </h4>
-                        <ul className="space-y-1">
-                          {currentStepData.content.strengths.slice(0, 2).map((strength: string, i: number) => (
-                            <li key={i} className="text-gray-700 text-sm flex items-start">
-                              <CheckCircle className="w-3 h-3 text-green-600 mr-2 mt-1 flex-shrink-0" />
-                              {strength}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      <div className="text-gray-600 mb-4">Overall Viability Score</div>
                       
-                      <div>
-                        <h4 className="text-gray-900 font-medium mb-2">Market Size</h4>
-                        <p className="text-purple-600 text-sm">{currentStepData.content.marketSize}</p>
+                      {/* Sub-scores */}
+                      <div className="grid grid-cols-3 gap-3 mb-6">
+                        <div className="bg-blue-50 rounded-lg p-3 border">
+                          <div className="text-xl font-bold text-blue-600">{currentStepData.content.technicalFeasibility}</div>
+                          <div className="text-xs text-gray-600">Technical</div>
+                        </div>
+                        <div className="bg-green-50 rounded-lg p-3 border">
+                          <div className="text-xl font-bold text-green-600">{currentStepData.content.marketFeasibility}</div>
+                          <div className="text-xs text-gray-600">Market</div>
+                        </div>
+                        <div className="bg-purple-50 rounded-lg p-3 border">
+                          <div className="text-xl font-bold text-purple-600">{currentStepData.content.financialFeasibility}</div>
+                          <div className="text-xs text-gray-600">Financial</div>
+                        </div>
                       </div>
                     </div>
+
+                    {/* Tabbed Analysis */}
+                    <Tabs defaultValue="swot" className="w-full">
+                      <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="swot" className="text-xs">SWOT</TabsTrigger>
+                        <TabsTrigger value="market" className="text-xs">Market</TabsTrigger>
+                        <TabsTrigger value="competitors" className="text-xs">Competitors</TabsTrigger>
+                        <TabsTrigger value="users" className="text-xs">Users</TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="swot" className="space-y-3 mt-4">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="bg-green-50 rounded p-2 border-l-4 border-green-500">
+                            <h5 className="font-medium text-green-800 text-xs mb-1 flex items-center">
+                              <ThumbsUp className="w-3 h-3 mr-1" />
+                              Strengths
+                            </h5>
+                            {currentStepData.content.strengths.slice(0, 2).map((item: string, i: number) => (
+                              <p key={i} className="text-xs text-green-700">{item}</p>
+                            ))}
+                          </div>
+                          <div className="bg-red-50 rounded p-2 border-l-4 border-red-500">
+                            <h5 className="font-medium text-red-800 text-xs mb-1 flex items-center">
+                              <AlertTriangle className="w-3 h-3 mr-1" />
+                              Weaknesses
+                            </h5>
+                            {currentStepData.content.weaknesses.slice(0, 2).map((item: string, i: number) => (
+                              <p key={i} className="text-xs text-red-700">{item}</p>
+                            ))}
+                          </div>
+                          <div className="bg-blue-50 rounded p-2 border-l-4 border-blue-500">
+                            <h5 className="font-medium text-blue-800 text-xs mb-1 flex items-center">
+                              <Lightbulb className="w-3 h-3 mr-1" />
+                              Opportunities
+                            </h5>
+                            {currentStepData.content.opportunities.slice(0, 2).map((item: string, i: number) => (
+                              <p key={i} className="text-xs text-blue-700">{item}</p>
+                            ))}
+                          </div>
+                          <div className="bg-orange-50 rounded p-2 border-l-4 border-orange-500">
+                            <h5 className="font-medium text-orange-800 text-xs mb-1 flex items-center">
+                              <Shield className="w-3 h-3 mr-1" />
+                              Threats
+                            </h5>
+                            {currentStepData.content.threats.slice(0, 2).map((item: string, i: number) => (
+                              <p key={i} className="text-xs text-orange-700">{item}</p>
+                            ))}
+                          </div>
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="market" className="space-y-3 mt-4">
+                        <div className="space-y-3">
+                          <div className="bg-purple-50 rounded-lg p-3 border">
+                            <h5 className="font-medium text-purple-800 text-sm mb-2">Market Size Analysis</h5>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-xs">
+                                <span className="text-gray-600">TAM (Total)</span>
+                                <span className="font-medium">${(currentStepData.content.tam / 1000000000).toFixed(1)}B</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-gray-600">SAM (Serviceable)</span>
+                                <span className="font-medium">${(currentStepData.content.sam / 1000000000).toFixed(1)}B</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-gray-600">SOM (Obtainable)</span>
+                                <span className="font-medium">${(currentStepData.content.som / 1000000).toFixed(0)}M</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="competitors" className="space-y-2 mt-4">
+                        {currentStepData.content.competitorAnalysis.map((comp: any, i: number) => (
+                          <div key={i} className="bg-gray-50 rounded p-2 border">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h6 className="font-medium text-xs text-gray-900">{comp.name}</h6>
+                                <p className="text-xs text-gray-600">{comp.users} users</p>
+                              </div>
+                              <Badge variant="outline" className="text-xs">{comp.revenue}</Badge>
+                            </div>
+                            <p className="text-xs text-gray-700 mt-1">{comp.strengths}</p>
+                          </div>
+                        ))}
+                      </TabsContent>
+                      
+                      <TabsContent value="users" className="space-y-2 mt-4">
+                        {currentStepData.content.userPersonas.map((persona: any, i: number) => (
+                          <div key={i} className="bg-blue-50 rounded p-2 border">
+                            <div className="flex justify-between items-start mb-1">
+                              <h6 className="font-medium text-xs text-blue-900">{persona.name}</h6>
+                              <span className="text-xs text-blue-600">{persona.age}</span>
+                            </div>
+                            <p className="text-xs text-blue-700 mb-1">Pain: {persona.painPoint}</p>
+                            <p className="text-xs text-blue-600">Goal: {persona.motivation}</p>
+                          </div>
+                        ))}
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 )}
 
                 {currentStepData.id === "business-plan" && isStepCompleted && (
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <div className="text-gray-900 font-semibold">Business Plan Generated</div>
-                        <div className="text-gray-600 text-sm">{currentStepData.content.wordCount} words, {currentStepData.content.pageCount} pages</div>
+                    {/* Plan Stats */}
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border">
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">{currentStepData.content.wordCount.toLocaleString()}</div>
+                          <div className="text-xs text-gray-600">Words</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-purple-600">{currentStepData.content.pageCount}</div>
+                          <div className="text-xs text-gray-600">Pages</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center text-green-600">
+                          <Clock className="w-4 h-4 mr-1" />
+                          {currentStepData.content.completionTime}
+                        </div>
+                        <div className="flex items-center text-orange-600">
+                          <Star className="w-4 h-4 mr-1" />
+                          Quality: {currentStepData.content.qualityScore}/10
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
+                    {/* Sections with expandable content */}
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
                       {currentStepData.content.sections.map((section: any, i: number) => (
-                        <div key={i} className="bg-gray-50 rounded-lg p-3 border">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-gray-900 text-sm font-medium">{section.name}</span>
-                            <CheckCircle className="w-4 h-4 text-green-600" />
+                        <details key={i} className="bg-gray-50 rounded-lg border">
+                          <summary className="p-3 cursor-pointer hover:bg-gray-100 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                <div>
+                                  <span className="text-gray-900 text-sm font-medium">{section.name}</span>
+                                  <div className="text-xs text-gray-500">{section.wordCount} words</div>
+                                </div>
+                              </div>
+                              <ArrowRight className="w-4 h-4 text-gray-400 transform transition-transform" />
+                            </div>
+                          </summary>
+                          <div className="px-3 pb-3 border-t border-gray-200 mt-2 pt-2">
+                            <p className="text-xs text-gray-700 leading-relaxed">{section.fullContent}</p>
                           </div>
-                          <p className="text-gray-700 text-xs">{section.preview}</p>
-                        </div>
+                        </details>
                       ))}
+                    </div>
+                    
+                    {/* Download Options */}
+                    <div className="flex gap-2">
+                      <Button size="sm" className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                        <Download className="w-3 h-3 mr-1" />
+                        Download PDF
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        <FileText className="w-3 h-3 mr-1" />
+                        Edit Plan
+                      </Button>
                     </div>
                   </div>
                 )}
 
                 {currentStepData.id === "pitch-deck" && isStepCompleted && (
                   <div className="space-y-4">
-                    <div className="text-center mb-4">
-                      <div className="text-gray-900 font-semibold">Investor Pitch Deck</div>
-                      <div className="text-gray-600 text-sm">{currentStepData.content.slides.length} professional slides</div>
+                    {/* Deck Stats */}
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border">
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">{currentStepData.content.totalSlides}</div>
+                          <div className="text-xs text-gray-600">Slides</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-emerald-600">12-15</div>
+                          <div className="text-xs text-gray-600">Minutes</div>
+                        </div>
+                      </div>
+                      <div className="text-center text-sm text-gray-700">
+                        Target: {currentStepData.content.targetAudience}
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-2">
-                      {currentStepData.content.slides.slice(0, 4).map((slide: any, i: number) => (
-                        <div key={i} className="bg-gray-50 rounded-lg p-3 aspect-video flex flex-col justify-center border">
-                          <div className="text-gray-900 text-xs font-medium mb-1">{slide.title}</div>
-                          <div className="text-gray-700 text-xs">{slide.content}</div>
+                    {/* Interactive Slide Preview */}
+                    <Tabs defaultValue="slides" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="slides" className="text-xs">Slide Preview</TabsTrigger>
+                        <TabsTrigger value="details" className="text-xs">Slide Details</TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="slides" className="space-y-2 mt-4 max-h-48 overflow-y-auto">
+                        <div className="grid grid-cols-2 gap-2">
+                          {currentStepData.content.slides.slice(0, 6).map((slide: any, i: number) => (
+                            <div key={i} className="bg-gray-50 rounded-lg p-2 aspect-video flex flex-col justify-center border hover:border-green-500 transition-colors cursor-pointer">
+                              <div className="text-gray-900 text-xs font-medium mb-1">{slide.title}</div>
+                              <div className="text-gray-700 text-xs leading-tight">{slide.content}</div>
+                              <div className="mt-1">
+                                <Badge variant="outline" className="text-xs">{slide.visualType}</Badge>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </TabsContent>
+                      
+                      <TabsContent value="details" className="space-y-2 mt-4 max-h-48 overflow-y-auto">
+                        {currentStepData.content.slides.slice(0, 4).map((slide: any, i: number) => (
+                          <details key={i} className="bg-gray-50 rounded-lg border">
+                            <summary className="p-2 cursor-pointer hover:bg-gray-100 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-gray-900">{slide.title}</span>
+                                <ArrowRight className="w-4 h-4 text-gray-400" />
+                              </div>
+                            </summary>
+                            <div className="px-2 pb-2 border-t border-gray-200 mt-1 pt-1">
+                              <div className="space-y-2">
+                                <div>
+                                  <h6 className="text-xs font-medium text-gray-800">Key Features:</h6>
+                                  <ul className="text-xs text-gray-600">
+                                    {slide.details.keyFeatures?.map((feature: string, j: number) => (
+                                      <li key={j}>• {feature}</li>
+                                    )) || slide.details.stats?.map((stat: string, j: number) => (
+                                      <li key={j}>• {stat}</li>
+                                    )) || slide.details.painPoints?.map((pain: string, j: number) => (
+                                      <li key={j}>• {pain}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                <div className="text-xs text-gray-500 italic">
+                                  Speaker notes: {slide.notes}
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        ))}
+                      </TabsContent>
+                    </Tabs>
+                    
+                    {/* Presentation Actions */}
+                    <div className="flex gap-2">
+                      <Button size="sm" className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+                        <Play className="w-3 h-3 mr-1" />
+                        Present
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        <Download className="w-3 h-3 mr-1" />
+                        Export
+                      </Button>
                     </div>
                   </div>
                 )}
 
                 {currentStepData.id === "financial" && isStepCompleted && (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-gray-50 rounded-lg p-3 text-center border">
-                        <div className="text-green-600 font-bold text-lg">
+                    {/* Key Metrics Overview */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-3 text-center border">
+                        <div className="text-green-600 font-bold text-xl">
                           ${(currentStepData.content.revenue.year5 / 1000000).toFixed(1)}M
                         </div>
                         <div className="text-gray-600 text-xs">Year 5 Revenue</div>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-3 text-center border">
-                        <div className="text-blue-600 font-bold text-lg">
+                      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-3 text-center border">
+                        <div className="text-blue-600 font-bold text-xl">
                           {(currentStepData.content.users.year5 / 1000).toFixed(0)}K
                         </div>
-                        <div className="text-gray-600 text-xs">Users</div>
+                        <div className="text-gray-600 text-xs">Year 5 Users</div>
                       </div>
                     </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-700 text-sm">LTV/CAC Ratio</span>
-                        <span className="text-gray-900 font-medium">{(currentStepData.content.metrics.ltv / currentStepData.content.metrics.cac).toFixed(1)}x</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-700 text-sm">Gross Margin</span>
-                        <span className="text-gray-900 font-medium">{currentStepData.content.metrics.grossMargin}%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-700 text-sm">Funding Need</span>
-                        <span className="text-gray-900 font-medium">${(currentStepData.content.fundingNeeds / 1000000).toFixed(1)}M</span>
-                      </div>
+
+                    {/* Financial Tabs */}
+                    <Tabs defaultValue="metrics" className="w-full">
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="metrics" className="text-xs">Unit Economics</TabsTrigger>
+                        <TabsTrigger value="growth" className="text-xs">Growth</TabsTrigger>
+                        <TabsTrigger value="funding" className="text-xs">Funding</TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="metrics" className="space-y-3 mt-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                            <span className="text-gray-700 text-sm flex items-center">
+                              <DollarSign className="w-3 h-3 mr-1" />
+                              LTV/CAC Ratio
+                            </span>
+                            <span className="text-gray-900 font-semibold">{(currentStepData.content.metrics.ltv / currentStepData.content.metrics.cac).toFixed(1)}x</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                            <span className="text-gray-700 text-sm flex items-center">
+                              <TrendingUp className="w-3 h-3 mr-1" />
+                              Gross Margin
+                            </span>
+                            <span className="text-gray-900 font-semibold">{currentStepData.content.metrics.grossMargin}%</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                            <span className="text-gray-700 text-sm flex items-center">
+                              <Users className="w-3 h-3 mr-1" />
+                              Monthly Churn
+                            </span>
+                            <span className="text-gray-900 font-semibold">{currentStepData.content.metrics.churnRate}%</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2">
+                            <span className="text-gray-700 text-sm flex items-center">
+                              <Clock className="w-3 h-3 mr-1" />
+                              Payback Period
+                            </span>
+                            <span className="text-gray-900 font-semibold">4.2 months</span>
+                          </div>
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="growth" className="space-y-3 mt-4">
+                        <div className="space-y-3">
+                          {[
+                            { year: "Year 1", users: currentStepData.content.users.year1, revenue: currentStepData.content.revenue.year1 },
+                            { year: "Year 2", users: currentStepData.content.users.year2, revenue: currentStepData.content.revenue.year2 },
+                            { year: "Year 5", users: currentStepData.content.users.year5, revenue: currentStepData.content.revenue.year5 }
+                          ].map((data, i) => (
+                            <div key={i} className="bg-gray-50 rounded-lg p-3 border">
+                              <div className="flex justify-between items-center">
+                                <span className="font-medium text-gray-900">{data.year}</span>
+                                <div className="text-right">
+                                  <div className="text-sm font-semibold text-green-600">
+                                    ${(data.revenue / 1000000).toFixed(1)}M
+                                  </div>
+                                  <div className="text-xs text-gray-600">
+                                    {(data.users / 1000).toFixed(0)}K users
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="funding" className="space-y-3 mt-4">
+                        <div className="bg-purple-50 rounded-lg p-3 border">
+                          <h5 className="font-medium text-purple-800 text-sm mb-2">Funding Requirements</h5>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Series A Ask</span>
+                              <span className="font-medium">${(currentStepData.content.fundingNeeds / 1000000).toFixed(1)}M</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Runway</span>
+                              <span className="font-medium">{currentStepData.content.runway} months</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">Break-even</span>
+                              <span className="font-medium">Month 18</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <h6 className="text-xs font-medium text-gray-800">Use of Funds:</h6>
+                          {[
+                            { category: "Engineering", percentage: 40, color: "bg-blue-500" },
+                            { category: "Marketing", percentage: 30, color: "bg-green-500" },
+                            { category: "Team", percentage: 20, color: "bg-purple-500" },
+                            { category: "Operations", percentage: 10, color: "bg-orange-500" }
+                          ].map((item, i) => (
+                            <div key={i} className="flex items-center space-x-2">
+                              <div className={`w-3 h-3 rounded ${item.color}`}></div>
+                              <div className="flex-1 flex justify-between">
+                                <span className="text-xs text-gray-700">{item.category}</span>
+                                <span className="text-xs font-medium">{item.percentage}%</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+
+                    {/* Export Options */}
+                    <div className="flex gap-2">
+                      <Button size="sm" className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white">
+                        <Calculator className="w-3 h-3 mr-1" />
+                        Open Model
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        <Download className="w-3 h-3 mr-1" />
+                        Export Excel
+                      </Button>
                     </div>
                   </div>
                 )}
