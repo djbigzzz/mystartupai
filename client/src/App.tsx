@@ -30,6 +30,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/platform" component={CompletePlatform} />
       <Route path="/waitlist" component={Waitlist} />
+      <Route path="/demo" component={DemoJourney} />
       <Route component={NotFound} />
     </Switch>
   );
