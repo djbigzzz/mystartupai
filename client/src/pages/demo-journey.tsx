@@ -53,6 +53,7 @@ export default function DemoJourney() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const demoSteps: DemoStep[] = [
     {
