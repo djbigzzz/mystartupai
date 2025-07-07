@@ -23,7 +23,7 @@ export default function Waitlist() {
   // Email signup mutation
   const emailSignupMutation = useMutation({
     mutationFn: async (data: { email: string; name: string }) => {
-      return apiRequest("/api/waitlist/email", {
+      return apiRequest("/api/waitlist", {
         method: "POST",
         body: data,
       });

@@ -76,52 +76,17 @@ export default function LandingNew() {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Animated Background */}
+      {/* Subtle Background */}
       <div className="fixed inset-0 z-0">
-        {/* Gradient Orbs */}
-        <div 
-          className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/30 to-blue-500/30 rounded-full blur-3xl"
-          style={{
-            transform: `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`,
-            top: '10%',
-            left: '20%'
-          }}
-        />
-        <div 
-          className="absolute w-80 h-80 bg-gradient-to-r from-cyan-500/30 to-purple-500/30 rounded-full blur-3xl"
-          style={{
-            transform: `translate(${mousePosition.x * -0.015}px, ${mousePosition.y * -0.015}px)`,
-            bottom: '20%',
-            right: '25%'
-          }}
-        />
-        <div 
-          className="absolute w-64 h-64 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-full blur-3xl"
-          style={{
-            transform: `translate(${mousePosition.x * 0.01}px, ${mousePosition.y * 0.01}px)`,
-            top: '60%',
-            left: '10%'
-          }}
-        />
+        {/* Static gradient orbs - no animation */}
+        <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full blur-3xl top-10 left-20"></div>
+        <div className="absolute w-80 h-80 bg-gradient-to-r from-cyan-500/15 to-purple-500/15 rounded-full blur-3xl bottom-20 right-32"></div>
+        <div className="absolute w-64 h-64 bg-gradient-to-r from-blue-500/15 to-cyan-500/15 rounded-full blur-3xl top-1/2 left-10"></div>
         
         {/* Grid Pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
         
-        {/* Floating 3D Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 3}s`
-              }}
-            />
-          ))}
-        </div>
+
       </div>
 
       {/* Navigation */}
@@ -215,20 +180,15 @@ export default function LandingNew() {
             {/* Right 3D Visual */}
             <div className="relative lg:h-96">
               <div className="absolute inset-0 flex items-center justify-center">
-                {/* Central 3D Cube */}
-                <div 
-                  className="relative transform-gpu"
-                  style={{
-                    transform: `perspective(1000px) rotateX(${mousePosition.y * 0.01}deg) rotateY(${mousePosition.x * 0.01}deg)`
-                  }}
-                >
-                  <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-2xl shadow-2xl shadow-purple-500/50 flex items-center justify-center transform rotate-12 hover:rotate-0 transition-transform duration-500">
+                {/* Simplified Central Element */}
+                <div className="relative">
+                  <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-2xl shadow-2xl shadow-purple-500/50 flex items-center justify-center">
                     <Brain className="w-16 h-16 text-white" />
                   </div>
                 </div>
 
-                {/* Orbiting Elements */}
-                <div className="absolute inset-0 animate-spin" style={{ animationDuration: '20s' }}>
+                {/* Static Elements */}
+                <div className="absolute inset-0">
                   <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
                     <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-xl flex items-center justify-center">
                       <FileText className="w-8 h-8 text-white" />

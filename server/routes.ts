@@ -555,6 +555,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Waitlist API routes
+  app.post("/api/waitlist", async (req, res) => {
+    try {
+      const validatedData = insertWaitlistSchema.parse({
+        ...req.body,
+        source: "email"
+      });
+      
+      // Check if email already exists
+      const existing = await storage.getWaitlistEntry(validatedData.email!);
+      if (existing) {
+        return res.status(400).json({ message: "Email already on waitlist" });
+      }
+
+      const entry = await storage.createWaitlistEntry(validatedData);
+      res.json(entry);
+    } catch (error: any) {
+      console.error("Waitlist signup error:", error);
+      res.status(400).json({ message: error.message || "Failed to join waitlist" });
+    }
+  });
+
   app.post("/api/waitlist/email", async (req, res) => {
     try {
       const validatedData = insertWaitlistSchema.parse({
