@@ -233,6 +233,14 @@ MyStartup.ai is a comprehensive AI-powered platform that transforms startup idea
   - Added interactive value calculator showing $10,500+ savings and time comparisons
   - Built 4-week journey timeline with specific deliverables for each phase
   - Enhanced platform preview with module grid showing all 6 core features with completion indicators
+- June 27, 2025: Design Consistency Improvements and Animation Cleanup
+  - Fixed broken waitlist functionality by adding missing `/api/waitlist` endpoint that matches frontend API calls
+  - Simplified excessive animations per user feedback: removed floating particles, mouse-following orbs, and spinning elements
+  - Implemented consistent design system with proper color variables for light/dark mode support
+  - Updated landing page to clean, professional layout matching mockup: centered hero text, simplified navigation
+  - Redesigned waitlist page with dual-column layout featuring both signup and login forms side-by-side
+  - Applied consistent typography, spacing, and component styling across all pages for cohesive user experience
+  - Removed distracting visual effects while maintaining essential branding elements and modern aesthetic
 
 ## User Preferences
 

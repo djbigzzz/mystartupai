@@ -13,7 +13,7 @@ import FinancialModelingPage from "@/pages/financial-modeling";
 import MarketResearchPage from "@/pages/market-research";
 import EventsNetworking from "@/pages/events-networking";
 import CompletePlatform from "@/pages/complete-platform";
-import Waitlist from "@/pages/waitlist";
+import WaitlistClean from "@/pages/waitlist-clean";
 import DemoJourney from "@/pages/demo-journey";
 import NotFound from "@/pages/not-found";
 
@@ -29,7 +29,7 @@ function Router() {
       <Route path="/events-networking" component={EventsNetworking} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/platform" component={CompletePlatform} />
-      <Route path="/waitlist" component={Waitlist} />
+      <Route path="/waitlist" component={WaitlistClean} />
       <Route path="/demo" component={DemoJourney} />
       <Route component={NotFound} />
     </Switch>

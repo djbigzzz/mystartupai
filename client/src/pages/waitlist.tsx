@@ -94,52 +94,154 @@ export default function Waitlist() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Background Effects */}
-      <div className="absolute inset-0 opacity-40" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"}}></div>
+    <div className="min-h-screen bg-background">
       
       <div className="relative z-10">
         {/* Header */}
-        <header className="container mx-auto px-4 py-6">
+        <header className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Zap className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                MyStartup.ai
+              <span className="ml-3 text-xl font-semibold text-foreground">
+                mystartup.ai
               </span>
             </div>
-            <Badge variant="secondary" className="bg-purple-600/20 text-purple-300 border-purple-500/30">
-              {waitlistCount?.count || 0} Early Adopters
-            </Badge>
+            <div className="flex items-center space-x-4">
+              <Button variant="outline">Log in</Button>
+              <Button>Create account</Button>
+            </div>
           </div>
         </header>
 
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-16 text-center">
-          <div className="max-w-4xl mx-auto">
-            <Badge className="mb-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0">
-              Building in Public - Join the Journey
-            </Badge>
+        <section className="container mx-auto px-6 py-16">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Signup Form */}
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Create your account
+              </h1>
+              <p className="text-muted-foreground mb-6">
+                Let's get started with your 30 days free trial.
+              </p>
+              
+              <div className="space-y-4">
+                <Button 
+                  onClick={handleGoogleSignup}
+                  variant="outline"
+                  className="w-full justify-center"
+                >
+                  <Chrome className="w-4 h-4 mr-2" />
+                  Sign up with Google
+                </Button>
+                
+                <div className="text-center text-muted-foreground text-sm">or</div>
+                
+                <form onSubmit={handleEmailSubmit} className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Name *</label>
+                    <Input
+                      type="text"
+                      placeholder="Enter your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="mt-1"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Email *</label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="mt-1"
+                      required
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-primary hover:bg-primary/90"
+                    disabled={emailSignupMutation.isPending}
+                  >
+                    {emailSignupMutation.isPending ? "Creating account..." : "Get started"}
+                  </Button>
+                </form>
+                
+                <p className="text-center text-sm text-muted-foreground">
+                  Already have an account? <a href="#" className="text-primary hover:underline">Log in</a>
+                </p>
+              </div>
+            </div>
             
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
-                Transform Ideas into
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                Investor-Ready Businesses
-              </span>
-            </h1>
-            
-            <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-              The first AI-powered startup accelerator that generates business plans, pitch decks, 
-              and financial models in minutes. Built with GPG-4 and proven Y Combinator frameworks.
-            </p>
-
-            {/* Waitlist Signup */}
-            <Card className="max-w-md mx-auto bg-white/5 backdrop-blur-xl border-white/10">
+            {/* Right Side - Login Form */}
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Log in
+              </h1>
+              <p className="text-muted-foreground mb-6">
+                Welcome back! Please enter your details.
+              </p>
+              
+              <div className="space-y-4">
+                <Button 
+                  variant="outline"
+                  className="w-full justify-center"
+                >
+                  <Chrome className="w-4 h-4 mr-2" />
+                  Continue with Google
+                </Button>
+                
+                <div className="text-center text-muted-foreground text-sm">or</div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Email</label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground">Password</label>
+                    <Input
+                      type="password"
+                      placeholder="********"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="remember" className="rounded border-border" />
+                      <label htmlFor="remember" className="text-sm text-foreground">Remember me</label>
+                    </div>
+                    <a href="#" className="text-sm text-primary hover:underline">Forgot password</a>
+                  </div>
+                  <Button className="w-full bg-primary hover:bg-primary/90">
+                    Log in
+                  </Button>
+                </div>
+                
+                <p className="text-center text-sm text-muted-foreground">
+                  Don't have an account? <a href="#" className="text-primary hover:underline">Create your account</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Reviews Badge */}
+          <div className="text-center mt-8">
+            <div className="inline-flex items-center text-sm text-muted-foreground">
+              <Star className="w-4 h-4 text-yellow-500 mr-1" />
+              <span className="font-medium mr-1">5.0</span>
+              <span>reviews</span>
+            </div>
+          </div>
+        </section>
               <CardHeader className="text-center pb-4">
                 <CardTitle className="text-white">Join the Waitlist</CardTitle>
                 <CardDescription className="text-slate-300">

@@ -75,40 +75,35 @@ export default function LandingNew() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
-      {/* Subtle Background */}
-      <div className="fixed inset-0 z-0">
-        {/* Static gradient orbs - no animation */}
-        <div className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full blur-3xl top-10 left-20"></div>
-        <div className="absolute w-80 h-80 bg-gradient-to-r from-cyan-500/15 to-purple-500/15 rounded-full blur-3xl bottom-20 right-32"></div>
-        <div className="absolute w-64 h-64 bg-gradient-to-r from-blue-500/15 to-cyan-500/15 rounded-full blur-3xl top-1/2 left-10"></div>
-        
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
-        
-
-      </div>
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Clean Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"></div>
 
       {/* Navigation */}
-      <nav className="relative z-50 bg-black/50 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center group">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300 shadow-lg shadow-purple-500/30">
-                <Sparkles className="w-6 h-6 text-white" />
+      <nav className="relative z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                MyStartup.ai
+              <span className="ml-3 text-xl font-semibold text-foreground">
+                mystartup.ai
               </span>
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-300 hover:text-white font-medium transition-colors">Features</a>
-              <a href="#how-it-works" className="text-gray-300 hover:text-white font-medium transition-colors">How it Works</a>
-              <Link href="/demo" className="text-gray-300 hover:text-white font-medium transition-colors">Demo</Link>
+              <a href="#features" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Features</a>
+              <a href="#how-it-works" className="text-muted-foreground hover:text-foreground font-medium transition-colors">How it Works</a>
+              <Link href="/demo" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Demo</Link>
               <Link href="/waitlist">
-                <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 shadow-lg shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
-                  Join Waitlist
+                <Button variant="secondary" className="mr-3">
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/waitlist">
+                <Button className="bg-primary hover:bg-primary/90">
+                  Create account
                 </Button>
               </Link>
             </div>
@@ -117,98 +112,46 @@ export default function LandingNew() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-20 pb-16 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div className="text-left">
-              <Badge className="mb-6 bg-purple-500/20 text-purple-300 border-purple-500/30 backdrop-blur-xl">
-                🚀 Your Startup Success Platform
-              </Badge>
-              
-              <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent">
-                  Turn Your Idea
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                  Into Investment
-                </span>
-              </h1>
-              
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
-                The smart platform that creates professional business plans, investor presentations, and financial forecasts 
-                using proven strategies that actually get funded.
-              </p>
+      <section className="relative z-10 pt-20 pb-16">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight tracking-tight">
+              <span className="text-foreground">
+                Start your turning your ideas
+              </span>
+              <br />
+              <span className="text-foreground">
+                into reality.
+              </span>
+            </h1>
+            
+            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
+              An intuitive platform that streamlines business plan creation, preparing you for
+              successful investment. Trusted by over 5,000 professionals.
+            </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Link href="/waitlist">
-                  <Button size="lg" className="group bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 px-8 py-4 text-lg font-bold shadow-2xl shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
-                    <span className="relative z-10 flex items-center">
-                      Join the Waitlist
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-lg blur opacity-0 group-hover:opacity-50 transition-opacity" />
-                  </Button>
-                </Link>
-                
-                <Link href="/demo">
-                  <Button size="lg" variant="outline" className="border-2 border-purple-500/30 text-white hover:bg-purple-500/10 px-8 py-4 text-lg font-bold backdrop-blur-xl transform hover:scale-105 transition-all duration-300">
-                    <Play className="mr-2 h-5 w-5" />
-                    Try Demo
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="flex items-center space-x-8">
-                <div className="flex items-center space-x-2">
-                  <Zap className="w-5 h-5 text-yellow-400" />
-                  <span className="text-gray-300 font-medium">Smart Analysis</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Target className="w-5 h-5 text-green-400" />
-                  <span className="text-gray-300 font-medium">Proven Methods</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-300 font-medium">Investor Ready</span>
-                </div>
-              </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+              <Link href="/waitlist">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 px-8 py-3 text-base font-semibold">
+                  Create account
+                </Button>
+              </Link>
+              <Link href="/waitlist">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="px-8 py-3 text-base font-semibold"
+                >
+                  Log in
+                </Button>
+              </Link>
             </div>
 
-            {/* Right 3D Visual */}
-            <div className="relative lg:h-96">
-              <div className="absolute inset-0 flex items-center justify-center">
-                {/* Simplified Central Element */}
-                <div className="relative">
-                  <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-2xl shadow-2xl shadow-purple-500/50 flex items-center justify-center">
-                    <Brain className="w-16 h-16 text-white" />
-                  </div>
-                </div>
-
-                {/* Static Elements */}
-                <div className="absolute inset-0">
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-xl flex items-center justify-center">
-                      <FileText className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="absolute top-1/2 -right-8 transform -translate-y-1/2">
-                    <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl shadow-xl flex items-center justify-center">
-                      <Presentation className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-xl shadow-xl flex items-center justify-center">
-                      <BarChart3 className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="absolute top-1/2 -left-8 transform -translate-y-1/2">
-                    <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-xl shadow-xl flex items-center justify-center">
-                      <Users className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
+            <div className="flex justify-center">
+              <div className="text-sm text-muted-foreground flex items-center">
+                <div className="flex items-center mr-6">
+                  <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                  <span className="font-medium">5.0 reviews</span>
                 </div>
               </div>
             </div>
