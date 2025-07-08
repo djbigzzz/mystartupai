@@ -22,10 +22,30 @@ import {
   Lightbulb
 } from "lucide-react";
 import { Link } from "wouter";
+import DemoTour from "@/components/demo-tour";
 
 export default function LandingNew() {
+  const [showDemo, setShowDemo] = useState(false);
+  const [demoCompleted, setDemoCompleted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleDemoComplete = () => {
+    setShowDemo(false);
+    setDemoCompleted(true);
+  };
+
+  const handleStartDemo = () => {
+    setShowDemo(true);
+  };
+
+  // All useEffect hooks must be at the top
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowDemo(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -34,6 +54,11 @@ export default function LandingNew() {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // If demo is active, show it
+  if (showDemo) {
+    return <DemoTour onComplete={handleDemoComplete} />;
+  }
 
   const features = [
     {
@@ -130,21 +155,40 @@ export default function LandingNew() {
               successful investment. Trusted by over 5,000 professionals.
             </p>
 
+            {demoCompleted && (
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-8 max-w-2xl mx-auto">
+                <p className="text-green-800 dark:text-green-200 font-medium">
+                  🎉 Demo completed! Ready to start building your startup? Join the waitlist to get early access.
+                </p>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Link href="/waitlist">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 px-8 py-3 text-base font-semibold">
-                  Create account
-                </Button>
-              </Link>
-              <Link href="/waitlist">
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="px-8 py-3 text-base font-semibold"
-                >
-                  Log in
-                </Button>
-              </Link>
+              {demoCompleted ? (
+                <Link href="/waitlist">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 px-8 py-3 text-base font-semibold">
+                    Join Waitlist
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/waitlist">
+                    <Button size="lg" className="bg-primary hover:bg-primary/90 px-8 py-3 text-base font-semibold">
+                      Create account
+                    </Button>
+                  </Link>
+                  <Link href="/waitlist">
+                    <Button 
+                      variant="outline" 
+                      size="lg"
+                      className="px-8 py-3 text-base font-semibold"
+                    >
+                      Log in
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             <div className="flex justify-center">
