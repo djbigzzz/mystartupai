@@ -124,7 +124,7 @@ export default function AnimatedDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStep((prev) => (prev + 1) % steps.length);
-    }, 2800);
+    }, 1600);
 
     return () => clearInterval(interval);
   }, []);
@@ -139,9 +139,9 @@ export default function AnimatedDemo() {
           setIsAnalyzing(false);
           return 100;
         }
-        return prev + 8;
+        return prev + 12;
       });
-    }, 30);
+    }, 20);
 
     return () => clearInterval(progressInterval);
   }, [currentStep]);
