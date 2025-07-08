@@ -1485,87 +1485,164 @@ export default function DemoJourney() {
 
                 {currentStepData.id === "pitch-deck" && isStepCompleted && (
                   <div className="space-y-4">
-                    {/* Deck Stats */}
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border">
-                      <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">{currentStepData.content.totalSlides}</div>
-                          <div className="text-xs text-gray-600">Slides</div>
+                    {/* Professional Header */}
+                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <Presentation className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold">FitAI Investor Deck</h3>
+                            <p className="text-purple-100 text-sm">Series A Presentation</p>
+                          </div>
                         </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-emerald-600">12-15</div>
-                          <div className="text-xs text-gray-600">Minutes</div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold">12</div>
+                          <div className="text-xs text-purple-200">Slides</div>
                         </div>
                       </div>
-                      <div className="text-center text-sm text-gray-700">
-                        Target: {currentStepData.content.targetAudience}
+                      <div className="flex items-center justify-between text-sm">
+                        <span>Target: Series A VCs in Health Tech</span>
+                        <span>Duration: 15 minutes</span>
                       </div>
                     </div>
                     
-                    {/* Interactive Slide Preview */}
-                    <Tabs defaultValue="slides" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="slides" className="text-xs">Slide Preview</TabsTrigger>
-                        <TabsTrigger value="details" className="text-xs">Slide Details</TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="slides" className="space-y-2 mt-4 max-h-40 overflow-y-auto">
-                        <div className="grid grid-cols-2 gap-2">
-                          {currentStepData.content.slides.slice(0, 6).map((slide: any, i: number) => (
-                            <div key={i} className="bg-gray-50 rounded-lg p-2 aspect-video flex flex-col justify-center border hover:border-green-500 transition-colors cursor-pointer">
-                              <div className="text-gray-900 text-xs font-medium mb-1">{slide.title}</div>
-                              <div className="text-gray-700 text-xs leading-tight">{slide.content}</div>
-                              <div className="mt-1">
-                                <Badge variant="outline" className="text-xs">{slide.visualType}</Badge>
-                              </div>
-                            </div>
-                          ))}
+                    {/* Professional Slide Preview */}
+                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-semibold text-gray-800">Investor Presentation Preview</h4>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="outline" className="text-xs">12 slides</Badge>
+                            <Badge className="bg-green-100 text-green-700 text-xs">Ready</Badge>
+                          </div>
                         </div>
-                      </TabsContent>
+                      </div>
                       
-                      <TabsContent value="details" className="space-y-2 mt-4 max-h-40 overflow-y-auto">
-                        {currentStepData.content.slides.slice(0, 4).map((slide: any, i: number) => (
-                          <details key={i} className="bg-gray-50 rounded-lg border">
-                            <summary className="p-2 cursor-pointer hover:bg-gray-100 transition-colors">
-                              <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-gray-900">{slide.title}</span>
-                                <ArrowRight className="w-4 h-4 text-gray-400" />
+                      <div className="p-4">
+                        {/* Key Slides Showcase */}
+                        <div className="space-y-3">
+                          {/* Title Slide */}
+                          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm font-bold">1</div>
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-gray-900">FitAI - The Future of Fitness</h5>
+                                <p className="text-sm text-gray-600 mt-1">AI-powered personal trainer for the mobile generation</p>
+                                <div className="text-xs text-blue-600 mt-2 font-medium">Series A • $5M Raise • Health Tech Revolution</div>
                               </div>
-                            </summary>
-                            <div className="px-2 pb-2 border-t border-gray-200 mt-1 pt-1">
-                              <div className="space-y-2">
-                                <div>
-                                  <h6 className="text-xs font-medium text-gray-800">Key Features:</h6>
-                                  <ul className="text-xs text-gray-600">
-                                    {slide.details.keyFeatures?.map((feature: string, j: number) => (
-                                      <li key={j}>• {feature}</li>
-                                    )) || slide.details.stats?.map((stat: string, j: number) => (
-                                      <li key={j}>• {stat}</li>
-                                    )) || slide.details.painPoints?.map((pain: string, j: number) => (
-                                      <li key={j}>• {pain}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                                <div className="text-xs text-gray-500 italic">
-                                  Speaker notes: {slide.notes}
+                            </div>
+                          </div>
+
+                          {/* Problem Slide */}
+                          <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 border border-red-200">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-red-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">2</div>
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-gray-900">The $2.3B Retention Crisis</h5>
+                                <p className="text-sm text-gray-600 mt-1">78% of fitness apps fail to retain users beyond 6 months</p>
+                                <div className="grid grid-cols-2 gap-2 mt-3">
+                                  <div className="bg-white rounded p-2 border border-red-100">
+                                    <div className="text-xs text-red-700 font-medium">40% monthly churn</div>
+                                    <div className="text-xs text-gray-500">Industry average</div>
+                                  </div>
+                                  <div className="bg-white rounded p-2 border border-red-100">
+                                    <div className="text-xs text-red-700 font-medium">$2.3B wasted</div>
+                                    <div className="text-xs text-gray-500">Ineffective solutions</div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </details>
-                        ))}
-                      </TabsContent>
-                    </Tabs>
-                    
-                    {/* Presentation Actions */}
-                    <div className="flex gap-2">
-                      <Button size="sm" className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
-                        <Play className="w-3 h-3 mr-1" />
-                        Present
-                      </Button>
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Download className="w-3 h-3 mr-1" />
-                        Export
-                      </Button>
+                          </div>
+
+                          {/* Solution Slide */}
+                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">3</div>
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-gray-900">AI-Powered Personal Trainer</h5>
+                                <p className="text-sm text-gray-600 mt-1">Real-time form correction with 85% retention rate</p>
+                                <div className="grid grid-cols-2 gap-2 mt-3">
+                                  <div className="bg-white rounded p-2 border border-green-100">
+                                    <div className="text-xs text-green-700 font-medium">Computer vision</div>
+                                    <div className="text-xs text-gray-500">Form analysis</div>
+                                  </div>
+                                  <div className="bg-white rounded p-2 border border-green-100">
+                                    <div className="text-xs text-green-700 font-medium">85% retention</div>
+                                    <div className="text-xs text-gray-500">Proven results</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Market Slide */}
+                          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-purple-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">4</div>
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-gray-900">$96B Market Opportunity</h5>
+                                <p className="text-sm text-gray-600 mt-1">Growing 14.7% annually with 300% post-COVID acceleration</p>
+                                <div className="flex items-center justify-between mt-3">
+                                  <div className="bg-white rounded p-2 border border-purple-100 text-center flex-1 mr-2">
+                                    <div className="text-sm font-bold text-purple-600">$96B</div>
+                                    <div className="text-xs text-gray-500">TAM</div>
+                                  </div>
+                                  <div className="bg-white rounded p-2 border border-purple-100 text-center flex-1 mx-1">
+                                    <div className="text-sm font-bold text-purple-600">$4.5B</div>
+                                    <div className="text-xs text-gray-500">SAM</div>
+                                  </div>
+                                  <div className="bg-white rounded p-2 border border-purple-100 text-center flex-1 ml-2">
+                                    <div className="text-sm font-bold text-purple-600">150M</div>
+                                    <div className="text-xs text-gray-500">Users</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Traction Slide */}
+                          <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-4 border border-orange-200">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-orange-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">5</div>
+                              <div className="flex-1">
+                                <h5 className="font-semibold text-gray-900">Strong Early Traction</h5>
+                                <p className="text-sm text-gray-600 mt-1">5K beta users, 85% retention, NPS 72</p>
+                                <div className="grid grid-cols-3 gap-2 mt-3">
+                                  <div className="bg-white rounded p-2 border border-orange-100 text-center">
+                                    <div className="text-sm font-bold text-orange-600">40%</div>
+                                    <div className="text-xs text-gray-500">Monthly growth</div>
+                                  </div>
+                                  <div className="bg-white rounded p-2 border border-orange-100 text-center">
+                                    <div className="text-sm font-bold text-orange-600">85%</div>
+                                    <div className="text-xs text-gray-500">Retention</div>
+                                  </div>
+                                  <div className="bg-white rounded p-2 border border-orange-100 text-center">
+                                    <div className="text-sm font-bold text-orange-600">72</div>
+                                    <div className="text-xs text-gray-500">NPS Score</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Footer Actions */}
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                          <div className="text-xs text-gray-500">+ 7 more slides: Business Model, Team, Financials, Ask...</div>
+                          <div className="flex space-x-2">
+                            <Button size="sm" variant="outline" className="text-xs">
+                              <Download className="w-3 h-3 mr-1" />
+                              Export PDF
+                            </Button>
+                            <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white text-xs">
+                              <Play className="w-3 h-3 mr-1" />
+                              Present
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
