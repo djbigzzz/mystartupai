@@ -5,6 +5,7 @@ import passport from "./auth";
 import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
+import { agenticAI } from "./agentic-ai";
 import bcrypt from "bcryptjs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -630,6 +631,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Waitlist count error:", error);
       res.status(500).json({ message: "Failed to get waitlist count" });
+    }
+  });
+
+  // Agentic AI Platform Routes
+  app.post("/api/agentic/chat", async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const response = await agenticAI.processUserMessage(message, context);
+      res.json(response);
+    } catch (error: any) {
+      console.error("AI chat error:", error);
+      res.status(500).json({ message: "Failed to process message" });
+    }
+  });
+
+  app.post("/api/agentic/execute-task", async (req, res) => {
+    try {
+      const { action } = req.body;
+      
+      if (!action) {
+        return res.status(400).json({ message: "Action is required" });
+      }
+
+      const task = await agenticAI.executeAutonomousTask(action);
+      res.json(task);
+    } catch (error: any) {
+      console.error("Task execution error:", error);
+      res.status(500).json({ message: "Failed to execute task" });
+    }
+  });
+
+  app.get("/api/agentic/tasks", async (req, res) => {
+    try {
+      const tasks = agenticAI.getActiveTasks();
+      res.json(tasks);
+    } catch (error: any) {
+      console.error("Get tasks error:", error);
+      res.status(500).json({ message: "Failed to get tasks" });
+    }
+  });
+
+  app.get("/api/agentic/investors", async (req, res) => {
+    try {
+      const investors = await agenticAI.findMatchingInvestors();
+      res.json(investors);
+    } catch (error: any) {
+      console.error("Investor matching error:", error);
+      res.status(500).json({ message: "Failed to find investors" });
+    }
+  });
+
+  app.get("/api/agentic/grants", async (req, res) => {
+    try {
+      const grants = await agenticAI.findMatchingGrants();
+      res.json(grants);
+    } catch (error: any) {
+      console.error("Grant matching error:", error);
+      res.status(500).json({ message: "Failed to find grants" });
+    }
+  });
+
+  app.post("/api/agentic/profile", async (req, res) => {
+    try {
+      const profile = req.body;
+      agenticAI.updateProfile(profile);
+      res.json({ message: "Profile updated successfully" });
+    } catch (error: any) {
+      console.error("Profile update error:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.get("/api/agentic/profile", async (req, res) => {
+    try {
+      const profile = agenticAI.getProfile();
+      res.json(profile);
+    } catch (error: any) {
+      console.error("Get profile error:", error);
+      res.status(500).json({ message: "Failed to get profile" });
     }
   });
 

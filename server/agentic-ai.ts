@@ -1,0 +1,498 @@
+import OpenAI from "openai";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// Autonomous AI Agent Core
+export interface AgentTask {
+  id: string;
+  title: string;
+  description: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  progress: number;
+  category: 'business-plan' | 'investor-matching' | 'grant-application' | 'market-research' | 'financial-modeling';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  estimatedCompletion: Date;
+  result?: any;
+}
+
+export interface InvestorMatch {
+  id: string;
+  name: string;
+  firm: string;
+  focus: string[];
+  stage: string;
+  checkSize: string;
+  portfolio: string[];
+  matchScore: number;
+  contactInfo: {
+    email?: string;
+    linkedin?: string;
+    phone?: string;
+  };
+  lastActivity: Date;
+  status: 'potential' | 'contacted' | 'interested' | 'declined' | 'invested';
+}
+
+export interface Grant {
+  id: string;
+  name: string;
+  organization: string;
+  amount: string;
+  deadline: Date;
+  eligibility: string[];
+  focus: string[];
+  matchScore: number;
+  status: 'eligible' | 'applied' | 'under-review' | 'approved' | 'rejected';
+  applicationProgress?: number;
+}
+
+export interface StartupProfile {
+  id: string;
+  name: string;
+  description: string;
+  industry: string;
+  stage: string;
+  team: number;
+  funding: string;
+  location: string;
+  techStack: string[];
+  targetMarket: string;
+  businessModel: string;
+}
+
+// Autonomous Agent Intelligence Engine
+export class AgenticAI {
+  private startupProfile: StartupProfile | null = null;
+  private activeTasks: Map<string, AgentTask> = new Map();
+  private investorDatabase: InvestorMatch[] = [];
+  private grantDatabase: Grant[] = [];
+
+  constructor(profile?: StartupProfile) {
+    this.startupProfile = profile;
+    this.initializeDatabase();
+  }
+
+  // Initialize with demo data (replace with real APIs)
+  private initializeDatabase() {
+    // Demo investor data - would connect to Crunchbase, AngelList APIs
+    this.investorDatabase = [
+      {
+        id: '1',
+        name: 'Sarah Chen',
+        firm: 'Andreessen Horowitz',
+        focus: ['AI', 'Health Tech', 'Consumer', 'Enterprise SaaS'],
+        stage: 'Series A',
+        checkSize: '$5M - $15M',
+        portfolio: ['Notion', 'Clubhouse', 'Workday', 'PaperTrail'],
+        matchScore: 92,
+        contactInfo: { 
+          email: 'sarah@a16z.com', 
+          linkedin: 'linkedin.com/in/sarahchen',
+          phone: '+1-650-555-0123'
+        },
+        lastActivity: new Date(),
+        status: 'potential'
+      },
+      {
+        id: '2',
+        name: 'Mike Rodriguez',
+        firm: 'Sequoia Capital',
+        focus: ['Enterprise SaaS', 'AI', 'Developer Tools', 'FinTech'],
+        stage: 'Seed to Series B',
+        checkSize: '$1M - $25M',
+        portfolio: ['Stripe', 'WhatsApp', 'Airbnb', 'DoorDash'],
+        matchScore: 88,
+        contactInfo: { 
+          email: 'mike@sequoiacap.com', 
+          linkedin: 'linkedin.com/in/mikerodriguez'
+        },
+        lastActivity: new Date(),
+        status: 'potential'
+      },
+      {
+        id: '3',
+        name: 'Emily Watson',
+        firm: 'First Round Capital',
+        focus: ['Health Tech', 'Consumer', 'Mobile', 'AI'],
+        stage: 'Pre-Seed to Series A',
+        checkSize: '$500K - $10M',
+        portfolio: ['Uber', 'Square', 'Warby Parker', 'Mint'],
+        matchScore: 85,
+        contactInfo: { 
+          email: 'emily@firstround.com', 
+          linkedin: 'linkedin.com/in/emilywatson'
+        },
+        lastActivity: new Date(),
+        status: 'potential'
+      }
+    ];
+
+    // Demo grant data - would connect to government databases
+    this.grantDatabase = [
+      {
+        id: '1',
+        name: 'Small Business Innovation Research (SBIR)',
+        organization: 'National Science Foundation',
+        amount: '$1.7M',
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        eligibility: ['US-based', 'Technology Innovation', 'Under 500 employees', 'R&D Focus'],
+        focus: ['AI', 'Health Tech', 'Clean Energy', 'Cybersecurity'],
+        matchScore: 94,
+        status: 'eligible'
+      },
+      {
+        id: '2',
+        name: 'Innovation Fund',
+        organization: 'European Innovation Council',
+        amount: '€2.5M',
+        deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+        eligibility: ['EU-based', 'Deep Tech', 'Scalable Innovation', 'Game-changing Technology'],
+        focus: ['AI', 'Digital Health', 'Sustainable Tech', 'Space Tech'],
+        matchScore: 89,
+        status: 'eligible'
+      },
+      {
+        id: '3',
+        name: 'Health Innovation Challenge',
+        organization: 'NIH',
+        amount: '$500K',
+        deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+        eligibility: ['Health Tech', 'Clinical Validation', 'FDA Pathway'],
+        focus: ['Digital Health', 'Medical Devices', 'AI in Healthcare'],
+        matchScore: 91,
+        status: 'eligible'
+      }
+    ];
+  }
+
+  // Conversational AI with GPT-4
+  async processUserMessage(message: string, context?: any): Promise<{
+    response: string;
+    actions: Array<{ label: string; action: string; }>;
+    suggestedTasks?: AgentTask[];
+  }> {
+    try {
+      const systemPrompt = `You are an autonomous AI startup assistant for MyStartup.ai. You help founders with:
+      - Business plan generation
+      - Investor matching and outreach
+      - Grant applications
+      - Market research and analysis
+      - Financial modeling
+      
+      You are proactive, intelligent, and can execute tasks autonomously. Always suggest specific actions the user can take.
+      
+      Current startup profile: ${this.startupProfile ? JSON.stringify(this.startupProfile) : 'Not yet provided'}
+      Available investors: ${this.investorDatabase.length}
+      Available grants: ${this.grantDatabase.length}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || '{}');
+      
+      return {
+        response: result.response || "I understand. How can I help you with your startup today?",
+        actions: result.actions || this.generateContextualActions(message),
+        suggestedTasks: result.suggestedTasks || []
+      };
+    } catch (error) {
+      console.error("AI processing error:", error);
+      return {
+        response: "I'm ready to help with your startup. What would you like me to work on?",
+        actions: this.generateContextualActions(message)
+      };
+    }
+  }
+
+  // Generate contextual actions based on user message
+  private generateContextualActions(message: string): Array<{ label: string; action: string; }> {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('investor') || lowerMessage.includes('funding')) {
+      return [
+        { label: "Find Top Investors", action: "find-investors" },
+        { label: "Generate Pitch Deck", action: "generate-pitch" },
+        { label: "Prepare Outreach", action: "prepare-outreach" }
+      ];
+    }
+    
+    if (lowerMessage.includes('grant') || lowerMessage.includes('government')) {
+      return [
+        { label: "Find Matching Grants", action: "find-grants" },
+        { label: "Prepare Applications", action: "prepare-applications" },
+        { label: "Submit Automatically", action: "auto-submit" }
+      ];
+    }
+    
+    if (lowerMessage.includes('business plan') || lowerMessage.includes('plan')) {
+      return [
+        { label: "Generate Business Plan", action: "generate-business-plan" },
+        { label: "Market Analysis", action: "market-analysis" },
+        { label: "Financial Projections", action: "financial-projections" }
+      ];
+    }
+    
+    return [
+      { label: "Analyze Startup", action: "analyze-startup" },
+      { label: "Create Action Plan", action: "create-plan" },
+      { label: "Show Opportunities", action: "show-opportunities" }
+    ];
+  }
+
+  // Investor Matching Algorithm
+  async findMatchingInvestors(profile?: StartupProfile): Promise<InvestorMatch[]> {
+    const startup = profile || this.startupProfile;
+    if (!startup) return [];
+
+    return this.investorDatabase
+      .map(investor => ({
+        ...investor,
+        matchScore: this.calculateInvestorMatch(investor, startup)
+      }))
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .slice(0, 10);
+  }
+
+  private calculateInvestorMatch(investor: InvestorMatch, startup: StartupProfile): number {
+    let score = 0;
+    
+    // Industry focus match
+    if (investor.focus.includes(startup.industry)) score += 40;
+    
+    // Stage compatibility
+    const stageCompatibility = this.getStageCompatibility(investor.stage, startup.stage);
+    score += stageCompatibility * 30;
+    
+    // Portfolio relevance
+    const portfolioRelevance = this.getPortfolioRelevance(investor.portfolio, startup);
+    score += portfolioRelevance * 20;
+    
+    // Tech stack alignment
+    if (startup.techStack.some(tech => 
+      investor.focus.some(focus => 
+        focus.toLowerCase().includes(tech.toLowerCase())
+      )
+    )) score += 10;
+    
+    return Math.min(score, 100);
+  }
+
+  private getStageCompatibility(investorStage: string, startupStage: string): number {
+    const stageMap: Record<string, number> = {
+      'Pre-Seed': 1,
+      'Seed': 2,
+      'Series A': 3,
+      'Series B': 4,
+      'Series C': 5
+    };
+    
+    const investorLevel = stageMap[investorStage] || 2;
+    const startupLevel = stageMap[startupStage] || 2;
+    
+    return Math.max(0, 1 - Math.abs(investorLevel - startupLevel) * 0.2);
+  }
+
+  private getPortfolioRelevance(portfolio: string[], startup: StartupProfile): number {
+    // Simple relevance based on industry keywords
+    const relevantCount = portfolio.filter(company => 
+      company.toLowerCase().includes(startup.industry.toLowerCase()) ||
+      startup.description.toLowerCase().includes(company.toLowerCase())
+    ).length;
+    
+    return Math.min(relevantCount / portfolio.length, 1);
+  }
+
+  // Grant Matching Algorithm
+  async findMatchingGrants(profile?: StartupProfile): Promise<Grant[]> {
+    const startup = profile || this.startupProfile;
+    if (!startup) return [];
+
+    return this.grantDatabase
+      .map(grant => ({
+        ...grant,
+        matchScore: this.calculateGrantMatch(grant, startup)
+      }))
+      .filter(grant => grant.matchScore > 70)
+      .sort((a, b) => b.matchScore - a.matchScore);
+  }
+
+  private calculateGrantMatch(grant: Grant, startup: StartupProfile): number {
+    let score = 0;
+    
+    // Focus area match
+    if (grant.focus.includes(startup.industry)) score += 50;
+    
+    // Eligibility check
+    const eligibilityScore = grant.eligibility.reduce((acc, req) => {
+      if (this.checkEligibility(req, startup)) acc += 10;
+      return acc;
+    }, 0);
+    score += Math.min(eligibilityScore, 30);
+    
+    // Amount relevance to startup stage
+    score += this.getAmountRelevance(grant.amount, startup.stage) * 20;
+    
+    return Math.min(score, 100);
+  }
+
+  private checkEligibility(requirement: string, startup: StartupProfile): boolean {
+    const req = requirement.toLowerCase();
+    const profile = startup.description.toLowerCase() + ' ' + startup.industry.toLowerCase();
+    
+    return profile.includes(req) || startup.location.toLowerCase().includes(req);
+  }
+
+  private getAmountRelevance(amount: string, stage: string): number {
+    // Simple relevance based on typical funding amounts per stage
+    const numAmount = parseInt(amount.replace(/[^0-9]/g, ''));
+    
+    switch (stage) {
+      case 'Pre-Seed': return numAmount < 1000000 ? 1 : 0.5;
+      case 'Seed': return numAmount >= 500000 && numAmount <= 5000000 ? 1 : 0.7;
+      case 'Series A': return numAmount >= 2000000 ? 1 : 0.8;
+      default: return 0.8;
+    }
+  }
+
+  // Autonomous Task Execution
+  async executeAutonomousTask(action: string): Promise<AgentTask> {
+    const task: AgentTask = {
+      id: Date.now().toString(),
+      title: this.getTaskTitle(action),
+      description: this.getTaskDescription(action),
+      status: 'in-progress',
+      progress: 0,
+      category: this.getTaskCategory(action),
+      priority: 'medium',
+      estimatedCompletion: new Date(Date.now() + this.getEstimatedDuration(action))
+    };
+
+    this.activeTasks.set(task.id, task);
+
+    // Simulate autonomous execution
+    this.simulateTaskExecution(task);
+
+    return task;
+  }
+
+  private async simulateTaskExecution(task: AgentTask) {
+    const updateInterval = setInterval(() => {
+      task.progress += Math.random() * 20;
+      
+      if (task.progress >= 100) {
+        task.progress = 100;
+        task.status = 'completed';
+        task.result = this.generateTaskResult(task);
+        clearInterval(updateInterval);
+      }
+    }, 1000);
+  }
+
+  private getTaskTitle(action: string): string {
+    const titles: Record<string, string> = {
+      'find-investors': 'Autonomous Investor Discovery',
+      'find-grants': 'Grant Opportunity Research',
+      'generate-business-plan': 'AI Business Plan Generation',
+      'market-analysis': 'Comprehensive Market Analysis',
+      'prepare-outreach': 'Investor Outreach Campaign',
+      'auto-submit': 'Automated Grant Submissions'
+    };
+    return titles[action] || 'AI Task Execution';
+  }
+
+  private getTaskDescription(action: string): string {
+    const descriptions: Record<string, string> = {
+      'find-investors': 'Scanning 2,500+ investors to find perfect matches for your startup',
+      'find-grants': 'Analyzing government and private grants for eligibility and fit',
+      'generate-business-plan': 'Creating comprehensive business plan with market analysis',
+      'market-analysis': 'Deep dive into market size, competitors, and opportunities',
+      'prepare-outreach': 'Crafting personalized investor outreach campaigns',
+      'auto-submit': 'Automatically preparing and submitting grant applications'
+    };
+    return descriptions[action] || 'Executing autonomous AI task';
+  }
+
+  private getTaskCategory(action: string): AgentTask['category'] {
+    const categories: Record<string, AgentTask['category']> = {
+      'find-investors': 'investor-matching',
+      'find-grants': 'grant-application',
+      'generate-business-plan': 'business-plan',
+      'market-analysis': 'market-research',
+      'prepare-outreach': 'investor-matching',
+      'auto-submit': 'grant-application'
+    };
+    return categories[action] || 'business-plan';
+  }
+
+  private getEstimatedDuration(action: string): number {
+    const durations: Record<string, number> = {
+      'find-investors': 300000, // 5 minutes
+      'find-grants': 180000,    // 3 minutes
+      'generate-business-plan': 600000, // 10 minutes
+      'market-analysis': 420000, // 7 minutes
+      'prepare-outreach': 240000, // 4 minutes
+      'auto-submit': 480000     // 8 minutes
+    };
+    return durations[action] || 300000;
+  }
+
+  private generateTaskResult(task: AgentTask): any {
+    switch (task.category) {
+      case 'investor-matching':
+        return {
+          totalInvestors: 2547,
+          matches: 24,
+          highQualityMatches: 8,
+          contactsReady: 5
+        };
+      case 'grant-application':
+        return {
+          grantsFound: 12,
+          eligible: 8,
+          highMatch: 3,
+          applicationsReady: 2
+        };
+      case 'business-plan':
+        return {
+          sections: 12,
+          pages: 45,
+          quality: 9.2,
+          investorReady: true
+        };
+      case 'market-research':
+        return {
+          marketSize: '$96B',
+          growth: '14.7%',
+          competitors: 15,
+          opportunities: 8
+        };
+      default:
+        return { completed: true, timestamp: new Date() };
+    }
+  }
+
+  // Get all active tasks
+  getActiveTasks(): AgentTask[] {
+    return Array.from(this.activeTasks.values());
+  }
+
+  // Update startup profile
+  updateProfile(profile: StartupProfile) {
+    this.startupProfile = profile;
+  }
+
+  // Get current profile
+  getProfile(): StartupProfile | null {
+    return this.startupProfile;
+  }
+}
+
+// Export singleton instance
+export const agenticAI = new AgenticAI();

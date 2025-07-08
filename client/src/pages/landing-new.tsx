@@ -19,7 +19,8 @@ import {
   Rocket,
   Code,
   Layers,
-  Lightbulb
+  Lightbulb,
+  Bot
 } from "lucide-react";
 import { Link } from "wouter";
 import AnimatedDemo from "@/components/animated-demo-new";
@@ -146,6 +147,12 @@ export default function LandingNew() {
 
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+              <Link href="/agentic">
+                <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-3 text-base font-semibold border-0 shadow-lg">
+                  <Bot className="w-5 h-5 mr-2" />
+                  Try Agentic AI Platform
+                </Button>
+              </Link>
               <Link href="/app">
                 <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 text-base font-semibold border-0 shadow-lg">
                   Launch App
