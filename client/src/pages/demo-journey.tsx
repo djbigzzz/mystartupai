@@ -61,7 +61,7 @@ export default function DemoJourney() {
       title: "Submit Your Idea",
       description: "Tell us about your startup concept",
       icon: Brain,
-      duration: 2,
+      duration: 7,
       color: "from-purple-500 to-pink-500",
       content: {
         title: "AI-Powered Fitness Coach",
@@ -77,7 +77,7 @@ export default function DemoJourney() {
       title: "AI Analysis",
       description: "Comprehensive startup validation",
       icon: Target,
-      duration: 2,
+      duration: 7,
       color: "from-blue-500 to-cyan-500",
       content: {
         score: 8.5,
@@ -232,7 +232,7 @@ export default function DemoJourney() {
       title: "Pitch Deck",
       description: "Investor presentation slides",
       icon: Presentation,
-      duration: 2,
+      duration: 7,
       color: "from-green-500 to-emerald-500",
       content: {
         slides: [
@@ -385,7 +385,7 @@ export default function DemoJourney() {
       title: "Financial Model",
       description: "5-year projections and metrics",
       icon: BarChart3,
-      duration: 2,
+      duration: 7,
       color: "from-orange-500 to-red-500",
       content: {
         revenue: {
@@ -415,7 +415,7 @@ export default function DemoJourney() {
       title: "Investor Package",
       description: "Download complete materials",
       icon: Download,
-      duration: 2,
+      duration: 7,
       color: "from-purple-500 to-blue-500",
       content: {
         documents: [
@@ -443,10 +443,10 @@ export default function DemoJourney() {
           setCompletedSteps(prev => [...prev, step.id]);
           return 100;
         }
-        // Much faster progress: 5% per interval for 2-second completion
-        return prev + 5;
+        // Progress for 7-second completion: ~1.43% per interval
+        return prev + 1.43;
       });
-    }, 100); // 2 seconds total (20 intervals * 100ms)
+    }, 100); // 7 seconds total (70 intervals * 100ms)
   };
 
   const currentStepData = demoSteps[currentStep];
@@ -636,7 +636,7 @@ export default function DemoJourney() {
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="border-purple-500 text-purple-600">
                 <Clock className="w-4 h-4 mr-1" />
-                ~10 seconds
+                ~42 seconds
               </Badge>
               <Link href="/">
                 <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
