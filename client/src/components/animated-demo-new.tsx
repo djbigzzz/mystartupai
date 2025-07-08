@@ -124,7 +124,7 @@ export default function AnimatedDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStep((prev) => (prev + 1) % steps.length);
-    }, 5000);
+    }, 3500);
 
     return () => clearInterval(interval);
   }, []);
@@ -139,9 +139,9 @@ export default function AnimatedDemo() {
           setIsAnalyzing(false);
           return 100;
         }
-        return prev + 1.5;
+        return prev + 4;
       });
-    }, 75);
+    }, 50);
 
     return () => clearInterval(progressInterval);
   }, [currentStep]);
@@ -153,14 +153,23 @@ export default function AnimatedDemo() {
       case "form":
         return (
           <div className="space-y-4">
+            <div className="text-center mb-4">
+              <div className="text-lg font-semibold text-primary">📝 Idea Submission Form</div>
+              <div className="text-sm text-muted-foreground">Capturing startup details</div>
+            </div>
             {step.content.fields.map((field, index) => (
               <div key={index} className="space-y-2">
-                <label className="text-sm font-medium">{field.label}</label>
-                <div className="p-3 border rounded-lg bg-background">
-                  {isAnalyzing && index === 0 ? (
-                    <div className="animate-pulse h-4 bg-muted rounded w-3/4"></div>
+                <label className="text-sm font-medium text-blue-700">{field.label}</label>
+                <div className="p-3 border-2 border-blue-200 rounded-lg bg-blue-50">
+                  {isAnalyzing && index <= Math.floor(progress / 25) ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-sm text-blue-600">Typing...</span>
+                    </div>
+                  ) : index <= Math.floor(progress / 25) ? (
+                    <span className="text-sm text-blue-800">{field.value}</span>
                   ) : (
-                    <span className="text-sm">{field.value}</span>
+                    <span className="text-sm text-gray-400">{field.placeholder}</span>
                   )}
                 </div>
               </div>
@@ -171,18 +180,30 @@ export default function AnimatedDemo() {
       case "analysis":
         return (
           <div className="space-y-4">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary mb-2">{step.content.score}/100</div>
-              <div className="text-sm text-muted-foreground">Overall Viability Score</div>
+            <div className="text-center mb-4">
+              <div className="text-lg font-semibold text-primary">🧠 AI Analysis Engine</div>
+              <div className="text-sm text-muted-foreground">Evaluating startup viability</div>
+            </div>
+            <div className="text-center bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded-lg">
+              <div className="text-4xl font-bold text-green-600 mb-2">
+                {isAnalyzing ? Math.floor(progress * 0.87) : step.content.score}/100
+              </div>
+              <div className="text-sm text-green-700">Overall Viability Score</div>
             </div>
             <div className="space-y-3">
               {step.content.insights.map((insight, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 border-l-4 border-blue-500 rounded-lg">
                   <div>
-                    <div className="font-medium text-sm">{insight.category}</div>
-                    <div className="text-xs text-muted-foreground">{insight.insight}</div>
+                    <div className="font-medium text-sm text-blue-700">{insight.category}</div>
+                    <div className="text-xs text-gray-600">{insight.insight}</div>
                   </div>
-                  <div className="text-lg font-bold text-primary">{insight.score}%</div>
+                  <div className="flex items-center space-x-2">
+                    {isAnalyzing ? (
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <div className="text-lg font-bold text-blue-600">{insight.score}%</div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -192,15 +213,21 @@ export default function AnimatedDemo() {
       case "business-plan":
         return (
           <div className="space-y-3">
+            <div className="text-center mb-4">
+              <div className="text-lg font-semibold text-primary">📋 Business Plan Generator</div>
+              <div className="text-sm text-muted-foreground">Creating 12-section comprehensive plan</div>
+            </div>
             {step.content.sections.map((section, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 bg-emerald-50 border-l-4 border-emerald-500 rounded-lg">
                 <div className="flex items-center space-x-3">
                   {section.status === "complete" && <CheckCircle className="w-4 h-4 text-green-500" />}
-                  {section.status === "generating" && <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>}
-                  {section.status === "pending" && <div className="w-4 h-4 border rounded-full border-muted"></div>}
-                  <span className="text-sm font-medium">{section.name}</span>
+                  {section.status === "generating" && <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>}
+                  {section.status === "pending" && <div className="w-4 h-4 border-2 border-gray-300 rounded-full"></div>}
+                  <span className="text-sm font-medium text-emerald-700">{section.name}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">{section.wordCount > 0 ? `${section.wordCount} words` : ''}</span>
+                <span className="text-xs text-emerald-600 font-medium">
+                  {section.wordCount > 0 ? `${section.wordCount} words` : 'Pending'}
+                </span>
               </div>
             ))}
           </div>
@@ -209,15 +236,19 @@ export default function AnimatedDemo() {
       case "pitch-deck":
         return (
           <div className="space-y-3">
+            <div className="text-center mb-4">
+              <div className="text-lg font-semibold text-primary">🎯 Pitch Deck Builder</div>
+              <div className="text-sm text-muted-foreground">Designing investor presentation</div>
+            </div>
             {step.content.slides.map((slide, index) => (
-              <div key={index} className="p-3 border rounded-lg">
+              <div key={index} className="p-3 bg-orange-50 border-l-4 border-orange-500 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-sm">{slide.title}</span>
+                  <span className="font-medium text-sm text-orange-700">Slide {index + 1}: {slide.title}</span>
                   {slide.status === "complete" && <CheckCircle className="w-4 h-4 text-green-500" />}
-                  {slide.status === "generating" && <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>}
-                  {slide.status === "pending" && <div className="w-4 h-4 border rounded-full border-muted"></div>}
+                  {slide.status === "generating" && <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>}
+                  {slide.status === "pending" && <div className="w-4 h-4 border-2 border-gray-300 rounded-full"></div>}
                 </div>
-                <div className="text-xs text-muted-foreground">{slide.content}</div>
+                <div className="text-xs text-orange-600">{slide.content}</div>
               </div>
             ))}
           </div>
@@ -226,12 +257,19 @@ export default function AnimatedDemo() {
       case "financial":
         return (
           <div className="space-y-3">
+            <div className="text-center mb-4">
+              <div className="text-lg font-semibold text-primary">💰 Financial Modeling</div>
+              <div className="text-sm text-muted-foreground">Building 5-year projections</div>
+            </div>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+              <div className="text-center text-green-700 font-semibold">5-Year Financial Model</div>
+            </div>
             {step.content.projections.map((projection, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <span className="font-medium text-sm">{projection.year}</span>
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 border-l-4 border-green-500 rounded-lg">
+                <span className="font-medium text-sm text-green-700">{projection.year}</span>
                 <div className="text-right text-xs">
-                  <div>Revenue: {projection.revenue}</div>
-                  <div>Profit: <span className={projection.profit.startsWith('-') ? 'text-red-500' : 'text-green-500'}>{projection.profit}</span></div>
+                  <div className="text-green-600">Revenue: {projection.revenue}</div>
+                  <div>Profit: <span className={projection.profit.startsWith('-') ? 'text-red-500 font-bold' : 'text-green-600 font-bold'}>{projection.profit}</span></div>
                 </div>
               </div>
             ))}
@@ -241,13 +279,20 @@ export default function AnimatedDemo() {
       case "complete":
         return (
           <div className="space-y-3">
+            <div className="text-center mb-4">
+              <div className="text-lg font-semibold text-primary">🚀 Complete Package</div>
+              <div className="text-sm text-muted-foreground">All deliverables ready</div>
+            </div>
+            <div className="bg-gradient-to-r from-indigo-100 to-purple-100 border border-indigo-200 rounded-lg p-3 mb-3">
+              <div className="text-center text-indigo-700 font-semibold">Investor-Ready Package Complete</div>
+            </div>
             {step.content.deliverables.map((deliverable, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={index} className="flex items-center justify-between p-3 bg-indigo-50 border-l-4 border-indigo-500 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span className="text-sm font-medium">{deliverable.name}</span>
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="text-sm font-medium text-indigo-700">{deliverable.name}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-indigo-600 font-medium">
                   {deliverable.confidence || deliverable.pages || deliverable.slides}
                 </span>
               </div>
