@@ -1508,137 +1508,374 @@ export default function DemoJourney() {
                       </div>
                     </div>
                     
-                    {/* Professional Slide Preview */}
-                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                      <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                    {/* Professional Pitch Deck Showcase */}
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-lg">
+                      {/* Header */}
+                      <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white px-6 py-4">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-semibold text-gray-800">Investor Presentation Preview</h4>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                              <Presentation className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h4 className="text-lg font-bold">FitAI Investor Deck</h4>
+                              <p className="text-slate-300 text-sm">Series A • Health Tech Revolution</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-blue-400">12</div>
+                            <div className="text-xs text-slate-400">Professional Slides</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Slide Navigation */}
+                      <div className="bg-gray-50 border-b px-6 py-3">
+                        <div className="flex items-center justify-between">
+                          <h5 className="text-sm font-semibold text-gray-800">Investor Presentation</h5>
                           <div className="flex items-center space-x-2">
-                            <Badge variant="outline" className="text-xs">12 slides</Badge>
-                            <Badge className="bg-green-100 text-green-700 text-xs">Ready</Badge>
+                            <Badge className="bg-green-100 text-green-700 text-xs">Ready to Present</Badge>
+                            <Badge variant="outline" className="text-xs">15 min duration</Badge>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="p-4">
-                        {/* Key Slides Showcase */}
-                        <div className="space-y-3">
-                          {/* Title Slide */}
-                          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm font-bold">1</div>
-                              <div className="flex-1">
-                                <h5 className="font-semibold text-gray-900">FitAI - The Future of Fitness</h5>
-                                <p className="text-sm text-gray-600 mt-1">AI-powered personal trainer for the mobile generation</p>
-                                <div className="text-xs text-blue-600 mt-2 font-medium">Series A • $5M Raise • Health Tech Revolution</div>
+                      {/* Scrollable Slide Content */}
+                      <div className="max-h-96 overflow-y-auto">
+                        <div className="p-6 space-y-4">
+                          {/* Slide 1: Title */}
+                          <div className="bg-gradient-to-br from-blue-600 to-purple-700 text-white rounded-xl p-6 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                            <div className="relative">
+                              <div className="flex items-center space-x-3 mb-4">
+                                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-sm font-bold">01</div>
+                                <div className="text-blue-200 text-sm font-medium">Company Overview</div>
+                              </div>
+                              <h3 className="text-2xl font-bold mb-2">FitAI</h3>
+                              <p className="text-blue-100 text-lg mb-3">The Future of Personalized Fitness</p>
+                              <div className="flex items-center space-x-4 text-sm">
+                                <span className="bg-white/20 px-3 py-1 rounded-full">Series A</span>
+                                <span className="bg-white/20 px-3 py-1 rounded-full">$5M Raise</span>
+                                <span className="bg-white/20 px-3 py-1 rounded-full">Health Tech</span>
                               </div>
                             </div>
                           </div>
 
-                          {/* Problem Slide */}
-                          <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 border border-red-200">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-red-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">2</div>
-                              <div className="flex-1">
-                                <h5 className="font-semibold text-gray-900">The $2.3B Retention Crisis</h5>
-                                <p className="text-sm text-gray-600 mt-1">78% of fitness apps fail to retain users beyond 6 months</p>
-                                <div className="grid grid-cols-2 gap-2 mt-3">
-                                  <div className="bg-white rounded p-2 border border-red-100">
-                                    <div className="text-xs text-red-700 font-medium">40% monthly churn</div>
-                                    <div className="text-xs text-gray-500">Industry average</div>
-                                  </div>
-                                  <div className="bg-white rounded p-2 border border-red-100">
-                                    <div className="text-xs text-red-700 font-medium">$2.3B wasted</div>
-                                    <div className="text-xs text-gray-500">Ineffective solutions</div>
+                          {/* Slide 2: Problem */}
+                          <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl p-6 border border-red-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-red-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">02</div>
+                              <div className="text-red-600 text-sm font-medium">Market Problem</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">The $2.3B Retention Crisis</h3>
+                            <p className="text-gray-700 mb-4">78% of fitness apps fail to retain users beyond 6 months, creating a massive waste of resources and missed opportunities.</p>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="bg-white rounded-lg p-3 border border-red-100">
+                                <div className="text-2xl font-bold text-red-600">40%</div>
+                                <div className="text-sm text-gray-600">Monthly churn rate</div>
+                                <div className="text-xs text-red-500">Industry standard</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-red-100">
+                                <div className="text-2xl font-bold text-red-600">$2.3B</div>
+                                <div className="text-sm text-gray-600">Wasted annually</div>
+                                <div className="text-xs text-red-500">On ineffective solutions</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Slide 3: Solution */}
+                          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">03</div>
+                              <div className="text-green-600 text-sm font-medium">Our Solution</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">AI-Powered Personal Trainer</h3>
+                            <p className="text-gray-700 mb-4">Real-time form correction and adaptive workouts powered by computer vision and machine learning.</p>
+                            <div className="grid grid-cols-2 gap-3 mb-4">
+                              <div className="bg-white rounded-lg p-3 border border-green-100">
+                                <div className="text-lg font-bold text-green-600">Computer Vision</div>
+                                <div className="text-sm text-gray-600">Real-time form analysis</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-green-100">
+                                <div className="text-lg font-bold text-green-600">85% Retention</div>
+                                <div className="text-sm text-gray-600">Proven user engagement</div>
+                              </div>
+                            </div>
+                            <div className="bg-green-100 rounded-lg p-3">
+                              <div className="text-sm font-medium text-green-800">Key Differentiators:</div>
+                              <div className="text-sm text-green-700 mt-1">• Adaptive difficulty based on performance • Personalized nutrition recommendations • Motivational AI coaching</div>
+                            </div>
+                          </div>
+
+                          {/* Slide 4: Market */}
+                          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-purple-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">04</div>
+                              <div className="text-purple-600 text-sm font-medium">Market Opportunity</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">$96B Market Growing 14.7% Annually</h3>
+                            <p className="text-gray-700 mb-4">Post-COVID fitness market acceleration with 300% growth in digital health adoption.</p>
+                            <div className="grid grid-cols-3 gap-3">
+                              <div className="bg-white rounded-lg p-3 border border-purple-100 text-center">
+                                <div className="text-xl font-bold text-purple-600">$96B</div>
+                                <div className="text-sm text-gray-600">Total Addressable</div>
+                                <div className="text-xs text-purple-500">Global fitness market</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-purple-100 text-center">
+                                <div className="text-xl font-bold text-purple-600">$4.5B</div>
+                                <div className="text-sm text-gray-600">Serviceable Market</div>
+                                <div className="text-xs text-purple-500">AI fitness segment</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-purple-100 text-center">
+                                <div className="text-xl font-bold text-purple-600">150M</div>
+                                <div className="text-sm text-gray-600">Target Users</div>
+                                <div className="text-xs text-purple-500">Mobile-first fitness</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Slide 5: Business Model */}
+                          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">05</div>
+                              <div className="text-blue-600 text-sm font-medium">Business Model</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Freemium SaaS with Premium AI Features</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-3">
+                                <div className="bg-white rounded-lg p-3 border border-blue-100">
+                                  <div className="text-lg font-bold text-blue-600">Free Tier</div>
+                                  <div className="text-sm text-gray-600">Basic workouts, limited AI</div>
+                                  <div className="text-xs text-blue-500">Customer acquisition</div>
+                                </div>
+                                <div className="bg-white rounded-lg p-3 border border-blue-100">
+                                  <div className="text-lg font-bold text-blue-600">$19.99/mo</div>
+                                  <div className="text-sm text-gray-600">Premium AI coaching</div>
+                                  <div className="text-xs text-blue-500">Primary revenue</div>
+                                </div>
+                              </div>
+                              <div className="space-y-3">
+                                <div className="bg-blue-100 rounded-lg p-3">
+                                  <div className="text-sm font-medium text-blue-800 mb-2">Revenue Streams:</div>
+                                  <div className="text-sm text-blue-700 space-y-1">
+                                    <div>• Subscription revenue (85%)</div>
+                                    <div>• Corporate partnerships (10%)</div>
+                                    <div>• Equipment integrations (5%)</div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          {/* Solution Slide */}
-                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">3</div>
-                              <div className="flex-1">
-                                <h5 className="font-semibold text-gray-900">AI-Powered Personal Trainer</h5>
-                                <p className="text-sm text-gray-600 mt-1">Real-time form correction with 85% retention rate</p>
-                                <div className="grid grid-cols-2 gap-2 mt-3">
-                                  <div className="bg-white rounded p-2 border border-green-100">
-                                    <div className="text-xs text-green-700 font-medium">Computer vision</div>
-                                    <div className="text-xs text-gray-500">Form analysis</div>
+                          {/* Slide 6: Traction */}
+                          <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border border-orange-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-orange-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">06</div>
+                              <div className="text-orange-600 text-sm font-medium">Traction & Growth</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Strong Product-Market Fit</h3>
+                            <p className="text-gray-700 mb-4">5,000 beta users with exceptional engagement metrics and viral growth.</p>
+                            <div className="grid grid-cols-3 gap-3 mb-4">
+                              <div className="bg-white rounded-lg p-3 border border-orange-100 text-center">
+                                <div className="text-xl font-bold text-orange-600">85%</div>
+                                <div className="text-sm text-gray-600">6-month retention</div>
+                                <div className="text-xs text-orange-500">vs 22% industry avg</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-orange-100 text-center">
+                                <div className="text-xl font-bold text-orange-600">72</div>
+                                <div className="text-sm text-gray-600">NPS Score</div>
+                                <div className="text-xs text-orange-500">World-class rating</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-orange-100 text-center">
+                                <div className="text-xl font-bold text-orange-600">40%</div>
+                                <div className="text-sm text-gray-600">Monthly growth</div>
+                                <div className="text-xs text-orange-500">Organic referrals</div>
+                              </div>
+                            </div>
+                            <div className="bg-orange-100 rounded-lg p-3">
+                              <div className="text-sm font-medium text-orange-800">Recent Milestones:</div>
+                              <div className="text-sm text-orange-700 mt-1">• Partnership with Equinox gyms • Featured in Apple App Store • $500K ARR run rate</div>
+                            </div>
+                          </div>
+
+                          {/* Slide 7: Competition */}
+                          <div className="bg-gradient-to-br from-gray-50 to-slate-50 rounded-xl p-6 border border-gray-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-gray-600 text-white rounded-lg flex items-center justify-center text-sm font-bold">07</div>
+                              <div className="text-gray-600 text-sm font-medium">Competitive Advantage</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">First-Mover in AI Form Correction</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <div className="text-sm font-medium text-gray-800 mb-2">Traditional Competitors:</div>
+                                <div className="space-y-2">
+                                  <div className="bg-white rounded p-2 border border-gray-100 text-sm">
+                                    <span className="font-medium">MyFitnessPal:</span> Nutrition tracking only
                                   </div>
-                                  <div className="bg-white rounded p-2 border border-green-100">
-                                    <div className="text-xs text-green-700 font-medium">85% retention</div>
-                                    <div className="text-xs text-gray-500">Proven results</div>
+                                  <div className="bg-white rounded p-2 border border-gray-100 text-sm">
+                                    <span className="font-medium">Nike Training:</span> Static video workouts
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-800 mb-2">Our Advantages:</div>
+                                <div className="space-y-2">
+                                  <div className="bg-green-50 rounded p-2 border border-green-100 text-sm text-green-700">
+                                    ✓ Real-time AI form correction
+                                  </div>
+                                  <div className="bg-green-50 rounded p-2 border border-green-100 text-sm text-green-700">
+                                    ✓ Adaptive workout progression
+                                  </div>
+                                  <div className="bg-green-50 rounded p-2 border border-green-100 text-sm text-green-700">
+                                    ✓ Proprietary computer vision models
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          {/* Market Slide */}
-                          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-purple-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">4</div>
-                              <div className="flex-1">
-                                <h5 className="font-semibold text-gray-900">$96B Market Opportunity</h5>
-                                <p className="text-sm text-gray-600 mt-1">Growing 14.7% annually with 300% post-COVID acceleration</p>
-                                <div className="flex items-center justify-between mt-3">
-                                  <div className="bg-white rounded p-2 border border-purple-100 text-center flex-1 mr-2">
-                                    <div className="text-sm font-bold text-purple-600">$96B</div>
-                                    <div className="text-xs text-gray-500">TAM</div>
-                                  </div>
-                                  <div className="bg-white rounded p-2 border border-purple-100 text-center flex-1 mx-1">
-                                    <div className="text-sm font-bold text-purple-600">$4.5B</div>
-                                    <div className="text-xs text-gray-500">SAM</div>
-                                  </div>
-                                  <div className="bg-white rounded p-2 border border-purple-100 text-center flex-1 ml-2">
-                                    <div className="text-sm font-bold text-purple-600">150M</div>
-                                    <div className="text-xs text-gray-500">Users</div>
-                                  </div>
+                          {/* Slide 8: Team */}
+                          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">08</div>
+                              <div className="text-indigo-600 text-sm font-medium">Leadership Team</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">World-Class AI & Fitness Expertise</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                <div className="text-lg font-bold text-gray-900">Sarah Chen, CEO</div>
+                                <div className="text-sm text-gray-600">Former Head of AI at Peloton</div>
+                                <div className="text-xs text-indigo-600 mt-1">Stanford AI PhD, 15 years experience</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                <div className="text-lg font-bold text-gray-900">Mike Rodriguez, CTO</div>
+                                <div className="text-sm text-gray-600">Ex-Google Computer Vision Lead</div>
+                                <div className="text-xs text-indigo-600 mt-1">Built ML systems for 500M+ users</div>
+                              </div>
+                            </div>
+                            <div className="mt-3 bg-indigo-100 rounded-lg p-3">
+                              <div className="text-sm font-medium text-indigo-800">Advisory Board:</div>
+                              <div className="text-sm text-indigo-700 mt-1">• Former Equinox CEO • Apple Health team lead • Y Combinator partner</div>
+                            </div>
+                          </div>
+
+                          {/* Slide 9: Financials */}
+                          <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-6 border border-emerald-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">09</div>
+                              <div className="text-emerald-600 text-sm font-medium">Financial Projections</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Path to $50M ARR by Year 3</h3>
+                            <div className="grid grid-cols-3 gap-3 mb-4">
+                              <div className="bg-white rounded-lg p-3 border border-emerald-100 text-center">
+                                <div className="text-xl font-bold text-emerald-600">$2M</div>
+                                <div className="text-sm text-gray-600">Year 1 ARR</div>
+                                <div className="text-xs text-emerald-500">100K users</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-emerald-100 text-center">
+                                <div className="text-xl font-bold text-emerald-600">$12M</div>
+                                <div className="text-sm text-gray-600">Year 2 ARR</div>
+                                <div className="text-xs text-emerald-500">500K users</div>
+                              </div>
+                              <div className="bg-white rounded-lg p-3 border border-emerald-100 text-center">
+                                <div className="text-xl font-bold text-emerald-600">$50M</div>
+                                <div className="text-sm text-gray-600">Year 3 ARR</div>
+                                <div className="text-xs text-emerald-500">2M users</div>
+                              </div>
+                            </div>
+                            <div className="bg-emerald-100 rounded-lg p-3">
+                              <div className="text-sm font-medium text-emerald-800">Unit Economics:</div>
+                              <div className="text-sm text-emerald-700 mt-1">• LTV/CAC ratio: 8:1 • Gross margin: 85% • Payback period: 4 months</div>
+                            </div>
+                          </div>
+
+                          {/* Slide 10: Funding Ask */}
+                          <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-6 border border-rose-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-rose-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">10</div>
+                              <div className="text-rose-600 text-sm font-medium">Investment Opportunity</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">Raising $5M Series A</h3>
+                            <p className="text-gray-700 mb-4">Accelerate growth, expand AI capabilities, and capture market leadership position.</p>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-3">
+                                <div className="bg-white rounded-lg p-3 border border-rose-100">
+                                  <div className="text-lg font-bold text-rose-600">40%</div>
+                                  <div className="text-sm text-gray-600">Engineering & AI</div>
+                                  <div className="text-xs text-rose-500">Product development</div>
+                                </div>
+                                <div className="bg-white rounded-lg p-3 border border-rose-100">
+                                  <div className="text-lg font-bold text-rose-600">35%</div>
+                                  <div className="text-sm text-gray-600">Marketing & Growth</div>
+                                  <div className="text-xs text-rose-500">User acquisition</div>
+                                </div>
+                              </div>
+                              <div className="space-y-3">
+                                <div className="bg-white rounded-lg p-3 border border-rose-100">
+                                  <div className="text-lg font-bold text-rose-600">15%</div>
+                                  <div className="text-sm text-gray-600">Operations</div>
+                                  <div className="text-xs text-rose-500">Infrastructure & support</div>
+                                </div>
+                                <div className="bg-white rounded-lg p-3 border border-rose-100">
+                                  <div className="text-lg font-bold text-rose-600">10%</div>
+                                  <div className="text-sm text-gray-600">Partnerships</div>
+                                  <div className="text-xs text-rose-500">Strategic alliances</div>
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          {/* Traction Slide */}
-                          <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-4 border border-orange-200">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-orange-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">5</div>
-                              <div className="flex-1">
-                                <h5 className="font-semibold text-gray-900">Strong Early Traction</h5>
-                                <p className="text-sm text-gray-600 mt-1">5K beta users, 85% retention, NPS 72</p>
-                                <div className="grid grid-cols-3 gap-2 mt-3">
-                                  <div className="bg-white rounded p-2 border border-orange-100 text-center">
-                                    <div className="text-sm font-bold text-orange-600">40%</div>
-                                    <div className="text-xs text-gray-500">Monthly growth</div>
-                                  </div>
-                                  <div className="bg-white rounded p-2 border border-orange-100 text-center">
-                                    <div className="text-sm font-bold text-orange-600">85%</div>
-                                    <div className="text-xs text-gray-500">Retention</div>
-                                  </div>
-                                  <div className="bg-white rounded p-2 border border-orange-100 text-center">
-                                    <div className="text-sm font-bold text-orange-600">72</div>
-                                    <div className="text-xs text-gray-500">NPS Score</div>
-                                  </div>
+                          {/* Slide 11: Vision */}
+                          <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-6 border border-violet-200">
+                            <div className="flex items-center space-x-3 mb-4">
+                              <div className="w-8 h-8 bg-violet-500 text-white rounded-lg flex items-center justify-center text-sm font-bold">11</div>
+                              <div className="text-violet-600 text-sm font-medium">Future Vision</div>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">The Global AI Fitness Platform</h3>
+                            <p className="text-gray-700 mb-4">Building the world's most intelligent fitness ecosystem, making personal training accessible to everyone.</p>
+                            <div className="space-y-3">
+                              <div className="bg-white rounded-lg p-3 border border-violet-100">
+                                <div className="text-sm font-medium text-violet-800">5-Year Vision:</div>
+                                <div className="text-sm text-violet-700 mt-1">• 50M global users • AI coaches in 25 languages • Integration with all major fitness equipment • IPO-ready $1B+ valuation</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Slide 12: Thank You */}
+                          <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-xl p-6 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/20 rounded-full -translate-y-20 translate-x-20"></div>
+                            <div className="relative">
+                              <div className="flex items-center space-x-3 mb-4">
+                                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-sm font-bold">12</div>
+                                <div className="text-slate-300 text-sm font-medium">Next Steps</div>
+                              </div>
+                              <h3 className="text-2xl font-bold mb-3">Let's Transform Fitness Together</h3>
+                              <p className="text-slate-300 mb-4">Ready to revolutionize how the world stays fit with AI-powered personal training.</p>
+                              <div className="flex items-center space-x-4">
+                                <div className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors">
+                                  Schedule Follow-up
                                 </div>
+                                <div className="text-slate-300 text-sm">sarah@fitai.com • +1 (555) 123-4567</div>
                               </div>
                             </div>
                           </div>
                         </div>
+                      </div>
 
-                        {/* Footer Actions */}
-                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                          <div className="text-xs text-gray-500">+ 7 more slides: Business Model, Team, Financials, Ask...</div>
-                          <div className="flex space-x-2">
-                            <Button size="sm" variant="outline" className="text-xs">
-                              <Download className="w-3 h-3 mr-1" />
+                      {/* Action Bar */}
+                      <div className="bg-gray-50 border-t px-6 py-4">
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm text-gray-600">
+                            <span className="font-medium">12 professional slides</span> • Investor-ready presentation • 15 minute duration
+                          </div>
+                          <div className="flex space-x-3">
+                            <Button size="sm" variant="outline" className="text-sm">
+                              <Download className="w-4 h-4 mr-2" />
                               Export PDF
                             </Button>
-                            <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white text-xs">
-                              <Play className="w-3 h-3 mr-1" />
-                              Present
+                            <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm">
+                              <Play className="w-4 h-4 mr-2" />
+                              Start Presentation
                             </Button>
                           </div>
                         </div>
