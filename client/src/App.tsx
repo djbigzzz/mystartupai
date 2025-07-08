@@ -15,6 +15,8 @@ import EventsNetworking from "@/pages/events-networking";
 import CompletePlatform from "@/pages/complete-platform";
 import WaitlistClean from "@/pages/waitlist-clean";
 import DemoJourney from "@/pages/demo-journey";
+import AppEntry from "@/pages/app-entry";
+import AppDashboard from "@/pages/app-dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,10 +29,11 @@ function Router() {
       <Route path="/financial-modeling" component={FinancialModelingPage} />
       <Route path="/market-research" component={MarketResearchPage} />
       <Route path="/events-networking" component={EventsNetworking} />
-      <Route path="/dashboard" component={Dashboard} />
       <Route path="/platform" component={CompletePlatform} />
       <Route path="/waitlist" component={WaitlistClean} />
       <Route path="/demo" component={DemoJourney} />
+      <Route path="/app" component={AppEntry} />
+      <Route path="/dashboard" component={AppDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
