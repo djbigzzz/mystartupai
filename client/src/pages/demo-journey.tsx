@@ -34,7 +34,8 @@ import {
   Lightbulb,
   Calculator,
   Search,
-  Layers
+  Layers,
+  X
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -57,19 +58,48 @@ export default function DemoJourney() {
 
   const demoSteps: DemoStep[] = [
     {
-      id: "idea",
+      id: "submission",
       title: "Submit Your Idea",
-      description: "Tell us about your startup concept",
+      description: "User enters raw startup concept",
       icon: Brain,
       duration: 7,
-      color: "from-purple-500 to-pink-500",
+      color: "from-gray-500 to-gray-600",
       content: {
-        title: "AI-Powered Fitness Coach",
+        title: "Fitness App",
+        description: "An app for workouts",
+        industry: "Health & Fitness",
+        targetMarket: "People who want to exercise",
+        stage: "raw",
+        viabilityScore: 23,
+        issues: [
+          "Vague problem definition",
+          "No clear differentiation", 
+          "Limited market understanding",
+          "Missing value proposition"
+        ]
+      }
+    },
+    {
+      id: "enhancement",
+      title: "AI Enhancement",
+      description: "AI analyzes and improves concept",
+      icon: Zap,
+      duration: 7,
+      color: "from-yellow-500 to-orange-500",
+      content: {
+        title: "AI-Powered Fitness Coach → Enhanced",
         description: "A mobile app that uses artificial intelligence to create personalized workout plans and nutrition guidance based on user goals, fitness level, and available equipment.",
         industry: "Health & Fitness",
         targetMarket: "Fitness enthusiasts aged 25-45",
         problemStatement: "Generic fitness apps don't provide personalized guidance, leading to poor results and high abandonment rates.",
-        solutionApproach: "AI-driven personalized coaching that adapts to user progress and preferences in real-time."
+        solutionApproach: "AI-driven personalized coaching that adapts to user progress and preferences in real-time.",
+        improvements: [
+          "Defined specific problem statement",
+          "Added AI differentiation strategy",
+          "Targeted precise market segment",
+          "Created compelling value proposition"
+        ],
+        viabilityScore: 78
       }
     },
     {
@@ -636,7 +666,7 @@ export default function DemoJourney() {
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="border-purple-500 text-purple-600">
                 <Clock className="w-4 h-4 mr-1" />
-                ~42 seconds
+                ~49 seconds
               </Badge>
               <Link href="/">
                 <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
@@ -880,6 +910,124 @@ export default function DemoJourney() {
               
               <CardContent className="h-[600px] overflow-hidden">
                 {/* Content based on current step */}
+                {currentStepData.id === "submission" && (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
+                        <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
+                        Raw Idea Submission
+                      </h3>
+                      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 border border-red-200">
+                        <h4 className="text-red-700 font-bold text-lg mb-3">{currentStepData.content.title}</h4>
+                        <p className="text-gray-700 text-sm leading-relaxed mb-4">{currentStepData.content.description}</p>
+                        
+                        {/* Low Viability Score */}
+                        <div className="bg-white rounded-lg p-4 border border-red-300 mb-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-semibold text-gray-700">Initial Viability Score</span>
+                            <span className="text-2xl font-bold text-red-600">{currentStepData.content.viabilityScore}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div 
+                              className="bg-red-500 h-3 rounded-full" 
+                              style={{ width: `${currentStepData.content.viabilityScore}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-red-600 mt-1">Below Investment Threshold</div>
+                        </div>
+
+                        {/* Issues Identified */}
+                        <div className="space-y-2">
+                          <h5 className="text-sm font-semibold text-red-700 mb-2">Critical Issues Detected:</h5>
+                          {currentStepData.content.issues.map((issue, index) => (
+                            <div key={index} className="bg-white rounded p-2 border border-red-200 flex items-center">
+                              <X className="w-4 h-4 text-red-500 mr-2" />
+                              <span className="text-sm text-gray-700">{issue}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-red-200">
+                          <div className="text-center">
+                            <span className="text-xs text-red-600 flex items-center justify-center">
+                              <AlertTriangle className="w-3 h-3 mr-1" />
+                              Requires AI Enhancement
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentStepData.id === "enhancement" && (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
+                        <Zap className="w-5 h-5 text-yellow-500 mr-2" />
+                        AI-Enhanced Concept
+                      </h3>
+                      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
+                        <h4 className="text-green-700 font-bold text-lg mb-3">{currentStepData.content.title}</h4>
+                        <p className="text-gray-700 text-sm leading-relaxed mb-4">{currentStepData.content.description}</p>
+                        
+                        {/* Improved Viability Score */}
+                        <div className="bg-white rounded-lg p-4 border border-green-300 mb-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-semibold text-gray-700">Enhanced Viability Score</span>
+                            <span className="text-2xl font-bold text-green-600">{currentStepData.content.viabilityScore}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div 
+                              className="bg-green-500 h-3 rounded-full transition-all duration-1000" 
+                              style={{ width: `${currentStepData.content.viabilityScore}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-xs text-green-600 mt-1">Investment Ready</div>
+                        </div>
+
+                        {/* AI Improvements */}
+                        <div className="space-y-2 mb-4">
+                          <h5 className="text-sm font-semibold text-green-700 mb-2">AI Improvements Applied:</h5>
+                          {currentStepData.content.improvements.map((improvement, index) => (
+                            <div key={index} className="bg-white rounded p-2 border border-green-200 flex items-center">
+                              <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+                              <span className="text-sm text-gray-700">{improvement}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="bg-white rounded-lg p-3 border">
+                            <div className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1 flex items-center">
+                              <AlertTriangle className="w-3 h-3 mr-1" />
+                              Problem Statement
+                            </div>
+                            <div className="text-sm text-gray-700">{currentStepData.content.problemStatement}</div>
+                          </div>
+                          
+                          <div className="bg-white rounded-lg p-3 border">
+                            <div className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1 flex items-center">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Solution Approach
+                            </div>
+                            <div className="text-sm text-gray-700">{currentStepData.content.solutionApproach}</div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-green-200">
+                          <div className="text-center">
+                            <span className="text-xs text-green-600 flex items-center justify-center">
+                              <Star className="w-3 h-3 mr-1" />
+                              Ready for Analysis
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {currentStepData.id === "idea" && (
                   <div className="space-y-4">
                     <div>
