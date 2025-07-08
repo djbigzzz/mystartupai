@@ -883,18 +883,76 @@ export default function DemoJourney() {
                 {currentStepData.id === "idea" && (
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-gray-900 font-semibold mb-2">Startup Concept</h3>
-                      <div className="bg-gray-50 rounded-lg p-4 border">
-                        <h4 className="text-purple-600 font-medium">{currentStepData.content.title}</h4>
-                        <p className="text-gray-700 text-sm mt-2">{currentStepData.content.description}</p>
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          <Badge variant="outline" className="border-purple-500 text-purple-600">
-                            {currentStepData.content.industry}
-                          </Badge>
-                          <Badge variant="outline" className="border-blue-500 text-blue-600">
-                            {currentStepData.content.targetMarket}
-                          </Badge>
+                      <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
+                        <Lightbulb className="w-5 h-5 text-purple-600 mr-2" />
+                        Startup Concept
+                      </h3>
+                      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200">
+                        <h4 className="text-purple-700 font-bold text-lg mb-3">{currentStepData.content.title}</h4>
+                        <p className="text-gray-700 text-sm leading-relaxed mb-4">{currentStepData.content.description}</p>
+                        
+                        <div className="grid grid-cols-1 gap-3 mb-4">
+                          <div className="bg-white rounded-lg p-3 border">
+                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Industry</div>
+                            <div className="text-sm font-medium text-gray-800">{currentStepData.content.industry}</div>
+                          </div>
+                          <div className="bg-white rounded-lg p-3 border">
+                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Target Market</div>
+                            <div className="text-sm font-medium text-gray-800">{currentStepData.content.targetMarket}</div>
+                          </div>
                         </div>
+
+                        <div className="space-y-3">
+                          <div className="bg-white rounded-lg p-3 border">
+                            <div className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-1 flex items-center">
+                              <AlertTriangle className="w-3 h-3 mr-1" />
+                              Problem Statement
+                            </div>
+                            <div className="text-sm text-gray-700">{currentStepData.content.problemStatement}</div>
+                          </div>
+                          
+                          <div className="bg-white rounded-lg p-3 border">
+                            <div className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1 flex items-center">
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Solution Approach
+                            </div>
+                            <div className="text-sm text-gray-700">{currentStepData.content.solutionApproach}</div>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-purple-200">
+                          <div className="flex items-center justify-between text-xs text-purple-600">
+                            <span className="flex items-center">
+                              <Eye className="w-3 h-3 mr-1" />
+                              Ready for AI Analysis
+                            </span>
+                            <span className="flex items-center">
+                              <Star className="w-3 h-3 mr-1" />
+                              High Potential
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Market Context */}
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <h4 className="text-blue-800 font-semibold mb-3 flex items-center">
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        Market Context
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white rounded p-3 text-center">
+                          <div className="text-lg font-bold text-blue-600">$96B</div>
+                          <div className="text-xs text-gray-600">Global Market</div>
+                        </div>
+                        <div className="bg-white rounded p-3 text-center">
+                          <div className="text-lg font-bold text-green-600">14.7%</div>
+                          <div className="text-xs text-gray-600">Annual Growth</div>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-blue-700">
+                        AI-powered fitness solutions are experiencing rapid adoption post-COVID
                       </div>
                     </div>
                   </div>
