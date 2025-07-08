@@ -22,10 +22,10 @@ import {
   Lightbulb
 } from "lucide-react";
 import { Link } from "wouter";
-import DemoTour from "@/components/demo-tour";
+import AnimatedDemo from "@/components/animated-demo-new";
 
 export default function LandingNew() {
-  const [isDemoPlaying, setIsDemoPlaying] = useState(false);
+  const [isDemoPlaying, setIsDemoPlaying] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -266,6 +266,11 @@ export default function LandingNew() {
                 <div className="text-gray-300 text-sm">From idea validation to investor presentations - everything included</div>
               </div>
             </div>
+          </div>
+
+          {/* Live Demo Section */}
+          <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-2 mb-16">
+            {isDemoPlaying && <AnimatedDemo />}
           </div>
 
           {/* Interactive Journey Timeline */}

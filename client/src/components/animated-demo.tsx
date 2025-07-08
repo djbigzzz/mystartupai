@@ -24,30 +24,103 @@ export default function AnimatedDemo() {
 
   const steps = [
     {
-      title: "AI Idea Analysis",
-      description: "Analyzing EcoFlow using Y Combinator standards",
+      title: "Step 1: Submit Your Idea",
+      description: "Smart form captures your startup concept details",
+      icon: Lightbulb,
+      color: "bg-purple-500",
+      content: {
+        type: "form",
+        fields: [
+          { label: "Startup Name", value: "EcoFlow", placeholder: "Enter your startup name..." },
+          { label: "Problem Statement", value: "Water waste costs businesses millions annually", placeholder: "What problem does your startup solve?" },
+          { label: "Solution", value: "AI-powered water management system", placeholder: "How does your startup solve this problem?" },
+          { label: "Target Market", value: "Commercial buildings, hotels, factories", placeholder: "Who are your target customers?" }
+        ]
+      }
+    },
+    {
+      title: "Step 2: AI Analysis",
+      description: "Advanced AI evaluates your idea across multiple dimensions",
       icon: Brain,
       color: "bg-blue-500",
-      metrics: [
-        { label: "Market Size", value: "$2.1B", change: "+15%" },
-        { label: "Competition", value: "Low", change: "Favorable" },
-        { label: "Feasibility", value: "92%", change: "+8%" }
-      ]
+      content: {
+        type: "analysis",
+        score: 87,
+        insights: [
+          { category: "Market Opportunity", score: 92, insight: "Large addressable market with growing demand" },
+          { category: "Competition", score: 78, insight: "Moderate competition with differentiation potential" },
+          { category: "Feasibility", score: 89, insight: "Strong technical and business feasibility" },
+          { category: "Revenue Potential", score: 91, insight: "Multiple revenue streams identified" }
+        ]
+      }
     },
     {
-      title: "Business Plan Generation",
-      description: "Creating comprehensive 12-section business plan",
+      title: "Step 3: Business Plan Generation",
+      description: "Complete 12-section business plan created automatically",
       icon: FileText,
       color: "bg-emerald-500",
-      metrics: [
-        { label: "Revenue Model", value: "SaaS", change: "Validated" },
-        { label: "TAM", value: "$847M", change: "Addressable" },
-        { label: "Funding Need", value: "$2.5M", change: "Series A" }
-      ]
+      content: {
+        type: "business-plan",
+        sections: [
+          { name: "Executive Summary", status: "complete", wordCount: 287 },
+          { name: "Market Analysis", status: "complete", wordCount: 456 },
+          { name: "Financial Projections", status: "complete", wordCount: 321 },
+          { name: "Marketing Strategy", status: "complete", wordCount: 298 },
+          { name: "Operations Plan", status: "generating", wordCount: 0 },
+          { name: "Risk Analysis", status: "pending", wordCount: 0 }
+        ]
+      }
     },
     {
-      title: "Pitch Deck Creation",
-      description: "Building investor-ready presentation",
+      title: "Step 4: Pitch Deck Creation",
+      description: "Professional investor presentation with 12 slides",
+      icon: Presentation,
+      color: "bg-orange-500",
+      content: {
+        type: "pitch-deck",
+        slides: [
+          { title: "Problem", content: "Water waste costs $2.1B annually", status: "complete" },
+          { title: "Solution", content: "AI-powered monitoring system", status: "complete" },
+          { title: "Market Size", content: "$847M addressable market", status: "complete" },
+          { title: "Business Model", content: "SaaS with usage-based pricing", status: "generating" },
+          { title: "Traction", content: "Early pilots show 35% water savings", status: "pending" },
+          { title: "Funding Ask", content: "$2.5M Series A", status: "pending" }
+        ]
+      }
+    },
+    {
+      title: "Step 5: Financial Modeling",
+      description: "Detailed financial projections and investment calculator",
+      icon: DollarSign,
+      color: "bg-green-500",
+      content: {
+        type: "financial",
+        projections: [
+          { year: "Year 1", revenue: "$125K", expenses: "$380K", profit: "-$255K" },
+          { year: "Year 2", revenue: "$580K", expenses: "$620K", profit: "-$40K" },
+          { year: "Year 3", revenue: "$1.2M", expenses: "$890K", profit: "$310K" },
+          { year: "Year 4", revenue: "$2.8M", expenses: "$1.8M", profit: "$1.0M" },
+          { year: "Year 5", revenue: "$5.2M", expenses: "$3.1M", profit: "$2.1M" }
+        ]
+      }
+    },
+    {
+      title: "Step 6: Complete Package",
+      description: "All deliverables ready for investors and execution",
+      icon: Rocket,
+      color: "bg-indigo-500",
+      content: {
+        type: "complete",
+        deliverables: [
+          { name: "AI Analysis Report", status: "complete", confidence: "87%" },
+          { name: "Business Plan (12 sections)", status: "complete", pages: 24 },
+          { name: "Pitch Deck (12 slides)", status: "complete", slides: 12 },
+          { name: "Financial Model (5 years)", status: "complete", scenarios: 3 },
+          { name: "Market Research", status: "complete", sources: 15 },
+          { name: "Competitive Analysis", status: "complete", competitors: 8 }
+        ]
+      }
+    }
       icon: Presentation,
       color: "bg-purple-500",
       metrics: [
