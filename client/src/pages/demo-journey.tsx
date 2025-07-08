@@ -103,9 +103,9 @@ export default function DemoJourney() {
       }
     },
     {
-      id: "analysis",
+      id: "analysis", 
       title: "AI Analysis",
-      description: "Comprehensive startup validation",
+      description: "Deep startup validation begins",
       icon: Target,
       duration: 7,
       color: "from-blue-500 to-cyan-500",
@@ -861,9 +861,31 @@ export default function DemoJourney() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-3">
-                  {!isStepCompleted && !isGenerating && (
+                  {/* Steps 0-1: Navigation without generation */}
+                  {currentStep === 0 && (
                     <Button 
-                      onClick={startGeneration}
+                      onClick={() => setCurrentStep(1)}
+                      className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white"
+                    >
+                      Continue to AI Enhancement
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+
+                  {currentStep === 1 && (
+                    <Button 
+                      onClick={() => setCurrentStep(2)}
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                    >
+                      Start Analysis
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+
+                  {/* Steps 2+: Original generation flow */}
+                  {currentStep >= 2 && !isStepCompleted && !isGenerating && (
+                    <Button 
+                      onClick={() => simulateGeneration(currentStep)}
                       className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white"
                     >
                       <Play className="w-4 h-4 mr-2" />
@@ -871,9 +893,9 @@ export default function DemoJourney() {
                     </Button>
                   )}
                   
-                  {isStepCompleted && currentStep < demoSteps.length - 1 && (
+                  {currentStep >= 2 && isStepCompleted && currentStep < demoSteps.length - 1 && (
                     <Button 
-                      onClick={nextStep}
+                      onClick={() => setCurrentStep(currentStep + 1)}
                       className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white animate-pulse"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
@@ -910,49 +932,32 @@ export default function DemoJourney() {
               
               <CardContent className="h-[600px] overflow-hidden">
                 {/* Content based on current step */}
-                {currentStepData.id === "submission" && (
+                {(currentStep === 0 || currentStepData.id === "submission") && (
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
-                        <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
-                        Raw Idea Submission
+                        <Brain className="w-5 h-5 text-gray-500 mr-2" />
+                        User Submits Raw Idea
                       </h3>
-                      <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg p-4 border border-red-200">
-                        <h4 className="text-red-700 font-bold text-lg mb-3">{currentStepData.content.title}</h4>
-                        <p className="text-gray-700 text-sm leading-relaxed mb-4">{currentStepData.content.description}</p>
-                        
-                        {/* Low Viability Score */}
-                        <div className="bg-white rounded-lg p-4 border border-red-300 mb-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-semibold text-gray-700">Initial Viability Score</span>
-                            <span className="text-2xl font-bold text-red-600">{currentStepData.content.viabilityScore}%</span>
+                      <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
+                        <div className="text-center py-8">
+                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Brain className="w-8 h-8 text-gray-400" />
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
-                            <div 
-                              className="bg-red-500 h-3 rounded-full" 
-                              style={{ width: `${currentStepData.content.viabilityScore}%` }}
-                            ></div>
-                          </div>
-                          <div className="text-xs text-red-600 mt-1">Below Investment Threshold</div>
-                        </div>
-
-                        {/* Issues Identified */}
-                        <div className="space-y-2">
-                          <h5 className="text-sm font-semibold text-red-700 mb-2">Critical Issues Detected:</h5>
-                          {currentStepData.content.issues.map((issue, index) => (
-                            <div key={index} className="bg-white rounded p-2 border border-red-200 flex items-center">
-                              <X className="w-4 h-4 text-red-500 mr-2" />
-                              <span className="text-sm text-gray-700">{issue}</span>
+                          <h4 className="text-gray-600 font-medium text-lg mb-2">Fitness App</h4>
+                          <p className="text-gray-500 text-sm mb-4">An app for workouts</p>
+                          
+                          <div className="bg-white rounded-lg p-3 border border-gray-200 mb-4">
+                            <div className="text-xs text-gray-500 mb-1">Basic Information</div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>Industry: Health & Fitness</div>
+                              <div>Target: General users</div>
                             </div>
-                          ))}
-                        </div>
+                          </div>
 
-                        <div className="mt-4 pt-3 border-t border-red-200">
-                          <div className="text-center">
-                            <span className="text-xs text-red-600 flex items-center justify-center">
-                              <AlertTriangle className="w-3 h-3 mr-1" />
-                              Requires AI Enhancement
-                            </span>
+                          <div className="bg-red-50 rounded-lg p-3 border border-red-200">
+                            <div className="text-sm text-red-600 font-medium mb-1">⚠️ Too Basic for Analysis</div>
+                            <div className="text-xs text-red-500">Needs AI enhancement first</div>
                           </div>
                         </div>
                       </div>
@@ -960,7 +965,7 @@ export default function DemoJourney() {
                   </div>
                 )}
 
-                {currentStepData.id === "enhancement" && (
+                {(currentStep === 1 || currentStepData.id === "enhancement") && (
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
@@ -1028,7 +1033,42 @@ export default function DemoJourney() {
                   </div>
                 )}
 
-                {currentStepData.id === "idea" && (
+                {currentStep === 2 && currentStepData.id === "analysis" && !isGenerating && !isStepCompleted && (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
+                        <Target className="w-5 h-5 text-blue-600 mr-2" />
+                        Ready to Analyze Enhanced Concept
+                      </h3>
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+                        <div className="text-center py-12">
+                          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Target className="w-8 h-8 text-blue-600" />
+                          </div>
+                          <h4 className="text-blue-900 font-medium text-lg mb-2">Analysis Ready</h4>
+                          <p className="text-blue-700 text-sm mb-6">Enhanced concept is ready for deep validation</p>
+                          
+                          <div className="bg-white rounded-lg p-4 border border-blue-300 mb-4">
+                            <div className="text-sm text-blue-800 font-medium mb-2">Analysis will include:</div>
+                            <div className="grid grid-cols-2 gap-2 text-xs text-blue-700">
+                              <div>• Market viability scoring</div>
+                              <div>• Competitive analysis</div>
+                              <div>• SWOT assessment</div>
+                              <div>• Growth opportunities</div>
+                            </div>
+                          </div>
+
+                          <div className="bg-blue-100 rounded-lg p-3 border border-blue-300">
+                            <div className="text-sm text-blue-800 font-medium mb-1">🎯 Click "Generate AI Analysis" to start</div>
+                            <div className="text-xs text-blue-600">Comprehensive validation in progress...</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentStep >= 2 && currentStepData.id === "analysis" && !isGenerating && isStepCompleted && (
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-gray-900 font-semibold mb-4 flex items-center">
