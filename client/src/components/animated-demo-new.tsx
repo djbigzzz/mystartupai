@@ -124,7 +124,7 @@ export default function AnimatedDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStep((prev) => (prev + 1) % steps.length);
-    }, 3500);
+    }, 2800);
 
     return () => clearInterval(interval);
   }, []);
@@ -139,9 +139,9 @@ export default function AnimatedDemo() {
           setIsAnalyzing(false);
           return 100;
         }
-        return prev + 4;
+        return prev + 8;
       });
-    }, 50);
+    }, 30);
 
     return () => clearInterval(progressInterval);
   }, [currentStep]);
@@ -305,6 +305,30 @@ export default function AnimatedDemo() {
     }
   };
 
+  const getProcessingMessage = () => {
+    switch (currentStep) {
+      case 0: return "Capturing startup details...";
+      case 1: return "Analyzing market opportunity...";
+      case 2: return "Generating business plan...";
+      case 3: return "Creating pitch slides...";
+      case 4: return "Building financial model...";
+      case 5: return "Finalizing package...";
+      default: return "Processing...";
+    }
+  };
+
+  const getStepActivity = () => {
+    switch (currentStep) {
+      case 0: return "Smart form validation and data structuring";
+      case 1: return "AI evaluating feasibility across 4 key dimensions";
+      case 2: return "Writing comprehensive 12-section business plan";
+      case 3: return "Designing professional investor presentation";
+      case 4: return "Calculating 5-year revenue and expense projections";
+      case 5: return "Compiling all deliverables into investor package";
+      default: return "AI processing in progress";
+    }
+  };
+
   return (
     <div className="bg-background min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl mx-auto">
@@ -335,7 +359,15 @@ export default function AnimatedDemo() {
               <Progress value={progress} className="w-full" />
               
               <div className="text-center text-sm text-muted-foreground">
-                {isAnalyzing ? "Processing..." : "Step completed"}
+                {isAnalyzing ? getProcessingMessage() : "Step completed"}
+              </div>
+              
+              {/* Step-specific progress details */}
+              <div className="bg-muted/30 rounded-lg p-4">
+                <div className="text-sm font-medium mb-2">Current Activity:</div>
+                <div className="text-sm text-muted-foreground">
+                  {getStepActivity()}
+                </div>
               </div>
             </div>
 
