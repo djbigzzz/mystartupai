@@ -81,34 +81,41 @@ export default function LandingNew() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Clean Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 text-white">
+      {/* Enhanced Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800/60 via-indigo-800/40 to-purple-800/50"></div>
+      
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 right-1/3 w-72 h-72 bg-gradient-to-r from-cyan-400/15 to-blue-400/15 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+      <nav className="relative z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-primary-foreground" />
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="ml-3 text-xl font-semibold text-foreground">
+              <span className="ml-3 text-xl font-semibold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                 mystartup.ai
               </span>
             </div>
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Features</a>
-              <a href="#how-it-works" className="text-muted-foreground hover:text-foreground font-medium transition-colors">How it Works</a>
-              <Link href="/demo" className="text-muted-foreground hover:text-foreground font-medium transition-colors">Demo</Link>
+              <a href="#features" className="text-gray-300 hover:text-white font-medium transition-colors">Features</a>
+              <a href="#how-it-works" className="text-gray-300 hover:text-white font-medium transition-colors">How it Works</a>
+              <Link href="/demo" className="text-gray-300 hover:text-white font-medium transition-colors">Demo</Link>
               <Link href="/waitlist">
-                <Button variant="secondary" className="mr-3">
+                <Button variant="outline" className="mr-3 border-white/20 text-white hover:bg-white/10">
                   Log in
                 </Button>
               </Link>
               <Link href="/waitlist">
-                <Button className="bg-primary hover:bg-primary/90">
+                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0">
                   Create account
                 </Button>
               </Link>
@@ -122,16 +129,16 @@ export default function LandingNew() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight tracking-tight">
-              <span className="text-foreground">
+              <span className="bg-gradient-to-r from-white via-purple-100 to-pink-100 bg-clip-text text-transparent">
                 Start your turning your ideas
               </span>
               <br />
-              <span className="text-foreground">
+              <span className="bg-gradient-to-r from-purple-200 via-pink-200 to-white bg-clip-text text-transparent">
                 into reality.
               </span>
             </h1>
             
-            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
               An intuitive platform that streamlines business plan creation, preparing you for
               successful investment. Trusted by over 5,000 professionals.
             </p>
@@ -140,7 +147,7 @@ export default function LandingNew() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <Link href="/app">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 px-8 py-3 text-base font-semibold">
+                <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 text-base font-semibold border-0 shadow-lg">
                   Launch App
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -149,7 +156,7 @@ export default function LandingNew() {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="px-8 py-3 text-base font-semibold"
+                  className="px-8 py-3 text-base font-semibold border-white/30 text-white hover:bg-white/10 backdrop-blur-sm"
                 >
                   <Play className="mr-2 h-4 w-4" />
                   Watch Demo
@@ -158,10 +165,10 @@ export default function LandingNew() {
             </div>
 
             <div className="flex justify-center">
-              <div className="text-sm text-muted-foreground flex items-center">
+              <div className="text-sm text-gray-400 flex items-center">
                 <div className="flex items-center mr-6">
-                  <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                  <span className="font-medium">5.0 reviews</span>
+                  <Star className="w-4 h-4 text-yellow-400 mr-1" />
+                  <span className="font-medium text-gray-300">5.0 reviews</span>
                 </div>
               </div>
             </div>
