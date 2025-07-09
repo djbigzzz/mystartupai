@@ -15,7 +15,7 @@ import EventsNetworking from "@/pages/events-networking";
 import CompletePlatform from "@/pages/complete-platform";
 import WaitlistClean from "@/pages/waitlist-clean";
 import DemoJourneyNew from "@/pages/demo-journey-new";
-import AgenticSimple from "@/pages/agentic-simple";
+import AgenticDemoUnified from "@/pages/agentic-demo-unified";
 import AppEntry from "@/pages/app-entry";
 import AppDashboard from "@/pages/app-dashboard";
 import NotFound from "@/pages/not-found";
@@ -33,7 +33,7 @@ function Router() {
       <Route path="/platform" component={CompletePlatform} />
       <Route path="/waitlist" component={WaitlistClean} />
       <Route path="/demo" component={DemoJourneyNew} />
-      <Route path="/agentic" component={AgenticSimple} />
+      <Route path="/agentic" component={AgenticDemoUnified} />
       <Route path="/app" component={AppEntry} />
       <Route path="/dashboard" component={AppDashboard} />
       <Route component={NotFound} />

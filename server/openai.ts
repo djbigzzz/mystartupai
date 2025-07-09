@@ -220,14 +220,15 @@ export async function generateBusinessPlan(
       messages: [
         {
           role: "system",
-          content: "You are an expert business plan writer who has helped hundreds of startups raise funding. Create detailed, professional business plans that investors love."
+          content: "You are a startup advisor. Create concise, investor-grade business plans quickly."
         },
         {
-          role: "user",
-          content: prompt
+          role: "user", 
+          content: `Generate concise business plan for ${ideaTitle}: ${description}. Return JSON with 12 sections: executiveSummary, problemStatement, solutionDescription, marketAnalysis, businessModel, marketingStrategy, operationalPlan, managementTeam, financialProjections, fundingRequirements, riskAnalysis, timeline. Each section 1-2 paragraphs.`
         }
       ],
       response_format: { type: "json_object" },
+      max_tokens: 1500, // Reduced for faster generation
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
