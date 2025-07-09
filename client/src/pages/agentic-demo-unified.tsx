@@ -220,21 +220,32 @@ export default function AgenticDemoUnified() {
 
     setCurrentTask(task);
 
-    // Animate progress
+    // Generate progressive results as task progresses
     const interval = setInterval(() => {
       setCurrentTask(prev => {
         if (!prev) return null;
         const newProgress = prev.progress + (100 / (task.duration * 10)); // 10 updates per second
         
+        // Show progressive results at different milestones
+        if (newProgress > 30 && !demoResults[task.category + '_partial']) {
+          const partialResult = generateProgressiveResult(task.category, 'early');
+          setDemoResults(prev => ({ ...prev, [task.category + '_partial']: partialResult }));
+        }
+        
+        if (newProgress > 70 && !demoResults[task.category + '_advanced']) {
+          const advancedResult = generateProgressiveResult(task.category, 'advanced');
+          setDemoResults(prev => ({ ...prev, [task.category + '_advanced']: advancedResult }));
+        }
+        
         if (newProgress >= 100) {
           clearInterval(interval);
           
-          // Generate result based on task category
+          // Generate final comprehensive result
           const result = generateTaskResult(task.category);
           setDemoResults(prev => ({ ...prev, [task.category]: result }));
           
           // Move to completed
-          setCompletedTasks(prev => [...prev, { ...prev, status: 'completed', progress: 100 }]);
+          setCompletedTasks(prev => [...prev, { ...task, status: 'completed', progress: 100 }]);
           
           // Start next task after brief delay
           setTimeout(() => {
@@ -247,6 +258,130 @@ export default function AgenticDemoUnified() {
         return { ...prev, progress: newProgress };
       });
     }, 100);
+  };
+
+  const generateProgressiveResult = (category: string, stage: 'early' | 'advanced') => {
+    switch (category) {
+      case 'enhancement':
+        if (stage === 'early') {
+          return {
+            analyzing: true,
+            insights: [
+              "Identifying market positioning opportunities...",
+              "Analyzing competitive landscape...",
+              "Evaluating technology differentiation..."
+            ]
+          };
+        }
+        return {
+          analyzing: false,
+          insights: [
+            "AI-powered personalization identified as key differentiator",
+            "Computer vision technology creates strong competitive moat", 
+            "Freemium model with premium AI features recommended"
+          ],
+          improvements: [
+            "Enhanced value proposition with AI emphasis",
+            "Added real-time form correction capability"
+          ]
+        };
+        
+      case 'analysis':
+        if (stage === 'early') {
+          return {
+            analyzing: true,
+            marketSize: "Calculating...",
+            growth: "Analyzing trends...",
+            competition: "Evaluating landscape...",
+            preliminaryFindings: [
+              "Health & fitness market showing strong digital adoption",
+              "AI-powered solutions gaining traction",
+              "Premium segment underserved"
+            ]
+          };
+        }
+        return {
+          analyzing: false,
+          marketSize: "$96B",
+          growth: "14.7%",
+          competition: "Moderate with AI differentiation opportunity",
+          keyInsights: [
+            "500M+ fitness app users globally",
+            "Premium AI features command 3x higher subscription rates",
+            "Form correction technology has 85% user retention rate"
+          ]
+        };
+        
+      case 'business-plan':
+        if (stage === 'early') {
+          return {
+            sectionsComplete: 4,
+            currentSection: "Market Analysis",
+            insights: [
+              "Executive summary emphasizing AI differentiation",
+              "Problem statement highlighting form correction gap",
+              "Solution description with computer vision focus"
+            ]
+          };
+        }
+        return {
+          sectionsComplete: 9,
+          currentSection: "Financial Projections", 
+          insights: [
+            "Revenue model: Freemium with $19.99/month premium tier",
+            "Target: 1M free users, 100K premium subscribers by Year 2",
+            "Unit economics: $45 CAC, $180 LTV, 4:1 LTV/CAC ratio"
+          ]
+        };
+        
+      case 'pitch-deck':
+        if (stage === 'early') {
+          return {
+            slidesComplete: 3,
+            currentSlide: "Market Opportunity",
+            keyPoints: [
+              "Problem: 70% of people quit fitness routines due to poor form",
+              "Solution: AI personal trainer with real-time correction",
+              "Market: $96B global fitness industry"
+            ]
+          };
+        }
+        return {
+          slidesComplete: 7,
+          currentSlide: "Financials",
+          keyPoints: [
+            "Business Model: Freemium SaaS with AI premium features",
+            "Traction: 10K beta users, 4.8 app store rating",
+            "Team: AI/ML experts from Google, Apple, Nike"
+          ]
+        };
+        
+      case 'financial':
+        if (stage === 'early') {
+          return {
+            modeling: true,
+            currentMetric: "Revenue Projections",
+            preliminaryNumbers: {
+              year1: "Calculating...",
+              cac: "Analyzing acquisition costs...",
+              ltv: "Estimating lifetime value..."
+            }
+          };
+        }
+        return {
+          modeling: false,
+          currentMetric: "Unit Economics",
+          keyMetrics: {
+            year1Revenue: "$250K",
+            year3Revenue: "$5M", 
+            grossMargin: "85%",
+            paybackPeriod: "2.5 months"
+          }
+        };
+        
+      default:
+        return {};
+    }
   };
 
   const generateTaskResult = (category: string) => {
@@ -706,95 +841,358 @@ export default function AgenticDemoUnified() {
             </Card>
           </div>
 
-          {/* Main Display */}
+          {/* Main Display - Real-time Results */}
           <div className="lg:col-span-2">
             <Card className="min-h-[600px]">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                  <span>
-                    {currentTask ? `${currentTask.title} in Progress` : 'Transformation Complete'}
-                  </span>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    <span>
+                      {currentTask ? `${currentTask.title} in Progress` : 'Transformation Complete'}
+                    </span>
+                  </div>
+                  {currentTask && (
+                    <div className="text-sm text-gray-500">
+                      {Math.round(currentTask.progress)}% complete
+                    </div>
+                  )}
                 </CardTitle>
               </CardHeader>
               
               <CardContent>
                 {currentTask ? (
                   <div className="space-y-6">
-                    {/* Current Task Display */}
-                    <div className="text-center">
-                      <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Zap className="w-10 h-10 text-white animate-pulse" />
+                    {/* Current Task Progress */}
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border">
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                          <Zap className="w-6 h-6 text-white animate-pulse" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold">{currentTask.title}</h3>
+                          <p className="text-gray-600">{currentTask.description}</p>
+                        </div>
                       </div>
                       
-                      <h3 className="text-2xl font-bold mb-2">{currentTask.title}</h3>
-                      <p className="text-gray-600 mb-4">{currentTask.description}</p>
-                      
-                      <div className="max-w-md mx-auto">
-                        <Progress value={currentTask.progress} className="h-3" />
-                        <div className="flex justify-between text-sm text-gray-500 mt-2">
-                          <span>{Math.round(currentTask.progress)}% complete</span>
-                          <span>~{Math.round((100 - currentTask.progress) / (100 / currentTask.duration))}s remaining</span>
-                        </div>
+                      <Progress value={currentTask.progress} className="h-3 mb-2" />
+                      <div className="flex justify-between text-sm text-gray-500">
+                        <span>Processing...</span>
+                        <span>~{Math.round((100 - currentTask.progress) / (100 / currentTask.duration))}s remaining</span>
                       </div>
                     </div>
                     
-                    {/* Live preview based on task */}
-                    {currentTask.category === 'enhancement' && (
-                      <div className="bg-yellow-50 rounded-lg p-6">
-                        <h4 className="font-bold mb-3 flex items-center">
-                          <Brain className="w-5 h-5 mr-2 text-yellow-600" />
-                          AI Enhancement Preview
-                        </h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <Sparkles className="w-4 h-4 text-yellow-500" />
-                            <span className="text-sm">Analyzing market fit and positioning...</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Sparkles className="w-4 h-4 text-yellow-500" />
-                            <span className="text-sm">Optimizing value proposition...</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Sparkles className="w-4 h-4 text-yellow-500" />
-                            <span className="text-sm">Adding competitive differentiators...</span>
-                          </div>
+                    {/* Real-time Results Display */}
+                    <div className="grid gap-6">
+                      {/* Enhancement Results */}
+                      {currentTask.category === 'enhancement' && (
+                        <div className="space-y-4">
+                          {demoResults['enhancement_partial'] && (
+                            <Card className="border-yellow-200 bg-yellow-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <Brain className="w-5 h-5 mr-2 text-yellow-600" />
+                                  AI Enhancement Insights
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="space-y-3">
+                                  {demoResults['enhancement_partial'].insights.map((insight: string, index: number) => (
+                                    <div key={index} className="flex items-start space-x-3">
+                                      <Sparkles className="w-4 h-4 text-yellow-500 mt-0.5" />
+                                      <span className="text-sm">{insight}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                          
+                          {demoResults['enhancement_advanced'] && (
+                            <Card className="border-green-200 bg-green-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <CheckCircle className="w-5 h-5 mr-2 text-green-600" />
+                                  Enhancement Complete
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="space-y-3">
+                                  {demoResults['enhancement_advanced'].improvements?.map((improvement: string, index: number) => (
+                                    <div key={index} className="flex items-start space-x-3 p-3 bg-white rounded-lg">
+                                      <ThumbsUp className="w-4 h-4 text-green-500 mt-0.5" />
+                                      <span className="text-sm font-medium">{improvement}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
                         </div>
-                      </div>
-                    )}
-                    
-                    {currentTask.category === 'analysis' && (
-                      <div className="bg-blue-50 rounded-lg p-6">
-                        <h4 className="font-bold mb-3 flex items-center">
-                          <Search className="w-5 h-5 mr-2 text-blue-600" />
-                          Market Analysis in Progress
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-white rounded p-3">
-                            <div className="text-xs text-gray-500">Market Size</div>
-                            <div className="text-lg font-bold text-blue-600">$96B+</div>
-                          </div>
-                          <div className="bg-white rounded p-3">
-                            <div className="text-xs text-gray-500">Growth Rate</div>
-                            <div className="text-lg font-bold text-green-600">14.7%</div>
-                          </div>
+                      )}
+                      
+                      {/* Analysis Results */}
+                      {currentTask.category === 'analysis' && (
+                        <div className="space-y-4">
+                          {demoResults['analysis_partial'] && (
+                            <Card className="border-blue-200 bg-blue-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <Search className="w-5 h-5 mr-2 text-blue-600" />
+                                  Market Analysis Progress
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="grid grid-cols-3 gap-4 mb-4">
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-lg font-bold text-blue-600">
+                                      {demoResults['analysis_partial'].marketSize}
+                                    </div>
+                                    <div className="text-xs text-gray-500">Market Size</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-lg font-bold text-green-600">
+                                      {demoResults['analysis_partial'].growth}
+                                    </div>
+                                    <div className="text-xs text-gray-500">Growth Rate</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-lg font-bold text-orange-600">
+                                      {demoResults['analysis_partial'].competition}
+                                    </div>
+                                    <div className="text-xs text-gray-500">Competition</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-blue-700">Key Findings:</h4>
+                                  {demoResults['analysis_partial'].preliminaryFindings?.map((finding: string, index: number) => (
+                                    <div key={index} className="flex items-start space-x-2">
+                                      <BarChart3 className="w-4 h-4 text-blue-500 mt-0.5" />
+                                      <span className="text-sm">{finding}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                          
+                          {demoResults['analysis_advanced'] && (
+                            <Card className="border-green-200 bg-green-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
+                                  Advanced Market Insights
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="grid grid-cols-3 gap-4 mb-4">
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-2xl font-bold text-blue-600">{demoResults['analysis_advanced'].marketSize}</div>
+                                    <div className="text-xs text-gray-500">Total Market</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-2xl font-bold text-green-600">{demoResults['analysis_advanced'].growth}</div>
+                                    <div className="text-xs text-gray-500">Annual Growth</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-xl font-bold text-purple-600">High</div>
+                                    <div className="text-xs text-gray-500">Opportunity Score</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-green-700">Strategic Insights:</h4>
+                                  {demoResults['analysis_advanced'].keyInsights?.map((insight: string, index: number) => (
+                                    <div key={index} className="flex items-start space-x-2 p-2 bg-white rounded">
+                                      <Star className="w-4 h-4 text-green-500 mt-0.5" />
+                                      <span className="text-sm font-medium">{insight}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
                         </div>
-                      </div>
-                    )}
-                    
-                    {currentTask.category === 'business-plan' && (
-                      <div className="bg-green-50 rounded-lg p-6">
-                        <h4 className="font-bold mb-3 flex items-center">
-                          <FileText className="w-5 h-5 mr-2 text-green-600" />
-                          Business Plan Generation
-                        </h4>
-                        <div className="text-center">
-                          <div className="text-3xl font-bold text-green-600 mb-2">12 Sections</div>
-                          <div className="text-sm text-gray-600">Comprehensive business plan being created</div>
-                          <div className="mt-4 text-xs text-green-600">⚡ Optimized for 15-second generation</div>
+                      )}
+                      
+                      {/* Business Plan Results */}
+                      {currentTask.category === 'business-plan' && (
+                        <div className="space-y-4">
+                          {demoResults['business-plan_partial'] && (
+                            <Card className="border-green-200 bg-green-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <FileText className="w-5 h-5 mr-2 text-green-600" />
+                                  Business Plan Progress
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="flex items-center justify-between mb-4">
+                                  <div className="text-center">
+                                    <div className="text-3xl font-bold text-green-600">{demoResults['business-plan_partial'].sectionsComplete}/12</div>
+                                    <div className="text-sm text-gray-600">Sections Complete</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="text-lg font-medium text-blue-600">{demoResults['business-plan_partial'].currentSection}</div>
+                                    <div className="text-sm text-gray-600">Current Section</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-green-700">Completed Sections:</h4>
+                                  {demoResults['business-plan_partial'].insights?.map((insight: string, index: number) => (
+                                    <div key={index} className="flex items-start space-x-2 p-2 bg-white rounded">
+                                      <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+                                      <span className="text-sm">{insight}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                          
+                          {demoResults['business-plan_advanced'] && (
+                            <Card className="border-blue-200 bg-blue-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <Calculator className="w-5 h-5 mr-2 text-blue-600" />
+                                  Advanced Business Planning
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-2xl font-bold text-blue-600">{demoResults['business-plan_advanced'].sectionsComplete}/12</div>
+                                    <div className="text-xs text-gray-500">Sections Complete</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-lg font-bold text-green-600">{demoResults['business-plan_advanced'].currentSection}</div>
+                                    <div className="text-xs text-gray-500">Current Focus</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-blue-700">Key Business Insights:</h4>
+                                  {demoResults['business-plan_advanced'].insights?.map((insight: string, index: number) => (
+                                    <div key={index} className="flex items-start space-x-2 p-2 bg-white rounded">
+                                      <DollarSign className="w-4 h-4 text-green-500 mt-0.5" />
+                                      <span className="text-sm font-medium">{insight}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
                         </div>
-                      </div>
-                    )}
+                      )}
+                      
+                      {/* Pitch Deck Results */}
+                      {currentTask.category === 'pitch-deck' && (
+                        <div className="space-y-4">
+                          {demoResults['pitch-deck_partial'] && (
+                            <Card className="border-purple-200 bg-purple-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <Presentation className="w-5 h-5 mr-2 text-purple-600" />
+                                  Pitch Deck Creation
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="flex items-center justify-between mb-4">
+                                  <div className="text-center">
+                                    <div className="text-3xl font-bold text-purple-600">{demoResults['pitch-deck_partial'].slidesComplete}/10</div>
+                                    <div className="text-sm text-gray-600">Slides Complete</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="text-lg font-medium text-blue-600">{demoResults['pitch-deck_partial'].currentSlide}</div>
+                                    <div className="text-sm text-gray-600">Current Slide</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-purple-700">Key Slide Content:</h4>
+                                  {demoResults['pitch-deck_partial'].keyPoints?.map((point: string, index: number) => (
+                                    <div key={index} className="flex items-start space-x-2 p-2 bg-white rounded">
+                                      <Layers className="w-4 h-4 text-purple-500 mt-0.5" />
+                                      <span className="text-sm">{point}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Financial Modeling Results */}
+                      {currentTask.category === 'financial' && (
+                        <div className="space-y-4">
+                          {demoResults['financial_partial'] && (
+                            <Card className="border-orange-200 bg-orange-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <LineChart className="w-5 h-5 mr-2 text-orange-600" />
+                                  Financial Modeling
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="text-center mb-4">
+                                  <div className="text-lg font-medium text-orange-600">{demoResults['financial_partial'].currentMetric}</div>
+                                  <div className="text-sm text-gray-600">Current Analysis</div>
+                                </div>
+                                
+                                <div className="grid grid-cols-3 gap-3">
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-sm font-bold text-gray-500">{demoResults['financial_partial'].preliminaryNumbers?.year1}</div>
+                                    <div className="text-xs text-gray-400">Year 1 Revenue</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-sm font-bold text-gray-500">{demoResults['financial_partial'].preliminaryNumbers?.cac}</div>
+                                    <div className="text-xs text-gray-400">CAC</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-sm font-bold text-gray-500">{demoResults['financial_partial'].preliminaryNumbers?.ltv}</div>
+                                    <div className="text-xs text-gray-400">LTV</div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                          
+                          {demoResults['financial_advanced'] && (
+                            <Card className="border-green-200 bg-green-50">
+                              <CardHeader className="pb-3">
+                                <CardTitle className="text-lg flex items-center">
+                                  <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
+                                  Financial Projections Complete
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-xl font-bold text-green-600">{demoResults['financial_advanced'].keyMetrics?.year1Revenue}</div>
+                                    <div className="text-xs text-gray-500">Year 1 Revenue</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-xl font-bold text-blue-600">{demoResults['financial_advanced'].keyMetrics?.year3Revenue}</div>
+                                    <div className="text-xs text-gray-500">Year 3 Revenue</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-xl font-bold text-purple-600">{demoResults['financial_advanced'].keyMetrics?.grossMargin}</div>
+                                    <div className="text-xs text-gray-500">Gross Margin</div>
+                                  </div>
+                                  <div className="bg-white rounded-lg p-3 text-center">
+                                    <div className="text-xl font-bold text-orange-600">{demoResults['financial_advanced'].keyMetrics?.paybackPeriod}</div>
+                                    <div className="text-xs text-gray-500">Payback Period</div>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center space-y-6">
@@ -808,7 +1206,7 @@ export default function AgenticDemoUnified() {
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
-                      {Object.keys(demoResults).map((category) => (
+                      {Object.keys(demoResults).filter(key => !key.includes('_')).map((category) => (
                         <Button
                           key={category}
                           variant="outline"
