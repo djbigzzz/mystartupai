@@ -4,11 +4,14 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  email: text("email").notNull().unique(),
-  name: text("name").notNull(),
+  email: text("email").unique(),
+  name: text("name"),
   username: text("username").unique(),
   password: text("password"),
   googleId: text("google_id").unique(),
+  walletAddress: text("wallet_address").unique(),
+  walletType: text("wallet_type"), // metamask, rabby, phantom, walletconnect
+  chainId: integer("chain_id"),
   avatar: text("avatar"),
   emailVerified: boolean("email_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
@@ -88,6 +91,13 @@ export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+export const insertWalletUserSchema = createInsertSchema(users).pick({
+  walletAddress: true,
+  walletType: true,
+  chainId: true,
+  name: true,
 });
 
 export const insertCompanySchema = createInsertSchema(companies).pick({

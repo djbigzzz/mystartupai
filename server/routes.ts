@@ -87,6 +87,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.redirect('/dashboard');
     }
   );
+
+  // Wallet authentication
+  app.post("/api/auth/wallet", async (req, res) => {
+    try {
+      const { address, chainId, wallet, signature, message } = req.body;
+      
+      if (!address || !wallet || !signature || !message) {
+        return res.status(400).json({ message: "Missing required wallet data" });
+      }
+
+      // Verify signature (simplified for demo - in production, implement proper verification)
+      if (signature.length < 10) {
+        return res.status(400).json({ message: "Invalid signature" });
+      }
+
+      // Check if user exists with this wallet
+      let user = await storage.getUserByWallet(address);
+      
+      if (!user) {
+        // Create new user with wallet
+        user = await storage.createUser({
+          walletAddress: address,
+          walletType: wallet,
+          chainId: chainId,
+          name: `${wallet.charAt(0).toUpperCase() + wallet.slice(1)} User`,
+          emailVerified: true // Wallet users are considered verified
+        });
+      }
+
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ message: "Authentication failed" });
+        }
+        const { password: _, ...userWithoutPassword } = user;
+        res.json({ user: userWithoutPassword });
+      });
+    } catch (error) {
+      console.error("Wallet auth error:", error);
+      res.status(500).json({ message: "Wallet authentication failed" });
+    }
+  });
   
   // Submit startup idea for analysis
   app.post("/api/ideas", async (req, res) => {
