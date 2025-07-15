@@ -11,16 +11,7 @@ import bcrypt from "bcryptjs";
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Session configuration
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === 'production',
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-  }));
+  // Session configuration removed - handled in index.ts
 
   // Initialize Passport middleware
   app.use(passport.initialize());
@@ -100,7 +91,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit startup idea for analysis
   app.post("/api/ideas", async (req, res) => {
     try {
+      // Validate and sanitize input
       const validatedData = insertStartupIdeaSchema.parse(req.body);
+      
+      // Additional security checks
+      if (!validatedData.ideaTitle || validatedData.ideaTitle.length > 100) {
+        return res.status(400).json({ message: "Invalid idea title" });
+      }
+      
+      if (!validatedData.description || validatedData.description.length > 2000) {
+        return res.status(400).json({ message: "Invalid description" });
+      }
       
       // Create the idea record
       const idea = await storage.createStartupIdea(validatedData);
@@ -129,6 +130,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/ideas/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      
+      // Validate ID parameter
+      if (isNaN(id) || id <= 0) {
+        return res.status(400).json({ message: "Invalid idea ID" });
+      }
+      
       const idea = await storage.getStartupIdea(id);
       
       if (!idea) {
@@ -142,13 +149,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get startup ideas by email
-  app.get("/api/ideas", async (req, res) => {
+  // Get startup ideas by email (protected route)
+  app.get("/api/ideas", requireAuth, async (req, res) => {
     try {
       const email = req.query.email as string;
       
-      if (!email) {
-        return res.status(400).json({ message: "Email parameter is required" });
+      // Validate email parameter
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ message: "Valid email parameter is required" });
       }
       
       const ideas = await storage.getStartupIdeasByEmail(email);
@@ -447,25 +455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/auth/me", async (req, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json({ id: user.id, username: user.username });
-    } catch (error) {
-      console.error("Auth check error:", error);
-      res.status(500).json({ message: "Authentication check failed" });
-    }
-  });
+  // Duplicate auth/me route removed - using Passport route above
 
   app.post("/api/auth/logout", async (req, res) => {
     try {

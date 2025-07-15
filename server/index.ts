@@ -2,20 +2,56 @@ import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { securityHeaders } from "./security";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// Apply security headers first
+app.use(securityHeaders);
+
+// Security middleware
+app.use(express.json({ limit: '10mb' })); // Limit payload size
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Rate limiting (basic implementation)
+const requestCounts = new Map();
+const RATE_LIMIT = 100; // requests per 15 minutes
+const RATE_WINDOW = 15 * 60 * 1000;
+
+app.use((req, res, next) => {
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  const now = Date.now();
+  const windowStart = now - RATE_WINDOW;
+  
+  if (!requestCounts.has(clientIp)) {
+    requestCounts.set(clientIp, []);
+  }
+  
+  const requests = requestCounts.get(clientIp).filter((timestamp: number) => timestamp > windowStart);
+  
+  if (requests.length >= RATE_LIMIT) {
+    return res.status(429).json({ message: "Rate limit exceeded. Please try again later." });
+  }
+  
+  requests.push(now);
+  requestCounts.set(clientIp, requests);
+  next();
+});
 
 // Session middleware
+if (!process.env.SESSION_SECRET) {
+  throw new Error("SESSION_SECRET environment variable is required for security");
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'mystartup-ai-secret-key',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'strict' // CSRF protection
   }
 }));
 
