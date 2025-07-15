@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Rate limiting (basic implementation)
 const requestCounts = new Map();
-const RATE_LIMIT = 100; // requests per 15 minutes
+const RATE_LIMIT = 1000; // requests per 15 minutes - increased for development
 const RATE_WINDOW = 15 * 60 * 1000;
 
 app.use((req, res, next) => {

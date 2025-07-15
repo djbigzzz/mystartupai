@@ -41,7 +41,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(null);
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
+      // Silently handle auth errors to prevent blank page
       setUser(null);
     } finally {
       setIsLoading(false);
