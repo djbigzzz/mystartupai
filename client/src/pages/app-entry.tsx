@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
+import WalletConnect from "@/components/wallet-connect";
 
 export default function AppEntry() {
   const [email, setEmail] = useState("");
@@ -49,12 +50,15 @@ export default function AppEntry() {
     window.location.href = "/api/auth/google";
   };
 
-  // Wallet connect (placeholder)
-  const handleWalletConnect = () => {
+  // Wallet connect success handler
+  const handleWalletSuccess = () => {
     toast({
-      title: "Wallet Authentication",
-      description: "Wallet authentication coming soon!",
+      title: "Wallet connected successfully!",
+      description: "Redirecting to your dashboard...",
     });
+    setTimeout(() => {
+      setLocation("/dashboard");
+    }, 1000);
   };
 
   const handleEmailSubmit = (e: React.FormEvent) => {
@@ -106,14 +110,7 @@ export default function AppEntry() {
                 Continue with Google
               </Button>
               
-              <Button 
-                onClick={handleWalletConnect}
-                variant="outline"
-                className="w-full justify-center"
-              >
-                <Wallet className="w-4 h-4 mr-2" />
-                Connect Wallet
-              </Button>
+              <WalletConnect onSuccess={handleWalletSuccess} />
             </div>
             
             <div className="relative">

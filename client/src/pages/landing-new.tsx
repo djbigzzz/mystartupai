@@ -110,14 +110,14 @@ export default function LandingNew() {
               <a href="#features" className="text-gray-300 hover:text-white font-medium transition-colors">Features</a>
               <a href="#how-it-works" className="text-gray-300 hover:text-white font-medium transition-colors">How it Works</a>
               <Link href="/demo" className="text-gray-300 hover:text-white font-medium transition-colors">Demo</Link>
-              <Link href="/waitlist">
+              <Link href="/app">
                 <Button variant="outline" className="mr-3 border-white/20 text-white hover:bg-white/10">
                   Log in
                 </Button>
               </Link>
-              <Link href="/waitlist">
+              <Link href="/app">
                 <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0">
-                  Create account
+                  Launch App
                 </Button>
               </Link>
             </div>
@@ -606,10 +606,10 @@ export default function LandingNew() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link href="/waitlist">
+                <Link href="/app">
                   <Button size="lg" className="group bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 px-8 py-4 text-lg font-bold shadow-2xl shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
                     <Rocket className="mr-2 h-5 w-5 group-hover:-translate-y-1 transition-transform" />
-                    Join the Waitlist
+                    Launch App
                   </Button>
                 </Link>
                 
