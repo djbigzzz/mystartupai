@@ -9,12 +9,29 @@ async function throwIfResNotOk(res: Response) {
 
 export async function apiRequest(
   url: string,
-  options?: RequestInit
+  options?: RequestInit & { body?: any }
 ): Promise<any> {
-  const res = await fetch(url, {
+  const { body, ...restOptions } = options || {};
+  
+  const fetchOptions: RequestInit = {
     credentials: "include",
-    ...options
-  });
+    ...restOptions
+  };
+
+  // If body is provided and it's an object, stringify it and set content-type
+  if (body && typeof body === 'object') {
+    fetchOptions.body = JSON.stringify(body);
+    fetchOptions.headers = {
+      'Content-Type': 'application/json',
+      ...fetchOptions.headers
+    };
+  } else if (body) {
+    fetchOptions.body = body;
+  }
+
+  console.log(`API Request to ${url}:`, { method: fetchOptions.method, body: fetchOptions.body });
+
+  const res = await fetch(url, fetchOptions);
 
   await throwIfResNotOk(res);
   return await res.json();
