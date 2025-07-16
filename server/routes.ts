@@ -75,6 +75,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile management routes
+  app.patch("/api/auth/profile", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { name, username, email } = req.body;
+      
+      // Check if username is taken by another user
+      if (username) {
+        const existingUser = await storage.getUserByUsername(username);
+        if (existingUser && existingUser.id !== userId) {
+          return res.status(400).json({ message: "Username already taken" });
+        }
+      }
+
+      // Check if email is taken by another user
+      if (email) {
+        const existingUser = await storage.getUserByEmail(email);
+        if (existingUser && existingUser.id !== userId) {
+          return res.status(400).json({ message: "Email already taken" });
+        }
+      }
+
+      // Update user profile
+      const updatedUser = await storage.updateUser(userId, {
+        name,
+        username,
+        email,
+        emailVerified: email !== req.user.email ? false : req.user.emailVerified // Reset verification if email changed
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Update session with new user data
+      req.user = updatedUser;
+
+      res.json({ user: updatedUser });
+    } catch (error) {
+      console.error("Profile update error:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.post("/api/auth/change-password", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { currentPassword, newPassword } = req.body;
+
+      // Check if user has a password (might be wallet-only user)
+      if (!req.user.password) {
+        return res.status(400).json({ message: "No password set for this account" });
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, req.user.password);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update password
+      const updatedUser = await storage.updateUser(userId, {
+        password: hashedNewPassword
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Password change error:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
   // Google OAuth routes
   app.get("/api/auth/google", 
     passport.authenticate('google', { scope: ['profile', 'email'] })

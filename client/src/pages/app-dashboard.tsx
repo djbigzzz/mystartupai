@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import { 
   Search, 
   UserPlus, 
@@ -230,18 +231,31 @@ export default function AppDashboard() {
                   </Button>
                 ))}
               </div>
+              
+              <div className="pt-6 border-t border-border/50">
+                <p className="text-xs font-medium text-muted-foreground mb-2 px-3">ACCOUNT</p>
+                <Link href="/profile">
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Settings className="w-4 h-4 mr-3" />
+                    Profile & Settings
+                  </Button>
+                </Link>
+              </div>
             </nav>
             
             <div className="absolute bottom-4 left-4 right-4">
-              <div className="flex items-center space-x-2 p-2 rounded-lg bg-muted">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-xs font-medium text-primary-foreground">JD</span>
+              <Link href="/profile">
+                <div className="flex items-center space-x-2 p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors cursor-pointer">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-primary-foreground">JD</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">John Doe</p>
+                    <p className="text-xs text-muted-foreground truncate">john@startup.com</p>
+                  </div>
+                  <Settings className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">John Doe</p>
-                  <p className="text-xs text-muted-foreground truncate">john@startup.com</p>
-                </div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>

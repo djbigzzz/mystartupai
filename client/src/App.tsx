@@ -18,6 +18,7 @@ import DemoJourneyNew from "@/pages/demo-journey-new";
 import AgenticDemoUnified from "@/pages/agentic-demo-unified";
 import AppEntry from "@/pages/app-entry";
 import AppDashboard from "@/pages/app-dashboard";
+import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/agentic" component={AgenticDemoUnified} />
       <Route path="/app" component={AppEntry} />
       <Route path="/dashboard" component={AppDashboard} />
+      <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
   );

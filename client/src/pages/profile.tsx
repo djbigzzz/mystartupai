@@ -1,0 +1,544 @@
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera } from "lucide-react";
+
+interface UserProfile {
+  id: number;
+  email: string | null;
+  name: string | null;
+  username: string | null;
+  walletAddress: string | null;
+  walletType: string | null;
+  chainId: number | null;
+  avatar: string | null;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface UpdateProfileData {
+  name?: string;
+  username?: string;
+  email?: string;
+}
+
+interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export default function Profile() {
+  const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState<UpdateProfileData>({});
+  const [passwordForm, setPasswordForm] = useState<ChangePasswordData>({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+
+  // Fetch user profile
+  const { data: user, isLoading } = useQuery<UserProfile>({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
+
+  // Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: UpdateProfileData) => {
+      return apiRequest("/api/auth/profile", {
+        method: "PATCH",
+        body: data
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      setIsEditing(false);
+      setEditForm({});
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update failed",
+        description: error.message || "Failed to update profile",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Change password mutation
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: ChangePasswordData) => {
+      return apiRequest("/api/auth/change-password", {
+        method: "POST",
+        body: data
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password changed",
+        description: "Your password has been changed successfully.",
+      });
+      setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Password change failed",
+        description: error.message || "Failed to change password",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleEditStart = () => {
+    setIsEditing(true);
+    setEditForm({
+      name: user?.name || "",
+      username: user?.username || "",
+      email: user?.email || ""
+    });
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
+    setEditForm({});
+  };
+
+  const handleEditSave = () => {
+    updateProfileMutation.mutate(editForm);
+  };
+
+  const handlePasswordChange = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast({
+        title: "Password mismatch",
+        description: "New password and confirmation don't match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    changePasswordMutation.mutate(passwordForm);
+  };
+
+  const getInitials = (name: string | null) => {
+    if (!name) return "U";
+    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+  };
+
+  const getAccountType = () => {
+    if (user?.walletAddress && user?.email) return "Hybrid Account";
+    if (user?.walletAddress) return "Wallet Account";
+    return "Email Account";
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center">Loading profile...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className="text-muted-foreground">Please log in to view your profile.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-8 px-4">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Profile Header */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Avatar className="w-20 h-20">
+                  <AvatarImage src={user.avatar || undefined} />
+                  <AvatarFallback className="text-lg font-semibold">
+                    {getInitials(user.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h1 className="text-2xl font-bold">{user.name || "Unnamed User"}</h1>
+                  <p className="text-muted-foreground">@{user.username || `user${user.id}`}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge variant="secondary">{getAccountType()}</Badge>
+                    {user.emailVerified && (
+                      <Badge variant="outline" className="text-green-600">
+                        <Shield className="w-3 h-3 mr-1" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Camera className="w-4 h-4" />
+                Change Photo
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
+
+        {/* Profile Management Tabs */}
+        <Tabs defaultValue="general" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="security">Security</TabsTrigger>
+            <TabsTrigger value="wallet">Wallet</TabsTrigger>
+            <TabsTrigger value="preferences">Preferences</TabsTrigger>
+          </TabsList>
+
+          {/* General Information */}
+          <TabsContent value="general">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Personal Information</CardTitle>
+                    <CardDescription>
+                      Manage your account details and public profile information.
+                    </CardDescription>
+                  </div>
+                  {!isEditing && (
+                    <Button variant="outline" size="sm" onClick={handleEditStart}>
+                      <Edit3 className="w-4 h-4 mr-2" />
+                      Edit
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {isEditing ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Full Name</Label>
+                        <Input
+                          id="name"
+                          value={editForm.name || ""}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          placeholder="Enter your full name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="username">Username</Label>
+                        <Input
+                          id="username"
+                          value={editForm.username || ""}
+                          onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                          placeholder="Choose a username"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={editForm.email || ""}
+                        onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                        placeholder="Enter your email address"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={handleEditSave}
+                        disabled={updateProfileMutation.isPending}
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+                      </Button>
+                      <Button variant="outline" onClick={handleEditCancel}>
+                        <X className="w-4 h-4 mr-2" />
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Full Name</Label>
+                      <p className="text-sm">{user.name || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Username</Label>
+                      <p className="text-sm">@{user.username || `user${user.id}`}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Email Address</Label>
+                      <p className="text-sm">{user.email || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Member Since</Label>
+                      <p className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Security Settings */}
+          <TabsContent value="security">
+            <Card>
+              <CardHeader>
+                <CardTitle>Security Settings</CardTitle>
+                <CardDescription>
+                  Manage your account security and password settings.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {user.email && (
+                  <form onSubmit={handlePasswordChange} className="space-y-4">
+                    <h3 className="text-lg font-medium">Change Password</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="current-password">Current Password</Label>
+                        <Input
+                          id="current-password"
+                          type="password"
+                          value={passwordForm.currentPassword}
+                          onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                          placeholder="Enter current password"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">New Password</Label>
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={passwordForm.newPassword}
+                          onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                          placeholder="Enter new password"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Confirm New Password</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={passwordForm.confirmPassword}
+                          onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                          placeholder="Confirm new password"
+                          required
+                        />
+                      </div>
+                      <Button 
+                        type="submit"
+                        disabled={changePasswordMutation.isPending}
+                      >
+                        <Key className="w-4 h-4 mr-2" />
+                        {changePasswordMutation.isPending ? "Changing..." : "Change Password"}
+                      </Button>
+                    </div>
+                  </form>
+                )}
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Account Security</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Mail className="w-4 h-4" />
+                        <span className="font-medium">Email Verification</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {user.emailVerified ? "Your email is verified" : "Your email is not verified"}
+                      </p>
+                      {!user.emailVerified && user.email && (
+                        <Button variant="outline" size="sm">
+                          Send Verification Email
+                        </Button>
+                      )}
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Shield className="w-4 h-4" />
+                        <span className="font-medium">Two-Factor Auth</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Add an extra layer of security
+                      </p>
+                      <Button variant="outline" size="sm">
+                        Setup 2FA
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Wallet Information */}
+          <TabsContent value="wallet">
+            <Card>
+              <CardHeader>
+                <CardTitle>Wallet Connection</CardTitle>
+                <CardDescription>
+                  Manage your connected wallets and blockchain accounts.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {user.walletAddress ? (
+                  <div className="space-y-4">
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Wallet className="w-5 h-5" />
+                          <div>
+                            <p className="font-medium">
+                              {user.walletType === "phantom" ? "Phantom Wallet" : "MetaMask"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {user.walletAddress.slice(0, 6)}...{user.walletAddress.slice(-4)}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="text-green-600">
+                          Connected
+                        </Badge>
+                      </div>
+                      <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Chain ID:</span>
+                          <span className="ml-2">{user.chainId}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Network:</span>
+                          <span className="ml-2">
+                            {user.chainId === 1 ? "Ethereum Mainnet" : 
+                             user.chainId === 101 ? "Solana Mainnet" : 
+                             `Chain ${user.chainId}`}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <Button variant="outline" className="w-full">
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Connect Additional Wallet
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Wallet className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No Wallet Connected</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Connect a wallet to access blockchain features
+                    </p>
+                    <Button>
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Connect Wallet
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Preferences */}
+          <TabsContent value="preferences">
+            <Card>
+              <CardHeader>
+                <CardTitle>Preferences</CardTitle>
+                <CardDescription>
+                  Customize your experience and notification settings.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Notifications</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Email Notifications</p>
+                        <p className="text-sm text-muted-foreground">Receive updates via email</p>
+                      </div>
+                      <Button variant="outline" size="sm">Enable</Button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Marketing Emails</p>
+                        <p className="text-sm text-muted-foreground">Receive product updates and tips</p>
+                      </div>
+                      <Button variant="outline" size="sm">Disable</Button>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Display</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Theme</p>
+                        <p className="text-sm text-muted-foreground">Choose your preferred theme</p>
+                      </div>
+                      <Button variant="outline" size="sm">Dark</Button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Language</p>
+                        <p className="text-sm text-muted-foreground">Select your language</p>
+                      </div>
+                      <Button variant="outline" size="sm">English</Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
