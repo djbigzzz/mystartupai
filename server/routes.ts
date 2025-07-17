@@ -613,9 +613,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Startup Profile routes
-  app.get("/api/startup-profile", requireAuth, async (req, res) => {
+  app.get("/api/startup-profile", async (req, res) => {
     try {
-      const userId = (req.user as any)?.id;
+      // Check session-based auth first
+      const userId = (req.session as any)?.userId || (req.user as any)?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const profile = await storage.getStartupProfile(userId);
       
       if (!profile) {
@@ -629,9 +635,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/startup-profile", requireAuth, async (req, res) => {
+  app.post("/api/startup-profile", async (req, res) => {
     try {
-      const userId = (req.user as any)?.id;
+      // Check session-based auth first
+      const userId = (req.session as any)?.userId || (req.user as any)?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const validatedData = insertStartupProfileSchema.parse({
         ...req.body,
         userId
@@ -645,10 +657,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/startup-profile/:id", requireAuth, async (req, res) => {
+  app.patch("/api/startup-profile/:id", async (req, res) => {
     try {
       const profileId = parseInt(req.params.id);
-      const userId = (req.user as any)?.id;
+      // Check session-based auth first
+      const userId = (req.session as any)?.userId || (req.user as any)?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
       
       // Verify ownership
       const existingProfile = await storage.getStartupProfile(userId);

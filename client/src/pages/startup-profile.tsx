@@ -68,9 +68,31 @@ export default function StartupProfile() {
   const [formData, setFormData] = useState<Partial<StartupProfile>>({});
 
   // Fetch startup profile
-  const { data: profile, isLoading } = useQuery<StartupProfile>({
+  const { data: profile, isLoading, error } = useQuery<StartupProfile>({
     queryKey: ["/api/startup-profile"],
     retry: false,
+    staleTime: 0,
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/startup-profile", {
+          credentials: "include"
+        });
+        
+        if (response.status === 404) {
+          return null; // No profile exists yet
+        }
+        
+        if (!response.ok) {
+          const errorData = await response.text();
+          throw new Error(`${response.status}: ${errorData}`);
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error("Profile fetch error:", error);
+        throw error;
+      }
+    }
   });
 
   // Save profile mutation
@@ -89,6 +111,7 @@ export default function StartupProfile() {
       setIsEditing(false);
     },
     onError: (error: any) => {
+      console.error("Save error:", error);
       toast({
         title: "Save failed",
         description: error.message || "Failed to save profile",
@@ -100,6 +123,11 @@ export default function StartupProfile() {
   const handleEdit = () => {
     setIsEditing(true);
     setFormData(profile || {});
+  };
+
+  const handleCreateNew = () => {
+    setIsEditing(true);
+    setFormData({});
   };
 
   const handleSave = () => {
@@ -123,12 +151,28 @@ export default function StartupProfile() {
 
   const currentData = isEditing ? formData : profile;
   const progress = calculateProgress(currentData || {});
+  const isNewProfile = !profile && !error?.message?.includes("401");
 
   if (isLoading) {
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center">Loading startup profile...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle authentication errors
+  if (error?.message?.includes("401")) {
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p className="text-muted-foreground mb-4">Please log in to access your startup profile.</p>
+          <Link href="/app">
+            <Button>Go to Login</Button>
+          </Link>
         </div>
       </div>
     );
@@ -199,8 +243,8 @@ export default function StartupProfile() {
                     <CardDescription>Basic details about your startup</CardDescription>
                   </div>
                   {!isEditing && (
-                    <Button onClick={handleEdit} variant="outline">
-                      Edit Profile
+                    <Button onClick={profile ? handleEdit : handleCreateNew} variant="outline">
+                      {profile ? "Edit Profile" : "Create Profile"}
                     </Button>
                   )}
                 </div>
