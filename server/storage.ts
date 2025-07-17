@@ -8,6 +8,7 @@ import {
   connections,
   networkingProfiles,
   waitlist,
+  startupProfiles,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -26,6 +27,8 @@ import {
   type InsertNetworkingProfile,
   type Waitlist,
   type InsertWaitlist,
+  type StartupProfile,
+  type InsertStartupProfile,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -93,6 +96,11 @@ export interface IStorage {
   getWaitlistByGoogleId(googleId: string): Promise<Waitlist | undefined>;
   getWaitlistCount(): Promise<number>;
   getWaitlistEntries(): Promise<Waitlist[]>;
+  
+  // Startup Profile operations
+  createStartupProfile(profile: InsertStartupProfile): Promise<StartupProfile>;
+  getStartupProfile(userId: number): Promise<StartupProfile | undefined>;
+  updateStartupProfile(id: number, updates: Partial<StartupProfile>): Promise<StartupProfile | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -385,6 +393,29 @@ export class DatabaseStorage implements IStorage {
 
   async getWaitlistEntries(): Promise<Waitlist[]> {
     return await db.select().from(waitlist).orderBy(desc(waitlist.createdAt));
+  }
+
+  // Startup Profile operations
+  async createStartupProfile(insertProfile: InsertStartupProfile): Promise<StartupProfile> {
+    const [profile] = await db
+      .insert(startupProfiles)
+      .values(insertProfile)
+      .returning();
+    return profile;
+  }
+
+  async getStartupProfile(userId: number): Promise<StartupProfile | undefined> {
+    const [profile] = await db.select().from(startupProfiles).where(eq(startupProfiles.userId, userId));
+    return profile;
+  }
+
+  async updateStartupProfile(id: number, updates: Partial<StartupProfile>): Promise<StartupProfile | undefined> {
+    const [profile] = await db
+      .update(startupProfiles)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(startupProfiles.id, id))
+      .returning();
+    return profile;
   }
 }
 

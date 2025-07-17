@@ -305,43 +305,60 @@ export default function AppDashboard() {
 
             {/* Module Grid */}
             <div className="grid grid-cols-3 gap-6">
-              {modules.map((module) => (
-                <Card key={module.id} className={`cursor-pointer transition-colors ${
-                  module.status === "locked" ? "opacity-60" : "hover:bg-muted/50"
-                }`}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          module.status === "active" ? "bg-primary text-primary-foreground" : "bg-muted"
-                        }`}>
-                          <module.icon className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-sm font-medium">{module.name}</CardTitle>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <span className="text-xs text-muted-foreground">{module.taskCount} tasks</span>
-                            {getStatusBadge(module.status)}
+              {modules.map((module) => {
+                const ModuleCard = ({ children }: { children: React.ReactNode }) => {
+                  if (module.id === "profile" && module.status === "active") {
+                    return (
+                      <Link href="/startup-profile">
+                        <Card className="cursor-pointer transition-colors hover:bg-muted/50">
+                          {children}
+                        </Card>
+                      </Link>
+                    );
+                  }
+                  return (
+                    <Card className={`cursor-pointer transition-colors ${
+                      module.status === "locked" ? "opacity-60" : "hover:bg-muted/50"
+                    }`}>
+                      {children}
+                    </Card>
+                  );
+                };
+
+                return (
+                  <ModuleCard key={module.id}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                            module.status === "active" ? "bg-primary text-primary-foreground" : "bg-muted"
+                          }`}>
+                            <module.icon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <CardTitle className="text-sm font-medium">{module.name}</CardTitle>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <span className="text-xs text-muted-foreground">{module.taskCount} tasks</span>
+                              {getStatusBadge(module.status)}
+                            </div>
                           </div>
                         </div>
+                        {module.status === "locked" && <Lock className="w-4 h-4 text-muted-foreground" />}
                       </div>
-                      {module.status === "locked" && <Lock className="w-4 h-4 text-muted-foreground" />}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex items-center space-x-2">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
-                          <User className="w-3 h-3 text-muted-foreground" />
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {module.status === "active" ? "Active recently" : "Yesterday"}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="flex items-center space-x-2">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
+                            <User className="w-3 h-3 text-muted-foreground" />
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">{module.description}</p>
+                    </CardContent>
+                  </ModuleCard>
+                );
+              })}
             </div>
           </div>
         </div>

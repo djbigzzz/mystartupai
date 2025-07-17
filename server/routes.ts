@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import session from "express-session";
 import passport from "./auth";
 import { storage } from "./storage";
-import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema } from "@shared/schema";
+import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
 import { agenticAI } from "./agentic-ai";
 import bcrypt from "bcryptjs";
@@ -609,6 +609,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Logout error:", error);
       res.status(500).json({ message: "Logout failed" });
+    }
+  });
+
+  // Startup Profile routes
+  app.get("/api/startup-profile", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const profile = await storage.getStartupProfile(userId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Startup profile not found" });
+      }
+      
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching startup profile:", error);
+      res.status(500).json({ message: "Failed to fetch startup profile" });
+    }
+  });
+
+  app.post("/api/startup-profile", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const validatedData = insertStartupProfileSchema.parse({
+        ...req.body,
+        userId
+      });
+      
+      const profile = await storage.createStartupProfile(validatedData);
+      res.json(profile);
+    } catch (error) {
+      console.error("Error creating startup profile:", error);
+      res.status(500).json({ message: "Failed to create startup profile" });
+    }
+  });
+
+  app.patch("/api/startup-profile/:id", requireAuth, async (req, res) => {
+    try {
+      const profileId = parseInt(req.params.id);
+      const userId = (req.user as any)?.id;
+      
+      // Verify ownership
+      const existingProfile = await storage.getStartupProfile(userId);
+      if (!existingProfile || existingProfile.id !== profileId) {
+        return res.status(403).json({ message: "Unauthorized to update this profile" });
+      }
+      
+      const validatedData = insertStartupProfileSchema.partial().parse(req.body);
+      const profile = await storage.updateStartupProfile(profileId, validatedData);
+      
+      res.json(profile);
+    } catch (error) {
+      console.error("Error updating startup profile:", error);
+      res.status(500).json({ message: "Failed to update startup profile" });
     }
   });
 

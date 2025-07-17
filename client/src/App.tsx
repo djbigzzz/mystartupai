@@ -19,6 +19,7 @@ import AgenticDemoUnified from "@/pages/agentic-demo-unified";
 import AppEntry from "@/pages/app-entry";
 import AppDashboard from "@/pages/app-dashboard";
 import Profile from "@/pages/profile";
+import StartupProfile from "@/pages/startup-profile";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/app" component={AppEntry} />
       <Route path="/dashboard" component={AppDashboard} />
       <Route path="/profile" component={Profile} />
+      <Route path="/startup-profile" component={StartupProfile} />
       <Route component={NotFound} />
     </Switch>
   );

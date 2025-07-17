@@ -303,3 +303,27 @@ export const insertWaitlistSchema = createInsertSchema(waitlist).pick({
 
 export type InsertWaitlist = z.infer<typeof insertWaitlistSchema>;
 export type Waitlist = typeof waitlist.$inferSelect;
+
+export const startupProfiles = pgTable("startup_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  companyName: text("company_name").notNull(),
+  description: text("description"),
+  industry: text("industry"),
+  stage: text("stage"),
+  location: text("location"),
+  teamSize: text("team_size"),
+  fundingGoal: text("funding_goal"),
+  targetMarket: text("target_market"),
+  problemStatement: text("problem_statement"),
+  solutionApproach: text("solution_approach"),
+  competitiveAdvantage: text("competitive_advantage"),
+  revenueModel: text("revenue_model"),
+  completionPercentage: integer("completion_percentage").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertStartupProfileSchema = createInsertSchema(startupProfiles);
+export type InsertStartupProfile = typeof startupProfiles.$inferInsert;
+export type StartupProfile = typeof startupProfiles.$inferSelect;
