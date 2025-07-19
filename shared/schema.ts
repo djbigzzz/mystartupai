@@ -73,6 +73,54 @@ export const documents = pgTable("documents", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const startupProfiles = pgTable("startup_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  
+  // Phase 1: Quick Start - Minimal Input
+  startupVision: text("startup_vision"),
+  
+  // AI-extracted/suggested fields
+  suggestedCompanyName: text("suggested_company_name"),
+  suggestedIndustry: text("suggested_industry"),
+  suggestedProblem: text("suggested_problem"),
+  suggestedSolution: text("suggested_solution"),
+  
+  // Phase 2: Guided Completion - Structured Data
+  companyName: text("company_name"),
+  industry: text("industry"),
+  stage: text("stage"),
+  location: text("location"),
+  teamSize: text("team_size"),
+  description: text("description"),
+  problemStatement: text("problem_statement"),
+  solutionApproach: text("solution_approach"),
+  targetMarket: text("target_market"),
+  competitiveAdvantage: text("competitive_advantage"),
+  revenueModel: text("revenue_model"),
+  fundingGoal: text("funding_goal"),
+  
+  // Phase 3: Advanced Details - Deep Dive
+  customerPersonas: text("customer_personas"),
+  marketSize: text("market_size"),
+  competitorAnalysis: text("competitor_analysis"),
+  businessModelDetails: text("business_model_details"),
+  financialAssumptions: text("financial_assumptions"),
+  marketingChannels: text("marketing_channels"),
+  keyMetrics: text("key_metrics"),
+  technologyStack: text("technology_stack"),
+  intellectualProperty: text("intellectual_property"),
+  regulatoryConsiderations: text("regulatory_considerations"),
+  
+  // Progress tracking
+  currentPhase: text("current_phase").default("quick-start"),
+  completionPercentage: integer("completion_percentage").default(0),
+  phaseCompletions: jsonb("phase_completions"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertStartupIdeaSchema = createInsertSchema(startupIdeas).pick({
   name: true,
   email: true,
@@ -123,6 +171,25 @@ export const insertDocumentSchema = createInsertSchema(documents).pick({
   description: true,
   fileUrl: true,
 });
+
+export const insertStartupProfileSchema = createInsertSchema(startupProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Type exports
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertWalletUser = z.infer<typeof insertWalletUserSchema>;
+export type StartupIdea = typeof startupIdeas.$inferSelect;
+export type InsertStartupIdea = z.infer<typeof insertStartupIdeaSchema>;
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Document = typeof documents.$inferSelect;
+export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type StartupProfile = typeof startupProfiles.$inferSelect;
+export type InsertStartupProfile = z.infer<typeof insertStartupProfileSchema>;
 
 // Events and networking schemas
 export const events = pgTable("events", {
@@ -304,26 +371,4 @@ export const insertWaitlistSchema = createInsertSchema(waitlist).pick({
 export type InsertWaitlist = z.infer<typeof insertWaitlistSchema>;
 export type Waitlist = typeof waitlist.$inferSelect;
 
-export const startupProfiles = pgTable("startup_profiles", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
-  companyName: text("company_name").notNull(),
-  description: text("description"),
-  industry: text("industry"),
-  stage: text("stage"),
-  location: text("location"),
-  teamSize: text("team_size"),
-  fundingGoal: text("funding_goal"),
-  targetMarket: text("target_market"),
-  problemStatement: text("problem_statement"),
-  solutionApproach: text("solution_approach"),
-  competitiveAdvantage: text("competitive_advantage"),
-  revenueModel: text("revenue_model"),
-  completionPercentage: integer("completion_percentage").default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
 
-export const insertStartupProfileSchema = createInsertSchema(startupProfiles);
-export type InsertStartupProfile = typeof startupProfiles.$inferInsert;
-export type StartupProfile = typeof startupProfiles.$inferSelect;
