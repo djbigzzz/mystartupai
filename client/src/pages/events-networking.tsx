@@ -1,619 +1,557 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { 
   Calendar, 
   MapPin, 
   Users, 
   Clock, 
-  DollarSign, 
-  Video, 
   Search,
   Filter,
   Star,
   MessageCircle,
   UserPlus,
+  Handshake,
+  CheckCircle,
+  XCircle,
   Globe,
   Linkedin,
   Twitter,
   Github,
-  ExternalLink,
-  Heart,
-  Share2
+  Building2,
+  Target,
+  TrendingUp
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  type: string;
-  category: string;
-  startDate: string;
-  endDate?: string;
-  location?: string;
-  isVirtual: boolean;
-  virtualLink?: string;
-  organizerName: string;
-  organizerEmail: string;
-  maxAttendees?: number;
-  currentAttendees: number;
-  price: string;
-  registrationUrl?: string;
-  tags: string[];
-  imageUrl?: string;
-  requirements?: string;
-  agenda?: any;
-  speakers?: any;
-  benefits: string[];
-  status: string;
-}
-
-interface NetworkingProfile {
-  id: number;
-  userId: number;
-  user?: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
-  bio: string;
-  interests: string[];
-  skills: string[];
-  industries: string[];
-  lookingFor: string[];
-  stage: string;
-  availableForMentoring: boolean;
-  seekingMentorship: boolean;
-  openToCollaboration: boolean;
-  linkedinUrl?: string;
-  twitterUrl?: string;
-  githubUrl?: string;
-  websiteUrl?: string;
-  location?: string;
-  timezone?: string;
-  preferredContactMethod: string;
-  visibility: string;
-}
-
 export default function EventsNetworking() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [eventFilter, setEventFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [locationFilter, setLocationFilter] = useState("all");
-  const [networkingFilter, setNetworkingFilter] = useState("all");
-  const [stageFilter, setStageFilter] = useState("all");
-
+  const [activeTab, setActiveTab] = useState("events");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [eventFilters, setEventFilters] = useState({
+    type: "",
+    category: "",
+    location: ""
+  });
+  const [networkingFilters, setNetworkingFilters] = useState({
+    stage: "",
+    industries: [] as string[],
+    lookingFor: [] as string[]
+  });
+  
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Mock events data for demonstration
-  const mockEvents: Event[] = [
+  // Events queries
+  const { data: events = [], isLoading: eventsLoading } = useQuery({
+    queryKey: ["/api/events", eventFilters],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (eventFilters.type) params.append('type', eventFilters.type);
+      if (eventFilters.category) params.append('category', eventFilters.category);
+      if (eventFilters.location) params.append('location', eventFilters.location);
+      return apiRequest(`/api/events?${params.toString()}`);
+    }
+  });
+
+  // Networking queries
+  const { data: profiles = [], isLoading: profilesLoading } = useQuery({
+    queryKey: ["/api/networking/profiles", networkingFilters],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (networkingFilters.stage) params.append('stage', networkingFilters.stage);
+      if (networkingFilters.industries.length) params.append('industries', networkingFilters.industries.join(','));
+      if (networkingFilters.lookingFor.length) params.append('lookingFor', networkingFilters.lookingFor.join(','));
+      return apiRequest(`/api/networking/profiles?${params.toString()}`);
+    }
+  });
+
+  const { data: myProfile } = useQuery({
+    queryKey: ["/api/networking/profile"]
+  });
+
+  const { data: myConnections = [] } = useQuery({
+    queryKey: ["/api/networking/connections"]
+  });
+
+  // Event registration mutation
+  const registerForEventMutation = useMutation({
+    mutationFn: (eventId: number) => apiRequest(`/api/events/${eventId}/register`, { method: 'POST' }),
+    onSuccess: () => {
+      toast({
+        title: "Registration successful!",
+        description: "You've been registered for this event."
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Registration failed",
+        description: error.message || "Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Connection request mutation
+  const sendConnectionMutation = useMutation({
+    mutationFn: (data: { receiverId: number; message: string }) => 
+      apiRequest("/api/networking/connections", { method: 'POST', body: data }),
+    onSuccess: () => {
+      toast({
+        title: "Connection request sent!",
+        description: "Your request has been sent successfully."
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/networking/connections"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Connection failed",
+        description: error.message || "Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Mock events data for demo
+  const mockEvents = [
     {
       id: 1,
-      title: "SF Startup Demo Day 2025",
-      description: "Join us for an exciting evening where early-stage startups present their innovative solutions to investors, mentors, and the tech community.",
+      title: "Startup Pitch Competition 2024",
+      description: "Present your startup idea to top investors and compete for $100K in funding",
       type: "startup",
-      category: "demo_day",
-      startDate: "2025-01-15T18:00:00Z",
-      endDate: "2025-01-15T21:00:00Z",
+      category: "pitch_competition",
+      startDate: new Date('2024-08-15T18:00:00'),
       location: "San Francisco, CA",
       isVirtual: false,
-      organizerName: "SF Tech Hub",
-      organizerEmail: "events@sftechhub.com",
+      organizerName: "TechVenture Partners",
+      price: "Free",
       maxAttendees: 200,
-      currentAttendees: 147,
-      price: "25.00",
-      tags: ["startups", "demo", "investors", "networking"],
-      benefits: ["Network with investors", "Learn from successful founders", "Get feedback on your startup"],
-      status: "upcoming"
+      currentAttendees: 156,
+      tags: ["funding", "pitching", "competition"],
+      imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500&h=300&fit=crop",
+      benefits: ["Network with VCs", "$100K funding prize", "Mentorship opportunities"]
     },
     {
       id: 2,
-      title: "Virtual AI & Machine Learning Workshop",
-      description: "Deep dive into the latest AI technologies and learn how to integrate machine learning into your startup's product roadmap.",
+      title: "AI & Machine Learning Workshop",
+      description: "Learn the latest AI technologies and how to integrate them into your startup",
       type: "tech",
       category: "workshop",
-      startDate: "2025-01-20T14:00:00Z",
-      endDate: "2025-01-20T17:00:00Z",
-      location: "Virtual",
+      startDate: new Date('2024-08-20T14:00:00'),
+      location: "Virtual Event",
       isVirtual: true,
-      virtualLink: "https://zoom.us/j/123456789",
-      organizerName: "AI Startup Collective",
-      organizerEmail: "workshops@aistartupcollective.com",
-      maxAttendees: 50,
-      currentAttendees: 38,
-      price: "0.00",
-      tags: ["AI", "machine learning", "technology", "virtual"],
-      benefits: ["Hands-on AI training", "Expert mentorship", "Code examples and resources"],
-      status: "upcoming"
+      organizerName: "AI Startup Academy",
+      price: "$49.99",
+      maxAttendees: 500,
+      currentAttendees: 342,
+      tags: ["ai", "ml", "technology"],
+      imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500&h=300&fit=crop",
+      benefits: ["Hands-on coding", "Expert instructors", "Certificate of completion"]
     },
     {
       id: 3,
-      title: "Women in Tech Networking Mixer",
-      description: "Connect with like-minded women entrepreneurs, share experiences, and build meaningful professional relationships in the tech industry.",
+      title: "Founder Networking Mixer",
+      description: "Connect with fellow entrepreneurs and share experiences over drinks",
       type: "networking",
       category: "networking",
-      startDate: "2025-01-25T19:00:00Z",
-      endDate: "2025-01-25T22:00:00Z",
-      location: "New York, NY",
+      startDate: new Date('2024-08-18T19:00:00'),
+      location: "Austin, TX",
       isVirtual: false,
-      organizerName: "Women Tech Leaders",
-      organizerEmail: "events@womentechleaders.org",
-      maxAttendees: 100,
-      currentAttendees: 73,
-      price: "15.00",
-      tags: ["women in tech", "networking", "diversity", "entrepreneurs"],
-      benefits: ["Diverse networking", "Mentorship opportunities", "Career advancement insights"],
-      status: "upcoming"
+      organizerName: "Austin Startup Society",
+      price: "$25.00",
+      maxAttendees: 150,
+      currentAttendees: 89,
+      tags: ["networking", "founders", "social"],
+      imageUrl: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=500&h=300&fit=crop",
+      benefits: ["Meet co-founders", "Investor introductions", "Complimentary drinks"]
     }
   ];
 
-  // Mock networking profiles data
-  const mockProfiles: NetworkingProfile[] = [
+  // Mock networking profiles for demo
+  const mockProfiles = [
     {
       id: 1,
-      userId: 1,
-      user: {
-        name: "Sarah Chen",
-        email: "sarah@techstartup.com",
-        avatar: undefined
-      },
-      bio: "Serial entrepreneur with 8+ years in SaaS. Currently building an AI-powered customer service platform. Looking to connect with fellow founders and potential advisors.",
-      interests: ["AI", "SaaS", "Customer Experience", "Product Management"],
-      skills: ["Product Strategy", "Team Building", "Fundraising", "Go-to-Market"],
-      industries: ["SaaS", "AI/ML", "Customer Service"],
-      lookingFor: ["advisor", "investor", "cofounder"],
+      userId: 2,
+      bio: "Serial entrepreneur with 3 successful exits. Looking to mentor early-stage founders in fintech.",
+      interests: ["fintech", "blockchain", "mentoring"],
+      skills: ["product", "fundraising", "scaling"],
+      industries: ["fintech", "saas"],
+      lookingFor: ["mentor"],
       stage: "growth",
       availableForMentoring: true,
-      seekingMentorship: false,
-      openToCollaboration: true,
-      linkedinUrl: "https://linkedin.com/in/sarahchen",
-      location: "San Francisco, CA",
-      timezone: "PST",
-      preferredContactMethod: "platform",
-      visibility: "public"
+      linkedinUrl: "https://linkedin.com/in/jane-investor",
+      location: "New York, NY",
+      user: { name: "Jane Smith", email: "jane@example.com", avatar: "https://images.unsplash.com/photo-1494790108755-2616b67c14e5?w=150&h=150&fit=crop&crop=face" }
     },
     {
       id: 2,
-      userId: 2,
-      user: {
-        name: "Marcus Johnson",
-        email: "marcus@fintech.com",
-        avatar: undefined
-      },
-      bio: "FinTech founder passionate about democratizing financial services. Previously led product at two successful startups. Happy to mentor early-stage founders.",
-      interests: ["FinTech", "Blockchain", "Financial Inclusion", "Mobile Payments"],
-      skills: ["Product Development", "Regulatory Compliance", "Partnership Building", "User Research"],
-      industries: ["FinTech", "Financial Services", "Blockchain"],
-      lookingFor: ["mentor", "customer"],
-      stage: "scaling",
-      availableForMentoring: true,
-      seekingMentorship: true,
-      openToCollaboration: false,
-      linkedinUrl: "https://linkedin.com/in/marcusjohnson",
-      twitterUrl: "https://twitter.com/marcusfintech",
-      location: "Austin, TX",
-      timezone: "CST",
-      preferredContactMethod: "linkedin",
-      visibility: "public"
+      userId: 3,
+      bio: "Tech co-founder with expertise in AI and ML. Building the next generation of intelligent apps.",
+      interests: ["ai", "machine-learning", "b2b-saas"],
+      skills: ["engineering", "ai", "product-management"],
+      industries: ["ai", "saas", "enterprise"],
+      lookingFor: ["cofounder", "advisor"],
+      stage: "mvp",
+      openToCollaboration: true,
+      githubUrl: "https://github.com/techfounder",
+      location: "San Francisco, CA",
+      user: { name: "Alex Chen", email: "alex@startup.com", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" }
     },
     {
       id: 3,
-      userId: 3,
-      user: {
-        name: "Emily Rodriguez",
-        email: "emily@healthtech.com",
-        avatar: undefined
-      },
-      bio: "Healthcare entrepreneur building solutions to improve patient outcomes. Background in biomedical engineering and digital health. Seeking technical co-founder.",
-      interests: ["HealthTech", "Digital Health", "Medical Devices", "Data Analytics"],
-      skills: ["Biomedical Engineering", "Clinical Research", "Product Design", "Healthcare Compliance"],
-      industries: ["HealthTech", "Medical Devices", "Digital Health"],
-      lookingFor: ["cofounder", "advisor", "investor"],
-      stage: "mvp",
-      availableForMentoring: false,
-      seekingMentorship: true,
-      openToCollaboration: true,
-      githubUrl: "https://github.com/emilyrodriguez",
-      websiteUrl: "https://healthtechsolutions.com",
-      location: "Boston, MA",
-      timezone: "EST",
-      preferredContactMethod: "platform",
-      visibility: "public"
+      userId: 4,
+      bio: "Marketing expert who has scaled 5 startups to $10M+ ARR. Passionate about growth hacking.",
+      interests: ["marketing", "growth-hacking", "saas"],
+      skills: ["growth-marketing", "seo", "content-marketing"],
+      industries: ["saas", "e-commerce", "marketing"],
+      lookingFor: ["advisor", "customer"],
+      stage: "scaling",
+      availableForMentoring: true,
+      linkedinUrl: "https://linkedin.com/in/growth-expert",
+      twitterUrl: "https://twitter.com/growthexpert",
+      location: "Austin, TX",
+      user: { name: "Sarah Johnson", email: "sarah@growth.co", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" }
     }
   ];
 
-  const filteredEvents = mockEvents.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = eventFilter === "all" || event.type === eventFilter;
-    const matchesCategory = categoryFilter === "all" || event.category === categoryFilter;
-    const matchesLocation = locationFilter === "all" || 
-                           (locationFilter === "virtual" && event.isVirtual) ||
-                           (locationFilter === "in-person" && !event.isVirtual);
-    
-    return matchesSearch && matchesType && matchesCategory && matchesLocation;
-  });
-
-  const filteredProfiles = mockProfiles.filter(profile => {
-    const matchesSearch = profile.user?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         profile.bio.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStage = stageFilter === "all" || profile.stage === stageFilter;
-    const matchesNetworking = networkingFilter === "all" ||
-                             (networkingFilter === "mentoring" && profile.availableForMentoring) ||
-                             (networkingFilter === "seeking" && profile.seekingMentorship) ||
-                             (networkingFilter === "collaboration" && profile.openToCollaboration);
-    
-    return matchesSearch && matchesStage && matchesNetworking;
-  });
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: 'numeric',
+      year: 'numeric',
       hour: 'numeric',
       minute: '2-digit'
-    });
+    }).format(date);
   };
 
-  const EventCard = ({ event }: { event: Event }) => (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <CardTitle className="text-lg mb-2">{event.title}</CardTitle>
-            <CardDescription className="text-sm mb-3">
-              {event.description}
-            </CardDescription>
-          </div>
-          <div className="flex items-center space-x-2 ml-4">
-            <Button size="sm" variant="outline">
-              <Heart className="w-4 h-4 mr-1" />
-              Save
-            </Button>
-            <Button size="sm" variant="outline">
-              <Share2 className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-2 mb-3">
-          <Badge variant="secondary">{event.type}</Badge>
-          <Badge variant="outline">{event.category}</Badge>
-          {event.tags.slice(0, 2).map(tag => (
-            <Badge key={tag} variant="outline" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <div className="space-y-3">
-          <div className="flex items-center text-sm text-gray-600">
-            <Calendar className="w-4 h-4 mr-2" />
-            {formatDate(event.startDate)}
-            {event.endDate && ` - ${formatDate(event.endDate)}`}
-          </div>
-
-          <div className="flex items-center text-sm text-gray-600">
-            {event.isVirtual ? (
-              <>
-                <Video className="w-4 h-4 mr-2" />
-                Virtual Event
-              </>
-            ) : (
-              <>
-                <MapPin className="w-4 h-4 mr-2" />
-                {event.location}
-              </>
-            )}
-          </div>
-
-          <div className="flex items-center text-sm text-gray-600">
-            <Users className="w-4 h-4 mr-2" />
-            {event.currentAttendees} / {event.maxAttendees || "∞"} attendees
-          </div>
-
-          {event.price !== "0.00" && (
-            <div className="flex items-center text-sm text-gray-600">
-              <DollarSign className="w-4 h-4 mr-2" />
-              ${event.price}
-            </div>
-          )}
-
-          <div className="text-sm text-gray-600">
-            <p className="font-medium mb-1">What you'll get:</p>
-            <ul className="list-disc list-inside text-xs space-y-1">
-              {event.benefits.slice(0, 3).map((benefit, index) => (
-                <li key={index}>{benefit}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-xs text-gray-500">
-              Organized by {event.organizerName}
-            </div>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-              Register Now
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+  const filteredEvents = mockEvents.filter(event =>
+    event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const ProfileCard = ({ profile }: { profile: NetworkingProfile }) => (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <div className="flex items-start space-x-4">
-          <Avatar className="w-16 h-16">
-            <AvatarImage src={profile.user?.avatar} />
-            <AvatarFallback>
-              {profile.user?.name.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
-          
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">{profile.user?.name}</CardTitle>
-              <div className="flex items-center space-x-2">
-                <Button size="sm" variant="outline">
-                  <UserPlus className="w-4 h-4 mr-1" />
-                  Connect
-                </Button>
-                <Button size="sm" variant="outline">
-                  <MessageCircle className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-2 mt-1">
-              <Badge variant="secondary">{profile.stage}</Badge>
-              {profile.availableForMentoring && (
-                <Badge variant="outline" className="text-green-700 border-green-300">
-                  Available for Mentoring
-                </Badge>
-              )}
-              {profile.seekingMentorship && (
-                <Badge variant="outline" className="text-blue-700 border-blue-300">
-                  Seeking Mentorship
-                </Badge>
-              )}
-              {profile.openToCollaboration && (
-                <Badge variant="outline" className="text-purple-700 border-purple-300">
-                  Open to Collaborate
-                </Badge>
-              )}
-            </div>
-
-            {profile.location && (
-              <div className="flex items-center text-sm text-gray-600 mt-1">
-                <MapPin className="w-3 h-3 mr-1" />
-                {profile.location}
-              </div>
-            )}
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <div className="space-y-4">
-          <p className="text-sm text-gray-700">{profile.bio}</p>
-
-          <div>
-            <p className="font-medium text-sm mb-2">Looking for:</p>
-            <div className="flex flex-wrap gap-1">
-              {profile.lookingFor.map(item => (
-                <Badge key={item} variant="outline" className="text-xs">
-                  {item}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="font-medium text-sm mb-2">Industries:</p>
-            <div className="flex flex-wrap gap-1">
-              {profile.industries.slice(0, 3).map(industry => (
-                <Badge key={industry} variant="secondary" className="text-xs">
-                  {industry}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="font-medium text-sm mb-2">Skills:</p>
-            <div className="flex flex-wrap gap-1">
-              {profile.skills.slice(0, 4).map(skill => (
-                <Badge key={skill} variant="outline" className="text-xs">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3 pt-2 border-t">
-            {profile.linkedinUrl && (
-              <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" variant="ghost" className="p-2">
-                  <Linkedin className="w-4 h-4" />
-                </Button>
-              </a>
-            )}
-            {profile.twitterUrl && (
-              <a href={profile.twitterUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" variant="ghost" className="p-2">
-                  <Twitter className="w-4 h-4" />
-                </Button>
-              </a>
-            )}
-            {profile.githubUrl && (
-              <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" variant="ghost" className="p-2">
-                  <Github className="w-4 h-4" />
-                </Button>
-              </a>
-            )}
-            {profile.websiteUrl && (
-              <a href={profile.websiteUrl} target="_blank" rel="noopener noreferrer">
-                <Button size="sm" variant="ghost" className="p-2">
-                  <ExternalLink className="w-4 h-4" />
-                </Button>
-              </a>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+  const filteredProfiles = mockProfiles.filter(profile =>
+    profile.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.bio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Events & Networking</h1>
-        <p className="text-gray-600 mt-2">
-          Discover startup events and connect with like-minded entrepreneurs
-        </p>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search events, people, or topics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Events & Networking</h1>
+          <p className="text-muted-foreground">
+            Discover startup events and connect with entrepreneurs, investors, and mentors in your area
+          </p>
         </div>
-        
-        <div className="flex gap-2">
-          <Select value={eventFilter} onValueChange={setEventFilter}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Event Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="startup">Startup</SelectItem>
-              <SelectItem value="tech">Tech</SelectItem>
-              <SelectItem value="networking">Networking</SelectItem>
-              <SelectItem value="demo_day">Demo Day</SelectItem>
-            </SelectContent>
-          </Select>
 
-          <Select value={locationFilter} onValueChange={setLocationFilter}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Location" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Locations</SelectItem>
-              <SelectItem value="virtual">Virtual</SelectItem>
-              <SelectItem value="in-person">In Person</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="events">
+              <Calendar className="w-4 h-4 mr-2" />
+              Events
+            </TabsTrigger>
+            <TabsTrigger value="networking">
+              <Users className="w-4 h-4 mr-2" />
+              Networking
+            </TabsTrigger>
+            <TabsTrigger value="connections">
+              <Handshake className="w-4 h-4 mr-2" />
+              My Connections
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Search and Filters */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder={activeTab === "events" ? "Search events..." : "Search people..."}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            {activeTab === "events" && (
+              <div className="flex gap-2">
+                <Select value={eventFilters.type} onValueChange={(value) => setEventFilters(prev => ({ ...prev, type: value }))}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Event Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="startup">Startup</SelectItem>
+                    <SelectItem value="tech">Tech</SelectItem>
+                    <SelectItem value="networking">Networking</SelectItem>
+                    <SelectItem value="conference">Conference</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={eventFilters.category} onValueChange={(value) => setEventFilters(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="workshop">Workshop</SelectItem>
+                    <SelectItem value="pitch_competition">Pitch Competition</SelectItem>
+                    <SelectItem value="networking">Networking</SelectItem>
+                    <SelectItem value="conference">Conference</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
+          <TabsContent value="events" className="space-y-6">
+            <div className="grid gap-6">
+              {filteredEvents.map((event) => (
+                <Card key={event.id} className="overflow-hidden">
+                  <div className="md:flex">
+                    <div className="md:w-1/3">
+                      <img 
+                        src={event.imageUrl} 
+                        alt={event.title}
+                        className="w-full h-48 md:h-full object-cover"
+                      />
+                    </div>
+                    <CardContent className="md:w-2/3 p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                          <p className="text-muted-foreground mb-4">{event.description}</p>
+                        </div>
+                        <Badge variant={event.price === "Free" ? "secondary" : "default"}>
+                          {event.price}
+                        </Badge>
+                      </div>
+
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          {formatDate(event.startDate)}
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          {event.location}
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Users className="w-4 h-4 mr-2" />
+                          {event.currentAttendees} / {event.maxAttendees} attendees
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Building2 className="w-4 h-4 mr-2" />
+                          Organized by {event.organizerName}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {event.tags.map((tag) => (
+                          <Badge key={tag} variant="outline" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <div className="mb-4">
+                        <h4 className="font-medium mb-2">Benefits:</h4>
+                        <ul className="text-sm text-muted-foreground space-y-1">
+                          {event.benefits.map((benefit, index) => (
+                            <li key={index} className="flex items-center">
+                              <CheckCircle className="w-3 h-3 mr-2 text-green-500" />
+                              {benefit}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <Button 
+                        onClick={() => registerForEventMutation.mutate(event.id)}
+                        disabled={registerForEventMutation.isPending}
+                        className="w-full md:w-auto"
+                      >
+                        {registerForEventMutation.isPending ? "Registering..." : "Register for Event"}
+                      </Button>
+                    </CardContent>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="networking" className="space-y-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProfiles.map((profile) => (
+                <Card key={profile.id} className="h-fit">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center space-x-4">
+                      <img 
+                        src={profile.user.avatar}
+                        alt={profile.user.name}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      <div>
+                        <h3 className="font-semibold">{profile.user.name}</h3>
+                        <p className="text-sm text-muted-foreground">{profile.location}</p>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground">{profile.bio}</p>
+                    
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Stage:</h4>
+                      <Badge variant="outline" className="capitalize">
+                        {profile.stage}
+                      </Badge>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Industries:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {profile.industries.map((industry) => (
+                          <Badge key={industry} variant="secondary" className="text-xs capitalize">
+                            {industry}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Looking for:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {profile.lookingFor.map((item) => (
+                          <Badge key={item} variant="outline" className="text-xs capitalize">
+                            {item}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-medium mb-2">Skills:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {profile.skills.slice(0, 3).map((skill) => (
+                          <Badge key={skill} variant="default" className="text-xs capitalize">
+                            {skill}
+                          </Badge>
+                        ))}
+                        {profile.skills.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{profile.skills.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      {profile.linkedinUrl && (
+                        <Button size="sm" variant="outline" className="p-2">
+                          <Linkedin className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {profile.twitterUrl && (
+                        <Button size="sm" variant="outline" className="p-2">
+                          <Twitter className="w-4 h-4" />
+                        </Button>
+                      )}
+                      {profile.githubUrl && (
+                        <Button size="sm" variant="outline" className="p-2">
+                          <Github className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <Button 
+                        size="sm" 
+                        onClick={() => sendConnectionMutation.mutate({ receiverId: profile.userId, message: "Hi! I'd like to connect with you." })}
+                        disabled={sendConnectionMutation.isPending}
+                        className="flex-1"
+                      >
+                        <UserPlus className="w-4 h-4 mr-1" />
+                        Connect
+                      </Button>
+                      <Button size="sm" variant="outline" className="px-3">
+                        <MessageCircle className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="connections" className="space-y-6">
+            <div className="grid gap-4">
+              {/* Mock connections for demo */}
+              {[
+                {
+                  id: 1,
+                  status: "accepted",
+                  user: { name: "Jane Smith", email: "jane@example.com", avatar: "https://images.unsplash.com/photo-1494790108755-2616b67c14e5?w=150&h=150&fit=crop&crop=face" },
+                  connectionDate: new Date('2024-07-15'),
+                  message: "Great to connect! Love your work in fintech."
+                },
+                {
+                  id: 2,
+                  status: "pending",
+                  user: { name: "Alex Chen", email: "alex@startup.com", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
+                  message: "Hi! I'd like to discuss potential collaboration opportunities."
+                }
+              ].map((connection) => (
+                <Card key={connection.id}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <img 
+                          src={connection.user.avatar}
+                          alt={connection.user.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div>
+                          <h3 className="font-semibold">{connection.user.name}</h3>
+                          <p className="text-sm text-muted-foreground">{connection.user.email}</p>
+                          {connection.message && (
+                            <p className="text-sm text-muted-foreground mt-1">"{connection.message}"</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge 
+                          variant={connection.status === "accepted" ? "default" : "secondary"}
+                          className="capitalize"
+                        >
+                          {connection.status === "accepted" && <CheckCircle className="w-3 h-3 mr-1" />}
+                          {connection.status}
+                        </Badge>
+                        {connection.status === "pending" && (
+                          <div className="flex space-x-1">
+                            <Button size="sm" variant="outline">
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" variant="outline">
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      {/* Tabs */}
-      <Tabs defaultValue="events" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="events">Upcoming Events</TabsTrigger>
-          <TabsTrigger value="networking">Network</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="events" className="space-y-6">
-          {/* Event Filters */}
-          <div className="flex gap-2">
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="workshop">Workshop</SelectItem>
-                <SelectItem value="demo_day">Demo Day</SelectItem>
-                <SelectItem value="networking">Networking</SelectItem>
-                <SelectItem value="conference">Conference</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Events Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredEvents.map(event => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-
-          {filteredEvents.length === 0 && (
-            <div className="text-center py-12">
-              <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-              <p className="text-gray-600">Try adjusting your search or filters</p>
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="networking" className="space-y-6">
-          {/* Networking Filters */}
-          <div className="flex gap-2">
-            <Select value={stageFilter} onValueChange={setStageFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Stage" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Stages</SelectItem>
-                <SelectItem value="idea">Idea</SelectItem>
-                <SelectItem value="mvp">MVP</SelectItem>
-                <SelectItem value="growth">Growth</SelectItem>
-                <SelectItem value="scaling">Scaling</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={networkingFilter} onValueChange={setNetworkingFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Looking for" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="mentoring">Available for Mentoring</SelectItem>
-                <SelectItem value="seeking">Seeking Mentorship</SelectItem>
-                <SelectItem value="collaboration">Open to Collaborate</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Profiles Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {filteredProfiles.map(profile => (
-              <ProfileCard key={profile.id} profile={profile} />
-            ))}
-          </div>
-
-          {filteredProfiles.length === 0 && (
-            <div className="text-center py-12">
-              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No profiles found</h3>
-              <p className="text-gray-600">Try adjusting your search or filters</p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }

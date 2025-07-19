@@ -9,9 +9,7 @@ export const users = pgTable("users", {
   username: text("username").unique(),
   password: text("password"),
   googleId: text("google_id").unique(),
-  walletAddress: text("wallet_address").unique(),
-  walletType: text("wallet_type"), // metamask, rabby, phantom, walletconnect
-  chainId: integer("chain_id"),
+
   avatar: text("avatar"),
   emailVerified: boolean("email_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
@@ -141,12 +139,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   updatedAt: true,
 });
 
-export const insertWalletUserSchema = createInsertSchema(users).pick({
-  walletAddress: true,
-  walletType: true,
-  chainId: true,
-  name: true,
-});
+
 
 export const insertCompanySchema = createInsertSchema(companies).pick({
   companyName: true,
@@ -181,7 +174,7 @@ export const insertStartupProfileSchema = createInsertSchema(startupProfiles).om
 // Type exports
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type InsertWalletUser = z.infer<typeof insertWalletUserSchema>;
+
 export type StartupIdea = typeof startupIdeas.$inferSelect;
 export type InsertStartupIdea = z.infer<typeof insertStartupIdeaSchema>;
 export type Company = typeof companies.$inferSelect;

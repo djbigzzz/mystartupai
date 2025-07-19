@@ -111,6 +111,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Google OAuth routes
+  app.get("/api/auth/google", passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+  app.get("/api/auth/google/callback", 
+    passport.authenticate('google', { failureRedirect: '/app' }),
+    (req, res) => {
+      // Successful authentication, redirect to dashboard
+      res.redirect('/dashboard');
+    }
+  );
+
+  // Google OAuth for waitlist
+  app.get("/api/auth/google/waitlist", passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+  app.get("/api/auth/google/waitlist/callback", 
+    passport.authenticate('google', { failureRedirect: '/waitlist' }),
+    async (req, res) => {
+      try {
+        // Add user to waitlist if not already there
+        const user = req.user as any;
+        if (user.email) {
+          const existingEntry = await storage.getWaitlistEntry(user.email);
+          if (!existingEntry) {
+            await storage.createWaitlistEntry({
+              email: user.email,
+              name: user.name || 'Google User',
+              source: 'google_oauth'
+            });
+          }
+        }
+        res.redirect('/waitlist?success=google');
+      } catch (error) {
+        console.error('Waitlist signup error:', error);
+        res.redirect('/waitlist?error=signup_failed');
+      }
+    }
+  );
+
   // Profile management routes
   app.patch("/api/auth/profile", requireAuth, async (req, res) => {
     try {
@@ -869,6 +907,181 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Get profile error:", error);
       res.status(500).json({ message: "Failed to get profile" });
+    }
+  });
+
+  // Events API Routes
+  app.get("/api/events", async (req, res) => {
+    try {
+      const { type, category, location } = req.query;
+      const events = await storage.getEvents({
+        type: type as string,
+        category: category as string,
+        location: location as string
+      });
+      res.json(events);
+    } catch (error: any) {
+      console.error("Get events error:", error);
+      res.status(500).json({ message: "Failed to get events" });
+    }
+  });
+
+  app.get("/api/events/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const event = await storage.getEvent(id);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      res.json(event);
+    } catch (error: any) {
+      console.error("Get event error:", error);
+      res.status(500).json({ message: "Failed to get event" });
+    }
+  });
+
+  app.post("/api/events/:id/register", requireAuth, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const userId = (req.user as any).id;
+      
+      // Check if already registered
+      const existing = await storage.getEventRegistration(eventId, userId);
+      if (existing) {
+        return res.status(400).json({ message: "Already registered for this event" });
+      }
+
+      const registration = await storage.registerForEvent({
+        eventId,
+        userId,
+        status: 'registered'
+      });
+      res.json(registration);
+    } catch (error: any) {
+      console.error("Event registration error:", error);
+      res.status(500).json({ message: "Failed to register for event" });
+    }
+  });
+
+  app.get("/api/events/:id/registrations", requireAuth, async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const registrations = await storage.getEventRegistrations(eventId);
+      res.json(registrations);
+    } catch (error: any) {
+      console.error("Get registrations error:", error);
+      res.status(500).json({ message: "Failed to get registrations" });
+    }
+  });
+
+  // Networking API Routes
+  app.get("/api/networking/profiles", requireAuth, async (req, res) => {
+    try {
+      const { stage, industries, lookingFor } = req.query;
+      const filters: any = {};
+      if (stage) filters.stage = stage as string;
+      if (industries) filters.industries = (industries as string).split(',');
+      if (lookingFor) filters.lookingFor = (lookingFor as string).split(',');
+      
+      const profiles = await storage.getNetworkingProfiles(filters);
+      res.json(profiles);
+    } catch (error: any) {
+      console.error("Get networking profiles error:", error);
+      res.status(500).json({ message: "Failed to get profiles" });
+    }
+  });
+
+  app.get("/api/networking/profile", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const profile = await storage.getNetworkingProfile(userId);
+      res.json(profile);
+    } catch (error: any) {
+      console.error("Get networking profile error:", error);
+      res.status(500).json({ message: "Failed to get profile" });
+    }
+  });
+
+  app.post("/api/networking/profile", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const profileData = { ...req.body, userId };
+      
+      const existing = await storage.getNetworkingProfile(userId);
+      let profile;
+      
+      if (existing) {
+        profile = await storage.updateNetworkingProfile(userId, profileData);
+      } else {
+        profile = await storage.createNetworkingProfile(profileData);
+      }
+      
+      res.json(profile);
+    } catch (error: any) {
+      console.error("Create/update networking profile error:", error);
+      res.status(500).json({ message: "Failed to save profile" });
+    }
+  });
+
+  app.post("/api/networking/connections", requireAuth, async (req, res) => {
+    try {
+      const requesterId = (req.user as any).id;
+      const { receiverId, message } = req.body;
+      
+      if (requesterId === receiverId) {
+        return res.status(400).json({ message: "Cannot connect to yourself" });
+      }
+
+      // Check if connection already exists
+      const existingConnections = await storage.getUserConnections(requesterId);
+      const existing = existingConnections.find(
+        conn => (conn.requesterId === requesterId && conn.receiverId === receiverId) ||
+                (conn.requesterId === receiverId && conn.receiverId === requesterId)
+      );
+      
+      if (existing) {
+        return res.status(400).json({ message: "Connection already exists" });
+      }
+
+      const connection = await storage.createConnection({
+        requesterId,
+        receiverId,
+        message,
+        status: 'pending'
+      });
+      
+      res.json(connection);
+    } catch (error: any) {
+      console.error("Create connection error:", error);
+      res.status(500).json({ message: "Failed to create connection" });
+    }
+  });
+
+  app.get("/api/networking/connections", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const connections = await storage.getUserConnections(userId);
+      res.json(connections);
+    } catch (error: any) {
+      console.error("Get connections error:", error);
+      res.status(500).json({ message: "Failed to get connections" });
+    }
+  });
+
+  app.patch("/api/networking/connections/:id", requireAuth, async (req, res) => {
+    try {
+      const connectionId = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      const connection = await storage.updateConnection(connectionId, {
+        status,
+        connectionDate: status === 'accepted' ? new Date() : undefined
+      });
+      
+      res.json(connection);
+    } catch (error: any) {
+      console.error("Update connection error:", error);
+      res.status(500).json({ message: "Failed to update connection" });
     }
   });
 
