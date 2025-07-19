@@ -26,6 +26,7 @@ import {
   securityLogger, 
   advancedRateLimit 
 } from "./advanced-security";
+import { cleanUserDataForResponse, sanitizeForLogging } from "./privacy-protection";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -81,14 +82,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           emailVerified: false
         });
 
-        // Don't expose sensitive user data
+        // Clean user data before sending response
+        const cleanUser = cleanUserDataForResponse(user);
         res.status(201).json({ 
           message: "User created successfully", 
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name
-          }
+          user: cleanUser
         });
       } catch (error) {
         console.error("Registration error:", error);
@@ -135,14 +133,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error("Login after signup error:", err);
             return res.status(500).json({ message: "Account created but login failed" });
           }
+          const cleanUser = cleanUserDataForResponse(user);
           res.status(201).json({ 
             message: "Account created successfully", 
-            user: { 
-              id: user.id, 
-              email: user.email, 
-              name: user.name,
-              emailVerified: user.emailVerified
-            }
+            user: cleanUser
           });
         });
       } catch (error) {
@@ -162,16 +156,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       failWithError: true 
     }), 
     (req, res) => {
-      // Don't expose sensitive user data
+      // Clean user data before sending response
       const user = req.user as any;
-      res.json({ 
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          emailVerified: user.emailVerified
-        }
-      });
+      const cleanUser = cleanUserDataForResponse(user);
+      res.json({ user: cleanUser });
     }
   );
 
@@ -187,13 +175,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/me", (req, res) => {
     if (req.isAuthenticated()) {
       const user = req.user as any;
-      res.json({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        emailVerified: user.emailVerified,
-        avatar: user.avatar
-      });
+      const cleanUser = cleanUserDataForResponse(user);
+      res.json(cleanUser);
     } else {
       res.status(401).json({ message: "Unauthorized" });
     }
@@ -285,7 +268,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update session with new user data
       req.user = updatedUser;
 
-      res.json({ user: updatedUser });
+      // Clean user data before sending response
+      const cleanUser = cleanUserDataForResponse(updatedUser);
+      res.json({ user: cleanUser });
     } catch (error) {
       console.error("Profile update error:", error);
       res.status(500).json({ message: "Failed to update profile" });
