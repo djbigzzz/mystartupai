@@ -39,7 +39,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByGoogleId(googleId: string): Promise<User | undefined>;
-  getUserByWallet(walletAddress: string): Promise<User | undefined>;
+
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
   
@@ -92,7 +92,7 @@ export interface IStorage {
   // Waitlist operations
   createWaitlistEntry(entry: InsertWaitlist): Promise<Waitlist>;
   getWaitlistEntry(email: string): Promise<Waitlist | undefined>;
-  getWaitlistByWallet(walletAddress: string): Promise<Waitlist | undefined>;
+
   getWaitlistByGoogleId(googleId: string): Promise<Waitlist | undefined>;
   getWaitlistCount(): Promise<number>;
   getWaitlistEntries(): Promise<Waitlist[]>;
@@ -124,10 +124,7 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async getUserByWallet(walletAddress: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.walletAddress, walletAddress));
-    return user || undefined;
-  }
+
 
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
     const [user] = await db
@@ -376,10 +373,7 @@ export class DatabaseStorage implements IStorage {
     return entry;
   }
 
-  async getWaitlistByWallet(walletAddress: string): Promise<Waitlist | undefined> {
-    const [entry] = await db.select().from(waitlist).where(eq(waitlist.walletAddress, walletAddress));
-    return entry;
-  }
+
 
   async getWaitlistByGoogleId(googleId: string): Promise<Waitlist | undefined> {
     const [entry] = await db.select().from(waitlist).where(eq(waitlist.googleId, googleId));

@@ -4,12 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Sparkles, Mail, Chrome, Wallet, ArrowRight, Eye, EyeOff, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Sparkles, Mail, Chrome, ArrowRight, Eye, EyeOff, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
-import WalletConnect from "@/components/wallet-connect";
 
 export default function AppEntry() {
   const [email, setEmail] = useState("");
@@ -117,16 +116,7 @@ export default function AppEntry() {
     window.location.href = "/api/auth/google";
   };
 
-  // Wallet connect success handler
-  const handleWalletSuccess = () => {
-    toast({
-      title: "Wallet connected successfully!",
-      description: "Redirecting to your dashboard...",
-    });
-    setTimeout(() => {
-      setLocation("/dashboard");
-    }, 1000);
-  };
+
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -235,25 +225,15 @@ export default function AppEntry() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            {/* OAuth Buttons - Prominently Featured */}
-            <div className="space-y-3">
-              <Button 
-                onClick={handleGoogleAuth}
-                variant="outline"
-                className="w-full justify-center h-11 bg-white dark:bg-gray-900 border-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                <Chrome className="w-5 h-5 mr-3 text-blue-600" />
-                <span className="font-medium">Continue with Google</span>
-              </Button>
-              
-              {/* Web3 Section */}
-              <div className="space-y-2">
-                <div className="text-sm font-medium text-muted-foreground text-center">
-                  Web3 Authentication
-                </div>
-                <WalletConnect onSuccess={handleWalletSuccess} />
-              </div>
-            </div>
+            {/* OAuth Button - Prominently Featured */}
+            <Button 
+              onClick={handleGoogleAuth}
+              variant="outline"
+              className="w-full justify-center h-12 bg-white dark:bg-gray-900 border-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Chrome className="w-5 h-5 mr-3 text-blue-600" />
+              <span className="font-medium text-base">Continue with Google</span>
+            </Button>
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

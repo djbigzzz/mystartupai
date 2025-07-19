@@ -203,66 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
-  // Wallet authentication
-  app.post("/api/auth/wallet", async (req, res) => {
-    try {
-      console.log("Wallet auth request body:", req.body);
-      const { address, chainId, wallet, signature, message } = req.body;
-      
-      // Detailed validation with specific error messages
-      if (!address) {
-        return res.status(400).json({ message: "Wallet address is required" });
-      }
-      if (!wallet) {
-        return res.status(400).json({ message: "Wallet type is required" });
-      }
-      if (!signature) {
-        return res.status(400).json({ message: "Signature is required" });
-      }
-      if (!message) {
-        return res.status(400).json({ message: "Message is required" });
-      }
 
-      // Basic signature validation
-      if (typeof signature !== 'string' || signature.length < 10) {
-        return res.status(400).json({ message: "Invalid signature format" });
-      }
-
-      // Check if user exists with this wallet
-      let user = await storage.getUserByWallet(address);
-      
-      if (!user) {
-        // Create new user with wallet
-        const walletName = wallet.charAt(0).toUpperCase() + wallet.slice(1);
-        user = await storage.createUser({
-          walletAddress: address,
-          walletType: wallet,
-          chainId: chainId || null,
-          name: `${walletName} User`,
-          emailVerified: true // Wallet users are considered verified
-        });
-        console.log("Created new wallet user:", user.id);
-      } else {
-        console.log("Found existing wallet user:", user.id);
-      }
-
-      req.login(user, (err) => {
-        if (err) {
-          console.error("Login error:", err);
-          return res.status(500).json({ message: "Authentication failed" });
-        }
-        const { password: _, ...userWithoutPassword } = user;
-        console.log("Wallet auth successful for user:", user.id);
-        res.json({ user: userWithoutPassword });
-      });
-    } catch (error) {
-      console.error("Wallet auth error:", error);
-      res.status(500).json({ 
-        message: "Wallet authentication failed",
-        details: error instanceof Error ? error.message : "Unknown error"
-      });
-    }
-  });
   
   // Submit startup idea for analysis
   app.post("/api/ideas", async (req, res) => {
@@ -835,31 +776,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/waitlist/wallet", async (req, res) => {
-    try {
-      const { walletAddress } = req.body;
-      
-      if (!walletAddress) {
-        return res.status(400).json({ message: "Wallet address required" });
-      }
 
-      // Check if wallet already exists
-      const existing = await storage.getWaitlistByWallet(walletAddress);
-      if (existing) {
-        return res.status(400).json({ message: "Wallet already on waitlist" });
-      }
-
-      const entry = await storage.createWaitlistEntry({
-        walletAddress,
-        source: "wallet"
-      });
-      
-      res.json(entry);
-    } catch (error: any) {
-      console.error("Waitlist wallet signup error:", error);
-      res.status(400).json({ message: error.message || "Failed to join waitlist" });
-    }
-  });
 
   app.get("/api/waitlist/count", async (req, res) => {
     try {

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Star, ArrowRight, Mail, Chrome, Wallet, Sparkles } from "lucide-react";
-import WalletConnect from "@/components/wallet-connect";
+
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -48,17 +48,7 @@ export default function WaitlistClean() {
     window.location.href = "/api/auth/google";
   };
 
-  // Wallet authentication success handler
-  const handleWalletSuccess = (walletInfo: any) => {
-    toast({
-      title: "Wallet connected successfully!",
-      description: `Connected with ${walletInfo.wallet}. Welcome to MyStartup.ai!`,
-    });
-    // Redirect to dashboard or waitlist confirmation
-    setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 2000);
-  };
+
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,11 +101,7 @@ export default function WaitlistClean() {
                 
                 <div className="text-center text-muted-foreground text-sm">or</div>
                 
-                <div className="border rounded-lg p-4">
-                  <WalletConnect onSuccess={handleWalletSuccess} />
-                </div>
-                
-                <div className="text-center text-muted-foreground text-sm">or</div>
+
                 
                 <form onSubmit={handleEmailSubmit} className="space-y-4">
                   <div>

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, Users, Zap, TrendingUp, Star, ArrowRight, Mail, Chrome, Wallet } from "lucide-react";
+import { CheckCircle, Users, Zap, TrendingUp, Star, ArrowRight, Mail, Chrome } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -50,42 +50,7 @@ export default function Waitlist() {
     window.location.href = "/api/auth/google/waitlist";
   };
 
-  // MetaMask wallet connection
-  const handleWalletConnect = async () => {
-    if (!window.ethereum) {
-      toast({
-        title: "MetaMask not found",
-        description: "Please install MetaMask to connect your wallet.",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      
-      if (accounts.length > 0) {
-        const walletAddress = accounts[0];
-        await apiRequest("/api/waitlist/wallet", {
-          method: "POST",
-          body: { walletAddress },
-        });
-        
-        toast({
-          title: "Wallet connected!",
-          description: "You're now on the waitlist with early Web3 access.",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Connection failed",
-        description: "Please try connecting your wallet again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,7 +215,7 @@ export default function Waitlist() {
               </CardHeader>
               <CardContent>
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-white/10">
+                  <TabsList className="grid w-full grid-cols-2 bg-white/10">
                     <TabsTrigger value="email" className="text-xs">
                       <Mail className="w-4 h-4 mr-1" />
                       Email
@@ -258,10 +223,6 @@ export default function Waitlist() {
                     <TabsTrigger value="google" className="text-xs">
                       <Chrome className="w-4 h-4 mr-1" />
                       Google
-                    </TabsTrigger>
-                    <TabsTrigger value="wallet" className="text-xs">
-                      <Wallet className="w-4 h-4 mr-1" />
-                      Web3
                     </TabsTrigger>
                   </TabsList>
                   
@@ -304,19 +265,6 @@ export default function Waitlist() {
                     </Button>
                     <p className="text-xs text-slate-400 mt-2 text-center">
                       Quick signup with your Google account
-                    </p>
-                  </TabsContent>
-                  
-                  <TabsContent value="wallet" className="mt-4">
-                    <Button 
-                      onClick={handleWalletConnect}
-                      className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600"
-                    >
-                      <Wallet className="w-4 h-4 mr-2" />
-                      Connect MetaMask
-                    </Button>
-                    <p className="text-xs text-slate-400 mt-2 text-center">
-                      Early Web3 features and token rewards
                     </p>
                   </TabsContent>
                 </Tabs>
