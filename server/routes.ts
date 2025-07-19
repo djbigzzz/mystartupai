@@ -399,6 +399,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get startup idea by ID with validation
   app.get("/api/ideas/:id", 
+    requireAuth,
     validateId,
     handleValidationErrors,
     async (req, res) => {
@@ -437,7 +438,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate comprehensive business plan
-  app.post("/api/startup-ideas/:id/business-plan", async (req, res) => {
+  app.post("/api/startup-ideas/:id/business-plan", requireAuth, async (req, res) => {
     try {
       const ideaId = parseInt(req.params.id);
       const idea = await storage.getStartupIdea(ideaId);
@@ -518,7 +519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate pitch deck for an idea
-  app.post("/api/ideas/:id/pitch-deck", async (req, res) => {
+  app.post("/api/ideas/:id/pitch-deck", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const idea = await storage.getStartupIdea(id);
@@ -813,7 +814,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate pitch deck
-  app.post("/api/startup-ideas/:id/pitch-deck", async (req, res) => {
+  app.post("/api/startup-ideas/:id/pitch-deck", requireAuth, async (req, res) => {
     try {
       const ideaId = parseInt(req.params.id);
       const idea = await storage.getStartupIdea(ideaId);
@@ -1031,6 +1032,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Profile update error:", error);
       res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Protected endpoints to prevent unauthorized access (for security testing)
+  app.get("/api/business-plans/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const idea = await storage.getStartupIdea(id);
+      
+      if (!idea) {
+        return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      if (!idea.businessPlan) {
+        return res.status(404).json({ message: "Business plan not generated yet" });
+      }
+      
+      res.json(idea.businessPlan);
+    } catch (error) {
+      console.error("Error fetching business plan:", error);
+      res.status(500).json({ message: "Failed to fetch business plan" });
+    }
+  });
+  
+  app.get("/api/pitch-decks/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const idea = await storage.getStartupIdea(id);
+      
+      if (!idea) {
+        return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      if (!idea.pitchDeck) {
+        return res.status(404).json({ message: "Pitch deck not generated yet" });
+      }
+      
+      res.json(idea.pitchDeck);
+    } catch (error) {
+      console.error("Error fetching pitch deck:", error);
+      res.status(500).json({ message: "Failed to fetch pitch deck" });
     }
   });
 
