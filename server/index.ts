@@ -1,59 +1,59 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { securityHeaders } from "./security";
+import {
+  securityHeaders,
+  rateLimiter,
+  corsOptions,
+  sanitizeInput,
+  secureSessionConfig,
+  validateEnvironment,
+  secureRequestLogger,
+  secureErrorHandler
+} from "./security";
+
+// Validate environment variables first
+validateEnvironment();
 
 const app = express();
+
+// Trust proxy for accurate IP addresses
+app.set('trust proxy', 1);
 
 // Apply security headers first
 app.use(securityHeaders);
 
-// Security middleware
-app.use(express.json({ limit: '10mb' })); // Limit payload size
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+// CORS configuration
+app.use(cors(corsOptions));
 
-// Rate limiting (basic implementation)
-const requestCounts = new Map();
-const RATE_LIMIT = 1000; // requests per 15 minutes - increased for development
-const RATE_WINDOW = 15 * 60 * 1000;
+// Input sanitization
+app.use(sanitizeInput);
 
-app.use((req, res, next) => {
-  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
-  const now = Date.now();
-  const windowStart = now - RATE_WINDOW;
-  
-  if (!requestCounts.has(clientIp)) {
-    requestCounts.set(clientIp, []);
-  }
-  
-  const requests = requestCounts.get(clientIp).filter((timestamp: number) => timestamp > windowStart);
-  
-  if (requests.length >= RATE_LIMIT) {
-    return res.status(429).json({ message: "Rate limit exceeded. Please try again later." });
-  }
-  
-  requests.push(now);
-  requestCounts.set(clientIp, requests);
-  next();
-});
+// Body parsing with strict limits
+app.use(express.json({ 
+  limit: '1mb', // Reduced from 10mb for security
+  strict: true
+}));
+app.use(express.urlencoded({ 
+  extended: false, 
+  limit: '1mb',
+  parameterLimit: 100 // Limit URL parameters
+}));
 
-// Session middleware
-if (!process.env.SESSION_SECRET) {
-  throw new Error("SESSION_SECRET environment variable is required for security");
+// Rate limiting (more permissive for development)
+if (process.env.NODE_ENV !== 'development') {
+  app.use(rateLimiter);
 }
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'strict' // CSRF protection
-  }
-}));
+// Secure request logging
+if (process.env.NODE_ENV !== 'test') {
+  app.use(secureRequestLogger);
+}
+
+// Session middleware with enhanced security
+app.use(session(secureSessionConfig));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -88,13 +88,8 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
+  // Secure error handling
+  app.use(secureErrorHandler);
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route

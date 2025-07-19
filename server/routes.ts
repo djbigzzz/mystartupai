@@ -6,7 +6,20 @@ import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
 import { agenticAI } from "./agentic-ai";
-import bcrypt from "bcryptjs";
+import { body } from "express-validator";
+import {
+  authRateLimiter,
+  validateEmail,
+  validatePassword,
+  validateName,
+  validateId,
+  validateStartupIdea,
+  handleValidationErrors,
+  sanitizeQuery,
+  sanitizeHtml,
+  hashPassword,
+  verifyPassword
+} from "./security";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -22,77 +35,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (req.isAuthenticated()) {
       return next();
     }
-    res.status(401).json({ message: "Not authenticated" });
+    res.status(401).json({ message: "Unauthorized" });
   };
 
-  // Auth routes
-  app.post("/api/auth/register", async (req, res) => {
-    try {
-      const { email, name, password } = req.body;
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-      
-      // Create user
-      const user = await storage.createUser({
-        email,
-        name,
-        password: hashedPassword,
-        emailVerified: false
-      });
-
-      res.json({ message: "User created successfully", userId: user.id });
-    } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).json({ message: "Registration failed" });
-    }
-  });
-
-  // Signup route (alias for register)
-  app.post("/api/auth/signup", async (req, res) => {
-    try {
-      const { email, name, password } = req.body;
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-      
-      // Create user
-      const user = await storage.createUser({
-        email,
-        name,
-        password: hashedPassword,
-        emailVerified: false
-      });
-
-      // Automatically log the user in after signup
-      req.login(user, (err) => {
-        if (err) {
-          console.error("Login after signup error:", err);
-          return res.status(500).json({ message: "Account created but login failed" });
+  // Secure authentication routes with rate limiting and validation
+  app.post("/api/auth/register", 
+    authRateLimiter,
+    validateEmail,
+    validatePassword,
+    validateName,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const { email, name, password } = req.body;
+        
+        // Sanitize inputs
+        const sanitizedEmail = sanitizeQuery(email.toLowerCase().trim());
+        const sanitizedName = sanitizeHtml(name.trim());
+        
+        // Check if user already exists
+        const existingUser = await storage.getUserByEmail(sanitizedEmail);
+        if (existingUser) {
+          return res.status(409).json({ message: "User already exists" });
         }
-        res.json({ message: "Account created successfully", user: { id: user.id, email: user.email, name: user.name } });
-      });
-    } catch (error) {
-      console.error("Signup error:", error);
-      res.status(500).json({ message: "Signup failed" });
-    }
-  });
 
-  app.post("/api/auth/login", passport.authenticate('local'), (req, res) => {
-    res.json({ user: req.user });
-  });
+        // Hash password with increased security
+        const hashedPassword = await hashPassword(password);
+        
+        // Create user
+        const user = await storage.createUser({
+          email: sanitizedEmail,
+          name: sanitizedName,
+          password: hashedPassword,
+          emailVerified: false
+        });
+
+        // Don't expose sensitive user data
+        res.status(201).json({ 
+          message: "User created successfully", 
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name
+          }
+        });
+      } catch (error) {
+        console.error("Registration error:", error);
+        res.status(500).json({ message: "Registration failed" });
+      }
+    }
+  );
+
+  // Signup route with auto-login
+  app.post("/api/auth/signup", 
+    authRateLimiter,
+    validateEmail,
+    validatePassword,
+    validateName,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const { email, name, password } = req.body;
+        
+        // Sanitize inputs
+        const sanitizedEmail = sanitizeQuery(email.toLowerCase().trim());
+        const sanitizedName = sanitizeHtml(name.trim());
+        
+        // Check if user already exists
+        const existingUser = await storage.getUserByEmail(sanitizedEmail);
+        if (existingUser) {
+          return res.status(409).json({ message: "User already exists" });
+        }
+
+        // Hash password with increased security
+        const hashedPassword = await hashPassword(password);
+        
+        // Create user
+        const user = await storage.createUser({
+          email: sanitizedEmail,
+          name: sanitizedName,
+          password: hashedPassword,
+          emailVerified: false
+        });
+
+        // Automatically log the user in after signup
+        req.login(user, (err) => {
+          if (err) {
+            console.error("Login after signup error:", err);
+            return res.status(500).json({ message: "Account created but login failed" });
+          }
+          res.status(201).json({ 
+            message: "Account created successfully", 
+            user: { 
+              id: user.id, 
+              email: user.email, 
+              name: user.name,
+              emailVerified: user.emailVerified
+            }
+          });
+        });
+      } catch (error) {
+        console.error("Signup error:", error);
+        res.status(500).json({ message: "Signup failed" });
+      }
+    }
+  );
+
+  app.post("/api/auth/login", 
+    authRateLimiter,
+    validateEmail,
+    body('password').notEmpty().withMessage('Password is required'),
+    handleValidationErrors,
+    passport.authenticate('local', { 
+      failureMessage: true,
+      failWithError: true 
+    }), 
+    (req, res) => {
+      // Don't expose sensitive user data
+      const user = req.user as any;
+      res.json({ 
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          emailVerified: user.emailVerified
+        }
+      });
+    }
+  );
 
   app.post("/api/auth/logout", (req: any, res) => {
     req.logout((err: any) => {
@@ -105,9 +175,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/me", (req, res) => {
     if (req.isAuthenticated()) {
-      res.json(req.user);
+      const user = req.user as any;
+      res.json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        emailVerified: user.emailVerified,
+        avatar: user.avatar
+      });
     } else {
-      res.status(401).json({ message: "Not authenticated" });
+      res.status(401).json({ message: "Unauthorized" });
     }
   });
 
@@ -149,38 +226,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
-  // Profile management routes
-  app.patch("/api/auth/profile", requireAuth, async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const { name, username, email } = req.body;
-      
-      // Check if username is taken by another user
-      if (username) {
-        const existingUser = await storage.getUserByUsername(username);
-        if (existingUser && existingUser.id !== userId) {
-          return res.status(400).json({ message: "Username already taken" });
+  // Profile management routes with validation
+  app.patch("/api/auth/profile", 
+    requireAuth,
+    body('name').optional().isLength({ min: 1, max: 100 }).trim().escape(),
+    body('username').optional().isLength({ min: 3, max: 30 }).matches(/^[a-zA-Z0-9_]+$/),
+    body('email').optional().isEmail().normalizeEmail(),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { name, username, email } = req.body;
+        
+        // Sanitize inputs
+        const updates: any = {};
+        if (name) updates.name = sanitizeHtml(name.trim());
+        if (username) updates.username = sanitizeQuery(username.toLowerCase().trim());
+        if (email) updates.email = sanitizeQuery(email.toLowerCase().trim());
+        
+        // Check if username is taken by another user
+        if (updates.username) {
+          const existingUser = await storage.getUserByUsername(updates.username);
+          if (existingUser && existingUser.id !== userId) {
+            return res.status(409).json({ message: "Username already taken" });
+          }
         }
-      }
 
-      // Check if email is taken by another user
-      if (email) {
-        const existingUser = await storage.getUserByEmail(email);
-        if (existingUser && existingUser.id !== userId) {
-          return res.status(400).json({ message: "Email already taken" });
+        // Check if email is taken by another user
+        if (updates.email) {
+          const existingUser = await storage.getUserByEmail(updates.email);
+          if (existingUser && existingUser.id !== userId) {
+            return res.status(409).json({ message: "Email already taken" });
+          }
+          // Reset verification if email changed
+          if (updates.email !== (req.user as any).email) {
+            updates.emailVerified = false;
+          }
         }
-      }
 
-      // Update user profile
-      const updatedUser = await storage.updateUser(userId, {
-        name,
-        username,
-        email,
-        emailVerified: email !== req.user.email ? false : req.user.emailVerified // Reset verification if email changed
-      });
+        // Update user profile
+        const updatedUser = await storage.updateUser(userId, updates);
 
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
+        if (!updatedUser) {
+          return res.status(404).json({ message: "User not found" });
       }
 
       // Update session with new user data
@@ -193,40 +281,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/change-password", requireAuth, async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const { currentPassword, newPassword } = req.body;
+  app.post("/api/auth/change-password", 
+    requireAuth,
+    authRateLimiter,
+    body('currentPassword').notEmpty().withMessage('Current password is required'),
+    validatePassword.withMessage('New password must meet security requirements'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { currentPassword, newPassword } = req.body;
 
-      // Check if user has a password (might be wallet-only user)
-      if (!req.user.password) {
-        return res.status(400).json({ message: "No password set for this account" });
+        // Check if user has a password (might be Google OAuth user)
+        if (!(req.user as any).password) {
+          return res.status(400).json({ message: "No password set for this account" });
+        }
+
+        // Verify current password
+        const isCurrentPasswordValid = await verifyPassword(currentPassword, (req.user as any).password);
+        if (!isCurrentPasswordValid) {
+          return res.status(400).json({ message: "Current password is incorrect" });
+        }
+
+        // Hash new password with enhanced security
+        const hashedNewPassword = await hashPassword(newPassword);
+
+        // Update password
+        const updatedUser = await storage.updateUser(userId, {
+          password: hashedNewPassword
+        });
+
+        if (!updatedUser) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ message: "Password changed successfully" });
+      } catch (error) {
+        console.error("Password change error:", error);
+        res.status(500).json({ message: "Failed to change password" });
       }
-
-      // Verify current password
-      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, req.user.password);
-      if (!isCurrentPasswordValid) {
-        return res.status(400).json({ message: "Current password is incorrect" });
-      }
-
-      // Hash new password
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-      // Update password
-      const updatedUser = await storage.updateUser(userId, {
-        password: hashedNewPassword
-      });
-
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json({ message: "Password changed successfully" });
-    } catch (error) {
-      console.error("Password change error:", error);
-      res.status(500).json({ message: "Failed to change password" });
     }
-  });
+  );
 
   // Google OAuth routes
   app.get("/api/auth/google", 
@@ -243,66 +338,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   
-  // Submit startup idea for analysis
-  app.post("/api/ideas", async (req, res) => {
-    try {
-      // Validate and sanitize input
-      const validatedData = insertStartupIdeaSchema.parse(req.body);
-      
-      // Additional security checks
-      if (!validatedData.ideaTitle || validatedData.ideaTitle.length > 100) {
-        return res.status(400).json({ message: "Invalid idea title" });
-      }
-      
-      if (!validatedData.description || validatedData.description.length > 2000) {
-        return res.status(400).json({ message: "Invalid description" });
-      }
-      
-      // Create the idea record
-      const idea = await storage.createStartupIdea(validatedData);
-      
-      // Generate AI analysis
-      const analysis = await analyzeStartupIdea(
-        idea.ideaTitle,
-        idea.description,
-        idea.industry,
-        idea.stage
-      );
-      
-      // Update the idea with analysis
-      const updatedIdea = await storage.updateStartupIdea(idea.id, { analysis });
-      
-      res.json(updatedIdea);
-    } catch (error) {
-      console.error("Error creating idea:", error);
-      res.status(400).json({ 
-        message: error instanceof Error ? error.message : "Failed to create idea" 
-      });
-    }
-  });
+  // Submit startup idea for analysis with comprehensive validation
+  app.post("/api/ideas", 
+    validateStartupIdea,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        // Sanitize all inputs
+        const sanitizedData = {
+          ...req.body,
+          ideaTitle: sanitizeHtml(req.body.ideaTitle.trim()),
+          description: sanitizeHtml(req.body.description.trim()),
+          industry: sanitizeQuery(req.body.industry.trim()),
+          stage: sanitizeQuery(req.body.stage),
+          targetMarket: req.body.targetMarket ? sanitizeHtml(req.body.targetMarket.trim()) : undefined,
+          problemStatement: req.body.problemStatement ? sanitizeHtml(req.body.problemStatement.trim()) : undefined,
+          solutionApproach: req.body.solutionApproach ? sanitizeHtml(req.body.solutionApproach.trim()) : undefined,
+          competitiveAdvantage: req.body.competitiveAdvantage ? sanitizeHtml(req.body.competitiveAdvantage.trim()) : undefined,
+          revenueModel: req.body.revenueModel ? sanitizeHtml(req.body.revenueModel.trim()) : undefined
+        };
 
-  // Get startup idea by ID
-  app.get("/api/ideas/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      
-      // Validate ID parameter
-      if (isNaN(id) || id <= 0) {
-        return res.status(400).json({ message: "Invalid idea ID" });
+        // Validate and parse with schema
+        const validatedData = insertStartupIdeaSchema.parse(sanitizedData);
+        
+        // Create the idea record
+        const idea = await storage.createStartupIdea(validatedData);
+        
+        // Generate AI analysis with sanitized inputs
+        const analysis = await analyzeStartupIdea(
+          idea.ideaTitle,
+          idea.description,
+          idea.industry,
+          idea.stage
+        );
+        
+        // Update the idea with analysis
+        const updatedIdea = await storage.updateStartupIdea(idea.id, { analysis });
+        
+        res.status(201).json(updatedIdea);
+      } catch (error) {
+        console.error("Error creating idea:", error);
+        res.status(400).json({ 
+          message: error instanceof Error ? error.message : "Failed to create idea" 
+        });
       }
-      
-      const idea = await storage.getStartupIdea(id);
-      
-      if (!idea) {
-        return res.status(404).json({ message: "Startup idea not found" });
-      }
-      
-      res.json(idea);
-    } catch (error) {
-      console.error("Error fetching idea:", error);
-      res.status(500).json({ message: "Failed to fetch idea" });
     }
-  });
+  );
+
+  // Get startup idea by ID with validation
+  app.get("/api/ideas/:id", 
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const id = parseInt(req.params.id);
+        const idea = await storage.getStartupIdea(id);
+        
+        if (!idea) {
+          return res.status(404).json({ message: "Startup idea not found" });
+        }
+        
+        res.json(idea);
+      } catch (error) {
+        console.error("Error fetching idea:", error);
+        res.status(500).json({ message: "Failed to fetch idea" });
+      }
+    }
+  );
 
   // Get startup ideas by email (protected route)
   app.get("/api/ideas", requireAuth, async (req, res) => {
@@ -772,47 +874,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Waitlist API routes
-  app.post("/api/waitlist", async (req, res) => {
-    try {
-      const validatedData = insertWaitlistSchema.parse({
-        ...req.body,
-        source: "email"
-      });
-      
-      // Check if email already exists
-      const existing = await storage.getWaitlistEntry(validatedData.email!);
-      if (existing) {
-        return res.status(400).json({ message: "Email already on waitlist" });
+  app.post("/api/waitlist", 
+    validateEmail,
+    body('name').optional().isLength({ min: 1, max: 100 }).trim().escape(),
+    body('source').optional().isLength({ max: 50 }).trim(),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        // Sanitize inputs
+        const sanitizedData = {
+          email: sanitizeQuery(req.body.email.toLowerCase().trim()),
+          name: req.body.name ? sanitizeHtml(req.body.name.trim()) : undefined,
+          source: req.body.source ? sanitizeQuery(req.body.source.trim()) : "email"
+        };
+
+        const validatedData = insertWaitlistSchema.parse(sanitizedData);
+        
+        // Check if email already exists
+        const existing = await storage.getWaitlistEntry(validatedData.email!);
+        if (existing) {
+          return res.status(409).json({ message: "Email already on waitlist" });
+        }
+
+        const entry = await storage.createWaitlistEntry(validatedData);
+        res.status(201).json(entry);
+      } catch (error: any) {
+        console.error("Waitlist signup error:", error);
+        res.status(400).json({ message: error.message || "Failed to join waitlist" });
       }
-
-      const entry = await storage.createWaitlistEntry(validatedData);
-      res.json(entry);
-    } catch (error: any) {
-      console.error("Waitlist signup error:", error);
-      res.status(400).json({ message: error.message || "Failed to join waitlist" });
     }
-  });
+  );
 
-  app.post("/api/waitlist/email", async (req, res) => {
-    try {
-      const validatedData = insertWaitlistSchema.parse({
-        ...req.body,
-        source: "email"
-      });
-      
-      // Check if email already exists
-      const existing = await storage.getWaitlistEntry(validatedData.email!);
-      if (existing) {
-        return res.status(400).json({ message: "Email already on waitlist" });
+  app.post("/api/waitlist/email", 
+    validateEmail,
+    body('name').optional().isLength({ min: 1, max: 100 }).trim().escape(),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        // Sanitize inputs
+        const sanitizedData = {
+          email: sanitizeQuery(req.body.email.toLowerCase().trim()),
+          name: req.body.name ? sanitizeHtml(req.body.name.trim()) : undefined,
+          source: "email"
+        };
+
+        const validatedData = insertWaitlistSchema.parse(sanitizedData);
+        
+        // Check if email already exists
+        const existing = await storage.getWaitlistEntry(validatedData.email!);
+        if (existing) {
+          return res.status(409).json({ message: "Email already on waitlist" });
+        }
+
+        const entry = await storage.createWaitlistEntry(validatedData);
+        res.status(201).json(entry);
+      } catch (error: any) {
+        console.error("Waitlist email signup error:", error);
+        res.status(400).json({ message: error.message || "Failed to join waitlist" });
       }
-
-      const entry = await storage.createWaitlistEntry(validatedData);
-      res.json(entry);
-    } catch (error: any) {
-      console.error("Waitlist email signup error:", error);
-      res.status(400).json({ message: error.message || "Failed to join waitlist" });
     }
-  });
+  );
 
 
 
