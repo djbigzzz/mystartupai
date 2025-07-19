@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, Mail, Chrome, Wallet, ArrowRight } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Sparkles, Mail, Chrome, Wallet, ArrowRight, Eye, EyeOff, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -13,10 +14,76 @@ import WalletConnect from "@/components/wallet-connect";
 export default function AppEntry() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [isSignUp, setIsSignUp] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [formTouched, setFormTouched] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
+
+  // Validation functions
+  const validateEmail = (email: string): string => {
+    if (!email) return "Email is required";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return "Please enter a valid email address";
+    return "";
+  };
+
+  const validatePassword = (password: string): string => {
+    if (!password) return "Password is required";
+    if (password.length < 8) return "Password must be at least 8 characters";
+    if (!/(?=.*[a-z])/.test(password)) return "Password must contain at least one lowercase letter";
+    if (!/(?=.*[A-Z])/.test(password)) return "Password must contain at least one uppercase letter";
+    if (!/(?=.*\d)/.test(password)) return "Password must contain at least one number";
+    return "";
+  };
+
+  const validateName = (name: string): string => {
+    if (!name) return "Name is required";
+    if (name.length < 2) return "Name must be at least 2 characters";
+    return "";
+  };
+
+  const validateConfirmPassword = (password: string, confirmPassword: string): string => {
+    if (!confirmPassword) return "Please confirm your password";
+    if (password !== confirmPassword) return "Passwords do not match";
+    return "";
+  };
+
+  // Real-time validation
+  useEffect(() => {
+    const errors: Record<string, string> = {};
+    
+    if (formTouched.email) {
+      const emailError = validateEmail(email);
+      if (emailError) errors.email = emailError;
+    }
+    
+    if (formTouched.password) {
+      const passwordError = validatePassword(password);
+      if (passwordError) errors.password = passwordError;
+    }
+    
+    if (isSignUp && formTouched.name) {
+      const nameError = validateName(name);
+      if (nameError) errors.name = nameError;
+    }
+    
+    if (isSignUp && formTouched.confirmPassword) {
+      const confirmError = validateConfirmPassword(password, confirmPassword);
+      if (confirmError) errors.confirmPassword = confirmError;
+    }
+    
+    setValidationErrors(errors);
+  }, [email, password, confirmPassword, name, formTouched, isSignUp]);
+
+  // Handle field touch
+  const handleFieldTouch = (field: string) => {
+    setFormTouched(prev => ({ ...prev, [field]: true }));
+  };
 
   // Email signup/login mutation
   const authMutation = useMutation({
@@ -63,13 +130,78 @@ export default function AppEntry() {
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password || (isSignUp && !name)) return;
+    
+    // Mark all fields as touched for validation
+    const fieldsToTouch = ['email', 'password'];
+    if (isSignUp) {
+      fieldsToTouch.push('name', 'confirmPassword');
+    }
+    
+    const touchedFields = fieldsToTouch.reduce((acc, field) => {
+      acc[field] = true;
+      return acc;
+    }, {} as Record<string, boolean>);
+    
+    setFormTouched(touchedFields);
+    
+    // Check for validation errors
+    const errors: Record<string, string> = {};
+    const emailError = validateEmail(email);
+    if (emailError) errors.email = emailError;
+    
+    const passwordError = validatePassword(password);
+    if (passwordError) errors.password = passwordError;
+    
+    if (isSignUp) {
+      const nameError = validateName(name);
+      if (nameError) errors.name = nameError;
+      
+      const confirmError = validateConfirmPassword(password, confirmPassword);
+      if (confirmError) errors.confirmPassword = confirmError;
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors below and try again.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     authMutation.mutate({
       email,
       password,
       ...(isSignUp && { name }),
     });
+  };
+
+  // Reset form when switching between sign up and sign in
+  const handleTabChange = (value: string) => {
+    setIsSignUp(value === "signup");
+    setValidationErrors({});
+    setFormTouched({});
+    setPassword("");
+    setConfirmPassword("");
+    if (value === "signin") {
+      setName("");
+    }
+  };
+
+  // Helper function to get input class based on validation state
+  const getInputClassName = (field: string, baseClass: string = "") => {
+    const hasError = validationErrors[field];
+    const isTouched = formTouched[field];
+    const isValid = isTouched && !hasError;
+    
+    let className = baseClass;
+    if (hasError) {
+      className += " border-red-500 focus-visible:ring-red-500";
+    } else if (isValid) {
+      className += " border-green-500 focus-visible:ring-green-500";
+    }
+    return className;
   };
 
   return (
@@ -88,90 +220,222 @@ export default function AppEntry() {
           </p>
         </div>
 
-        <Card>
+        <Card className="border-2 border-border/50 shadow-xl">
           <CardHeader className="space-y-1">
-            <Tabs value={isSignUp ? "signup" : "signin"} onValueChange={(value) => setIsSignUp(value === "signup")}>
+            <Tabs value={isSignUp ? "signup" : "signin"} onValueChange={handleTabChange}>
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
+                <TabsTrigger value="signup" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Sign Up
+                </TabsTrigger>
+                <TabsTrigger value="signin" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  Sign In
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </CardHeader>
           
-          <CardContent className="space-y-4">
-            {/* OAuth Buttons */}
+          <CardContent className="space-y-6">
+            {/* OAuth Buttons - Prominently Featured */}
             <div className="space-y-3">
               <Button 
                 onClick={handleGoogleAuth}
                 variant="outline"
-                className="w-full justify-center"
+                className="w-full justify-center h-11 bg-white dark:bg-gray-900 border-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
-                <Chrome className="w-4 h-4 mr-2" />
-                Continue with Google
+                <Chrome className="w-5 h-5 mr-3 text-blue-600" />
+                <span className="font-medium">Continue with Google</span>
               </Button>
               
-              <WalletConnect onSuccess={handleWalletSuccess} />
+              {/* Web3 Section */}
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-muted-foreground text-center">
+                  Web3 Authentication
+                </div>
+                <WalletConnect onSuccess={handleWalletSuccess} />
+              </div>
             </div>
             
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">or continue with</span>
+                <span className="bg-background px-3 text-muted-foreground font-medium">or continue with email</span>
               </div>
             </div>
             
-            {/* Email Form */}
-            <form onSubmit={handleEmailSubmit} className="space-y-4">
+            {/* Email Form with Enhanced Validation */}
+            <form onSubmit={handleEmailSubmit} className="space-y-5">
               {isSignUp && (
-                <div>
-                  <label className="text-sm font-medium text-foreground">Name</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground flex items-center">
+                    Name
+                    {formTouched.name && !validationErrors.name && (
+                      <CheckCircle className="w-4 h-4 ml-2 text-green-500" />
+                    )}
+                  </label>
                   <Input
                     type="text"
                     placeholder="Enter your full name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="mt-1"
+                    onBlur={() => handleFieldTouch('name')}
+                    className={getInputClassName('name', "mt-1 h-11")}
                     required
                   />
+                  {validationErrors.name && (
+                    <div className="flex items-center text-sm text-red-600">
+                      <XCircle className="w-4 h-4 mr-1" />
+                      {validationErrors.name}
+                    </div>
+                  )}
                 </div>
               )}
               
-              <div>
-                <label className="text-sm font-medium text-foreground">Email</label>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center">
+                  Email
+                  {formTouched.email && !validationErrors.email && (
+                    <CheckCircle className="w-4 h-4 ml-2 text-green-500" />
+                  )}
+                </label>
                 <Input
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1"
+                  onBlur={() => handleFieldTouch('email')}
+                  className={getInputClassName('email', "mt-1 h-11")}
                   required
                 />
+                {validationErrors.email && (
+                  <div className="flex items-center text-sm text-red-600">
+                    <XCircle className="w-4 h-4 mr-1" />
+                    {validationErrors.email}
+                  </div>
+                )}
               </div>
               
-              <div>
-                <label className="text-sm font-medium text-foreground">Password</label>
-                <Input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1"
-                  required
-                />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground flex items-center">
+                  Password
+                  {formTouched.password && !validationErrors.password && (
+                    <CheckCircle className="w-4 h-4 ml-2 text-green-500" />
+                  )}
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder={isSignUp ? "Create a strong password" : "Enter your password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onBlur={() => handleFieldTouch('password')}
+                    className={getInputClassName('password', "mt-1 h-11 pr-10")}
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+                {validationErrors.password && (
+                  <div className="flex items-center text-sm text-red-600">
+                    <XCircle className="w-4 h-4 mr-1" />
+                    {validationErrors.password}
+                  </div>
+                )}
+                {isSignUp && formTouched.password && !validationErrors.password && (
+                  <div className="text-sm text-green-600 flex items-center">
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Strong password!
+                  </div>
+                )}
               </div>
+
+              {isSignUp && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground flex items-center">
+                    Confirm Password
+                    {formTouched.confirmPassword && !validationErrors.confirmPassword && (
+                      <CheckCircle className="w-4 h-4 ml-2 text-green-500" />
+                    )}
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm your password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onBlur={() => handleFieldTouch('confirmPassword')}
+                      className={getInputClassName('confirmPassword', "mt-1 h-11 pr-10")}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+                  </div>
+                  {validationErrors.confirmPassword && (
+                    <div className="flex items-center text-sm text-red-600">
+                      <XCircle className="w-4 h-4 mr-1" />
+                      {validationErrors.confirmPassword}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!isSignUp && (
+                <div className="text-right">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-sm text-primary hover:underline p-0 h-auto"
+                    onClick={() => {
+                      toast({
+                        title: "Password Reset",
+                        description: "Password reset functionality will be available soon.",
+                      });
+                    }}
+                  >
+                    Forgot your password?
+                  </Button>
+                </div>
+              )}
               
               <Button 
                 type="submit" 
-                className="w-full bg-primary hover:bg-primary/90"
-                disabled={authMutation.isPending}
+                className="w-full h-11 bg-primary hover:bg-primary/90 font-medium transition-all duration-200"
+                disabled={authMutation.isPending || Object.keys(validationErrors).length > 0}
               >
-                {authMutation.isPending 
-                  ? (isSignUp ? "Creating account..." : "Signing in...") 
-                  : (isSignUp ? "Create account" : "Sign in")
-                }
-                <ArrowRight className="w-4 h-4 ml-2" />
+                {authMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {isSignUp ? "Creating account..." : "Signing in..."}
+                  </>
+                ) : (
+                  <>
+                    {isSignUp ? "Create account" : "Sign in"}
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>

@@ -54,6 +54,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Signup route (alias for register)
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { email, name, password } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user
+      const user = await storage.createUser({
+        email,
+        name,
+        password: hashedPassword,
+        emailVerified: false
+      });
+
+      // Automatically log the user in after signup
+      req.login(user, (err) => {
+        if (err) {
+          console.error("Login after signup error:", err);
+          return res.status(500).json({ message: "Account created but login failed" });
+        }
+        res.json({ message: "Account created successfully", user: { id: user.id, email: user.email, name: user.name } });
+      });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ message: "Signup failed" });
+    }
+  });
+
   app.post("/api/auth/login", passport.authenticate('local'), (req, res) => {
     res.json({ user: req.user });
   });
