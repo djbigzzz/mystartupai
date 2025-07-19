@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
 import { agenticAI } from "./agentic-ai";
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 import {
   authRateLimiter,
   validateEmail,
@@ -471,7 +471,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate business plan for an idea
-  app.post("/api/ideas/:id/business-plan", async (req, res) => {
+  app.post("/api/ideas/:id/business-plan", 
+    requireAuth,
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const idea = await storage.getStartupIdea(id);
@@ -536,12 +540,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Company management routes
-  app.post("/api/companies", async (req, res) => {
+  app.post("/api/companies", 
+    requireAuth,
+    advancedRateLimit(5, 15 * 60 * 1000), // 5 companies per 15 minutes
+    body('name').isLength({ min: 1, max: 200 }).trim().escape(),
+    body('description').optional().isLength({ max: 1000 }).trim(),
+    body('industry').optional().isLength({ max: 100 }).trim(),
+    body('stage').optional().isIn(['idea', 'mvp', 'launch', 'growth']),
+    handleValidationErrors,
+    async (req, res) => {
     try {
-      const validatedData = insertCompanySchema.parse(req.body);
-      const userId = req.body.userId || 1; // TODO: Get from session/auth
+      const userId = (req.user as any).id;
       
-      const company = await storage.createCompany({ ...validatedData, userId });
+      // Sanitize inputs
+      const sanitizedData = {
+        ...req.body,
+        name: sanitizeHtml(req.body.name.trim()),
+        description: req.body.description ? sanitizeHtml(req.body.description.trim()) : undefined,
+        industry: req.body.industry ? sanitizeQuery(req.body.industry.trim()) : undefined,
+        stage: req.body.stage ? sanitizeQuery(req.body.stage) : 'idea',
+        userId
+      };
+      
+      const validatedData = insertCompanySchema.parse(sanitizedData);
+      const company = await storage.createCompany(validatedData);
       res.json(company);
     } catch (error) {
       console.error("Error creating company:", error);
@@ -551,7 +573,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/companies/:id", async (req, res) => {
+  app.get("/api/companies", 
+    requireAuth,
+    async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const companies = await storage.getCompaniesByUser(userId);
+      res.json(companies);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      res.status(500).json({ message: "Failed to fetch companies" });
+    }
+  });
+
+  app.get("/api/companies/:id", 
+    requireAuth,
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const company = await storage.getCompany(id);
@@ -567,12 +606,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/companies/:id", async (req, res) => {
+  app.put("/api/companies/:id", 
+    requireAuth,
+    validateId,
+    body('name').optional().isLength({ min: 1, max: 200 }).trim().escape(),
+    body('description').optional().isLength({ max: 1000 }).trim(),
+    body('industry').optional().isLength({ max: 100 }).trim(),
+    body('stage').optional().isIn(['idea', 'mvp', 'launch', 'growth']),
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const updates = req.body;
+      const userId = (req.user as any).id;
       
-      const company = await storage.updateCompany(id, updates);
+      // Verify ownership
+      const existingCompany = await storage.getCompany(id);
+      if (!existingCompany || existingCompany.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to update this company" });
+      }
+      
+      // Sanitize inputs
+      const sanitizedUpdates: any = {};
+      if (req.body.name) sanitizedUpdates.name = sanitizeHtml(req.body.name.trim());
+      if (req.body.description) sanitizedUpdates.description = sanitizeHtml(req.body.description.trim());
+      if (req.body.industry) sanitizedUpdates.industry = sanitizeQuery(req.body.industry.trim());
+      if (req.body.stage) sanitizedUpdates.stage = sanitizeQuery(req.body.stage);
+      
+      const company = await storage.updateCompany(id, sanitizedUpdates);
       
       if (!company) {
         return res.status(404).json({ message: "Company not found" });
@@ -586,11 +646,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Document management routes
-  app.post("/api/companies/:companyId/documents", async (req, res) => {
+  app.post("/api/companies/:companyId/documents", 
+    requireAuth,
+    validateId,
+    body('title').isLength({ min: 1, max: 200 }).trim().escape(),
+    body('content').isLength({ min: 1, max: 10000 }).trim(),
+    body('type').isIn(['business_plan', 'pitch_deck', 'financial_model', 'legal', 'other']),
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const companyId = parseInt(req.params.companyId);
-      const validatedData = insertDocumentSchema.parse({ ...req.body, companyId });
+      const userId = (req.user as any).id;
       
+      // Verify company ownership
+      const company = await storage.getCompany(companyId);
+      if (!company || company.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to create documents for this company" });
+      }
+      
+      // Sanitize inputs
+      const sanitizedData = {
+        ...req.body,
+        companyId,
+        title: sanitizeHtml(req.body.title.trim()),
+        content: sanitizeHtml(req.body.content.trim()),
+        type: sanitizeQuery(req.body.type)
+      };
+      
+      const validatedData = insertDocumentSchema.parse(sanitizedData);
       const document = await storage.createDocument(validatedData);
       res.json(document);
     } catch (error) {
@@ -601,9 +684,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/companies/:companyId/documents", async (req, res) => {
+  app.get("/api/companies/:companyId/documents", 
+    requireAuth,
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const companyId = parseInt(req.params.companyId);
+      const userId = (req.user as any).id;
+      
+      // Verify company ownership
+      const company = await storage.getCompany(companyId);
+      if (!company || company.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to access documents for this company" });
+      }
+      
       const documents = await storage.getDocumentsByCompany(companyId);
       res.json(documents);
     } catch (error) {
@@ -612,27 +707,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/documents/:id", async (req, res) => {
+  app.put("/api/documents/:id", 
+    requireAuth,
+    validateId,
+    body('title').optional().isLength({ min: 1, max: 200 }).trim().escape(),
+    body('content').optional().isLength({ min: 1, max: 10000 }).trim(),
+    body('type').optional().isIn(['business_plan', 'pitch_deck', 'financial_model', 'legal', 'other']),
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const updates = req.body;
+      const userId = (req.user as any).id;
       
-      const document = await storage.updateDocument(id, updates);
-      
+      // Get document and verify ownership via company
+      const document = await storage.getDocument(id);
       if (!document) {
         return res.status(404).json({ message: "Document not found" });
       }
       
-      res.json(document);
+      const company = await storage.getCompany(document.companyId);
+      if (!company || company.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to update this document" });
+      }
+      
+      // Sanitize updates
+      const sanitizedUpdates: any = {};
+      if (req.body.title) sanitizedUpdates.title = sanitizeHtml(req.body.title.trim());
+      if (req.body.content) sanitizedUpdates.content = sanitizeHtml(req.body.content.trim());
+      if (req.body.type) sanitizedUpdates.type = sanitizeQuery(req.body.type);
+      
+      const updatedDocument = await storage.updateDocument(id, sanitizedUpdates);
+      
+      if (!updatedDocument) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      res.json(updatedDocument);
     } catch (error) {
       console.error("Error updating document:", error);
       res.status(500).json({ message: "Failed to update document" });
     }
   });
 
-  app.delete("/api/documents/:id", async (req, res) => {
+  app.delete("/api/documents/:id", 
+    requireAuth,
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = (req.user as any).id;
+      
+      // Get document and verify ownership via company
+      const document = await storage.getDocument(id);
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      const company = await storage.getCompany(document.companyId);
+      if (!company || company.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to delete this document" });
+      }
+      
       const success = await storage.deleteDocument(id);
       
       if (!success) {
@@ -947,15 +1083,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Agentic AI Platform Routes
-  app.post("/api/agentic/chat", async (req, res) => {
+  app.post("/api/agentic/chat", 
+    advancedRateLimit(20, 15 * 60 * 1000), // 20 AI chat requests per 15 minutes
+    body('message').isLength({ min: 1, max: 2000 }).trim(),
+    body('context').optional().isLength({ max: 5000 }).trim(),
+    handleValidationErrors,
+    async (req, res) => {
     try {
-      const { message, context } = req.body;
-      
-      if (!message) {
-        return res.status(400).json({ message: "Message is required" });
-      }
+      // Sanitize inputs to prevent AI prompt injection
+      const sanitizedMessage = sanitizeHtml(req.body.message.trim());
+      const sanitizedContext = req.body.context ? sanitizeHtml(req.body.context.trim()) : undefined;
 
-      const response = await agenticAI.processUserMessage(message, context);
+      const response = await agenticAI.processUserMessage(sanitizedMessage, sanitizedContext);
       res.json(response);
     } catch (error: any) {
       console.error("AI chat error:", error);
@@ -963,15 +1102,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/agentic/execute-task", async (req, res) => {
+  app.post("/api/agentic/execute-task", 
+    advancedRateLimit(5, 15 * 60 * 1000), // 5 task executions per 15 minutes
+    body('action').isLength({ min: 1, max: 1000 }).trim(),
+    handleValidationErrors,
+    async (req, res) => {
     try {
-      const { action } = req.body;
-      
-      if (!action) {
-        return res.status(400).json({ message: "Action is required" });
-      }
+      // Sanitize action to prevent malicious task execution
+      const sanitizedAction = sanitizeQuery(req.body.action.trim());
 
-      const task = await agenticAI.executeAutonomousTask(action);
+      const task = await agenticAI.executeAutonomousTask(sanitizedAction);
       res.json(task);
     } catch (error: any) {
       console.error("Task execution error:", error);
@@ -989,7 +1129,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/agentic/investors", async (req, res) => {
+  app.get("/api/agentic/investors", 
+    advancedRateLimit(10, 15 * 60 * 1000), // 10 investor requests per 15 minutes
+    query('industry').optional().isLength({ max: 100 }).trim(),
+    query('stage').optional().isIn(['seed', 'series-a', 'series-b', 'series-c', 'late-stage']),
+    query('location').optional().isLength({ max: 100 }).trim(),
+    handleValidationErrors,
+    async (req, res) => {
     try {
       const investors = await agenticAI.findMatchingInvestors();
       res.json(investors);
