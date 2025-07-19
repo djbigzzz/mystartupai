@@ -82,7 +82,7 @@ export async function analyzeStartupIdea(
   // Check if API key is available and valid for production use
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey || apiKey === "default_key" || apiKey.includes("demo")) {
-    console.log("No valid OpenAI API key, using demo analysis");
+    console.log("🔒 OpenAI API key not available, using demo analysis");
     return getDemoAnalysis(ideaTitle, industry);
   }
 
@@ -131,7 +131,7 @@ export async function analyzeStartupIdea(
       console.log("OpenAI quota exceeded, using demo analysis");
       return getDemoAnalysis(ideaTitle, industry);
     } else if (errorMessage.includes("401") || errorMessage.includes("unauthorized")) {
-      console.log("Invalid API key, using demo analysis");
+      console.log("🔒 OpenAI API error, using demo analysis");
       return getDemoAnalysis(ideaTitle, industry);
     } else if (errorMessage.includes("rate_limit")) {
       console.log("Rate limit hit, using demo analysis");
@@ -240,7 +240,7 @@ export async function generateBusinessPlan(
       console.log("OpenAI quota exceeded, using demo business plan");
       return getDemoBusinessPlan(ideaTitle, description, industry);
     } else if (errorMessage.includes("401") || errorMessage.includes("unauthorized")) {
-      console.log("Invalid API key, using demo business plan");
+      console.log("🔒 OpenAI API error, using demo business plan");
       return getDemoBusinessPlan(ideaTitle, description, industry);
     } else if (errorMessage.includes("rate_limit")) {
       throw new Error("OpenAI rate limit exceeded. Please wait a moment and try again.");
@@ -379,7 +379,7 @@ export async function generatePitchDeck(
       console.log("OpenAI quota exceeded, using demo pitch deck");
       return getDemoPitchDeck(ideaTitle, industry);
     } else if (errorMessage.includes("401") || errorMessage.includes("unauthorized")) {
-      console.log("Invalid API key, using demo pitch deck");
+      console.log("🔒 OpenAI API error, using demo pitch deck");
       return getDemoPitchDeck(ideaTitle, industry);
     } else if (errorMessage.includes("rate_limit")) {
       throw new Error("OpenAI rate limit exceeded. Please wait a moment and try again.");

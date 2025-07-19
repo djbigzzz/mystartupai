@@ -29,7 +29,10 @@ export async function apiRequest(
     fetchOptions.body = body;
   }
 
-  console.log(`API Request to ${url}:`, { method: fetchOptions.method, body: fetchOptions.body });
+  // Security: Never log request bodies as they may contain sensitive data
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`API Request to ${url}:`, { method: fetchOptions.method || 'GET' });
+  }
 
   const res = await fetch(url, fetchOptions);
 
