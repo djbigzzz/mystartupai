@@ -13,6 +13,8 @@ import {
   secureRequestLogger,
   secureErrorHandler
 } from "./security";
+import { monitorDatabaseConnections } from "./database-security";
+import { setBrowserSecurityHeaders, sanitizeFrontendInputs, validateFrontendInputs, generateCSRFToken } from "./frontend-security";
 
 // Validate environment variables first
 validateEnvironment();
@@ -22,13 +24,16 @@ const app = express();
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);
 
-// Apply security headers first
+// Apply maximum security headers first
+app.use(setBrowserSecurityHeaders);
 app.use(securityHeaders);
 
 // CORS configuration
 app.use(cors(corsOptions));
 
-// Input sanitization
+// Advanced input sanitization and validation
+app.use(sanitizeFrontendInputs);
+app.use(validateFrontendInputs);
 app.use(sanitizeInput);
 
 // Body parsing with strict limits

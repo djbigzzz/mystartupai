@@ -20,11 +20,22 @@ import {
   hashPassword,
   verifyPassword
 } from "./security";
+import { 
+  advancedInputValidation, 
+  validateInputLengths, 
+  securityLogger, 
+  advancedRateLimit 
+} from "./advanced-security";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Session configuration
   // Session configuration removed - handled in index.ts
+
+  // Apply advanced security middleware globally
+  app.use(securityLogger);
+  app.use(advancedInputValidation);
+  app.use(validateInputLengths);
 
   // Initialize Passport middleware
   app.use(passport.initialize());
@@ -340,6 +351,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Submit startup idea for analysis with comprehensive validation
   app.post("/api/ideas", 
+    advancedRateLimit(10, 15 * 60 * 1000), // 10 idea submissions per 15 minutes
     validateStartupIdea,
     handleValidationErrors,
     async (req, res) => {
@@ -875,6 +887,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Waitlist API routes
   app.post("/api/waitlist", 
+    advancedRateLimit(3, 15 * 60 * 1000), // 3 waitlist signups per 15 minutes
     validateEmail,
     body('name').optional().isLength({ min: 1, max: 100 }).trim().escape(),
     body('source').optional().isLength({ max: 50 }).trim(),
