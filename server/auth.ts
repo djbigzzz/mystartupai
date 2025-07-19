@@ -47,10 +47,21 @@ passport.use(new LocalStrategy(
 
 // Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  // Dynamic callback URL based on environment
+  const getCallbackURL = () => {
+    // Use the current Replit domain or custom domain
+    if (process.env.REPLIT_DOMAINS) {
+      const domain = process.env.REPLIT_DOMAINS.split(',')[0];
+      return `https://${domain}/api/auth/google/callback`;
+    }
+    // Fallback for local development
+    return "http://localhost:5000/api/auth/google/callback";
+  };
+
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/api/auth/google/callback"
+    callbackURL: getCallbackURL()
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
