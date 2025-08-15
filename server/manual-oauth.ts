@@ -4,7 +4,12 @@ import { storage } from "./storage";
 // Manual Google OAuth implementation to bypass Passport.js issues
 export async function initiateGoogleOAuth(req: Request, res: Response) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const redirectUri = `https://${req.get('host')}/api/auth/google/manual/callback`;
+  
+  // Use production domain or fall back to development domain
+  const host = process.env.NODE_ENV === 'production' 
+    ? 'mystartup.ai' 
+    : (process.env.REPLIT_DOMAINS || req.get('host'));
+  const redirectUri = `https://${host}/api/auth/google/manual/callback`;
   
   const params = new URLSearchParams({
     client_id: clientId!,
@@ -19,6 +24,8 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
   
   console.log('🔍 Manual OAuth URL:', authUrl);
   console.log('🔍 Redirect URI:', redirectUri);
+  console.log('🔍 Host from env:', process.env.REPLIT_DOMAINS);
+  console.log('🔍 Host from header:', req.get('host'));
   
   res.redirect(authUrl);
 }
@@ -48,7 +55,7 @@ export async function handleGoogleOAuthCallback(req: Request, res: Response) {
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
         code: code as string,
         grant_type: 'authorization_code',
-        redirect_uri: `https://${req.get('host')}/api/auth/google/manual/callback`
+        redirect_uri: `https://${process.env.NODE_ENV === 'production' ? 'mystartup.ai' : (process.env.REPLIT_DOMAINS || req.get('host'))}/api/auth/google/manual/callback`
       })
     });
 
