@@ -68,8 +68,12 @@ export async function handleGoogleOAuthCallback(req: Request, res: Response) {
 
     const tokens = await tokenResponse.json();
     
+    console.log('🔍 Token response status:', tokenResponse.status);
+    console.log('🔍 Token response:', tokens);
+    
     if (!tokens.access_token) {
       console.error('Failed to get access token:', tokens);
+      console.error('Token response status:', tokenResponse.status);
       return res.redirect('/app?error=token_exchange_failed');
     }
 
