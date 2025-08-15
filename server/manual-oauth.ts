@@ -104,8 +104,17 @@ export async function handleGoogleOAuthCallback(req: Request, res: Response) {
     (req.session as any).userId = user.id;
     (req.session as any).user = user;
     
-    console.log('✅ Google OAuth successful for user:', user.email);
-    res.redirect('/dashboard');
+    // Also save session to ensure it persists
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.redirect('/app?error=session_failed');
+      }
+      
+      console.log('✅ Google OAuth successful for user:', user.email);
+      console.log('✅ Session saved with userId:', user.id);
+      res.redirect('/dashboard');
+    });
 
   } catch (error) {
     console.error('OAuth callback error:', error);

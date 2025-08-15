@@ -175,8 +175,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/auth/me", (req, res) => {
+    // Check both Passport.js and manual session authentication
     if (req.isAuthenticated()) {
       const user = req.user as any;
+      const cleanUser = cleanUserDataForResponse(user);
+      res.json(cleanUser);
+    } else if ((req.session as any)?.userId) {
+      // Manual session authentication (for manual OAuth)
+      const user = (req.session as any).user;
       const cleanUser = cleanUserDataForResponse(user);
       res.json(cleanUser);
     } else {
