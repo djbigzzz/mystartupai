@@ -204,11 +204,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
-  // Google OAuth for waitlist
-  app.get("/api/auth/google/waitlist", passport.authenticate('google', { scope: ['profile', 'email'] }));
+  // Google OAuth for waitlist with separate strategy
+  app.get("/api/auth/google/waitlist", passport.authenticate('google-waitlist', { scope: ['profile', 'email'] }));
 
   app.get("/api/auth/google/waitlist/callback", 
-    passport.authenticate('google', { failureRedirect: '/waitlist' }),
+    passport.authenticate('google-waitlist', { failureRedirect: '/waitlist' }),
     async (req, res) => {
       try {
         // Add user to waitlist if not already there
