@@ -22,8 +22,8 @@ passport.use(new GoogleStrategy({
       user = await storage.getUserByEmail(email);
       if (user) {
         // Link Google account to existing user
-        await storage.linkGoogleAccount(user.id, profile.id);
-        return done(null, user);
+        const updatedUser = await storage.updateUser(user.id, { googleId: profile.id });
+        return done(null, updatedUser || user);
       }
     }
     
@@ -32,7 +32,7 @@ passport.use(new GoogleStrategy({
       email: email || "",
       name: profile.displayName || `${profile.name?.givenName || ""} ${profile.name?.familyName || ""}`.trim(),
       googleId: profile.id,
-      profilePicture: profile.photos?.[0]?.value,
+      avatar: profile.photos?.[0]?.value,
       emailVerified: true // Google accounts are pre-verified
     });
     

@@ -6,7 +6,7 @@ import { storage } from "./storage";
 const waitlistStrategy = new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID!,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  callbackURL: "https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/waitlist/callback"
+  callbackURL: "/api/auth/google/waitlist/callback"
 },
 async (accessToken, refreshToken, profile, done) => {
   try {
@@ -42,7 +42,7 @@ async (accessToken, refreshToken, profile, done) => {
     return done(null, newUser);
   } catch (error) {
     console.error('Google OAuth waitlist error:', error);
-    return done(error, null);
+    return done(error, false);
   }
 });
 

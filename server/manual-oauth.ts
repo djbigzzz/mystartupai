@@ -28,12 +28,11 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
 
   const authUrl = `https://accounts.google.com/oauth/authorize?${params.toString()}`;
   
-  console.log('🔍 Manual OAuth URL:', authUrl);
-  console.log('🔍 Redirect URI:', redirectUri);
-  console.log('🔍 Host from env:', process.env.REPLIT_DOMAINS);
-  console.log('🔍 Host from header:', req.get('host'));
-  console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
-  console.log('🔍 Production mode:', process.env.NODE_ENV === 'production');
+  // Only log sensitive information in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Manual OAuth URL:', authUrl);
+    console.log('🔍 Redirect URI:', redirectUri);
+  }
   
   res.redirect(authUrl);
 }
@@ -41,9 +40,11 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
 export async function handleGoogleOAuthCallback(req: Request, res: Response) {
   const { code, error, state } = req.query;
   
-  console.log('🔍 OAuth callback received');
-  console.log('🔍 Callback URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
-  console.log('🔍 Query params:', req.query);
+  // Only log sensitive information in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 OAuth callback received');
+    console.log('🔍 Callback URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
+  }
   
   // Verify CSRF state parameter
   const sessionState = (req.session as any)?.oauth_state;
