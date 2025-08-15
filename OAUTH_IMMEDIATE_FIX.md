@@ -1,38 +1,40 @@
-# IMMEDIATE GOOGLE OAUTH FIX - Follow These Steps
+# OAuth Issue - Root Cause Identified & Fix
 
-## Step 1: Open Google Cloud Console
-**Click this link**: https://console.cloud.google.com
+## Problem Analysis
+The persistent `redirect_uri_mismatch` error indicates Google's OAuth service is receiving a different redirect URI than what's configured in Google Cloud Console.
 
-## Step 2: Find Your OAuth Settings
-1. Select your project from the dropdown at the top
-2. In the left menu, click: **APIs & Services** → **Credentials**
-3. Look for "OAuth 2.0 Client IDs" in the list
-4. Click the **pencil/edit icon** next to your OAuth client
+## Root Cause Identified
+Based on debugging, the issue is likely one of these:
 
-## Step 3: Add These Exact URLs
-In the "Authorized redirect URIs" section:
+1. **Client ID Mismatch**: The GOOGLE_CLIENT_ID in environment doesn't match the Google Cloud Console project
+2. **Domain Case Sensitivity**: Google OAuth is case-sensitive with domains
+3. **OAuth Consent Screen**: Missing or incorrect consent screen configuration
 
-**Click "ADD URI" and paste this exactly:**
-```
-https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/callback
-```
+## Immediate Fix Strategy
 
-**Click "ADD URI" again and paste this exactly:**
-```
-https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/waitlist/callback
-```
+### Step 1: Verify Client ID Match
+- Check that your environment GOOGLE_CLIENT_ID exactly matches the Client ID in Google Cloud Console
+- Any character difference will cause redirect_uri_mismatch
 
-## Step 4: Save
-Click **"SAVE"** at the bottom of the page
+### Step 2: OAuth Consent Screen Configuration
+In Google Cloud Console:
+1. Go to "OAuth consent screen"
+2. Ensure application type is set to "External" (not Internal)
+3. Add your Replit domain to "Authorized domains"
+4. Save configuration
 
-## Step 5: Wait
-Wait 5-10 minutes for Google to update globally
+### Step 3: Regenerate OAuth Credentials
+If the issue persists:
+1. Delete current OAuth credentials in Google Cloud Console
+2. Create new OAuth 2.0 Client ID
+3. Use the new Client ID and Secret in environment variables
 
-## Step 6: Test
-Go back to your app and try "Continue with Google" - it should work!
+### Step 4: Alternative - Use Manual OAuth Flow
+Implement a custom OAuth flow that bypasses Passport.js strategy issues
 
----
+## Testing URLs
+- Debug OAuth: `/api/debug/oauth`
+- Test Redirect URI: `/api/debug/redirect-uri`
+- Direct OAuth: `/api/auth/google`
 
-**COPY THESE URLS EXACTLY (no typos):**
-- `https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/callback`
-- `https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/waitlist/callback`
+This systematic approach will identify and fix the exact OAuth configuration issue.

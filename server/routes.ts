@@ -27,6 +27,8 @@ import {
   advancedRateLimit 
 } from "./advanced-security";
 import { cleanUserDataForResponse, sanitizeForLogging } from "./privacy-protection";
+import { debugOAuthConfiguration, testRedirectUri } from "./oauth-debug";
+import { initiateGoogleOAuth, handleGoogleOAuthCallback } from "./manual-oauth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -182,7 +184,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Google OAuth routes with comprehensive logging
+  // OAuth Debug Routes (temporary for troubleshooting)
+  app.get("/api/debug/oauth", debugOAuthConfiguration);
+  app.get("/api/debug/redirect-uri", testRedirectUri);
+
+  // Manual Google OAuth (bypasses Passport.js issues)
+  app.get("/api/auth/google/manual", initiateGoogleOAuth);
+  app.get("/api/auth/google/manual/callback", handleGoogleOAuthCallback);
+
+  // Original Google OAuth routes with comprehensive logging
   app.get("/api/auth/google", (req, res, next) => {
     console.log('🔍 === GOOGLE OAUTH INITIATION ===');
     console.log('🔍 Host:', req.get('host'));
