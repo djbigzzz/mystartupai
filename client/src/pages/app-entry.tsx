@@ -113,7 +113,8 @@ export default function AppEntry() {
 
   // Google OAuth
   const handleGoogleAuth = () => {
-    window.location.href = "/api/auth/google";
+    // Use manual OAuth flow to bypass Passport.js redirect_uri_mismatch issue
+    window.location.href = "/api/auth/google/manual";
   };
 
 

@@ -8,7 +8,8 @@ interface GoogleSignInProps {
 
 export default function GoogleSignIn({ className, disabled }: GoogleSignInProps) {
   const handleGoogleSignIn = () => {
-    window.location.href = "/api/auth/google";
+    // Use manual OAuth flow to bypass Passport.js redirect_uri_mismatch issue
+    window.location.href = "/api/auth/google/manual";
   };
 
   // Check if Google OAuth is configured

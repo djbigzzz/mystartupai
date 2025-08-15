@@ -100,16 +100,12 @@ export async function handleGoogleOAuthCallback(req: Request, res: Response) {
       });
     }
 
-    // Log the user in
-    req.login(user, (err) => {
-      if (err) {
-        console.error('Login error:', err);
-        return res.redirect('/app?error=login_failed');
-      }
-      
-      console.log('✅ Google OAuth successful for user:', user.email);
-      res.redirect('/dashboard');
-    });
+    // Log the user in using session (not Passport.js since it may be causing issues)
+    (req.session as any).userId = user.id;
+    (req.session as any).user = user;
+    
+    console.log('✅ Google OAuth successful for user:', user.email);
+    res.redirect('/dashboard');
 
   } catch (error) {
     console.error('OAuth callback error:', error);
