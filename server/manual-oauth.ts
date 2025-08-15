@@ -12,13 +12,18 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
     : (process.env.REPLIT_DOMAINS || requestHost);
   const redirectUri = `https://${host}/api/auth/google/manual/callback`;
   
+  // Generate CSRF state token for security
+  const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  (req.session as any).oauth_state = state;
+  
   const params = new URLSearchParams({
     client_id: clientId!,
     redirect_uri: redirectUri,
     response_type: 'code',
     scope: 'profile email',
     access_type: 'offline',
-    prompt: 'select_account'
+    prompt: 'select_account',
+    state: state // CSRF protection
   });
 
   const authUrl = `https://accounts.google.com/oauth/authorize?${params.toString()}`;
@@ -34,11 +39,21 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
 }
 
 export async function handleGoogleOAuthCallback(req: Request, res: Response) {
-  const { code, error } = req.query;
+  const { code, error, state } = req.query;
   
   console.log('🔍 OAuth callback received');
   console.log('🔍 Callback URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
   console.log('🔍 Query params:', req.query);
+  
+  // Verify CSRF state parameter
+  const sessionState = (req.session as any)?.oauth_state;
+  if (!state || state !== sessionState) {
+    console.error('OAuth state mismatch - potential CSRF attack');
+    return res.redirect('/app?error=invalid_state');
+  }
+  
+  // Clear the state from session
+  delete (req.session as any).oauth_state;
   
   if (error) {
     console.error('OAuth error:', error);

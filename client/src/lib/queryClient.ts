@@ -30,7 +30,7 @@ export async function apiRequest(
   }
 
   // Security: Never log request bodies as they may contain sensitive data
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log(`API Request to ${url}:`, { method: fetchOptions.method || 'GET' });
   }
 

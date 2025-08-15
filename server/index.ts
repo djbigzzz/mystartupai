@@ -36,6 +36,9 @@ app.use(sanitizeFrontendInputs);
 app.use(validateFrontendInputs);
 app.use(sanitizeInput);
 
+// NoSQL injection protection (already imported in security.ts)
+app.use(sanitizeInput); // This includes mongo-sanitize
+
 // Body parsing with strict limits
 app.use(express.json({ 
   limit: '1mb', // Reduced from 10mb for security

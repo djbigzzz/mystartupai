@@ -21,7 +21,20 @@ export const securityHeaders = helmet({
       baseUri: ["'self'"],
       formAction: ["'self'"],
     },
-  } : false, // Disable CSP in development to avoid Vite conflicts
+  } : {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Allow eval for development
+      connectSrc: ["'self'", "https:", "ws:", "wss:"], // Allow WebSocket for HMR
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+    },
+  }, // Enable permissive CSP for development
   crossOriginEmbedderPolicy: false, // Disabled for external images
   hsts: process.env.NODE_ENV === 'production' ? {
     maxAge: 31536000,
