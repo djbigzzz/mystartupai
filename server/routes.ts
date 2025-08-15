@@ -182,13 +182,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Google OAuth routes with debug logging
+  // Google OAuth routes with comprehensive logging
   app.get("/api/auth/google", (req, res, next) => {
-    console.log('🔍 Initiating Google OAuth from:', req.get('host'));
-    console.log('🔍 Request URL:', req.url);
+    console.log('🔍 === GOOGLE OAUTH INITIATION ===');
+    console.log('🔍 Host:', req.get('host'));
+    console.log('🔍 Protocol:', req.protocol);
+    console.log('🔍 Original URL:', req.originalUrl);
     console.log('🔍 Full URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
+    console.log('🔍 Headers:', JSON.stringify(req.headers, null, 2));
     next();
-  }, passport.authenticate('google', { scope: ['profile', 'email'] }));
+  }, passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    prompt: 'select_account'
+  }));
 
   app.get("/api/auth/google/callback", 
     (req, res, next) => {

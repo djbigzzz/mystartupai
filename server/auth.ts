@@ -45,25 +45,20 @@ passport.use(new LocalStrategy(
   }
 ));
 
-// Google OAuth Strategy
+// Google OAuth Strategy with explicit configuration
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  // Dynamic callback URL based on environment
-  const getCallbackURL = () => {
-    // Use the current Replit domain or custom domain
-    if (process.env.REPLIT_DOMAINS) {
-      const domain = process.env.REPLIT_DOMAINS.split(',')[0];
-      const callbackUrl = `https://${domain}/api/auth/google/callback`;
-      console.log('🔍 Google OAuth Callback URL:', callbackUrl);
-      return callbackUrl;
-    }
-    // Fallback for local development
-    return "http://localhost:5000/api/auth/google/callback";
-  };
+  console.log('🔍 Configuring Google OAuth Strategy...');
+  console.log('🔍 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
+  console.log('🔍 Client Secret exists:', !!process.env.GOOGLE_CLIENT_SECRET);
+  
+  const callbackURL = "https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/callback";
+  console.log('🔍 Using callback URL:', callbackURL);
 
-  passport.use(new GoogleStrategy({
+  passport.use('google', new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/callback"
+    callbackURL: callbackURL,
+    scope: ['profile', 'email']
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
