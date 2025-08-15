@@ -182,13 +182,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Google OAuth routes
-  app.get("/api/auth/google", passport.authenticate('google', { scope: ['profile', 'email'] }));
+  // Google OAuth routes with debug logging
+  app.get("/api/auth/google", (req, res, next) => {
+    console.log('🔍 Initiating Google OAuth from:', req.get('host'));
+    console.log('🔍 Request URL:', req.url);
+    console.log('🔍 Full URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
+    next();
+  }, passport.authenticate('google', { scope: ['profile', 'email'] }));
 
   app.get("/api/auth/google/callback", 
+    (req, res, next) => {
+      console.log('🔍 Google OAuth Callback received');
+      console.log('🔍 Callback URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
+      console.log('🔍 Query params:', req.query);
+      next();
+    },
     passport.authenticate('google', { failureRedirect: '/app' }),
     (req, res) => {
-      // Successful authentication, redirect to dashboard
+      console.log('✅ Google OAuth successful, redirecting to dashboard');
       res.redirect('/dashboard');
     }
   );
