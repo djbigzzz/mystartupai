@@ -52,7 +52,9 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     // Use the current Replit domain or custom domain
     if (process.env.REPLIT_DOMAINS) {
       const domain = process.env.REPLIT_DOMAINS.split(',')[0];
-      return `https://${domain}/api/auth/google/callback`;
+      const callbackUrl = `https://${domain}/api/auth/google/callback`;
+      console.log('🔍 Google OAuth Callback URL:', callbackUrl);
+      return callbackUrl;
     }
     // Fallback for local development
     return "http://localhost:5000/api/auth/google/callback";
