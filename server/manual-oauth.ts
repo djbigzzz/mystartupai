@@ -5,10 +5,11 @@ import { storage } from "./storage";
 export async function initiateGoogleOAuth(req: Request, res: Response) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   
-  // Use production domain or fall back to development domain
-  const host = process.env.NODE_ENV === 'production' 
+  // Use explicit domain based on request host for better reliability
+  const requestHost = req.get('host');
+  const host = requestHost?.includes('mystartup.ai') 
     ? 'mystartup.ai' 
-    : (process.env.REPLIT_DOMAINS || req.get('host'));
+    : (process.env.REPLIT_DOMAINS || requestHost);
   const redirectUri = `https://${host}/api/auth/google/manual/callback`;
   
   const params = new URLSearchParams({
@@ -26,12 +27,18 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
   console.log('🔍 Redirect URI:', redirectUri);
   console.log('🔍 Host from env:', process.env.REPLIT_DOMAINS);
   console.log('🔍 Host from header:', req.get('host'));
+  console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
+  console.log('🔍 Production mode:', process.env.NODE_ENV === 'production');
   
   res.redirect(authUrl);
 }
 
 export async function handleGoogleOAuthCallback(req: Request, res: Response) {
   const { code, error } = req.query;
+  
+  console.log('🔍 OAuth callback received');
+  console.log('🔍 Callback URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
+  console.log('🔍 Query params:', req.query);
   
   if (error) {
     console.error('OAuth error:', error);
@@ -55,7 +62,7 @@ export async function handleGoogleOAuthCallback(req: Request, res: Response) {
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
         code: code as string,
         grant_type: 'authorization_code',
-        redirect_uri: `https://${process.env.NODE_ENV === 'production' ? 'mystartup.ai' : (process.env.REPLIT_DOMAINS || req.get('host'))}/api/auth/google/manual/callback`
+        redirect_uri: `https://${req.get('host')?.includes('mystartup.ai') ? 'mystartup.ai' : (process.env.REPLIT_DOMAINS || req.get('host'))}/api/auth/google/manual/callback`
       })
     });
 
