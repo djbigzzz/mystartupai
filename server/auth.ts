@@ -51,7 +51,13 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   console.log('🔍 Client ID exists:', !!process.env.GOOGLE_CLIENT_ID);
   console.log('🔍 Client Secret exists:', !!process.env.GOOGLE_CLIENT_SECRET);
   
-  const callbackURL = "https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/callback";
+  // Use production domain for OAuth callback - detect based on host
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isReplitDev = process.env.REPL_ID || process.env.REPLIT_DOMAINS;
+  
+  const callbackURL = (!isDevelopment && !isReplitDev)
+    ? "https://mystartup.ai/api/auth/google/callback"
+    : "https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/callback";
   console.log('🔍 Using callback URL:', callbackURL);
 
   passport.use('google', new GoogleStrategy({
