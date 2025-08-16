@@ -57,6 +57,6 @@ export function testRedirectUri(req: Request, res: Response) {
     protocol,
     expectedUri,
     replitDomains: process.env.REPLIT_DOMAINS,
-    matches: expectedUri === `https://dcce2b51-81d9-4f52-b724-4633b7613eaa-00-1pco1isub73pc.spock.replit.dev/api/auth/google/callback`
+    matches: expectedUri === `https://mystartup.ai/api/auth/google/callback`
   });
 }

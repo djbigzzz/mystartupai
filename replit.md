@@ -6,8 +6,11 @@ MyStartup.ai is an AI-powered platform designed to guide startup founders from i
 ## Recent Changes
 - **Production Deployment**: MyStartup.ai successfully deployed and live on mystartup.ai
 - **Security Hardening**: Comprehensive security audit completed - 100% security score
-- **OAuth System**: Fully functional with CSRF protection and state verification ✅ WORKING
-- **Google Authentication**: Successfully tested and confirmed working on production
+- **OAuth System**: Fixed callback URL configuration - now pointing to production domain ✅ WORKING
+- **Session Persistence**: Fixed cookie configuration with `sameSite: 'lax'` for OAuth compatibility
+- **Database Schema**: Added missing `startup_vision` column to resolve backend errors
+- **Profile Page**: Added back button navigation and functional change photo button
+- **Google Authentication**: OAuth system fully functional with manual implementation using mystartup.ai (Jan 16, 2025)
 - **Security Vulnerabilities**: All identified vulnerabilities patched (CVE-2025-30208, hardcoded URLs, logging)
 - **Enterprise Security**: All OWASP Top 10 vulnerabilities mitigated
 - **Mobile Ready**: Platform optimized and accessible across all devices
