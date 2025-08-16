@@ -5,11 +5,8 @@ import { storage } from "./storage";
 export async function initiateGoogleOAuth(req: Request, res: Response) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   
-  // Use explicit domain based on request host for better reliability
-  const requestHost = req.get('host');
-  const host = requestHost?.includes('mystartup.ai') 
-    ? 'mystartup.ai' 
-    : (process.env.REPLIT_DOMAINS || requestHost);
+  // Force production domain in all environments
+  const host = 'mystartup.ai';
   const redirectUri = `https://${host}/api/auth/google/manual/callback`;
   
   // Generate CSRF state token for security
