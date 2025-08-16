@@ -1,40 +1,32 @@
-# OAuth Issue - Root Cause Identified & Fix
+# Immediate OAuth Fix - Alternative Approach
 
-## Problem Analysis
-The persistent `redirect_uri_mismatch` error indicates Google's OAuth service is receiving a different redirect URI than what's configured in Google Cloud Console.
+## The Issue
+Your OAuth consent screen appears to not be fully configured, which is causing the 404 error. Let me provide multiple solutions.
 
-## Root Cause Identified
-Based on debugging, the issue is likely one of these:
+## Solution 1: Complete OAuth Consent Screen Setup
 
-1. **Client ID Mismatch**: The GOOGLE_CLIENT_ID in environment doesn't match the Google Cloud Console project
-2. **Domain Case Sensitivity**: Google OAuth is case-sensitive with domains
-3. **OAuth Consent Screen**: Missing or incorrect consent screen configuration
+### Navigate to OAuth Consent Screen:
+1. Go to: https://console.cloud.google.com/apis/credentials/consent
+2. OR: In Google Cloud Console, go to "APIs & Services" → "OAuth consent screen"
+3. If you see "Configure consent screen", click it
 
-## Immediate Fix Strategy
+### Required Settings:
+- **User Type**: External
+- **App name**: MyStartup.ai
+- **User support email**: Your email
+- **Authorized domains**: Add `mystartup.ai`
+- **Application homepage**: `https://mystartup.ai`
+- **Developer contact**: Your email
 
-### Step 1: Verify Client ID Match
-- Check that your environment GOOGLE_CLIENT_ID exactly matches the Client ID in Google Cloud Console
-- Any character difference will cause redirect_uri_mismatch
+## Solution 2: Use Alternative Redirect URI
 
-### Step 2: OAuth Consent Screen Configuration
-In Google Cloud Console:
-1. Go to "OAuth consent screen"
-2. Ensure application type is set to "External" (not Internal)
-3. Add your Replit domain to "Authorized domains"
-4. Save configuration
+I'll add support for a simpler callback URL that might work immediately.
 
-### Step 3: Regenerate OAuth Credentials
-If the issue persists:
-1. Delete current OAuth credentials in Google Cloud Console
-2. Create new OAuth 2.0 Client ID
-3. Use the new Client ID and Secret in environment variables
+## Solution 3: Verify Domain Ownership
 
-### Step 4: Alternative - Use Manual OAuth Flow
-Implement a custom OAuth flow that bypasses Passport.js strategy issues
+The 404 could be due to domain verification. You may need to verify `mystartup.ai` domain ownership in Google Search Console first.
 
-## Testing URLs
-- Debug OAuth: `/api/debug/oauth`
-- Test Redirect URI: `/api/debug/redirect-uri`
-- Direct OAuth: `/api/auth/google`
-
-This systematic approach will identify and fix the exact OAuth configuration issue.
+## Next Steps:
+1. Try accessing: https://console.cloud.google.com/apis/credentials/consent directly
+2. Complete the consent screen configuration
+3. If that doesn't work, I'll implement alternative callback strategies

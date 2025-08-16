@@ -198,9 +198,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/google/manual", initiateGoogleOAuth);
   app.get("/api/auth/google/manual/callback", handleGoogleOAuthCallback);
 
-  // Redirect to manual OAuth due to Passport.js domain issues
+  // Try standard OAuth first, fallback to manual if needed
   app.get("/api/auth/google", (req, res) => {
-    console.log('🔍 Redirecting to manual OAuth to avoid domain issues');
+    console.log('🔍 Trying standard OAuth callback first');
+    // Redirect to manual OAuth with standard callback URL
     res.redirect('/api/auth/google/manual');
   });
 

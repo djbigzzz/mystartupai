@@ -5,9 +5,15 @@ import { storage } from "./storage";
 export async function initiateGoogleOAuth(req: Request, res: Response) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   
-  // Force production domain in all environments
+  // Try multiple callback URL strategies for better compatibility
   const host = 'mystartup.ai';
-  const redirectUri = `https://${host}/api/auth/google/manual/callback`;
+  let redirectUri = `https://${host}/api/auth/google/callback`; // Try standard callback first
+  
+  // If standard doesn't work, fallback to manual
+  const useManualCallback = req.query.manual === 'true';
+  if (useManualCallback) {
+    redirectUri = `https://${host}/api/auth/google/manual/callback`;
+  }
   
   // Generate CSRF state token for security
   const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
