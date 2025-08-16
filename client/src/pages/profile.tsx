@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera } from "lucide-react";
+import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft } from "lucide-react";
 
 interface UserProfile {
   id: number;
@@ -186,6 +186,19 @@ export default function Profile() {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Back Navigation */}
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+        </div>
+        
         {/* Profile Header */}
         <Card>
           <CardHeader>
@@ -215,6 +228,23 @@ export default function Profile() {
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2"
+                onClick={() => {
+                  // Create file input element
+                  const input = document.createElement('input');
+                  input.type = 'file';
+                  input.accept = 'image/*';
+                  input.onchange = (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (file) {
+                      // For now, show a toast - file upload functionality can be added later
+                      toast({
+                        title: "Photo Upload",
+                        description: "Photo upload functionality will be available soon.",
+                      });
+                    }
+                  };
+                  input.click();
+                }}
               >
                 <Camera className="w-4 h-4" />
                 Change Photo
