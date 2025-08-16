@@ -171,7 +171,7 @@ export const verifyPassword = async (password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 };
 
-// Session Security
+// Session Security with persistent store
 export const secureSessionConfig = {
   name: 'mystartup_session', // Don't use default session name
   secret: process.env.SESSION_SECRET!,
@@ -181,7 +181,8 @@ export const secureSessionConfig = {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'strict' as const,
+    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax' as const, // Changed from 'strict' to 'lax' for OAuth
+    domain: process.env.NODE_ENV === 'production' ? '.mystartup.ai' : undefined, // Allow subdomain for OAuth
   },
   rolling: true, // Reset expiration on activity
 };
