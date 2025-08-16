@@ -1,57 +1,51 @@
-# OAuth Debugging Report - redirect_uri_mismatch
-
-## Issue Analysis
-The redirect_uri_mismatch error persists despite correct URL configuration in Google Cloud Console.
-
-## Potential Root Causes
-
-### 1. OAuth Strategy Configuration
-- Google OAuth strategy might be sending different parameters
-- Scope or prompt configuration could affect the callback URL generation
-
-### 2. Google Cloud Console Settings
-- OAuth consent screen configuration
-- Application type settings (Web application vs other types)
-- Domain verification issues
-
-### 3. Environment Variables
-- GOOGLE_CLIENT_ID mismatch
-- Environment variable caching issues
-
-## Debugging Steps Implemented
-
-### 1. Enhanced Logging
-- Added comprehensive request logging for OAuth initiation
-- Strategy configuration logging
-- Callback URL verification
-
-### 2. Explicit Strategy Configuration
-- Named the Google strategy explicitly ('google')
-- Added scope configuration directly in strategy
-- Added prompt parameter to force account selection
-
-### 3. Hardcoded Callback URL
-- Bypassed dynamic URL generation
-- Used exact URL from Google Cloud Console
-
-## Next Steps
-
-### Option A: Alternative OAuth Implementation
-Create a custom OAuth flow using direct HTTP requests to Google's OAuth endpoints
-
-### Option B: Temporary Deployment Without OAuth
-Deploy the platform with email authentication only:
-- Platform is fully functional with email/password
-- All features work perfectly
-- OAuth can be configured post-deployment
-
-### Option C: Environment Reset
-Reset environment variables and reconfigure OAuth from scratch
+# OAuth 404 Issue - Debugging Report
 
 ## Current Status
-- Platform: 100% functional with email auth
-- Security: Enterprise-grade protection
-- All features: Working perfectly
-- Google OAuth: Debugging in progress
+- **Code Configuration**: ✅ CORRECT - generates `https://mystartup.ai/api/auth/google/manual/callback`
+- **Google Console**: ✅ CONFIGURED - has the callback URL added
+- **Result**: ❌ Still getting 404 from Google
 
-The platform is ready for production deployment with email authentication while we resolve OAuth issues.
+## Possible Causes
+
+### 1. Google Console Propagation Delay
+Google's systems may take 5-15 minutes to propagate OAuth configuration changes.
+
+### 2. OAuth Consent Screen Issues
+The OAuth consent screen may need additional configuration:
+- Application verification status
+- Publishing status (Testing vs Production)
+- User type restrictions
+
+### 3. Additional Required Settings
+Missing configurations in Google Console:
+- Application domain verification
+- Authorized domains in OAuth consent screen
+- API scopes not properly configured
+
+## Immediate Solutions to Try
+
+### Option A: Wait for Propagation (Recommended)
+Google Console changes can take up to 15 minutes to take effect. Wait and retry.
+
+### Option B: Alternative Callback URL
+Try adding multiple callback URLs to Google Console:
+```
+https://mystartup.ai/api/auth/google/callback
+https://mystartup.ai/api/auth/google/manual/callback  
+https://www.mystartup.ai/api/auth/google/manual/callback
+```
+
+### Option C: OAuth Consent Screen Check
+Ensure the OAuth consent screen is properly configured:
+1. Set to "External" user type
+2. Add `mystartup.ai` to authorized domains
+3. Set application homepage to `https://mystartup.ai`
+4. Verify application is published (not in testing mode)
+
+## Next Steps
+1. Wait 10-15 minutes for Google propagation
+2. Check OAuth consent screen configuration
+3. Try alternative callback URLs if needed
+4. Verify domain ownership in Google Console
+
+The code is correct - this is a Google Console configuration/timing issue.

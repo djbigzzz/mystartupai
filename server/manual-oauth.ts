@@ -25,11 +25,11 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
 
   const authUrl = `https://accounts.google.com/oauth/authorize?${params.toString()}`;
   
-  // Only log sensitive information in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 Manual OAuth URL:', authUrl);
-    console.log('🔍 Redirect URI:', redirectUri);
-  }
+  // Always log OAuth information for debugging
+  console.log('🔍 Manual OAuth URL:', authUrl);
+  console.log('🔍 Redirect URI:', redirectUri);
+  console.log('🔍 Client ID:', clientId);
+  console.log('🔍 Host used:', host);
   
   res.redirect(authUrl);
 }
