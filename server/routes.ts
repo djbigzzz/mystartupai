@@ -205,19 +205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect('/api/auth/google/manual');
   });
 
-  app.get("/api/auth/google/callback", 
-    (req, res, next) => {
-      console.log('🔍 Google OAuth Callback received');
-      console.log('🔍 Callback URL:', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
-      console.log('🔍 Query params:', req.query);
-      next();
-    },
-    passport.authenticate('google', { failureRedirect: '/app' }),
-    (req, res) => {
-      console.log('✅ Google OAuth successful, redirecting to dashboard');
-      res.redirect('/dashboard');
-    }
-  );
+  app.get("/api/auth/google/callback", handleGoogleOAuthCallback);
 
   // Google OAuth for waitlist with separate strategy
   app.get("/api/auth/google/waitlist", passport.authenticate('google-waitlist', { scope: ['profile', 'email'] }));
