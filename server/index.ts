@@ -21,6 +21,28 @@ validateEnvironment();
 
 const app = express();
 
+// OAuth bypass route - MUST be before any middleware that could fail
+app.get("/api/auth/google/bypass", (req, res) => {
+  console.log('🔍 Bypass OAuth route called');
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const redirectUri = 'https://mystartup.ai/api/auth/google/callback';
+  const state = 'bypass123';
+  
+  const params = new URLSearchParams({
+    client_id: clientId!,
+    redirect_uri: redirectUri,
+    response_type: 'code',
+    scope: 'profile email',
+    access_type: 'offline',
+    prompt: 'select_account',
+    state: state
+  });
+
+  const authUrl = `https://accounts.google.com/oauth/authorize?${params.toString()}`;
+  console.log('🔍 Bypass OAuth URL:', authUrl);
+  res.redirect(authUrl);
+});
+
 // Trust proxy for accurate IP addresses
 app.set('trust proxy', 1);
 

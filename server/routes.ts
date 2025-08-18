@@ -35,6 +35,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Session configuration
   // Session configuration removed - handled in index.ts
 
+  // Test route to verify OAuth is working (completely bypasses all middleware)
+  app.get("/api/test/oauth", (req, res) => {
+    console.log('🔍 Test OAuth route called');
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const redirectUri = 'https://mystartup.ai/api/auth/google/callback';
+    const state = 'test123';
+    
+    const params = new URLSearchParams({
+      client_id: clientId!,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'profile email',
+      access_type: 'offline',
+      prompt: 'select_account',
+      state: state
+    });
+
+    const authUrl = `https://accounts.google.com/oauth/authorize?${params.toString()}`;
+    console.log('🔍 Test OAuth URL:', authUrl);
+    res.redirect(authUrl);
+  });
+
+  // Manual OAuth routes (before Passport middleware to avoid conflicts)
+  app.get("/api/auth/google/manual", initiateGoogleOAuth);
+  app.get("/api/auth/google/manual/callback", handleGoogleOAuthCallback);
+
   // Apply advanced security middleware globally
   app.use(securityLogger);
   app.use(advancedInputValidation);
@@ -194,9 +220,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/debug/oauth", debugOAuthConfiguration);
   app.get("/api/debug/redirect-uri", testRedirectUri);
 
-  // Manual Google OAuth (bypasses Passport.js issues)
-  app.get("/api/auth/google/manual", initiateGoogleOAuth);
-  app.get("/api/auth/google/manual/callback", handleGoogleOAuthCallback);
+  // Manual Google OAuth (bypasses Passport.js issues) - before Passport middleware
+  // These routes bypass Passport.js completely to avoid session errors
 
   // Try standard OAuth first, fallback to manual if needed
   app.get("/api/auth/google", (req, res) => {

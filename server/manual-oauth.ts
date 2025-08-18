@@ -3,14 +3,21 @@ import { storage } from "./storage";
 
 // Manual Google OAuth implementation to bypass Passport.js issues
 export async function initiateGoogleOAuth(req: Request, res: Response) {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  
-  // Use the callback URL that's configured in Google Console  
-  const redirectUri = 'https://mystartup.ai/api/auth/google/callback';
-  
-  // Generate CSRF state token for security
-  const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-  (req.session as any).oauth_state = state;
+  try {
+    console.log('🔍 Starting manual OAuth flow');
+    
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.error('🔍 Missing GOOGLE_CLIENT_ID');
+      return res.status(500).json({ error: 'OAuth configuration error' });
+    }
+    
+    // Use the callback URL that's configured in Google Console  
+    const redirectUri = 'https://mystartup.ai/api/auth/google/callback';
+    
+    // Generate CSRF state token for security
+    const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    (req.session as any).oauth_state = state;
   
   const params = new URLSearchParams({
     client_id: clientId!,
@@ -28,9 +35,12 @@ export async function initiateGoogleOAuth(req: Request, res: Response) {
   console.log('🔍 Manual OAuth URL:', authUrl);
   console.log('🔍 Redirect URI:', redirectUri);
   console.log('🔍 Client ID:', clientId);
-  console.log('🔍 Host used:', host);
   
   res.redirect(authUrl);
+  } catch (error) {
+    console.error('🔍 OAuth initiation error:', error);
+    res.status(500).json({ error: 'Failed to initiate OAuth' });
+  }
 }
 
 export async function handleGoogleOAuthCallback(req: Request, res: Response) {

@@ -13,10 +13,22 @@ passport.serializeUser((user: any, done) => {
 // Deserialize user from session
 passport.deserializeUser(async (id: number, done) => {
   try {
+    // Handle invalid ID
+    if (!id || typeof id !== 'number') {
+      console.log('🔍 Invalid user ID in session:', id);
+      return done(null, false);
+    }
+    
     const user = await storage.getUser(id);
+    if (!user) {
+      console.log('🔍 User not found for ID:', id);
+      return done(null, false);
+    }
+    
     done(null, user);
   } catch (error) {
-    done(error, null);
+    console.error('🔍 Error deserializing user:', error);
+    done(null, false); // Don't propagate error, just treat as not authenticated
   }
 });
 
