@@ -20,8 +20,22 @@ export default function AppEntry() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formTouched, setFormTouched] = useState<Record<string, boolean>>({});
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetToken, setResetToken] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [showResetForm, setShowResetForm] = useState(false);
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
+
+  // Check for password reset token in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('reset');
+    if (token) {
+      setResetToken(token);
+      setShowResetForm(true);
+    }
+  }, []);
 
   // Validation functions
   const validateEmail = (email: string): string => {
@@ -90,8 +104,8 @@ export default function AppEntry() {
       const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
       return apiRequest(endpoint, {
         method: "POST",
-        body: data,
-      });
+        body: data
+      } as RequestInit & { body?: any });
     },
     onSuccess: () => {
       toast({
@@ -111,11 +125,57 @@ export default function AppEntry() {
     },
   });
 
-  // Google OAuth
-  const handleGoogleAuth = () => {
-    // Use manual OAuth flow to bypass Passport.js redirect_uri_mismatch issue
-    window.location.href = "/api/auth/google/manual";
-  };
+  // Forgot password mutation
+  const forgotPasswordMutation = useMutation({
+    mutationFn: async (email: string) => {
+      return apiRequest("/api/auth/forgot-password", {
+        method: "POST",
+        body: { email }
+      } as RequestInit & { body?: any });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Reset link sent!",
+        description: "Check your email for password reset instructions.",
+      });
+      setShowForgotPassword(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send reset email.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Reset password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (data: { token: string; newPassword: string }) => {
+      return apiRequest("/api/auth/reset-password", {
+        method: "POST",
+        body: data
+      } as RequestInit & { body?: any });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password reset successful!",
+        description: "You can now sign in with your new password.",
+      });
+      setShowResetForm(false);
+      setResetToken("");
+      setNewPassword("");
+      // Clear URL parameters
+      window.history.replaceState({}, document.title, "/app");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Reset failed",
+        description: error.message || "Failed to reset password.",
+        variant: "destructive",
+      });
+    },
+  });
 
 
 
@@ -166,6 +226,34 @@ export default function AppEntry() {
       password,
       ...(isSignUp && { name }),
     });
+  };
+
+  const handleForgotPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    const emailError = validateEmail(email);
+    if (!emailError) {
+      forgotPasswordMutation.mutate(email);
+    } else {
+      toast({
+        title: "Invalid email",
+        description: emailError,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleResetPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    const passwordError = validatePassword(newPassword);
+    if (!passwordError && resetToken) {
+      resetPasswordMutation.mutate({ token: resetToken, newPassword });
+    } else if (passwordError) {
+      toast({
+        title: "Invalid password",
+        description: passwordError,
+        variant: "destructive",
+      });
+    }
   };
 
   // Reset form when switching between sign up and sign in
@@ -226,24 +314,7 @@ export default function AppEntry() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            {/* OAuth Button - Prominently Featured */}
-            <Button 
-              onClick={handleGoogleAuth}
-              variant="outline"
-              className="w-full justify-center h-12 bg-white dark:bg-gray-900 border-2 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            >
-              <Chrome className="w-5 h-5 mr-3 text-blue-600" />
-              <span className="font-medium text-base">Continue with Google</span>
-            </Button>
-            
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-3 text-muted-foreground font-medium">or continue with email</span>
-              </div>
-            </div>
+            {/* Temporarily removed Google OAuth for testing */}
             
             {/* Email Form with Enhanced Validation */}
             <form onSubmit={handleEmailSubmit} className="space-y-5">
@@ -389,12 +460,7 @@ export default function AppEntry() {
                     type="button"
                     variant="link"
                     className="text-sm text-primary hover:underline p-0 h-auto"
-                    onClick={() => {
-                      toast({
-                        title: "Password Reset",
-                        description: "Password reset functionality will be available soon.",
-                      });
-                    }}
+                    onClick={() => setShowForgotPassword(true)}
                   >
                     Forgot your password?
                   </Button>
@@ -421,6 +487,111 @@ export default function AppEntry() {
             </form>
           </CardContent>
         </Card>
+
+        {/* Forgot Password Modal */}
+        {showForgotPassword && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Reset Password</CardTitle>
+                <CardDescription>Enter your email address and we'll send you a reset link.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email Address</label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowForgotPassword(false)}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={forgotPasswordMutation.isPending}
+                      className="flex-1"
+                    >
+                      {forgotPasswordMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        'Send Reset Link'
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Reset Password Modal */}
+        {showResetForm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Set New Password</CardTitle>
+                <CardDescription>Enter your new password below.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">New Password</label>
+                    <Input
+                      type="password"
+                      placeholder="Enter new password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowResetForm(false);
+                        setResetToken("");
+                        setNewPassword("");
+                        window.history.replaceState({}, document.title, "/app");
+                      }}
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={resetPasswordMutation.isPending}
+                      className="flex-1"
+                    >
+                      {resetPasswordMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        'Update Password'
+                      )}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div className="text-center mt-6 text-sm text-muted-foreground">
           <p>

@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import passport from "./auth";
@@ -29,6 +29,8 @@ import {
 import { cleanUserDataForResponse, sanitizeForLogging } from "./privacy-protection";
 import { debugOAuthConfiguration, testRedirectUri } from "./oauth-debug";
 import { initiateGoogleOAuth, handleGoogleOAuthCallback } from "./manual-oauth";
+import crypto from "crypto";
+import bcrypt from "bcryptjs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -358,10 +360,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
-  // Google OAuth routes
-  app.get("/api/auth/google", 
-    passport.authenticate('google', { scope: ['profile', 'email'] })
+  // Password reset routes
+  app.post("/api/auth/forgot-password",
+    authRateLimiter,
+    validateEmail,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const { email } = req.body;
+        const sanitizedEmail = sanitizeQuery(email.toLowerCase().trim());
+
+        // Check if user exists
+        const user = await storage.getUserByEmail(sanitizedEmail);
+        if (!user) {
+          // Return success even if user doesn't exist (security best practice)
+          return res.json({ 
+            message: "If an account with that email exists, we've sent a password reset link." 
+          });
+        }
+
+        // Generate secure reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 3600000); // 1 hour from now
+
+        // Save reset token
+        await storage.createPasswordResetToken({
+          email: sanitizedEmail,
+          token: resetToken,
+          expiresAt,
+          used: false
+        });
+
+        // TODO: Send email with reset link
+        // For now, we'll log it (in production, send actual email)
+        console.log(`Password reset token for ${sanitizedEmail}: ${resetToken}`);
+        console.log(`Reset link: https://mystartup.ai/app?reset=${resetToken}`);
+
+        res.json({ 
+          message: "If an account with that email exists, we've sent a password reset link.",
+          // Remove this in production - only for testing
+          resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
+        });
+
+      } catch (error) {
+        console.error("Forgot password error:", error);
+        res.status(500).json({ message: "Failed to process password reset request" });
+      }
+    }
   );
+
+  app.post("/api/auth/reset-password",
+    authRateLimiter,
+    body('token').notEmpty().withMessage('Reset token is required'),
+    validatePassword.withMessage('New password must meet security requirements'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const { token, newPassword } = req.body;
+
+        // Find valid reset token
+        const resetToken = await storage.getPasswordResetToken(token);
+        
+        if (!resetToken || resetToken.used || resetToken.expiresAt < new Date()) {
+          return res.status(400).json({ 
+            message: "Invalid or expired reset token" 
+          });
+        }
+
+        // Find user by email
+        const user = await storage.getUserByEmail(resetToken.email);
+        if (!user) {
+          return res.status(400).json({ 
+            message: "User not found" 
+          });
+        }
+
+        // Hash new password
+        const hashedPassword = await hashPassword(newPassword);
+
+        // Update user password
+        await storage.updateUser(user.id, {
+          password: hashedPassword
+        });
+
+        // Mark token as used
+        await storage.markPasswordResetTokenAsUsed(token);
+
+        res.json({ message: "Password reset successfully" });
+
+      } catch (error) {
+        console.error("Reset password error:", error);
+        res.status(500).json({ message: "Failed to reset password" });
+      }
+    }
+  );
+
+  // Google OAuth routes (temporarily disabled)
+  // app.get("/api/auth/google", 
+  //   passport.authenticate('google', { scope: ['profile', 'email'] })
+  // );
 
   app.get("/api/auth/google/callback",
     passport.authenticate('google', { failureRedirect: '/' }),
@@ -378,7 +475,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     advancedRateLimit(10, 15 * 60 * 1000), // 10 idea submissions per 15 minutes
     validateStartupIdea,
     handleValidationErrors,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         // Sanitize all inputs
         const sanitizedData = {
@@ -593,16 +690,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Sanitize inputs
       const sanitizedData = {
-        ...req.body,
-        name: sanitizeHtml(req.body.name.trim()),
-        description: req.body.description ? sanitizeHtml(req.body.description.trim()) : undefined,
-        industry: req.body.industry ? sanitizeQuery(req.body.industry.trim()) : undefined,
+        companyName: sanitizeHtml(req.body.name.trim()),
+        description: req.body.description ? sanitizeHtml(req.body.description.trim()) : "Company description",
+        industry: req.body.industry ? sanitizeQuery(req.body.industry.trim()) : "Technology",
         stage: req.body.stage ? sanitizeQuery(req.body.stage) : 'idea',
-        userId
       };
       
       const validatedData = insertCompanySchema.parse(sanitizedData);
-      const company = await storage.createCompany(validatedData);
+      const companyWithUserId = { ...validatedData, userId };
+      const company = await storage.createCompany(companyWithUserId);
       res.json(company);
     } catch (error) {
       console.error("Error creating company:", error);
@@ -764,6 +860,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
       
+      if (document.companyId === null) {
+        return res.status(400).json({ message: "Document has no associated company" });
+      }
+      
       const company = await storage.getCompany(document.companyId);
       if (!company || company.userId !== userId) {
         return res.status(403).json({ message: "Unauthorized to update this document" });
@@ -801,6 +901,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const document = await storage.getDocument(id);
       if (!document) {
         return res.status(404).json({ message: "Document not found" });
+      }
+      
+      if (document.companyId === null) {
+        return res.status(400).json({ message: "Document has no associated company" });
       }
       
       const company = await storage.getCompany(document.companyId);
