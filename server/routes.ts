@@ -412,7 +412,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/reset-password",
     authRateLimiter,
     body('token').notEmpty().withMessage('Reset token is required'),
-    validatePassword.withMessage('New password must meet security requirements'),
+    body('newPassword')
+      .isLength({ min: 8, max: 128 })
+      .withMessage('Password must be 8-128 characters')
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+      .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
     handleValidationErrors,
     async (req, res) => {
       try {
