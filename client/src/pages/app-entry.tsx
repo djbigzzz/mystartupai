@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Sparkles, Mail, Chrome, ArrowRight, Eye, EyeOff, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 
 export default function AppEntry() {
@@ -108,12 +108,17 @@ export default function AppEntry() {
       } as RequestInit & { body?: any });
     },
     onSuccess: () => {
+      // Invalidate auth queries to refresh user data
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      
       toast({
         title: isSignUp ? "Account created successfully!" : "Welcome back!",
         description: "Redirecting to your dashboard...",
       });
+      
+      // Redirect to the correct dashboard route
       setTimeout(() => {
-        setLocation("/dashboard");
+        window.location.href = "/dashboard";
       }, 1000);
     },
     onError: (error: any) => {
