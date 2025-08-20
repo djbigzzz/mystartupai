@@ -116,9 +116,9 @@ export default function AppEntry() {
         description: "Redirecting to your dashboard...",
       });
       
-      // Redirect to the correct dashboard route
+      // Redirect to dashboard
       setTimeout(() => {
-        window.location.href = "/app-dashboard";
+        window.location.href = "/dashboard";
       }, 1000);
     },
     onError: (error: any) => {
