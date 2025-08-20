@@ -64,9 +64,11 @@ export default function Dashboard() {
   });
 
   // Fetch authenticated user data
-  const { data: user, isLoading: userLoading, error: userError } = useQuery<User>({
+  const { data: user, isLoading: userLoading, error: userError, refetch } = useQuery<User>({
     queryKey: ["/api/auth/me"],
-    retry: false,
+    retry: 1,
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 0, // Don't cache the response
   });
 
   // Debug logging
@@ -74,7 +76,7 @@ export default function Dashboard() {
   console.log('Dashboard - User loading:', userLoading);
   console.log('Dashboard - User error:', userError);
   
-  // Force cache invalidation for debugging
+  // Force cache invalidation and refetch for debugging
   React.useEffect(() => {
     if (user) {
       console.log('Dashboard - User received:', {
@@ -82,8 +84,11 @@ export default function Dashboard() {
         name: user.name,
         email: user.email
       });
+    } else if (!userLoading && !userError) {
+      console.log('Dashboard - No user data, attempting refetch...');
+      refetch();
     }
-  }, [user]);
+  }, [user, userLoading, userError, refetch]);
 
   // Redirect to login if not authenticated
   useEffect(() => {

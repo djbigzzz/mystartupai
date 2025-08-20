@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -60,15 +60,25 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
   const queryClient = useQueryClient();
 
   // Fetch user data
-  const { data: user, isLoading: userLoading, error: userError } = useQuery<User>({
+  const { data: user, isLoading: userLoading, error: userError, refetch } = useQuery<User>({
     queryKey: ["/api/auth/me"],
-    retry: false,
+    retry: 1,
+    staleTime: 0, // Always fetch fresh data
+    gcTime: 0, // Don't cache the response
   });
 
   // Debug logging
   console.log('Sidebar - User data:', user);
   console.log('Sidebar - User loading:', userLoading);
   console.log('Sidebar - User error:', userError);
+  
+  // Attempt to refetch if we get null user but no error
+  React.useEffect(() => {
+    if (!userLoading && !user && !userError) {
+      console.log('Sidebar - No user data, attempting refetch...');
+      refetch();
+    }
+  }, [user, userLoading, userError, refetch]);
 
   // Logout mutation
   const logoutMutation = useMutation({
