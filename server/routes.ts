@@ -182,15 +182,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     validateEmail,
     body('password').notEmpty().withMessage('Password is required'),
     handleValidationErrors,
-    passport.authenticate('local', { 
-      failureMessage: true,
-      failWithError: true 
-    }), 
-    (req, res) => {
-      // Clean user data before sending response
-      const user = req.user as any;
-      const cleanUser = cleanUserDataForResponse(user);
-      res.json({ user: cleanUser });
+    (req, res, next) => {
+      console.log('🔍 Login attempt:', req.body.email);
+      passport.authenticate('local', (err, user, info) => {
+        if (err) {
+          console.error('❌ Login authentication error:', err);
+          return next(err);
+        }
+        if (!user) {
+          console.log('❌ Login failed:', info?.message || 'Invalid credentials');
+          return res.status(401).json({ message: info?.message || 'Invalid credentials' });
+        }
+        
+        req.logIn(user, (err) => {
+          if (err) {
+            console.error('❌ Session creation failed:', err);
+            return next(err);
+          }
+          console.log('✅ Login successful for user:', user.id, user.email);
+          const cleanUser = cleanUserDataForResponse(user);
+          res.json({ user: cleanUser });
+        });
+      })(req, res, next);
     }
   );
 

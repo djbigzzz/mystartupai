@@ -40,18 +40,33 @@ passport.use(new LocalStrategy(
   },
   async (email, password, done) => {
     try {
+      console.log('🔍 Local Strategy: Attempting login for', email);
       const user = await storage.getUserByEmail(email);
       if (!user) {
+        console.log('❌ Local Strategy: User not found');
         return done(null, false, { message: 'Invalid credentials' });
       }
 
-      const isValid = await bcrypt.compare(password, user.password || '');
+      console.log('🔍 Local Strategy: User found, checking password');
+      console.log('🔍 Local Strategy: User has password hash:', !!user.password);
+      
+      if (!user.password) {
+        console.log('❌ Local Strategy: No password hash stored');
+        return done(null, false, { message: 'Account has no password set' });
+      }
+
+      const isValid = await bcrypt.compare(password, user.password);
+      console.log('🔍 Local Strategy: Password valid:', isValid);
+      
       if (!isValid) {
+        console.log('❌ Local Strategy: Invalid password');
         return done(null, false, { message: 'Invalid credentials' });
       }
 
+      console.log('✅ Local Strategy: Authentication successful');
       return done(null, user);
     } catch (error) {
+      console.error('❌ Local Strategy error:', error);
       return done(error);
     }
   }
