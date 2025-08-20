@@ -133,11 +133,28 @@ export default function AppEntry() {
         body: { email }
       } as RequestInit & { body?: any });
     },
-    onSuccess: () => {
-      toast({
-        title: "Reset link sent!",
-        description: "Check your email for password reset instructions.",
-      });
+    onSuccess: (data: any) => {
+      if (data.emailSent) {
+        toast({
+          title: "Reset link sent!",
+          description: "Check your email for password reset instructions.",
+        });
+      } else if (data.resetLink) {
+        // Show reset link directly if email couldn't be sent
+        toast({
+          title: "Email service unavailable",
+          description: "Use this direct link to reset your password",
+          action: (
+            <button 
+              onClick={() => window.open(data.resetLink, '_blank')}
+              className="bg-white text-primary px-3 py-1 rounded text-sm"
+            >
+              Open Reset Link
+            </button>
+          ),
+          duration: 10000, // Show longer for manual action
+        });
+      }
       setShowForgotPassword(false);
     },
     onError: (error: any) => {
