@@ -203,19 +203,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get("/api/auth/me", (req, res) => {
-    // Check both Passport.js and manual session authentication
-    if (req.isAuthenticated()) {
-      const user = req.user as any;
-      const cleanUser = cleanUserDataForResponse(user);
-      res.json(cleanUser);
-    } else if ((req.session as any)?.userId) {
-      // Manual session authentication (for manual OAuth)
-      const user = (req.session as any).user;
-      const cleanUser = cleanUserDataForResponse(user);
-      res.json(cleanUser);
-    } else {
-      res.status(401).json({ message: "Unauthorized" });
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      // Check both Passport.js and manual session authentication
+      console.log('🔍 Auth check - isAuthenticated:', req.isAuthenticated());
+      console.log('🔍 Auth check - session userId:', (req.session as any)?.userId);
+      console.log('🔍 Auth check - session user:', (req.session as any)?.user ? 'exists' : 'null');
+      
+      if (req.isAuthenticated()) {
+        const user = req.user as any;
+        const cleanUser = cleanUserDataForResponse(user);
+        console.log('✅ Authenticated via Passport - user ID:', user.id);
+        res.json(cleanUser);
+      } else if ((req.session as any)?.userId) {
+        // Manual session authentication (for manual OAuth)
+        const userId = (req.session as any).userId;
+        const user = await storage.getUser(userId);
+        if (user) {
+          const cleanUser = cleanUserDataForResponse(user);
+          console.log('✅ Authenticated via manual session - user ID:', userId);
+          res.json(cleanUser);
+        } else {
+          console.log('❌ Manual session user not found in database');
+          res.status(401).json({ message: "Unauthorized" });
+        }
+      } else {
+        console.log('❌ No authentication found');
+        res.status(401).json({ message: "Unauthorized" });
+      }
+    } catch (error) {
+      console.error('❌ Auth check error:', error);
+      res.status(500).json({ message: "Authentication check failed" });
     }
   });
 
