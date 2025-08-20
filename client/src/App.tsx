@@ -37,7 +37,8 @@ function Router() {
       <Route path="/demo" component={DemoJourneyNew} />
       <Route path="/agentic" component={AgenticDemoUnified} />
       <Route path="/app" component={AppEntry} />
-      <Route path="/dashboard" component={AppDashboard} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/app-dashboard" component={AppDashboard} />
       <Route path="/profile" component={Profile} />
       <Route path="/startup-profile" component={StartupProfile} />
       <Route component={NotFound} />
