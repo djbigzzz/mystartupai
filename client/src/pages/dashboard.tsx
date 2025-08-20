@@ -64,10 +64,47 @@ export default function Dashboard() {
   });
 
   // Fetch authenticated user data
-  const { data: user } = useQuery<User>({
+  const { data: user, isLoading: userLoading, error: userError } = useQuery<User>({
     queryKey: ["/api/auth/me"],
     retry: false,
   });
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (userError && (userError as any).status === 401) {
+      window.location.href = '/app';
+    }
+  }, [userError]);
+
+  // Show loading state while checking authentication
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login redirect if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+          <p className="text-gray-600 mb-4">Please log in to access your dashboard.</p>
+          <button 
+            onClick={() => window.location.href = '/app'}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Mock stats data
   const stats: DashboardStats = {
