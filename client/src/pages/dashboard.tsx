@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -68,6 +68,22 @@ export default function Dashboard() {
     queryKey: ["/api/auth/me"],
     retry: false,
   });
+
+  // Debug logging
+  console.log('Dashboard - User data:', user);
+  console.log('Dashboard - User loading:', userLoading);
+  console.log('Dashboard - User error:', userError);
+  
+  // Force cache invalidation for debugging
+  React.useEffect(() => {
+    if (user) {
+      console.log('Dashboard - User received:', {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      });
+    }
+  }, [user]);
 
   // Redirect to login if not authenticated
   useEffect(() => {

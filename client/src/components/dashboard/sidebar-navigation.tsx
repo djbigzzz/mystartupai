@@ -60,10 +60,15 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
   const queryClient = useQueryClient();
 
   // Fetch user data
-  const { data: user, isLoading: userLoading } = useQuery<User>({
+  const { data: user, isLoading: userLoading, error: userError } = useQuery<User>({
     queryKey: ["/api/auth/me"],
     retry: false,
   });
+
+  // Debug logging
+  console.log('Sidebar - User data:', user);
+  console.log('Sidebar - User loading:', userLoading);
+  console.log('Sidebar - User error:', userError);
 
   // Logout mutation
   const logoutMutation = useMutation({
