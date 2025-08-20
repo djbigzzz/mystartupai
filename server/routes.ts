@@ -31,6 +31,7 @@ import { debugOAuthConfiguration, testRedirectUri } from "./oauth-debug";
 import { initiateGoogleOAuth, handleGoogleOAuthCallback } from "./manual-oauth";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
+import { emailService } from "./email-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -391,16 +392,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           used: false
         });
 
-        // TODO: Send email with reset link
-        // For now, we'll log it (in production, send actual email)
-        console.log(`Password reset token for ${sanitizedEmail}: ${resetToken}`);
-        console.log(`Reset link: https://mystartup.ai/app?reset=${resetToken}`);
-
-        res.json({ 
-          message: "If an account with that email exists, we've sent a password reset link.",
-          // Remove this in production - only for testing
-          resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
-        });
+        // Send password reset email
+        const emailSent = await emailService.sendPasswordResetEmail(sanitizedEmail, resetToken);
+        
+        if (emailSent) {
+          res.json({ 
+            message: "Password reset email sent! Check your inbox for the reset link.",
+            emailSent: true
+          });
+        } else {
+          // If email service isn't configured, provide the reset link directly
+          res.json({ 
+            message: "Email service not configured. Use this link to reset your password:",
+            resetLink: `https://mystartup.ai/app?reset=${resetToken}`,
+            resetToken: resetToken,
+            emailSent: false
+          });
+        }
 
       } catch (error) {
         console.error("Forgot password error:", error);
