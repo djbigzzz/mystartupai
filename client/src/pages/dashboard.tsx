@@ -22,6 +22,17 @@ import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
 import StartupWorkflowDashboard from "@/components/startup-workflow-dashboard";
 
+interface User {
+  id: number;
+  email: string | null;
+  name: string | null;
+  username: string | null;
+  avatar: string | null;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface DashboardStats {
   totalIdeas: number;
   completedAnalyses: number;
@@ -52,25 +63,11 @@ export default function Dashboard() {
     enabled: !!currentIdeaId,
   });
 
-  // Mock user data for testing - will be replaced with real authentication
-  const user = {
-    id: 1,
-    name: "John Entrepreneur",
-    email: "john@startup.com",
-    phone: "+1 (555) 123-4567",
-    location: "San Francisco, CA",
-    company: "TechStartup Inc.",
-    website: "https://techstartup.com",
-    bio: "Serial entrepreneur with 10+ years experience in SaaS and fintech. Passionate about building solutions that solve real problems.",
-    avatar: undefined,
-    plan: "Pro",
-    joinedAt: "2024-01-15",
-    linkedin: "https://linkedin.com/in/johnentrepreneur",
-    twitter: "https://twitter.com/johnentrepreneur",
-    github: "https://github.com/johnentrepreneur",
-    emailVerified: true,
-    profileComplete: 85
-  };
+  // Fetch authenticated user data
+  const { data: user } = useQuery<User>({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
 
   // Mock stats data
   const stats: DashboardStats = {
@@ -145,11 +142,11 @@ export default function Dashboard() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold mb-2">Welcome back, {user.name}!</h1>
+            <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name || 'Entrepreneur'}!</h1>
             <p className="text-blue-100">Ready to accelerate your startup journey?</p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold">{user.profileComplete}%</div>
+            <div className="text-3xl font-bold">75%</div>
             <div className="text-blue-100 text-sm">Profile Complete</div>
           </div>
         </div>
@@ -367,7 +364,7 @@ export default function Dashboard() {
   const renderMainContent = () => {
     switch (activeSection) {
       case "profile":
-        return <ProfileManagement user={user} />;
+        return user ? <ProfileManagement user={user} /> : <div>Loading...</div>;
       default:
         return renderDashboardOverview();
     }
@@ -413,12 +410,12 @@ export default function Dashboard() {
               </Button>
               <div className="flex items-center space-x-3">
                 <Avatar>
-                  <AvatarImage src={user.avatar || undefined} />
-                  <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  <AvatarImage src={user?.avatar || undefined} />
+                  <AvatarFallback>{user?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}</AvatarFallback>
                 </Avatar>
                 <div className="text-sm">
-                  <p className="font-medium text-gray-900">{user.name}</p>
-                  <p className="text-gray-500">{user.plan} Plan</p>
+                  <p className="font-medium text-gray-900">{user?.name || 'User'}</p>
+                  <p className="text-gray-500">Pro Plan</p>
                 </div>
               </div>
             </div>
