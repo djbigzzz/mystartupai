@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   LayoutDashboard,
   User,
@@ -22,8 +24,10 @@ import {
   ChevronRight,
   Plus,
   Bell,
-  HelpCircle
+  HelpCircle,
+  LogOut
 } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface NavigationItem {
   id: string;
@@ -34,6 +38,17 @@ interface NavigationItem {
   count?: number;
 }
 
+interface User {
+  id: number;
+  email: string | null;
+  name: string | null;
+  username: string | null;
+  avatar: string | null;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface SidebarNavigationProps {
   className?: string;
 }
@@ -42,6 +57,31 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
   const [collapsed, setCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [location] = useLocation();
+  const queryClient = useQueryClient();
+
+  // Fetch user data
+  const { data: user, isLoading: userLoading } = useQuery<User>({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
+
+  // Logout mutation
+  const logoutMutation = useMutation({
+    mutationFn: () => apiRequest("/api/auth/logout", {
+      method: "POST",
+    }),
+    onSuccess: () => {
+      queryClient.clear();
+      window.location.href = '/app';
+    },
+    onError: (error) => {
+      console.error('Logout failed:', error);
+    }
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   const mainNavigation: NavigationItem[] = [
     {
@@ -289,7 +329,62 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 space-y-3">
+        {/* User Profile Section */}
+        {!collapsed && user && (
+          <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.avatar || undefined} />
+              <AvatarFallback className="text-xs">
+                {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-gray-900 truncate">
+                {user.name || 'User'}
+              </div>
+              <div className="text-xs text-gray-500 truncate">
+                {user.email || 'No email'}
+              </div>
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+              className="h-8 w-8 p-0"
+              title="Logout"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
+        {/* Collapsed User Profile */}
+        {collapsed && user && (
+          <div className="flex justify-center">
+            <div className="relative">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.avatar || undefined} />
+                <AvatarFallback className="text-xs">
+                  {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+                className="absolute -top-1 -right-1 h-4 w-4 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full"
+                title="Logout"
+              >
+                <LogOut className="h-2 w-2" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Pro Plan Section */}
         {!collapsed && (
           <div className="bg-blue-50 rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
