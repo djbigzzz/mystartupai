@@ -33,6 +33,48 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { emailService } from "./email-service";
 
+// Helper function to parse AI analysis for profile form
+function parseAIAnalysisForProfile(analysis: any) {
+  try {
+    // Extract structured data from AI analysis
+    const result = {
+      companyName: extractFromAnalysis(analysis, 'company', 'startup', 'business') || "Your Startup",
+      industry: extractFromAnalysis(analysis, 'industry', 'sector', 'market') || "Technology", 
+      problem: extractFromAnalysis(analysis, 'problem', 'challenge', 'pain point') || "Market need identified",
+      solution: extractFromAnalysis(analysis, 'solution', 'approach', 'offering') || "Innovative solution"
+    };
+    
+    return result;
+  } catch (error) {
+    console.error("Error parsing AI analysis:", error);
+    return {
+      companyName: "Your Startup",
+      industry: "Technology",
+      problem: "AI analysis could not identify specific problems",
+      solution: "AI analysis could not identify specific solutions"
+    };
+  }
+}
+
+// Helper to extract specific information from AI analysis text
+function extractFromAnalysis(analysis: any, ...keywords: string[]): string | null {
+  if (!analysis || typeof analysis !== 'string') return null;
+  
+  const text = analysis.toLowerCase();
+  const sentences = text.split(/[.!?]/);
+  
+  for (const keyword of keywords) {
+    for (const sentence of sentences) {
+      if (sentence.includes(keyword)) {
+        // Return the sentence, cleaned up
+        return sentence.trim().charAt(0).toUpperCase() + sentence.trim().slice(1);
+      }
+    }
+  }
+  
+  return null;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Session configuration
@@ -556,6 +598,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error("Error creating idea:", error);
         res.status(400).json({ 
           message: error instanceof Error ? error.message : "Failed to create idea" 
+        });
+      }
+    }
+  );
+
+  // AI analyze startup vision for profile form
+  app.post("/api/ai/analyze-startup-idea",
+    advancedRateLimit(5, 10 * 60 * 1000), // 5 AI analysis requests per 10 minutes
+    body('vision').isLength({ min: 10, max: 2000 }).withMessage('Vision must be between 10 and 2000 characters'),
+    handleValidationErrors,
+    async (req: Request, res: Response) => {
+      try {
+        const { vision } = req.body;
+        const sanitizedVision = sanitizeHtml(vision.trim());
+        
+        // Use OpenAI to analyze the startup vision
+        const analysis = await analyzeStartupIdea(
+          "Startup Vision Analysis", // title
+          sanitizedVision, // description 
+          "General", // industry (will be determined by AI)
+          "Concept" // stage
+        );
+        
+        // Parse the AI analysis to extract structured data
+        const structuredAnalysis = parseAIAnalysisForProfile(analysis);
+        
+        res.json(structuredAnalysis);
+      } catch (error) {
+        console.error("Error analyzing startup vision:", error);
+        res.status(500).json({ 
+          message: "AI analysis failed. Please try again or continue manually." 
         });
       }
     }

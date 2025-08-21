@@ -147,26 +147,33 @@ export default function StartupProfile() {
   const generateProfileFromVision = async (vision: string) => {
     setIsGeneratingProfile(true);
     try {
-      // Simulate AI parsing of startup vision
-      const suggestions = {
-        companyName: extractCompanyName(vision),
-        industry: extractIndustry(vision),
-        problem: extractProblem(vision),
-        solution: extractSolution(vision)
-      };
+      // Call actual AI analysis API
+      const response = await fetch('/api/ai/analyze-startup-idea', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ vision }),
+      });
+
+      if (!response.ok) {
+        throw new Error('AI analysis failed');
+      }
+
+      const aiAnalysis = await response.json();
       
-      setAiSuggestions(suggestions);
+      setAiSuggestions(aiAnalysis);
       setFormData(prev => ({
         ...prev,
-        suggestedCompanyName: suggestions.companyName,
-        suggestedIndustry: suggestions.industry,
-        suggestedProblem: suggestions.problem,
-        suggestedSolution: suggestions.solution
+        suggestedCompanyName: aiAnalysis.companyName,
+        suggestedIndustry: aiAnalysis.industry,
+        suggestedProblem: aiAnalysis.problem,
+        suggestedSolution: aiAnalysis.solution
       }));
       
       toast({
         title: "AI Analysis Complete!",
-        description: "I've extracted key details from your vision. Review and continue to build your profile."
+        description: "I've analyzed your startup idea with AI. Review the intelligent suggestions below."
       });
       
     } catch (error) {
@@ -180,108 +187,7 @@ export default function StartupProfile() {
     }
   };
 
-  // Helper functions for AI parsing simulation
-  const extractCompanyName = (text: string): string => {
-    const lowerText = text.toLowerCase();
-    
-    // Look for cafe/restaurant names
-    if (lowerText.includes('cafe') || lowerText.includes('coffee')) {
-      if (lowerText.includes('crypto')) return "CryptoCafe";
-      if (lowerText.includes('dublin')) return "Dublin Crypto Cafe";
-      return "The Crypto Cafe";
-    }
-    
-    // Look for business type indicators
-    if (lowerText.includes('app')) return "YourApp";
-    if (lowerText.includes('platform')) return "YourPlatform";
-    if (lowerText.includes('service')) return "YourService";
-    
-    // Extract first capitalized word as fallback
-    const words = text.split(' ');
-    const capitalizedWord = words.find(word => word.length > 3 && /^[A-Z]/.test(word));
-    return capitalizedWord || "Your Startup";
-  };
 
-  const extractIndustry = (text: string): string => {
-    const industryKeywords: Record<string, string> = {
-      'cafe': 'Food & Beverage',
-      'coffee': 'Food & Beverage',
-      'restaurant': 'Food & Beverage',
-      'crypto': 'Finance',
-      'blockchain': 'Finance',
-      'bitcoin': 'Finance',
-      'fitness': 'Healthcare',
-      'health': 'Healthcare', 
-      'food': 'Food & Beverage',
-      'app': 'Technology',
-      'software': 'Technology',
-      'education': 'Education',
-      'finance': 'Finance',
-      'ecommerce': 'E-commerce',
-      'shopping': 'E-commerce'
-    };
-    
-    const lowerText = text.toLowerCase();
-    
-    // Special case for crypto cafe - it's hospitality/food service
-    if (lowerText.includes('crypto') && (lowerText.includes('cafe') || lowerText.includes('coffee'))) {
-      return "Food & Beverage";
-    }
-    
-    for (const [keyword, industry] of Object.entries(industryKeywords)) {
-      if (lowerText.includes(keyword)) return industry;
-    }
-    return "Technology";
-  };
-
-  const extractProblem = (text: string): string => {
-    const lowerText = text.toLowerCase();
-    
-    // Specific problem patterns for different business types
-    if (lowerText.includes('cafe') || lowerText.includes('coffee')) {
-      if (lowerText.includes('crypto')) {
-        return "Limited accessible spaces for crypto enthusiasts to gather, learn, and conduct business";
-      }
-      return "Need for community gathering spaces with specialized services";
-    }
-    
-    // Look for explicit problem statements
-    const problemIndicators = ['problem', 'issue', 'challenge', 'struggle', 'difficult', 'lack of', 'need for'];
-    const sentences = text.split('.');
-    
-    for (const sentence of sentences) {
-      const lowerSentence = sentence.toLowerCase();
-      if (problemIndicators.some(indicator => lowerSentence.includes(indicator))) {
-        return sentence.trim();
-      }
-    }
-    
-    return "Market gap identified from your business concept";
-  };
-
-  const extractSolution = (text: string): string => {
-    const lowerText = text.toLowerCase();
-    
-    // Specific solutions for different business types
-    if (lowerText.includes('cafe') || lowerText.includes('coffee')) {
-      if (lowerText.includes('crypto')) {
-        return "A themed cafe combining coffee culture with cryptocurrency education, trading spaces, and community events";
-      }
-      return "Community-focused cafe with specialized services and atmosphere";
-    }
-    
-    // Look for solution indicators  
-    const solutionIndicators = ['solution', 'solve', 'app', 'platform', 'service', 'tool', 'create', 'build'];
-    const sentences = text.split('.');
-    
-    for (const sentence of sentences) {
-      const lowerSentence = sentence.toLowerCase();
-      if (solutionIndicators.some(indicator => lowerSentence.includes(indicator))) {
-        return sentence.trim();
-      }
-    }
-    return "Innovative solution addressing identified market needs";
-  };
 
   // Progress calculation
   useEffect(() => {
@@ -688,12 +594,7 @@ export default function StartupProfile() {
 
           {/* Phase Content */}
           {currentPhase === 'quick-start' && <QuickStartPhase />}
-          {currentPhase === 'guided-completion' && (
-            <div>
-              <div className="text-xs text-gray-500 mb-2">Debug: Rendering guided-completion phase</div>
-              <GuidedCompletionPhase />
-            </div>
-          )}
+          {currentPhase === 'guided-completion' && <GuidedCompletionPhase />}
           {currentPhase === 'advanced-details' && <AdvancedDetailsPhase />}
         </div>
       </div>
