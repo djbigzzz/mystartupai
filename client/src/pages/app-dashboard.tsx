@@ -55,7 +55,9 @@ export default function AppDashboard() {
   // Check authentication
   const { data: user, isLoading: userLoading, error: userError } = useQuery<User>({
     queryKey: ["/api/auth/me"],
-    retry: false,
+    retry: 1,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   // Redirect to login if not authenticated
@@ -305,8 +307,8 @@ export default function AppDashboard() {
                     <span className="text-xs font-medium text-primary-foreground">JD</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">John Doe</p>
-                    <p className="text-xs text-muted-foreground truncate">john@startup.com</p>
+                    <p className="text-sm font-medium text-foreground truncate">{user?.name || "Loading..."}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email || "Loading..."}</p>
                   </div>
                   <Settings className="w-4 h-4 text-muted-foreground" />
                 </div>
@@ -339,7 +341,7 @@ export default function AppDashboard() {
 
             {/* Welcome Section */}
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-foreground mb-2">Welcome back, John</h1>
+              <h1 className="text-2xl font-bold text-foreground mb-2">Welcome back, {user?.name || 'Entrepreneur'}</h1>
               <p className="text-muted-foreground">Your current summary and activity.</p>
             </div>
 

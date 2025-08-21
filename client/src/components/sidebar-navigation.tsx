@@ -230,10 +230,10 @@ export default function SidebarNavigation({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-slate-900 truncate">
-                {companyData?.companyName || "John Doe"}
+                {user?.name || "Loading..."}
               </p>
               <p className="text-xs text-slate-500 truncate">
-                {companyData?.industry || "john@mystartup.com"}
+                {user?.email || "Loading..."}
               </p>
             </div>
             <Button variant="ghost" size="sm" className="p-1">
