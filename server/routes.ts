@@ -36,12 +36,12 @@ import { emailService } from "./email-service";
 // Helper function to parse AI analysis for profile form
 function parseAIAnalysisForProfile(analysis: any) {
   try {
-    // Extract structured data from AI analysis
+    // The analysis is an IdeaAnalysis object with structured fields
     const result = {
-      companyName: extractFromAnalysis(analysis, 'company', 'startup', 'business') || "Your Startup",
-      industry: extractFromAnalysis(analysis, 'industry', 'sector', 'market') || "Technology", 
-      problem: extractFromAnalysis(analysis, 'problem', 'challenge', 'pain point') || "Market need identified",
-      solution: extractFromAnalysis(analysis, 'solution', 'approach', 'offering') || "Innovative solution"
+      companyName: generateCompanyNameFromAnalysis(analysis) || "Your Startup",
+      industry: determineIndustryFromAnalysis(analysis) || "Technology", 
+      problem: extractProblemFromAnalysis(analysis) || "Market need identified",
+      solution: extractSolutionFromAnalysis(analysis) || "Innovative solution"
     };
     
     return result;
@@ -56,23 +56,93 @@ function parseAIAnalysisForProfile(analysis: any) {
   }
 }
 
-// Helper to extract specific information from AI analysis text
-function extractFromAnalysis(analysis: any, ...keywords: string[]): string | null {
-  if (!analysis || typeof analysis !== 'string') return null;
+// Generate a company name suggestion from AI analysis
+function generateCompanyNameFromAnalysis(analysis: any): string {
+  // Use the market opportunity or competitive advantage to inspire a name
+  const opportunity = analysis.marketOpportunity?.toLowerCase() || "";
+  const advantage = analysis.competitiveAdvantage?.toLowerCase() || "";
   
-  const text = analysis.toLowerCase();
-  const sentences = text.split(/[.!?]/);
+  if (opportunity.includes('cafe') || opportunity.includes('coffee')) {
+    if (opportunity.includes('crypto') || opportunity.includes('blockchain')) {
+      return "CryptoCafe";
+    }
+    return "NextGen Cafe";
+  }
   
-  for (const keyword of keywords) {
-    for (const sentence of sentences) {
-      if (sentence.includes(keyword)) {
-        // Return the sentence, cleaned up
-        return sentence.trim().charAt(0).toUpperCase() + sentence.trim().slice(1);
-      }
+  if (opportunity.includes('tech') || advantage.includes('technology')) {
+    return "TechFlow";
+  }
+  
+  return "Your Startup";
+}
+
+// Determine industry from AI analysis
+function determineIndustryFromAnalysis(analysis: any): string {
+  const opportunity = analysis.marketOpportunity?.toLowerCase() || "";
+  
+  if (opportunity.includes('food') || opportunity.includes('cafe') || opportunity.includes('restaurant')) {
+    return "Food & Beverage";
+  }
+  if (opportunity.includes('health') || opportunity.includes('medical')) {
+    return "Healthcare";
+  }
+  if (opportunity.includes('finance') || opportunity.includes('crypto') || opportunity.includes('fintech')) {
+    return "Finance";
+  }
+  if (opportunity.includes('education') || opportunity.includes('learning')) {
+    return "Education";
+  }
+  
+  return "Technology";
+}
+
+// Extract problem statement from AI analysis
+function extractProblemFromAnalysis(analysis: any): string {
+  // Use the weaknesses or market opportunity to identify problems
+  if (analysis.weaknesses && analysis.weaknesses.length > 0) {
+    return analysis.weaknesses[0]; // Take the first weakness as the main problem
+  }
+  
+  if (analysis.marketOpportunity) {
+    // Extract problem hints from market opportunity
+    const opportunity = analysis.marketOpportunity;
+    if (opportunity.includes('lacking') || opportunity.includes('gap') || opportunity.includes('inefficient')) {
+      return opportunity.split('.')[0] + '.'; // Take first sentence
     }
   }
   
-  return null;
+  return "Market gap identified from AI analysis";
+}
+
+// Extract solution from AI analysis  
+function extractSolutionFromAnalysis(analysis: any): string {
+  // Use strengths or competitive advantage to describe solution
+  if (analysis.competitiveAdvantage) {
+    return analysis.competitiveAdvantage;
+  }
+  
+  if (analysis.strengths && analysis.strengths.length > 0) {
+    return analysis.strengths[0]; // Take the first strength as solution approach
+  }
+  
+  return "Innovative solution identified by AI analysis";
+}
+
+// Extract a dynamic title from the vision text
+function extractTitleFromVision(vision: string): string {
+  const lowerVision = vision.toLowerCase();
+  
+  if (lowerVision.includes('crypto') && (lowerVision.includes('cafe') || lowerVision.includes('coffee'))) {
+    return "Crypto Cafe Concept";
+  }
+  if (lowerVision.includes('app') || lowerVision.includes('platform')) {
+    return "Tech Platform Idea";
+  }
+  if (lowerVision.includes('service') || lowerVision.includes('business')) {
+    return "Service Business Concept";
+  }
+  
+  return "Startup Vision Analysis";
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -615,7 +685,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Use OpenAI to analyze the startup vision
         const analysis = await analyzeStartupIdea(
-          "Startup Vision Analysis", // title
+          extractTitleFromVision(sanitizedVision), // more dynamic title
           sanitizedVision, // description 
           "General", // industry (will be determined by AI)
           "Concept" // stage
