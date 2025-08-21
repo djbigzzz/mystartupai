@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -133,6 +133,15 @@ export default function StartupProfile() {
   
   // Progress calculation
   const [overallProgress, setOverallProgress] = useState(0);
+
+  // Stable input handlers to prevent focus loss
+  const handleStartupVisionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, startupVision: e.target.value }));
+  }, []);
+
+  const handleFormFieldChange = useCallback((field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
 
   // AI-powered vision parsing
   const generateProfileFromVision = async (vision: string) => {
@@ -392,7 +401,7 @@ export default function StartupProfile() {
             placeholder="Example: I want to create an AI-powered fitness app that provides real-time form correction during workouts. Many people struggle with maintaining proper exercise form at home, leading to injuries and ineffective workouts. My app would use computer vision to analyze user movements and provide instant feedback..."
             className="min-h-32 text-base border-2 border-gray-200 focus:border-blue-500 resize-none"
             value={formData.startupVision || ''}
-            onChange={(e) => setFormData(prev => ({ ...prev, startupVision: e.target.value }))}
+            onChange={handleStartupVisionChange}
           />
           <p className="text-sm text-gray-500 flex items-center">
             <Bot className="w-4 h-4 mr-2" />
@@ -422,7 +431,7 @@ export default function StartupProfile() {
                   id="quick-company"
                   placeholder="Leave blank for AI suggestion"
                   value={formData.companyName || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
+                  onChange={(e) => handleFormFieldChange('companyName', e.target.value)}
                 />
               </div>
               <div>
