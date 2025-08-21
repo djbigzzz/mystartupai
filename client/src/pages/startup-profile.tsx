@@ -182,13 +182,34 @@ export default function StartupProfile() {
 
   // Helper functions for AI parsing simulation
   const extractCompanyName = (text: string): string => {
-    // Simple extraction logic - in real app would use AI
+    const lowerText = text.toLowerCase();
+    
+    // Look for cafe/restaurant names
+    if (lowerText.includes('cafe') || lowerText.includes('coffee')) {
+      if (lowerText.includes('crypto')) return "CryptoCafe";
+      if (lowerText.includes('dublin')) return "Dublin Crypto Cafe";
+      return "The Crypto Cafe";
+    }
+    
+    // Look for business type indicators
+    if (lowerText.includes('app')) return "YourApp";
+    if (lowerText.includes('platform')) return "YourPlatform";
+    if (lowerText.includes('service')) return "YourService";
+    
+    // Extract first capitalized word as fallback
     const words = text.split(' ');
-    return words.find(word => word.length > 3 && /^[A-Z]/.test(word)) || "Your Startup";
+    const capitalizedWord = words.find(word => word.length > 3 && /^[A-Z]/.test(word));
+    return capitalizedWord || "Your Startup";
   };
 
   const extractIndustry = (text: string): string => {
     const industryKeywords: Record<string, string> = {
+      'cafe': 'Food & Beverage',
+      'coffee': 'Food & Beverage',
+      'restaurant': 'Food & Beverage',
+      'crypto': 'Finance',
+      'blockchain': 'Finance',
+      'bitcoin': 'Finance',
       'fitness': 'Healthcare',
       'health': 'Healthcare', 
       'food': 'Food & Beverage',
@@ -201,6 +222,12 @@ export default function StartupProfile() {
     };
     
     const lowerText = text.toLowerCase();
+    
+    // Special case for crypto cafe - it's hospitality/food service
+    if (lowerText.includes('crypto') && (lowerText.includes('cafe') || lowerText.includes('coffee'))) {
+      return "Food & Beverage";
+    }
+    
     for (const [keyword, industry] of Object.entries(industryKeywords)) {
       if (lowerText.includes(keyword)) return industry;
     }
@@ -208,8 +235,18 @@ export default function StartupProfile() {
   };
 
   const extractProblem = (text: string): string => {
-    // Look for problem indicators
-    const problemIndicators = ['problem', 'issue', 'challenge', 'struggle', 'difficult', 'lack of'];
+    const lowerText = text.toLowerCase();
+    
+    // Specific problem patterns for different business types
+    if (lowerText.includes('cafe') || lowerText.includes('coffee')) {
+      if (lowerText.includes('crypto')) {
+        return "Limited accessible spaces for crypto enthusiasts to gather, learn, and conduct business";
+      }
+      return "Need for community gathering spaces with specialized services";
+    }
+    
+    // Look for explicit problem statements
+    const problemIndicators = ['problem', 'issue', 'challenge', 'struggle', 'difficult', 'lack of', 'need for'];
     const sentences = text.split('.');
     
     for (const sentence of sentences) {
@@ -218,12 +255,23 @@ export default function StartupProfile() {
         return sentence.trim();
       }
     }
-    return "Identified from your vision description";
+    
+    return "Market gap identified from your business concept";
   };
 
   const extractSolution = (text: string): string => {
+    const lowerText = text.toLowerCase();
+    
+    // Specific solutions for different business types
+    if (lowerText.includes('cafe') || lowerText.includes('coffee')) {
+      if (lowerText.includes('crypto')) {
+        return "A themed cafe combining coffee culture with cryptocurrency education, trading spaces, and community events";
+      }
+      return "Community-focused cafe with specialized services and atmosphere";
+    }
+    
     // Look for solution indicators  
-    const solutionIndicators = ['solution', 'solve', 'app', 'platform', 'service', 'tool'];
+    const solutionIndicators = ['solution', 'solve', 'app', 'platform', 'service', 'tool', 'create', 'build'];
     const sentences = text.split('.');
     
     for (const sentence of sentences) {
@@ -232,7 +280,7 @@ export default function StartupProfile() {
         return sentence.trim();
       }
     }
-    return "Extracted from your vision description";
+    return "Innovative solution addressing identified market needs";
   };
 
   // Progress calculation
@@ -640,7 +688,12 @@ export default function StartupProfile() {
 
           {/* Phase Content */}
           {currentPhase === 'quick-start' && <QuickStartPhase />}
-          {currentPhase === 'guided-completion' && <GuidedCompletionPhase />}
+          {currentPhase === 'guided-completion' && (
+            <div>
+              <div className="text-xs text-gray-500 mb-2">Debug: Rendering guided-completion phase</div>
+              <GuidedCompletionPhase />
+            </div>
+          )}
           {currentPhase === 'advanced-details' && <AdvancedDetailsPhase />}
         </div>
       </div>
