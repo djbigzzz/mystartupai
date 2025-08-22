@@ -17,7 +17,7 @@ import WaitlistClean from "@/pages/waitlist-clean";
 import DemoJourneyNew from "@/pages/demo-journey-new";
 import AgenticDemoUnified from "@/pages/agentic-demo-unified";
 import AppEntry from "@/pages/app-entry";
-import AppDashboard from "@/pages/app-dashboard";
+
 import Profile from "@/pages/profile";
 import StartupProfile from "@/pages/startup-profile";
 import AnalyticsDemo from "@/pages/analytics-demo";
@@ -42,7 +42,7 @@ function Router() {
       <Route path="/agentic" component={AgenticDemoUnified} />
       <Route path="/app" component={AppEntry} />
       <Route path="/dashboard" component={Dashboard} />
-      <Route path="/app-dashboard" component={AppDashboard} />
+
       <Route path="/profile" component={Profile} />
       <Route path="/startup-profile" component={StartupProfile} />
       <Route path="/analytics" component={AnalyticsDemo} />
