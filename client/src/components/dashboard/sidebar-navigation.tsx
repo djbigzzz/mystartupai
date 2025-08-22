@@ -117,26 +117,28 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       name: "Analytics",
       href: "/analytics", 
       icon: TrendingUp,
+      badge: "Demo",
     },
     {
       id: "business-plans",
       name: "Business Plans",
       href: "/business-plans",
       icon: FileText,
-      count: 5,
+      badge: "Demo",
     },
     {
       id: "investors",
       name: "Investors",
       href: "/investors",
       icon: Users,
-      badge: "New",
+      badge: "Demo",
     },
     {
       id: "funding",
       name: "Funding",
       href: "/funding",
       icon: DollarSign,
+      badge: "Demo",
     },
   ];
 
@@ -146,24 +148,28 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       name: "Company Setup",
       href: "/company-setup",
       icon: Building,
+      badge: "Demo",
     },
     {
       id: "website-builder",
       name: "Website Builder",
       href: "/website-builder",
       icon: Globe,
+      badge: "Demo",
     },
     {
       id: "legal",
       name: "Legal & Compliance",
       href: "/legal",
       icon: Shield,
+      badge: "Demo",
     },
     {
       id: "calendar",
       name: "Schedule",
       href: "/calendar",
       icon: Calendar,
+      badge: "Demo",
     },
   ];
 
@@ -230,7 +236,14 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
             <>
               <span className="flex-1 text-left">{item.name}</span>
               {item.badge && (
-                <Badge variant="secondary" className="ml-2 text-xs">
+                <Badge 
+                  variant={item.badge === "Demo" ? "outline" : "secondary"} 
+                  className={`ml-2 text-xs ${
+                    item.badge === "Demo" 
+                      ? "bg-orange-50 text-orange-600 border-orange-200" 
+                      : ""
+                  }`}
+                >
                   {item.badge}
                 </Badge>
               )}

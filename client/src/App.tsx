@@ -20,6 +20,10 @@ import AppEntry from "@/pages/app-entry";
 import AppDashboard from "@/pages/app-dashboard";
 import Profile from "@/pages/profile";
 import StartupProfile from "@/pages/startup-profile";
+import AnalyticsDemo from "@/pages/analytics-demo";
+import BusinessPlansDemo from "@/pages/business-plans-demo";
+import InvestorsDemo from "@/pages/investors-demo";
+import FundingDemo from "@/pages/funding-demo";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -41,6 +45,10 @@ function Router() {
       <Route path="/app-dashboard" component={AppDashboard} />
       <Route path="/profile" component={Profile} />
       <Route path="/startup-profile" component={StartupProfile} />
+      <Route path="/analytics" component={AnalyticsDemo} />
+      <Route path="/business-plans" component={BusinessPlansDemo} />
+      <Route path="/investors" component={InvestorsDemo} />
+      <Route path="/funding" component={FundingDemo} />
       <Route component={NotFound} />
     </Switch>
   );
