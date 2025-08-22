@@ -29,6 +29,8 @@ import WebsiteBuilderDemo from "@/pages/website-builder-demo";
 import LegalDemo from "@/pages/legal-demo";
 import ScheduleDemo from "@/pages/schedule-demo";
 import ExportCenter from "@/pages/export-center";
+import InvestorReadyDemo from "@/pages/investor-ready-demo";
+import AIShowcase from "@/pages/ai-showcase";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -59,6 +61,8 @@ function Router() {
       <Route path="/legal" component={LegalDemo} />
       <Route path="/schedule" component={ScheduleDemo} />
       <Route path="/export" component={ExportCenter} />
+      <Route path="/investor-demo" component={InvestorReadyDemo} />
+      <Route path="/ai-showcase" component={AIShowcase} />
       <Route component={NotFound} />
     </Switch>
   );
