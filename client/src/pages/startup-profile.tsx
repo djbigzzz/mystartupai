@@ -333,19 +333,19 @@ export default function StartupProfile() {
   // Phase 1: Quick Start Component
   const QuickStartPhase = () => (
     <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
-      <CardHeader className="text-center pb-4">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
-          <Lightbulb className="w-8 h-8 text-white" />
+      <CardHeader className="text-center pb-3">
+        <div className="mx-auto w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-3">
+          <Lightbulb className="w-6 h-6 text-white" />
         </div>
-        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <CardTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Share Your Vision
         </CardTitle>
-        <CardDescription className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <CardDescription className="text-base text-gray-600 max-w-2xl mx-auto">
           Tell us about your startup idea in your own words. Our AI will intelligently extract key details and guide you through building a comprehensive profile.
         </CardDescription>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <div className="space-y-4">
           <Label htmlFor="startup-vision" className="text-lg font-semibold text-gray-800">
             What's your startup idea? <span className="text-red-500">*</span>
@@ -411,30 +411,30 @@ export default function StartupProfile() {
         {/* AI Suggestions Display */}
         {aiSuggestions.companyName && (
           <Card className="bg-green-50 border-green-200">
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-2">
               <div className="flex items-center">
                 <Sparkles className="w-5 h-5 text-green-600 mr-2" />
-                <CardTitle className="text-lg text-green-800">AI Extracted Details</CardTitle>
+                <CardTitle className="text-base text-green-800">AI Extracted Details</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid md:grid-cols-2 gap-3">
-                <div className="p-3 bg-white rounded border border-green-200">
-                  <Label className="text-sm font-medium text-green-700">Suggested Company Name</Label>
-                  <p className="text-green-800 font-semibold">{aiSuggestions.companyName}</p>
+            <CardContent className="space-y-2">
+              <div className="grid md:grid-cols-2 gap-2">
+                <div className="p-2 bg-white rounded border border-green-200">
+                  <Label className="text-xs font-medium text-green-700">Suggested Company Name</Label>
+                  <p className="text-green-800 font-semibold text-sm">{aiSuggestions.companyName}</p>
                 </div>
-                <div className="p-3 bg-white rounded border border-green-200">
-                  <Label className="text-sm font-medium text-green-700">Suggested Industry</Label>
-                  <p className="text-green-800 font-semibold">{aiSuggestions.industry}</p>
+                <div className="p-2 bg-white rounded border border-green-200">
+                  <Label className="text-xs font-medium text-green-700">Suggested Industry</Label>
+                  <p className="text-green-800 font-semibold text-sm">{aiSuggestions.industry}</p>
                 </div>
               </div>
-              <div className="p-3 bg-white rounded border border-green-200">
-                <Label className="text-sm font-medium text-green-700">Problem Identified</Label>
-                <p className="text-green-800">{aiSuggestions.problem}</p>
+              <div className="p-2 bg-white rounded border border-green-200">
+                <Label className="text-xs font-medium text-green-700">Problem Identified</Label>
+                <p className="text-green-800 text-sm">{aiSuggestions.problem}</p>
               </div>
-              <div className="p-3 bg-white rounded border border-green-200">
-                <Label className="text-sm font-medium text-green-700">Solution Approach</Label>
-                <p className="text-green-800">{aiSuggestions.solution}</p>
+              <div className="p-2 bg-white rounded border border-green-200">
+                <Label className="text-xs font-medium text-green-700">Solution Approach</Label>
+                <p className="text-green-800 text-sm">{aiSuggestions.solution}</p>
               </div>
             </CardContent>
           </Card>
@@ -487,8 +487,8 @@ export default function StartupProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <div className="container mx-auto py-8 px-4">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="container mx-auto py-4 px-3 max-w-6xl">
+        <div className="max-w-5xl mx-auto space-y-4">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -639,7 +639,7 @@ export default function StartupProfile() {
             <div className="space-y-2">
               <Label htmlFor="company-name" className="flex items-center">
                 Company Name <span className="text-red-500 ml-1">*</span>
-                <HelpCircle className="w-4 h-4 ml-2 text-gray-400" title="The official name of your startup company" />
+                <HelpCircle className="w-4 h-4 ml-2 text-gray-400" />
               </Label>
               <Input
                 id="company-name"
@@ -664,7 +664,7 @@ export default function StartupProfile() {
             <div className="space-y-2">
               <Label htmlFor="industry" className="flex items-center">
                 Industry <span className="text-red-500 ml-1">*</span>
-                <HelpCircle className="w-4 h-4 ml-2 text-gray-400" title="The primary industry your startup operates in" />
+                <HelpCircle className="w-4 h-4 ml-2 text-gray-400" />
               </Label>
               <Select 
                 value={formData.industry || ''} 
@@ -752,7 +752,7 @@ export default function StartupProfile() {
           <div className="space-y-2">
             <Label htmlFor="problem" className="flex items-center">
               Problem Statement <span className="text-red-500 ml-1">*</span>
-              <HelpCircle className="w-4 h-4 ml-2 text-gray-400" title="What specific problem does your startup solve?" />
+              <HelpCircle className="w-4 h-4 ml-2 text-gray-400" />
             </Label>
             <Textarea
               id="problem"
@@ -777,7 +777,7 @@ export default function StartupProfile() {
           <div className="space-y-2">
             <Label htmlFor="solution" className="flex items-center">
               Solution Approach <span className="text-red-500 ml-1">*</span>
-              <HelpCircle className="w-4 h-4 ml-2 text-gray-400" title="How does your product/service solve this problem?" />
+              <HelpCircle className="w-4 h-4 ml-2 text-gray-400" />
             </Label>
             <Textarea
               id="solution"
@@ -952,7 +952,7 @@ export default function StartupProfile() {
           <div className="space-y-2">
             <Label htmlFor="customer-personas" className="flex items-center">
               Customer Personas & Demographics
-              <HelpCircle className="w-4 h-4 ml-2 text-gray-400" title="Detailed descriptions of your ideal customers" />
+              <HelpCircle className="w-4 h-4 ml-2 text-gray-400" />
             </Label>
             <Textarea
               id="customer-personas"
