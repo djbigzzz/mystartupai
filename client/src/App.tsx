@@ -28,6 +28,7 @@ import CompanySetupDemo from "@/pages/company-setup-demo";
 import WebsiteBuilderDemo from "@/pages/website-builder-demo";
 import LegalDemo from "@/pages/legal-demo";
 import ScheduleDemo from "@/pages/schedule-demo";
+import ExportCenter from "@/pages/export-center";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -57,6 +58,7 @@ function Router() {
       <Route path="/website-builder" component={WebsiteBuilderDemo} />
       <Route path="/legal" component={LegalDemo} />
       <Route path="/schedule" component={ScheduleDemo} />
+      <Route path="/export" component={ExportCenter} />
       <Route component={NotFound} />
     </Switch>
   );

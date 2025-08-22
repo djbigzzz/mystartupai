@@ -25,7 +25,8 @@ import {
   Plus,
   Bell,
   HelpCircle,
-  LogOut
+  LogOut,
+  Download
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -179,6 +180,12 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       name: "Submit New Idea",
       href: "/ideas/new",
       icon: Plus,
+    },
+    {
+      id: "export",
+      name: "Export Center",
+      href: "/export",
+      icon: Download,
     },
     {
       id: "profile",

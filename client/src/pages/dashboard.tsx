@@ -16,8 +16,10 @@ import {
   Target,
   Lightbulb,
   Brain,
-  Rocket
+  Rocket,
+  Download
 } from "lucide-react";
+import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
 import StartupWorkflowDashboard from "@/components/startup-workflow-dashboard";
@@ -203,9 +205,17 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold mb-2">Welcome back, {user?.name || 'Entrepreneur'}!</h1>
             <p className="text-blue-100">Ready to accelerate your startup journey?</p>
           </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold">75%</div>
-            <div className="text-blue-100 text-sm">Profile Complete</div>
+          <div className="flex items-center space-x-4">
+            <Link href="/export">
+              <Button variant="outline" className="text-blue-600 border-white hover:bg-white/10">
+                <Download className="w-4 h-4 mr-2" />
+                Export Docs
+              </Button>
+            </Link>
+            <div className="text-right">
+              <div className="text-3xl font-bold">75%</div>
+              <div className="text-blue-100 text-sm">Profile Complete</div>
+            </div>
           </div>
         </div>
       </div>
