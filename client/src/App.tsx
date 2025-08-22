@@ -24,6 +24,10 @@ import AnalyticsDemo from "@/pages/analytics-demo";
 import BusinessPlansDemo from "@/pages/business-plans-demo";
 import InvestorsDemo from "@/pages/investors-demo";
 import FundingDemo from "@/pages/funding-demo";
+import CompanySetupDemo from "@/pages/company-setup-demo";
+import WebsiteBuilderDemo from "@/pages/website-builder-demo";
+import LegalDemo from "@/pages/legal-demo";
+import ScheduleDemo from "@/pages/schedule-demo";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -49,6 +53,10 @@ function Router() {
       <Route path="/business-plans" component={BusinessPlansDemo} />
       <Route path="/investors" component={InvestorsDemo} />
       <Route path="/funding" component={FundingDemo} />
+      <Route path="/company-setup" component={CompanySetupDemo} />
+      <Route path="/website-builder" component={WebsiteBuilderDemo} />
+      <Route path="/legal" component={LegalDemo} />
+      <Route path="/schedule" component={ScheduleDemo} />
       <Route component={NotFound} />
     </Switch>
   );

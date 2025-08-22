@@ -165,9 +165,9 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       badge: "Demo",
     },
     {
-      id: "calendar",
+      id: "schedule",
       name: "Schedule",
-      href: "/calendar",
+      href: "/schedule",
       icon: Calendar,
       badge: "Demo",
     },
