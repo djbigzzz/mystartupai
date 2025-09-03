@@ -29,7 +29,8 @@ import {
   Download,
   Target,
   Rocket,
-  Code
+  Code,
+  Brain
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 

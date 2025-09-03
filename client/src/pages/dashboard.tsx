@@ -432,7 +432,7 @@ export default function Dashboard() {
   const renderMainContent = () => {
     switch (activeSection) {
       case "profile":
-        return user ? <ProfileManagement user={user} /> : <div>Loading...</div>;
+        return user ? <ProfileManagement user={user as any} /> : <div>Loading...</div>;
       default:
         return renderDashboardOverview();
     }
