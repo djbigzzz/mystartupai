@@ -27,7 +27,9 @@ import {
   HelpCircle,
   LogOut,
   Download,
-  Target
+  Target,
+  Rocket,
+  Code
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -130,10 +132,10 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
     },
     {
       id: "investors",
-      name: "Investors",
-      href: "/investors",
+      name: "Investor Matching",
+      href: "/investor-matching",
       icon: Users,
-      badge: "Demo",
+      badge: "New",
     },
     {
       id: "funding",
@@ -145,6 +147,13 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
   ];
 
   const businessTools: NavigationItem[] = [
+    {
+      id: "mvp-builder",
+      name: "MVP Builder",
+      href: "/mvp-builder",
+      icon: Rocket,
+      badge: "New",
+    },
     {
       id: "company-setup",
       name: "Company Setup",

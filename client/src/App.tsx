@@ -31,6 +31,8 @@ import ScheduleDemo from "@/pages/schedule-demo";
 import ExportCenter from "@/pages/export-center";
 import InvestorReadyDemo from "@/pages/investor-ready-demo";
 import AIShowcase from "@/pages/ai-showcase";
+import MVPBuilder from "@/pages/mvp-builder";
+import InvestorMatching from "@/pages/investor-matching";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -63,6 +65,8 @@ function Router() {
       <Route path="/export" component={ExportCenter} />
       <Route path="/investor-demo" component={InvestorReadyDemo} />
       <Route path="/ai-showcase" component={AIShowcase} />
+      <Route path="/mvp-builder" component={MVPBuilder} />
+      <Route path="/investor-matching" component={InvestorMatching} />
       <Route component={NotFound} />
     </Switch>
   );

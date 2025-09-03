@@ -1721,6 +1721,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Demo AI analysis route (for showcase without requiring authentication)
+  app.post("/api/analyze-idea-demo", async (req, res) => {
+    try {
+      const { ideaTitle, description, industry, stage } = req.body;
+      
+      // Validate input
+      if (!ideaTitle || !description) {
+        return res.status(400).json({ message: "ideaTitle and description are required" });
+      }
+      
+      const analysis = await analyzeStartupIdea(
+        ideaTitle,
+        description,
+        industry || "Technology",
+        stage || "idea"
+      );
+      
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error in demo analysis:", error);
+      res.status(500).json({ message: "Failed to analyze idea" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
