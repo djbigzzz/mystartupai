@@ -3,6 +3,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import InteractiveDemo from "@/components/interactive-demo";
+import Logo from "@/components/logo";
 import { 
   Rocket, 
   Sparkles, 
@@ -143,14 +145,7 @@ export default function MarketingHome() {
       <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                MyStartup.ai
-              </span>
-            </div>
+            <Logo size="md" showText={true} />
             
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
@@ -174,29 +169,37 @@ export default function MarketingHome() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700">
+        {/* Background Pattern Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-white/20 to-purple-50/10"></div>
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                           radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                           radial-gradient(circle at 40% 80%, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+          backgroundSize: '100px 100px, 80px 80px, 120px 120px'
+        }}></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <Badge className="mb-6 bg-blue-100 text-blue-600 hover:bg-blue-100">
+              <Badge className="mb-6 bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border border-white/30">
                 <Zap className="w-4 h-4 mr-1" />
                 Live & Ready to Use
               </Badge>
               
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
                 Your Agentic AI{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
                   Co-Founder
                 </span>
               </h1>
               
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-xl text-blue-100 mb-8 leading-relaxed drop-shadow-sm">
                 MyStartup.ai helps entrepreneurs validate ideas, build execution roadmaps, and launch investor-ready startups — faster, smarter, and without giving up equity.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold">
+                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
                     Get Started Free
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
@@ -205,7 +208,7 @@ export default function MarketingHome() {
                   size="lg" 
                   variant="outline" 
                   onClick={() => setShowVideo(true)}
-                  className="px-8 py-4 text-lg font-semibold border-2"
+                  className="px-8 py-4 text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm"
                 >
                   <Play className="mr-2 w-5 h-5" />
                   See How It Works
@@ -213,39 +216,18 @@ export default function MarketingHome() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8 border-t border-gray-100">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8 border-t border-white/20">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{stat.number}</div>
-                    <div className="text-sm text-gray-500">{stat.label}</div>
+                    <div className="text-2xl font-bold text-white drop-shadow-sm">{stat.number}</div>
+                    <div className="text-sm text-blue-200">{stat.label}</div>
                   </div>
                 ))}
               </div>
             </div>
             
             <div className="relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-100">
-                <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <div className="text-center">
-                    <Brain className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                    <p className="text-gray-600 font-medium">AI Dashboard Preview</p>
-                    <p className="text-sm text-gray-500">See the actual platform you'll get</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between text-sm text-gray-600">
-                  <span>✅ Business Plan Generated</span>
-                  <span>✅ Investors Matched</span>
-                  <span>✅ MVP Ready</span>
-                </div>
-              </div>
-              
-              {/* Floating elements */}
-              <div className="absolute -top-4 -right-4 bg-green-100 rounded-full p-3">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-purple-100 rounded-full p-3">
-                <Rocket className="w-6 h-6 text-purple-600" />
-              </div>
+              <InteractiveDemo />
             </div>
           </div>
         </div>
@@ -468,11 +450,8 @@ export default function MarketingHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
-                </div>
-                <span className="ml-2 text-xl font-bold">MyStartup.ai</span>
+              <div className="mb-4">
+                <Logo size="md" showText={true} />
               </div>
               <p className="text-gray-400 max-w-md">
                 Your AI co-founder for building investor-ready startups. Transform ideas into businesses faster than ever.
