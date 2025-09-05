@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import InteractiveDemo from "@/components/interactive-demo";
 import Logo from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { 
   Rocket, 
   Sparkles, 
@@ -140,23 +141,24 @@ export default function MarketingHome() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       {/* Navigation */}
-      <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+      <nav className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <Logo size="lg" showText={true} />
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                 Features
               </a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+              <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                 How it Works
               </a>
-              <a href="#who-its-for" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+              <a href="#who-its-for" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                 Who It's For
               </a>
+              <ThemeToggle />
               <Link href="/app">
                 <Button variant="outline" size="sm">Sign In</Button>
               </Link>
@@ -241,27 +243,27 @@ export default function MarketingHome() {
       </section>
 
       {/* Problem Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               90% of startups fail. Here's why.
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="text-center p-6">
                 <Clock className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Time & Money Wasted</h3>
-                <p className="text-gray-600">Founders waste months and money figuring out what to do next</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Time & Money Wasted</h3>
+                <p className="text-gray-600 dark:text-gray-300">Founders waste months and money figuring out what to do next</p>
               </div>
               <div className="text-center p-6">
                 <DollarSign className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Expensive Access</h3>
-                <p className="text-gray-600">Access to accelerators or consultants requires equity or high fees</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Expensive Access</h3>
+                <p className="text-gray-600 dark:text-gray-300">Access to accelerators or consultants requires equity or high fees</p>
               </div>
               <div className="text-center p-6">
                 <Target className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Investor Readiness</h3>
-                <p className="text-gray-600">Most founders struggle with market validation and investor materials</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Investor Readiness</h3>
+                <p className="text-gray-600 dark:text-gray-300">Most founders struggle with market validation and investor materials</p>
               </div>
             </div>
           </div>
@@ -269,16 +271,16 @@ export default function MarketingHome() {
       </section>
 
       {/* Solution Section */}
-      <section id="features" className="py-20 bg-white">
+      <section id="features" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <Logo size="lg" showText={false} className="mr-4" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
                 Meet Your AI Co-Founder
               </h2>
             </div>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               MyStartup.ai uses a multi-agent AI system where specialized agents collaborate in real time to build your startup alongside you.
             </p>
           </div>
@@ -287,13 +289,13 @@ export default function MarketingHome() {
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full">
+                <Card key={index} className="border-0 shadow-lg hover:shadow-xl dark:bg-gray-800 dark:border dark:border-gray-700 transition-all duration-300 h-full">
                   <CardContent className="p-6 text-center h-full flex flex-col">
                     <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center mx-auto mb-4`}>
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                    <p className="text-gray-600 flex-grow">{feature.description}</p>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">{feature.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 flex-grow">{feature.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -312,12 +314,12 @@ export default function MarketingHome() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-gray-50">
+      <section id="how-it-works" className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <Logo size="md" showText={false} className="mr-3" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
                 From Idea to Investor-Ready in Hours
               </h2>
             </div>
@@ -336,8 +338,8 @@ export default function MarketingHome() {
                       <span className="text-white font-bold text-sm">{step.step}</span>
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">{step.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{step.description}</p>
                 </div>
               );
             })}
@@ -355,12 +357,12 @@ export default function MarketingHome() {
       </section>
 
       {/* Who It's For */}
-      <section id="who-its-for" className="py-20 bg-white">
+      <section id="who-its-for" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <Logo size="md" showText={false} className="mr-3" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
                 Built for Founders Everywhere
               </h2>
             </div>
@@ -370,18 +372,18 @@ export default function MarketingHome() {
             {targetAudiences.map((audience, index) => {
               const IconComponent = audience.icon;
               return (
-                <Card key={index} className="border-2 hover:border-blue-200 transition-colors duration-300">
+                <Card key={index} className="border-2 hover:border-blue-200 dark:hover:border-blue-600 dark:bg-gray-800 dark:border-gray-700 transition-colors duration-300">
                   <CardContent className="p-8 text-center">
                     <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                       <IconComponent className="w-8 h-8 text-blue-600" />
                     </div>
-                    <h3 className="text-2xl font-semibold text-gray-900 mb-4">{audience.title}</h3>
-                    <p className="text-gray-600 mb-6">{audience.description}</p>
+                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">{audience.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">{audience.description}</p>
                     <div className="space-y-2">
                       {audience.examples.map((example, idx) => (
                         <div key={idx} className="flex items-center justify-center">
                           <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          <span className="text-gray-600 text-sm">{example}</span>
+                          <span className="text-gray-600 dark:text-gray-300 text-sm">{example}</span>
                         </div>
                       ))}
                     </div>
@@ -394,10 +396,10 @@ export default function MarketingHome() {
       </section>
 
       {/* What Makes Us Different */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               What Makes Us Different
             </h2>
           </div>
