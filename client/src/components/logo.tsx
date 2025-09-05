@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import logoImage from "@assets/3d logo_1_1757074300349.png";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -21,10 +21,12 @@ export function Logo({ size = "md", showText = true, className = "" }: LogoProps
 
   return (
     <div className={`flex items-center ${className}`}>
-      {/* Logo Icon - Inspired by pitch deck gradient aesthetic */}
-      <div className={`${sizeClasses[size]} bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-300`}>
-        <Sparkles className={`${size === 'sm' ? 'w-3 h-3' : size === 'md' ? 'w-5 h-5' : 'w-7 h-7'} text-white`} />
-      </div>
+      {/* Logo Image */}
+      <img 
+        src={logoImage} 
+        alt="MyStartup.ai Logo" 
+        className={`${sizeClasses[size]} object-contain hover:scale-105 transition-transform duration-300`}
+      />
       
       {showText && (
         <div className="ml-3">
