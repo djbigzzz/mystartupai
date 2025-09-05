@@ -145,7 +145,7 @@ export default function MarketingHome() {
       <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <Logo size="md" showText={true} />
+            <Logo size="lg" showText={true} />
             
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
@@ -178,6 +178,13 @@ export default function MarketingHome() {
                            radial-gradient(circle at 40% 80%, rgba(255,255,255,0.05) 1px, transparent 1px)`,
           backgroundSize: '100px 100px, 80px 80px, 120px 120px'
         }}></div>
+        {/* Floating Logo Elements */}
+        <div className="absolute top-20 right-20 opacity-20 hidden lg:block">
+          <Logo size="lg" showText={false} />
+        </div>
+        <div className="absolute bottom-20 left-20 opacity-15 hidden lg:block">
+          <Logo size="md" showText={false} />
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -265,9 +272,12 @@ export default function MarketingHome() {
       <section id="features" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-              Meet Your AI Co-Founder
-            </h2>
+            <div className="flex items-center justify-center mb-6">
+              <Logo size="lg" showText={false} className="mr-4" />
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+                Meet Your AI Co-Founder
+              </h2>
+            </div>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               MyStartup.ai uses a multi-agent AI system where specialized agents collaborate in real time to build your startup alongside you.
             </p>
@@ -305,9 +315,12 @@ export default function MarketingHome() {
       <section id="how-it-works" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-              From Idea to Investor-Ready in Hours
-            </h2>
+            <div className="flex items-center justify-center mb-6">
+              <Logo size="md" showText={false} className="mr-3" />
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+                From Idea to Investor-Ready in Hours
+              </h2>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -345,9 +358,12 @@ export default function MarketingHome() {
       <section id="who-its-for" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-              Built for Founders Everywhere
-            </h2>
+            <div className="flex items-center justify-center mb-6">
+              <Logo size="md" showText={false} className="mr-3" />
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+                Built for Founders Everywhere
+              </h2>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -404,11 +420,18 @@ export default function MarketingHome() {
       </section>
 
       {/* Vision */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-            Building the Operating System for Startups
-          </h2>
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 relative overflow-hidden">
+        {/* Large Background Logo */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-5">
+          <Logo size="lg" showText={false} className="transform scale-[8] pointer-events-none" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="flex items-center justify-center mb-6">
+            <Logo size="lg" showText={false} className="mr-4" />
+            <h2 className="text-3xl lg:text-4xl font-bold text-white">
+              Building the Operating System for Startups
+            </h2>
+          </div>
           <p className="text-xl text-blue-100 max-w-4xl mx-auto mb-8">
             We believe anyone with an idea should have the tools to become an entrepreneur. MyStartup.ai's mission is to make startup creation borderless, faster, and more accessible — giving every founder an AI co-founder in their pocket.
           </p>
@@ -418,9 +441,12 @@ export default function MarketingHome() {
       {/* Final CTA */}
       <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-            Ready to Build Smarter?
-          </h2>
+          <div className="flex items-center justify-center mb-6">
+            <Logo size="lg" showText={false} className="mr-4" />
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+              Ready to Build Smarter?
+            </h2>
+          </div>
           <p className="text-xl text-gray-600 mb-8">
             Join thousands of founders who are already using AI to accelerate their startup journey.
           </p>
@@ -451,7 +477,7 @@ export default function MarketingHome() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
               <div className="mb-4">
-                <Logo size="md" showText={true} />
+                <Logo size="lg" showText={true} />
               </div>
               <p className="text-gray-400 max-w-md">
                 Your AI co-founder for building investor-ready startups. Transform ideas into businesses faster than ever.
