@@ -18,7 +18,12 @@ import {
   Edit,
   Rocket,
   Users,
-  DollarSign
+  DollarSign,
+  CheckCircle,
+  Clock,
+  ArrowRight,
+  Sparkles,
+  TrendingUp as Progress
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -67,6 +72,111 @@ export default function ActiveIdea() {
     if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
     return "text-red-600 dark:text-red-400";
   };
+
+  // Progress tracking system
+  const getProgressStages = (idea: StartupIdea | undefined) => {
+    if (!idea) return [];
+    
+    const stages = [
+      {
+        id: 'idea',
+        title: 'Idea Submitted',
+        description: 'Your startup concept is in the system',
+        completed: !!idea.ideaTitle,
+        icon: Lightbulb,
+        color: 'blue'
+      },
+      {
+        id: 'analysis',
+        title: 'AI Analysis',
+        description: 'Market validation and feasibility analysis',
+        completed: idea.analysisStatus === 'completed' && !!idea.analysis,
+        inProgress: idea.analysisStatus === 'processing',
+        icon: Brain,
+        color: 'purple'
+      },
+      {
+        id: 'validation',
+        title: 'Validation Score',
+        description: 'Comprehensive scoring and insights',
+        completed: !!idea.validationScore && idea.validationScore > 0,
+        icon: BarChart3,
+        color: 'green'
+      },
+      {
+        id: 'business-plan',
+        title: 'Business Plan',
+        description: 'Detailed business strategy and roadmap',
+        completed: !!idea.businessPlan,
+        icon: FileText,
+        color: 'orange'
+      },
+      {
+        id: 'mvp',
+        title: 'MVP Development',
+        description: 'Build your minimum viable product',
+        completed: false, // This would be tracked separately
+        icon: Rocket,
+        color: 'red'
+      }
+    ];
+    
+    return stages;
+  };
+
+  // AI suggestions based on current progress
+  const getAISuggestions = (idea: StartupIdea | undefined) => {
+    if (!idea) return [];
+    
+    const suggestions = [];
+    
+    if (!idea.analysis) {
+      suggestions.push({
+        title: "Get AI Analysis",
+        description: "Complete your startup validation with AI-powered market analysis",
+        action: "Update your idea details to trigger analysis",
+        priority: "high",
+        icon: Brain
+      });
+    }
+    
+    if (idea.analysis && !idea.businessPlan) {
+      suggestions.push({
+        title: "Generate Business Plan",
+        description: "Your idea has been analyzed. Create a comprehensive business plan now.",
+        action: "Use AI to generate your business plan",
+        priority: "high",
+        icon: FileText
+      });
+    }
+    
+    if (idea.validationScore && idea.validationScore < 70) {
+      suggestions.push({
+        title: "Improve Validation Score",
+        description: "Your score can be improved with more detailed market research",
+        action: "Add more details about your target market and competition",
+        priority: "medium",
+        icon: TrendingUp
+      });
+    }
+    
+    if (idea.businessPlan && idea.validationScore && idea.validationScore >= 70) {
+      suggestions.push({
+        title: "Start MVP Development",
+        description: "Your idea is well-validated. Time to build your MVP!",
+        action: "Use our AI-powered MVP builder",
+        priority: "high",
+        icon: Rocket
+      });
+    }
+    
+    return suggestions;
+  };
+
+  const progressStages = getProgressStages(activeIdea);
+  const aiSuggestions = getAISuggestions(activeIdea);
+  const completedStages = progressStages.filter(stage => stage.completed).length;
+  const progressPercentage = (completedStages / progressStages.length) * 100;
 
   const quickActions = [
     {
@@ -300,6 +410,136 @@ export default function ActiveIdea() {
                 })}
               </div>
             </div>
+
+            {/* Progress Tracking */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Validation Progress
+                </h2>
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                  <Progress className="w-4 h-4 mr-2" />
+                  {completedStages}/{progressStages.length} stages completed
+                </div>
+              </div>
+              
+              <Card className="mb-6">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Overall Progress
+                    </span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {Math.round(progressPercentage)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                      style={{ width: `${progressPercentage}%` }}
+                    ></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                {progressStages.map((stage, index) => {
+                  const IconComponent = stage.icon;
+                  const isCompleted = stage.completed;
+                  const isInProgress = stage.inProgress;
+                  const isNext = !isCompleted && !isInProgress && index === completedStages;
+                  
+                  return (
+                    <Card key={stage.id} className={`relative overflow-hidden ${
+                      isCompleted ? 'border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-700' :
+                      isInProgress ? 'border-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700' :
+                      isNext ? 'border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-700' :
+                      'border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
+                    }`}>
+                      <CardContent className="p-4 text-center">
+                        <div className="flex justify-center mb-3">
+                          {isCompleted ? (
+                            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+                          ) : isInProgress ? (
+                            <Clock className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-pulse" />
+                          ) : (
+                            <IconComponent className={`w-8 h-8 ${
+                              isNext ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-400'
+                            }`} />
+                          )}
+                        </div>
+                        <h3 className={`font-semibold text-sm mb-1 ${
+                          isCompleted ? 'text-green-800 dark:text-green-300' :
+                          isInProgress ? 'text-blue-800 dark:text-blue-300' :
+                          isNext ? 'text-yellow-800 dark:text-yellow-300' :
+                          'text-gray-600 dark:text-gray-400'
+                        }`}>
+                          {stage.title}
+                        </h3>
+                        <p className={`text-xs ${
+                          isCompleted ? 'text-green-600 dark:text-green-400' :
+                          isInProgress ? 'text-blue-600 dark:text-blue-400' :
+                          isNext ? 'text-yellow-600 dark:text-yellow-400' :
+                          'text-gray-500 dark:text-gray-500'
+                        }`}>
+                          {stage.description}
+                        </p>
+                        {isInProgress && (
+                          <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 animate-pulse"></div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* AI Suggestions */}
+            {aiSuggestions.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <Sparkles className="w-5 h-5 mr-2 text-yellow-500" />
+                  AI Recommendations
+                </h2>
+                <div className="space-y-4">
+                  {aiSuggestions.map((suggestion, index) => {
+                    const IconComponent = suggestion.icon;
+                    return (
+                      <Card key={index} className={`border-l-4 ${
+                        suggestion.priority === 'high' 
+                          ? 'border-l-red-500 bg-red-50 dark:bg-red-900/20' 
+                          : 'border-l-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
+                      }`}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start space-x-4">
+                            <IconComponent className={`w-6 h-6 mt-1 ${
+                              suggestion.priority === 'high' ? 'text-red-600' : 'text-yellow-600'
+                            }`} />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-semibold text-gray-900 dark:text-white">
+                                  {suggestion.title}
+                                </h3>
+                                <Badge variant={suggestion.priority === 'high' ? 'destructive' : 'secondary'}>
+                                  {suggestion.priority} priority
+                                </Badge>
+                              </div>
+                              <p className="text-gray-600 dark:text-gray-300 mb-3">
+                                {suggestion.description}
+                              </p>
+                              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <ArrowRight className="w-4 h-4 mr-1" />
+                                {suggestion.action}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Progress Insights */}
             {activeIdea.analysis && (
