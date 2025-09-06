@@ -190,7 +190,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
     {
       id: "new-idea",
       name: "Submit New Idea",
-      href: "/ideas/new",
+      href: "/submit-idea",
       icon: Plus,
     },
     {

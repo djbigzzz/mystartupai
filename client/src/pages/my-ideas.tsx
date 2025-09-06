@@ -182,7 +182,7 @@ export default function MyIdeas() {
                 <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Avg Score</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {ideas?.filter(idea => idea.validationScore).reduce((acc, idea) => acc + (idea.validationScore || 0), 0) / (ideas?.filter(idea => idea.validationScore).length || 1) || 0}
+                    {Math.round((ideas?.filter(idea => idea.validationScore).reduce((acc, idea) => acc + (idea.validationScore || 0), 0) || 0) / Math.max(ideas?.filter(idea => idea.validationScore).length || 1, 1))}
                   </p>
                 </div>
               </div>
