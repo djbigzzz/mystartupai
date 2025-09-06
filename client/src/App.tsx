@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/contexts/theme-context";
 import Home from "@/pages/marketing-home";
 import Dashboard from "@/pages/dashboard";
 import SubmitIdea from "@/pages/submit-idea";
-import MyIdeas from "@/pages/my-ideas";
+import ActiveIdea from "@/pages/active-idea";
 import BusinessPlan from "@/pages/business-plan";
 import PitchDeck from "@/pages/pitch-deck";
 import FinancialModelingPage from "@/pages/financial-modeling";
@@ -42,7 +42,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/submit-idea" component={SubmitIdea} />
-      <Route path="/ideas" component={MyIdeas} />
+      <Route path="/active-idea" component={ActiveIdea} />
       <Route path="/business-plan" component={BusinessPlan} />
       <Route path="/pitch-deck" component={PitchDeck} />
       <Route path="/financial-modeling" component={FinancialModelingPage} />

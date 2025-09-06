@@ -112,11 +112,10 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       icon: LayoutDashboard,
     },
     {
-      id: "ideas",
-      name: "My Ideas",
-      href: "/ideas",
+      id: "active-idea",
+      name: "My Active Idea",
+      href: "/active-idea",
       icon: Lightbulb,
-      count: 12,
     },
     {
       id: "analytics",
@@ -189,7 +188,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
   const quickActions: NavigationItem[] = [
     {
       id: "new-idea",
-      name: "Submit New Idea",
+      name: "Update My Idea",
       href: "/submit-idea",
       icon: Plus,
     },
