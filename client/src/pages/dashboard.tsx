@@ -23,6 +23,7 @@ import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
 import StartupWorkflowDashboard from "@/components/startup-workflow-dashboard";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface User {
   id: number;

@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import InteractiveDemo from "@/components/interactive-demo";
 import Logo from "@/components/logo";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { 
   Rocket, 
   Sparkles, 
@@ -141,9 +140,9 @@ export default function MarketingHome() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 transition-colors duration-300">
+      <nav className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <Logo size="lg" showText={true} />
@@ -158,7 +157,6 @@ export default function MarketingHome() {
               <a href="#who-its-for" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
                 Who It's For
               </a>
-              <ThemeToggle />
               <Link href="/app">
                 <Button variant="outline" size="sm">Sign In</Button>
               </Link>

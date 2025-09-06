@@ -33,6 +33,7 @@ import {
   Brain
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface NavigationItem {
   id: string;
@@ -292,32 +293,35 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
   };
 
   return (
-    <div className={`bg-white border-r border-gray-200 flex flex-col ${
+    <div className={`bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col ${
       collapsed ? "w-16" : "w-64"
     } transition-all duration-300 ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
-              <span className="ml-2 text-lg font-bold text-gray-900">MyStartup.ai</span>
+              <span className="ml-2 text-lg font-bold text-gray-900 dark:text-white">MyStartup.ai</span>
             </div>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5"
-          >
-            {collapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
+          <div className="flex items-center space-x-2">
+            {!collapsed && <ThemeToggle />}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-1.5"
+            >
+              {collapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
         
         {!collapsed && (
