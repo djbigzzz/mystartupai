@@ -262,7 +262,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
           variant={isActive ? "secondary" : "ghost"}
           className={`w-full justify-start h-10 px-3 ${
             collapsed ? "px-2" : ""
-          } ${isActive ? "bg-blue-50 text-blue-700 border-blue-200" : "text-gray-700 hover:bg-gray-100"}`}
+          } ${isActive ? "bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-200" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
         >
           <IconComponent className={`h-4 w-4 ${collapsed ? "" : "mr-3"} flex-shrink-0`} />
           {!collapsed && (
@@ -273,7 +273,11 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
                   variant={item.badge === "Demo" ? "outline" : "secondary"} 
                   className={`ml-2 text-xs ${
                     item.badge === "Demo" 
-                      ? "bg-orange-50 text-orange-600 border-orange-200" 
+                      ? "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-700" 
+                      : item.badge === "New"
+                      ? "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-700"
+                      : item.badge === "Hot"
+                      ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-700"
                       : ""
                   }`}
                 >
