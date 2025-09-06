@@ -92,12 +92,12 @@ export default function SubmitIdea() {
           </Badge>
           
           <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-            Validate Your Startup Idea with AI
+            Your Startup Idea Hub
           </h1>
           
           <p className="text-xl lg:text-2xl text-blue-100 max-w-3xl mx-auto mb-8">
-            Get comprehensive analysis, market insights, and strategic recommendations 
-            to turn your idea into a successful business
+            Focus on one idea at a time. Get AI-powered analysis, market insights, and strategic recommendations 
+            to turn your concept into a successful business
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -106,7 +106,7 @@ export default function SubmitIdea() {
               className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-50 transform transition-all duration-200 hover:scale-105 shadow-lg flex items-center justify-center"
             >
               <Lightbulb className="w-5 h-5 mr-2" />
-              Submit Your Idea
+              Update Your Idea
             </button>
           </div>
           

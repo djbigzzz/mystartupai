@@ -649,8 +649,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Validate and parse with schema
         const validatedData = insertStartupIdeaSchema.parse(sanitizedData);
         
-        // Create the idea record
-        const idea = await storage.createStartupIdea(validatedData);
+        // Check if user already has an active idea
+        const existingIdeas = await storage.getStartupIdeasByEmail(validatedData.email);
+        
+        let idea;
+        if (existingIdeas.length > 0) {
+          // Update the existing idea (single-idea approach)
+          idea = await storage.updateStartupIdea(existingIdeas[0].id, validatedData);
+        } else {
+          // Create the first idea record
+          idea = await storage.createStartupIdea(validatedData);
+        }
         
         // Generate AI analysis with sanitized inputs
         const analysis = await analyzeStartupIdea(
