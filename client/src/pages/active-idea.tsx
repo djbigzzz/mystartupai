@@ -67,7 +67,7 @@ export default function ActiveIdea() {
   };
 
   const getValidationScoreColor = (score: number | null) => {
-    if (!score) return "text-gray-500 dark:text-gray-400";
+    if (!score) return "text-muted-foreground";
     if (score >= 80) return "text-green-600 dark:text-green-400";
     if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
     return "text-red-600 dark:text-red-400";
@@ -218,8 +218,8 @@ export default function ActiveIdea() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-            <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+            <div className="h-8 bg-muted rounded w-1/3"></div>
+            <div className="h-64 bg-muted rounded-lg"></div>
           </div>
         </div>
       </div>
@@ -249,16 +249,16 @@ export default function ActiveIdea() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 My Active Idea
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="text-muted-foreground">
                 Focus on validating and building your startup concept
               </p>
             </div>
@@ -291,10 +291,10 @@ export default function ActiveIdea() {
           <Card className="border-dashed border-2 border-gray-300 dark:border-gray-600">
             <CardContent className="p-12 text-center">
               <Lightbulb className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <h3 className="text-xl font-semibold text-foreground mb-2">
                 No Active Idea Yet
               </h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-6">
+              <p className="text-muted-foreground mb-6">
                 Submit your startup idea to get AI-powered analysis, business plan generation, and investor matching
               </p>
               <Link href="/submit-idea">
@@ -312,7 +312,7 @@ export default function ActiveIdea() {
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-2xl mb-3 text-gray-900 dark:text-white">
+                    <CardTitle className="text-2xl mb-3 text-foreground">
                       {activeIdea.ideaTitle}
                     </CardTitle>
                     <div className="flex items-center space-x-3 mb-3">
@@ -332,19 +332,19 @@ export default function ActiveIdea() {
                       <div className={`text-3xl font-bold ${getValidationScoreColor(activeIdea.validationScore)}`}>
                         {activeIdea.validationScore}/100
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">Validation Score</div>
+                      <div className="text-sm text-muted-foreground">Validation Score</div>
                     </div>
                   )}
                 </div>
               </CardHeader>
               
               <CardContent className="pt-0">
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                <p className="text-foreground mb-4 leading-relaxed">
                   {activeIdea.description}
                 </p>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4 mr-1" />
                     Created {new Date(activeIdea.createdAt).toLocaleDateString()}
                   </div>
@@ -367,7 +367,7 @@ export default function ActiveIdea() {
 
             {/* Quick Actions */}
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-xl font-semibold text-foreground mb-4">
                 Next Steps
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -387,10 +387,10 @@ export default function ActiveIdea() {
                           action.color === 'orange' ? 'text-orange-600' :
                           'text-gray-600'
                         }`} />
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                        <h3 className="font-semibold text-foreground mb-1">
                           {action.title}
                         </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                        <p className="text-sm text-muted-foreground mb-3">
                           {action.description}
                         </p>
                         {action.enabled ? (
@@ -414,10 +414,10 @@ export default function ActiveIdea() {
             {/* Progress Tracking */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h2 className="text-xl font-semibold text-foreground">
                   Validation Progress
                 </h2>
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                <div className="flex items-center text-sm text-muted-foreground">
                   <Progress className="w-4 h-4 mr-2" />
                   {completedStages}/{progressStages.length} stages completed
                 </div>
@@ -426,14 +426,14 @@ export default function ActiveIdea() {
               <Card className="mb-6">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-foreground">
                       Overall Progress
                     </span>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-sm font-medium text-foreground">
                       {Math.round(progressPercentage)}%
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-muted rounded-full h-2">
                     <div 
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
                       style={{ width: `${progressPercentage}%` }}
@@ -497,7 +497,7 @@ export default function ActiveIdea() {
             {/* AI Suggestions */}
             {aiSuggestions.length > 0 && (
               <div className="mb-8">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
                   <Sparkles className="w-5 h-5 mr-2 text-yellow-500" />
                   AI Recommendations
                 </h2>
@@ -517,17 +517,17 @@ export default function ActiveIdea() {
                             }`} />
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-semibold text-gray-900 dark:text-white">
+                                <h3 className="font-semibold text-foreground">
                                   {suggestion.title}
                                 </h3>
                                 <Badge variant={suggestion.priority === 'high' ? 'destructive' : 'secondary'}>
                                   {suggestion.priority} priority
                                 </Badge>
                               </div>
-                              <p className="text-gray-600 dark:text-gray-300 mb-3">
+                              <p className="text-muted-foreground mb-3">
                                 {suggestion.description}
                               </p>
-                              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                              <div className="flex items-center text-sm text-muted-foreground">
                                 <ArrowRight className="w-4 h-4 mr-1" />
                                 {suggestion.action}
                               </div>
@@ -556,19 +556,19 @@ export default function ActiveIdea() {
                       <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {activeIdea.analysis?.marketPotential || 'High'}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">Market Potential</div>
+                      <div className="text-sm text-muted-foreground">Market Potential</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {activeIdea.analysis?.technicalFeasibility || 'Medium'}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">Technical Feasibility</div>
+                      <div className="text-sm text-muted-foreground">Technical Feasibility</div>
                     </div>
                     <div className="text-center">
                       <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                         {activeIdea.analysis?.competitiveAdvantage || 'Strong'}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">Competitive Advantage</div>
+                      <div className="text-sm text-muted-foreground">Competitive Advantage</div>
                     </div>
                   </div>
                 </CardContent>

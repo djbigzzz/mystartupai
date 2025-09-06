@@ -261,7 +261,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
           variant={isActive ? "secondary" : "ghost"}
           className={`w-full justify-start h-10 px-3 ${
             collapsed ? "px-2" : ""
-          } ${isActive ? "bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border-blue-200" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+          } ${isActive ? "bg-accent text-accent-foreground border-blue-200" : "text-foreground hover:bg-muted"}`}
         >
           <IconComponent className={`h-4 w-4 ${collapsed ? "" : "mr-3"} flex-shrink-0`} />
           {!collapsed && (
