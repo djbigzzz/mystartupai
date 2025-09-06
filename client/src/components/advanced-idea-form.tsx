@@ -156,7 +156,7 @@ export default function AdvancedIdeaForm() {
 
   const submitIdeaMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await fetch("/api/startup-ideas", {
+      const response = await fetch("/api/ideas", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,15 +172,15 @@ export default function AdvancedIdeaForm() {
     },
     onSuccess: (data) => {
       toast({
-        title: "Idea submitted successfully!",
-        description: "Your startup idea is being analyzed. Redirecting to dashboard...",
+        title: "Idea updated successfully!",
+        description: "Your startup idea has been updated. Redirecting to view analysis...",
       });
       
       localStorage.setItem("currentIdeaId", data.id.toString());
       localStorage.setItem("userEmail", data.email);
       
       setTimeout(() => {
-        setLocation("/dashboard");
+        setLocation("/active-idea");
       }, 2000);
     },
     onError: (error) => {

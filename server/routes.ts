@@ -661,6 +661,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           idea = await storage.createStartupIdea(validatedData);
         }
         
+        // Ensure idea exists
+        if (!idea) {
+          throw new Error("Failed to create or update idea");
+        }
+        
         // Generate AI analysis with sanitized inputs
         const analysis = await analyzeStartupIdea(
           idea.ideaTitle,
