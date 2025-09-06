@@ -29,7 +29,9 @@ import {
   ArrowRight,
   CheckCircle,
   AlertCircle,
-  Clock
+  Clock,
+  Loader2,
+  Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -646,13 +648,13 @@ export default function AdvancedIdeaForm() {
                     >
                       {submitIdeaMutation.isPending ? (
                         <>
-                          <Clock className="w-4 h-4 mr-2 animate-spin" />
-                          Analyzing...
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          AI Analysis in Progress...
                         </>
                       ) : (
                         <>
                           <Brain className="w-4 h-4 mr-2" />
-                          Submit for AI Analysis
+                          Update & Re-analyze
                         </>
                       )}
                     </Button>
