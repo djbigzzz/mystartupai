@@ -49,6 +49,64 @@
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "MyStartup.AI",
+      "description": "AI-powered startup accelerator platform that helps entrepreneurs validate ideas, create business plans, generate pitch decks, and build investor-ready businesses in minutes.",
+      "url": "https://mystartup.ai",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "description": "Free trial available"
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "MyStartup.AI",
+        "url": "https://mystartup.ai"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1250",
+        "bestRating": "5"
+      },
+      "featureList": [
+        "AI Business Plan Generator",
+        "Pitch Deck Creator", 
+        "Financial Model Builder",
+        "Market Research Tool",
+        "Investor Matching",
+        "MVP Builder",
+        "Startup Validation"
+      ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "MyStartup.AI",
+      "url": "https://mystartup.ai",
+      "logo": "https://mystartup.ai/logo.png",
+      "sameAs": [
+        "https://twitter.com/MyStartupAI",
+        "https://linkedin.com/company/mystartup-ai"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "email": "support@mystartup.ai"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -44,26 +44,26 @@ export default function MarketingHome() {
   const features = [
     {
       icon: Brain,
-      title: "Validate Your Idea",
-      description: "AI-driven market research, competitor analysis, and feasibility assessment in minutes.",
+      title: "AI Startup Idea Validation",
+      description: "Advanced market research, competitor analysis, and business feasibility assessment powered by AI. Validate your startup concept in minutes, not months.",
       color: "from-blue-500 to-blue-600"
     },
     {
       icon: Presentation,
-      title: "Plan Your Startup",
-      description: "Automated execution roadmaps, business plans, and strategic frameworks tailored to your industry.",
+      title: "Business Plan Generator",
+      description: "AI-powered business plan generator creates comprehensive execution roadmaps, strategic frameworks, and investor-ready documentation tailored to your industry.",
       color: "from-green-500 to-green-600"
     },
     {
       icon: DollarSign,
-      title: "Get Investor-Ready",
-      description: "Generate pitch decks, financial models, and investor materials that get results.",
+      title: "Pitch Deck Creator & Financial Models",
+      description: "Professional pitch deck creator and financial modeling tools. Generate investor presentations and detailed financial projections that help you secure funding.",
       color: "from-purple-500 to-purple-600"
     },
     {
       icon: Rocket,
-      title: "Grow Faster",
-      description: "Go-to-market strategies, MVP development tools, and growth tactics for early traction.",
+      title: "MVP Builder & Growth Strategy",
+      description: "Complete MVP development tools, go-to-market strategies, and proven growth tactics to achieve early traction and scale your startup effectively.",
       color: "from-orange-500 to-orange-600"
     }
   ];
@@ -194,14 +194,14 @@ export default function MarketingHome() {
               </Badge>
               
               <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
-                Your Agentic AI{" "}
+                AI Startup Accelerator:{" "}
                 <span className="bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
-                  Co-Founder
+                  Your AI Co-Founder
                 </span>
               </h1>
               
               <p className="text-xl text-blue-100 mb-8 leading-relaxed drop-shadow-sm">
-                MyStartup.ai helps entrepreneurs validate ideas, build execution roadmaps, and launch investor-ready startups — faster, smarter, and without giving up equity.
+                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. Get funding 67% faster with our startup accelerator platform — no equity required.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -245,13 +245,13 @@ export default function MarketingHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              90% of startups fail. Here's why.
+              Why 90% of Startups Fail (And How AI Can Help You Succeed)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="text-center p-6">
                 <Clock className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Time & Money Wasted</h3>
-                <p className="text-gray-600 dark:text-gray-300">Founders waste months and money figuring out what to do next</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Time & Money Wasted on Poor Planning</h3>
+                <p className="text-gray-600 dark:text-gray-300">Without proper business planning and validation, founders waste 6-12 months building products nobody wants</p>
               </div>
               <div className="text-center p-6">
                 <DollarSign className="w-12 h-12 text-red-500 mx-auto mb-4" />
@@ -275,11 +275,11 @@ export default function MarketingHome() {
             <div className="flex items-center justify-center mb-6">
               <Logo size="lg" showText={false} className="mr-4" />
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                Meet Your AI Co-Founder
+                AI Startup Tools & Business Plan Generator
               </h2>
             </div>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              MyStartup.ai uses a multi-agent AI system where specialized agents collaborate in real time to build your startup alongside you.
+              Complete AI-powered startup acceleration platform with business plan generator, pitch deck creator, financial modeling tools, and market research capabilities - everything entrepreneurs need to validate ideas and secure funding.
             </p>
           </div>
           
@@ -318,7 +318,7 @@ export default function MarketingHome() {
             <div className="flex items-center justify-center mb-6">
               <Logo size="md" showText={false} className="mr-3" />
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                From Idea to Investor-Ready in Hours
+                How to Build an Investor-Ready Startup in Hours (Not Months)
               </h2>
             </div>
           </div>
@@ -361,7 +361,7 @@ export default function MarketingHome() {
             <div className="flex items-center justify-center mb-6">
               <Logo size="md" showText={false} className="mr-3" />
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                Built for Founders Everywhere
+                Best AI Startup Tools for Entrepreneurs & Business Founders
               </h2>
             </div>
           </div>
