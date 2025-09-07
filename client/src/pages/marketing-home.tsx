@@ -279,10 +279,18 @@ export default function MarketingHome() {
       </section>
 
       {/* Problem Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300 relative overflow-hidden">
+        {/* Subtle background elements */}
+        <div className="absolute top-20 left-10 floating-shape opacity-5">
+          <div className="w-40 h-40 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full morphing-bg"></div>
+        </div>
+        <div className="absolute bottom-20 right-10 floating-shape opacity-5">
+          <div className="w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-3xl morphing-bg"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6 transform hover:scale-105 transition-transform duration-300">
               Why 90% of Startups Fail (And How AI Can Help You Succeed)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
@@ -325,13 +333,15 @@ export default function MarketingHome() {
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl dark:bg-gray-800 dark:border dark:border-gray-700 transition-all duration-300 h-full">
-                  <CardContent className="p-6 text-center h-full flex flex-col">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center mx-auto mb-4`}>
+                <Card key={index} className="border-0 shadow-lg hover:shadow-2xl dark:bg-gray-800 dark:border dark:border-gray-700 transition-all duration-500 h-full card-3d group relative overflow-hidden">
+                  {/* Card background gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <CardContent className="p-6 text-center h-full flex flex-col relative z-10">
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center mx-auto mb-4 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg`}>
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">{feature.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 flex-grow">{feature.description}</p>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{feature.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 flex-grow group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">{feature.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -340,9 +350,10 @@ export default function MarketingHome() {
           
           <div className="text-center">
             <Link href="/app">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold">
-                Start Now — It's Free
-                <ArrowRight className="ml-2 w-5 h-5" />
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 relative overflow-hidden group">
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-600 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                <span className="relative z-10">Start Now — It's Free</span>
+                <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </Link>
           </div>
@@ -367,15 +378,15 @@ export default function MarketingHome() {
               return (
                 <div key={index} className="text-center">
                   <div className="relative mb-6">
-                    <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg hover:shadow-blue-500/30">
                       <IconComponent className="w-10 h-10 text-white" />
                     </div>
                     <div className="absolute -top-2 -right-2 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
                       <span className="text-white font-bold text-sm">{step.step}</span>
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">{step.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{step.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 transform hover:scale-105 transition-transform duration-300">{step.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 transform hover:translate-y-1 transition-transform duration-300">{step.description}</p>
                 </div>
               );
             })}
@@ -383,9 +394,10 @@ export default function MarketingHome() {
           
           <div className="text-center">
             <Link href="/app">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold">
-                Create Your Startup Today
-                <ArrowRight className="ml-2 w-5 h-5" />
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 relative overflow-hidden group">
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-600 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                <span className="relative z-10">Create Your Startup Today</span>
+                <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </Link>
           </div>
@@ -408,8 +420,10 @@ export default function MarketingHome() {
             {targetAudiences.map((audience, index) => {
               const IconComponent = audience.icon;
               return (
-                <Card key={index} className="border-2 hover:border-blue-200 dark:hover:border-blue-600 dark:bg-gray-800 dark:border-gray-700 transition-colors duration-300">
-                  <CardContent className="p-8 text-center">
+                <Card key={index} className="border-2 hover:border-blue-200 dark:hover:border-blue-600 dark:bg-gray-800 dark:border-gray-700 transition-all duration-500 card-3d group relative overflow-hidden">
+                  {/* Card background gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-purple-50/20 dark:from-blue-900/10 dark:to-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <CardContent className="p-8 text-center relative z-10">
                     <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                       <IconComponent className="w-8 h-8 text-blue-600" />
                     </div>
