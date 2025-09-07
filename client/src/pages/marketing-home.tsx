@@ -239,24 +239,14 @@ export default function MarketingHome() {
                 Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. Get funding 67% faster with our startup accelerator platform — no equity required.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              <div className="flex justify-center sm:justify-start mb-8">
                 <Link href="/app">
-                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free">
+                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-4 text-xl font-semibold shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free">
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
                     <span className="relative z-10">Get Started Free</span>
-                    <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
+                    <ArrowRight className="ml-2 w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  onClick={() => setShowVideo(true)}
-                  className="px-8 py-4 text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm glass-effect hover:scale-105 transform transition-all duration-300 group"
-                  aria-label="Watch video demo of AI startup tools"
-                >
-                  <Play className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
-                  See How It Works
-                </Button>
               </div>
 
               {/* Stats */}
