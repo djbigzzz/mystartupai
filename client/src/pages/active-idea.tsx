@@ -26,6 +26,7 @@ import {
   TrendingUp as Progress
 } from "lucide-react";
 import { Link } from "wouter";
+import MobileNavigation from "@/components/mobile-navigation";
 
 interface StartupIdea {
   id: number;
@@ -250,6 +251,7 @@ export default function ActiveIdea() {
 
   return (
     <div className="min-h-screen bg-background p-6">
+      <MobileNavigation />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
