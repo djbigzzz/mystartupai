@@ -230,7 +230,6 @@ export default function MarketingHome() {
               </Badge>
               
               <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight text-3d transform hover:scale-105 transition-transform duration-500">
-                AI Startup Accelerator:{" "}
                 <span className="bg-gradient-to-r from-yellow-200 via-yellow-100 to-white bg-clip-text text-transparent animate-pulse">
                   Your AI Co-Founder
                 </span>
@@ -295,17 +294,17 @@ export default function MarketingHome() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="text-center p-6">
-                <Clock className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Time & Money Wasted on Poor Planning</h3>
                 <p className="text-gray-600 dark:text-gray-300">Without proper business planning and validation, founders waste 6-12 months building products nobody wants</p>
               </div>
               <div className="text-center p-6">
-                <DollarSign className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <DollarSign className="w-12 h-12 text-purple-500 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Expensive Access</h3>
                 <p className="text-gray-600 dark:text-gray-300">Access to accelerators or consultants requires equity or high fees</p>
               </div>
               <div className="text-center p-6">
-                <Target className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <Target className="w-12 h-12 text-blue-600 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Investor Readiness</h3>
                 <p className="text-gray-600 dark:text-gray-300">Most founders struggle with market validation and investor materials</p>
               </div>
