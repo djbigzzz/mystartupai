@@ -169,33 +169,69 @@ export default function MarketingHome() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700">
-        {/* Background Pattern Overlay */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 hero-3d">
+        {/* Advanced 3D Background */}
+        <div className="absolute inset-0 gradient-mesh opacity-30"></div>
+        
+        {/* Floating 3D Geometric Shapes */}
+        <div className="absolute top-10 right-10 floating-shape">
+          <div className="w-24 h-24 bg-gradient-to-br from-white/20 to-blue-200/20 rounded-3xl transform rotate-45 morphing-bg"></div>
+        </div>
+        <div className="absolute top-40 left-10 floating-shape">
+          <div className="w-32 h-32 bg-gradient-to-br from-purple-200/20 to-white/20 rounded-full morphing-bg"></div>
+        </div>
+        <div className="absolute bottom-20 right-1/4 floating-shape">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-2xl transform -rotate-12 morphing-bg"></div>
+        </div>
+        <div className="absolute top-1/3 left-1/4 floating-shape">
+          <div className="w-16 h-16 bg-gradient-to-br from-white/15 to-blue-300/15 rounded-full morphing-bg"></div>
+        </div>
+        
+        {/* Animated Particles */}
+        {[...Array(15)].map((_, i) => (
+          <div 
+            key={i}
+            className="particle" 
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${8 + Math.random() * 6}s`
+            }}
+          ></div>
+        ))}
+        
+        {/* Enhanced Background Pattern Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-white/20 to-purple-50/10"></div>
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
                            radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                           radial-gradient(circle at 40% 80%, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-          backgroundSize: '100px 100px, 80px 80px, 120px 120px'
+                           radial-gradient(circle at 40% 80%, rgba(255,255,255,0.05) 1px, transparent 1px),
+                           radial-gradient(circle at 60% 20%, rgba(255,255,255,0.08) 1px, transparent 1px)`,
+          backgroundSize: '100px 100px, 80px 80px, 120px 120px, 150px 150px'
         }}></div>
-        {/* Floating Logo Elements */}
-        <div className="absolute top-20 right-20 opacity-20 hidden lg:block">
-          <Logo size="lg" showText={false} />
+        
+        {/* 3D Floating Logo Elements */}
+        <div className="absolute top-20 right-20 opacity-20 hidden lg:block transform hover:scale-110 transition-transform duration-500">
+          <div className="floating-shape">
+            <Logo size="lg" showText={false} />
+          </div>
         </div>
-        <div className="absolute bottom-20 left-20 opacity-15 hidden lg:block">
-          <Logo size="md" showText={false} />
+        <div className="absolute bottom-20 left-20 opacity-15 hidden lg:block transform hover:scale-110 transition-transform duration-500">
+          <div className="floating-shape" style={{animationDelay: '-3s'}}>
+            <Logo size="md" showText={false} />
+          </div>
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge className="mb-6 bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border border-white/30">
-                <Zap className="w-4 h-4 mr-1" />
+            <div className="relative z-10">
+              <Badge className="mb-6 glass-effect text-white hover:bg-white/30 backdrop-blur-sm border border-white/30 transform hover:scale-105 transition-all duration-300">
+                <Zap className="w-4 h-4 mr-1 animate-pulse" />
                 Live & Ready to Use
               </Badge>
               
-              <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+              <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight text-3d transform hover:scale-105 transition-transform duration-500">
                 AI Startup Accelerator:{" "}
-                <span className="bg-gradient-to-r from-yellow-200 to-white bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-yellow-200 via-yellow-100 to-white bg-clip-text text-transparent animate-pulse">
                   Your AI Co-Founder
                 </span>
               </h1>
@@ -206,19 +242,20 @@ export default function MarketingHome() {
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300" aria-label="Start creating your business plan for free">
-                    Get Started Free
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free">
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                    <span className="relative z-10">Get Started Free</span>
+                    <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
                 <Button 
                   size="lg" 
                   variant="outline" 
                   onClick={() => setShowVideo(true)}
-                  className="px-8 py-4 text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm"
+                  className="px-8 py-4 text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm glass-effect hover:scale-105 transform transition-all duration-300 group"
                   aria-label="Watch video demo of AI startup tools"
                 >
-                  <Play className="mr-2 w-5 h-5" />
+                  <Play className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                   See How It Works
                 </Button>
               </div>
