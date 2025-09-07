@@ -149,13 +149,13 @@ export default function MarketingHome() {
             
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-                Features
+                AI Tools
               </a>
               <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-                How it Works
+                Business Plans
               </a>
               <a href="#who-its-for" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
-                Who It's For
+                For Entrepreneurs
               </a>
               <Link href="/app">
                 <Button variant="outline" size="sm">Sign In</Button>
@@ -206,7 +206,7 @@ export default function MarketingHome() {
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300" aria-label="Start creating your business plan for free">
                     Get Started Free
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
@@ -216,6 +216,7 @@ export default function MarketingHome() {
                   variant="outline" 
                   onClick={() => setShowVideo(true)}
                   className="px-8 py-4 text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm"
+                  aria-label="Watch video demo of AI startup tools"
                 >
                   <Play className="mr-2 w-5 h-5" />
                   See How It Works

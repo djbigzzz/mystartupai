@@ -24,7 +24,7 @@ export function Logo({ size = "md", showText = true, className = "" }: LogoProps
       {/* Logo Image */}
       <img 
         src={logoImage} 
-        alt="MyStartup.ai Logo" 
+        alt="MyStartup.AI - AI-Powered Startup Accelerator Logo" 
         className={`${sizeClasses[size]} object-contain hover:scale-105 transition-transform duration-300`}
       />
       
