@@ -148,20 +148,20 @@ export default function MarketingHome() {
             <Logo size="lg" showText={true} />
             
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" data-testid="nav-link-features">
                 AI Tools
               </a>
-              <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+              <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" data-testid="nav-link-process">
                 Business Plans
               </a>
-              <a href="#who-its-for" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+              <a href="#who-its-for" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" data-testid="nav-link-audience">
                 For Entrepreneurs
               </a>
               <Link href="/app">
-                <Button variant="outline" size="sm">Sign In</Button>
+                <Button variant="outline" size="sm" data-testid="button-nav-signin">Sign In</Button>
               </Link>
               <Link href="/app">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700">Get Started Free</Button>
+                <Button size="sm" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300" data-testid="button-nav-primary">Start Free Now</Button>
               </Link>
             </div>
           </div>
@@ -235,18 +235,51 @@ export default function MarketingHome() {
                 </span>
               </h1>
               
-              <p className="text-xl text-blue-100 mb-8 leading-relaxed drop-shadow-sm">
+              <p className="text-xl text-blue-100 mb-6 leading-relaxed drop-shadow-sm">
                 Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. Get funding 67% faster with our startup accelerator platform — no equity required.
               </p>
               
-              <div className="flex justify-center sm:justify-start mb-8">
+              {/* Social Proof & Urgency */}
+              <div className="flex items-center justify-center sm:justify-start mb-6 text-blue-200">
+                <div className="flex items-center mr-6">
+                  <div className="flex -space-x-2 mr-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full border-2 border-white"></div>
+                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full border-2 border-white"></div>
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full border-2 border-white"></div>
+                    <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-gray-600">+</div>
+                  </div>
+                  <span className="text-sm font-medium">2,847+ entrepreneurs started this week</span>
+                </div>
+                <div className="flex items-center text-yellow-200">
+                  <Star className="w-4 h-4 fill-current mr-1" />
+                  <span className="text-sm font-medium">4.9/5 from 500+ reviews</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row justify-center sm:justify-start gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-4 text-xl font-semibold shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free">
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                    <span className="relative z-10">Get Started Free</span>
+                  <Button size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 px-10 py-4 text-xl font-bold shadow-2xl hover:shadow-yellow-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                    <span className="relative z-10">🚀 Start Free Now</span>
                     <ArrowRight className="ml-2 w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
+                <Link href="#how-it-works">
+                  <Button size="lg" variant="outline" className="border-2 border-white/50 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold backdrop-blur-sm hover:scale-105 transform transition-all duration-300" data-testid="button-hero-secondary">
+                    <Play className="mr-2 w-5 h-5" />
+                    See How It Works
+                  </Button>
+                </Link>
+              </div>
+              
+              {/* Trust Indicators */}
+              <div className="flex items-center justify-center sm:justify-start text-blue-200 text-sm mb-8">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                <span className="mr-6">No credit card required</span>
+                <CheckCircle className="w-4 h-4 mr-2" />
+                <span className="mr-6">Setup in 2 minutes</span>
+                <CheckCircle className="w-4 h-4 mr-2" />
+                <span>Cancel anytime</span>
               </div>
 
               {/* Stats */}
@@ -339,9 +372,9 @@ export default function MarketingHome() {
           
           <div className="text-center">
             <Link href="/app">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 relative overflow-hidden group">
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-600 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                <span className="relative z-10">Start Now — It's Free</span>
+              <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-4 text-lg font-bold transform hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25 transition-all duration-300 relative overflow-hidden group" data-testid="button-features-cta">
+                <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                <span className="relative z-10">🚀 Start Free Now</span>
                 <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </Link>
@@ -383,9 +416,9 @@ export default function MarketingHome() {
           
           <div className="text-center">
             <Link href="/app">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-8 py-4 text-lg font-semibold transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 relative overflow-hidden group">
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-600 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                <span className="relative z-10">Create Your Startup Today</span>
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white px-8 py-4 text-lg font-bold transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 relative overflow-hidden group" data-testid="button-process-cta">
+                <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                <span className="relative z-10">🚀 Start Free Now</span>
                 <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
               </Button>
             </Link>
@@ -494,14 +527,14 @@ export default function MarketingHome() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/app">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 px-12 py-4 text-lg font-semibold">
-                Get Started Free
+              <Button size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 px-12 py-4 text-xl font-bold shadow-2xl hover:shadow-yellow-500/25 transform hover:scale-105 transition-all duration-300" data-testid="button-final-primary">
+                🚀 Start Free Now
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
             <Link href="/app">
-              <Button size="lg" variant="outline" className="px-12 py-4 text-lg font-semibold border-2">
-                Sign In
+              <Button size="lg" variant="outline" className="px-12 py-4 text-lg font-semibold border-2 hover:bg-gray-50 dark:hover:bg-gray-800 transform hover:scale-105 transition-all duration-300" data-testid="button-final-secondary">
+                👤 Sign In
               </Button>
             </Link>
           </div>
