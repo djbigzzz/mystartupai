@@ -362,6 +362,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Complete user onboarding
+  app.post("/api/auth/complete-onboarding", async (req, res) => {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const user = req.user as any;
+      
+      // Update user's onboarding completion status
+      await storage.updateUser(user.id, { onboardingCompleted: true });
+      
+      res.json({ message: "Onboarding completed successfully" });
+    } catch (error) {
+      console.error("Complete onboarding error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // OAuth Debug Routes (temporary for troubleshooting)
   app.get("/api/debug/oauth", debugOAuthConfiguration);
   app.get("/api/debug/redirect-uri", testRedirectUri);

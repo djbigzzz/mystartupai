@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,8 @@ import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
 import StartupWorkflowDashboard from "@/components/startup-workflow-dashboard";
 import { ThemeToggle } from "@/components/theme-toggle";
+import GuidedOnboarding from "@/components/onboarding/guided-onboarding";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface User {
   id: number;
@@ -32,6 +34,7 @@ interface User {
   username: string | null;
   avatar: string | null;
   emailVerified: boolean;
+  onboardingCompleted: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -55,6 +58,7 @@ interface RecentActivity {
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("overview");
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     const ideaId = localStorage.getItem("currentIdeaId");
@@ -74,6 +78,13 @@ export default function Dashboard() {
     gcTime: 0, // Don't cache the response
   });
 
+  // Check if user needs onboarding
+  useEffect(() => {
+    if (user && !user.onboardingCompleted) {
+      setShowOnboarding(true);
+    }
+  }, [user]);
+
   // Debug logging
   console.log('Dashboard - User data:', user);
   console.log('Dashboard - User loading:', userLoading);
@@ -92,6 +103,32 @@ export default function Dashboard() {
       refetch();
     }
   }, [user, userLoading, userError, refetch]);
+
+  // Mutation to mark onboarding as completed
+  const completeOnboardingMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("/api/auth/complete-onboarding", {
+        method: "POST"
+      } as RequestInit & { body?: any });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      setShowOnboarding(false);
+    },
+    onError: (error) => {
+      console.error("Failed to complete onboarding:", error);
+    }
+  });
+
+  const handleOnboardingComplete = () => {
+    completeOnboardingMutation.mutate();
+  };
+
+  const handleSkipOnboarding = () => {
+    setShowOnboarding(false);
+    // Optionally mark as completed or set a "skipped" status
+    completeOnboardingMutation.mutate();
+  };
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -441,6 +478,15 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      {/* Guided Onboarding Modal */}
+      {showOnboarding && (
+        <GuidedOnboarding 
+          onComplete={handleOnboardingComplete}
+          onSkip={handleSkipOnboarding}
+          isFirstTimeUser={!user?.onboardingCompleted}
+        />
+      )}
+      
       {/* Sidebar Navigation */}
       <SidebarNavigation />
       
