@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useDemoSession } from "@/contexts/demo-session-context";
+import { DemoPersonalizationModal, DemoSessionData } from "@/components/demo-personalization-modal";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +36,11 @@ import {
 
 export default function MarketingHome() {
   const [showVideo, setShowVideo] = useState(false);
+  const [showPersonalizationModal, setShowPersonalizationModal] = useState(false);
+  const [isPersonalizing, setIsPersonalizing] = useState(false);
+  
+  const { isPersonalized, sessionData, setSessionData, clearSession } = useDemoSession();
+  const { toast } = useToast();
 
   const stats = [
     { number: "10,000+", label: "Ideas Analyzed" },
@@ -115,6 +123,49 @@ export default function MarketingHome() {
       examples: ["Accelerator programs", "Investment firms", "Startup competitions"]
     }
   ];
+
+  const handlePersonalize = async (demoData: DemoSessionData) => {
+    setIsPersonalizing(true);
+    
+    try {
+      // Create demo session via API
+      const response = await fetch('/api/demo/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(demoData)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create demo session');
+      }
+      
+      const session = await response.json();
+      setSessionData(demoData);
+      setShowPersonalizationModal(false);
+      
+      toast({
+        title: "🎉 Demos Personalized!",
+        description: `All demos are now customized for "${demoData.ideaTitle}". Try the Pitch Deck or Financial Modeling demos!`,
+      });
+    } catch (error) {
+      console.error('Personalization error:', error);
+      toast({
+        title: "Personalization Failed",
+        description: "There was an issue personalizing your demos. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsPersonalizing(false);
+    }
+  };
+
+  const handleClearPersonalization = () => {
+    clearSession();
+    toast({
+      title: "Personalization Cleared",
+      description: "Demos have been reset to default examples.",
+    });
+  };
 
   const differentiators = [
     {
