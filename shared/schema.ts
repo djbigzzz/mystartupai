@@ -374,4 +374,70 @@ export const insertWaitlistSchema = createInsertSchema(waitlist).pick({
 export type InsertWaitlist = z.infer<typeof insertWaitlistSchema>;
 export type Waitlist = typeof waitlist.$inferSelect;
 
+// Demo Session schemas for unified demo experience
+export const demoSessions = pgTable("demo_sessions", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  ideaTitle: text("idea_title").notNull(),
+  description: text("description").notNull(),
+  industry: text("industry").notNull(),
+  targetMarket: text("target_market"),
+  problemStatement: text("problem_statement"),
+  solutionApproach: text("solution_approach"),
+  competitiveAdvantage: text("competitive_advantage"),
+  revenueModel: text("revenue_model"),
+  brandColors: jsonb("brand_colors"), // extracted theme colors
+  completedArtifacts: text("completed_artifacts").array().default([]),
+  progress: jsonb("progress"), // completion tracking per demo
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const artifacts = pgTable("artifacts", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").references(() => demoSessions.sessionId).notNull(),
+  type: text("type").notNull(), // "business-plan", "pitch-deck", "financial-model", etc.
+  title: text("title").notNull(),
+  summary: text("summary"),
+  content: jsonb("content").notNull(), // structured artifact data
+  exportUrls: jsonb("export_urls"), // PDF, PNG, shareable links
+  generationStatus: text("generation_status").default("pending"), // pending, generating, completed, error
+  quality: integer("quality"), // 1-100 quality score
+  insights: text("insights").array(), // key takeaways or recommendations
+  crossLinks: jsonb("cross_links"), // references to other artifacts
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertDemoSessionSchema = createInsertSchema(demoSessions).pick({
+  sessionId: true,
+  ideaTitle: true,
+  description: true,
+  industry: true,
+  targetMarket: true,
+  problemStatement: true,
+  solutionApproach: true,
+  competitiveAdvantage: true,
+  revenueModel: true,
+  brandColors: true,
+});
+
+export const insertArtifactSchema = createInsertSchema(artifacts).pick({
+  sessionId: true,
+  type: true,
+  title: true,
+  summary: true,
+  content: true,
+  exportUrls: true,
+  generationStatus: true,
+  quality: true,
+  insights: true,
+  crossLinks: true,
+});
+
+export type DemoSession = typeof demoSessions.$inferSelect;
+export type InsertDemoSession = z.infer<typeof insertDemoSessionSchema>;
+export type Artifact = typeof artifacts.$inferSelect;
+export type InsertArtifact = z.infer<typeof insertArtifactSchema>;
+
 

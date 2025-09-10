@@ -10,6 +10,8 @@ import {
   waitlist,
   startupProfiles,
   passwordResetTokens,
+  demoSessions,
+  artifacts,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -32,6 +34,10 @@ import {
   type InsertStartupProfile,
   type PasswordResetToken,
   type InsertPasswordResetToken,
+  type DemoSession,
+  type InsertDemoSession,
+  type Artifact,
+  type InsertArtifact,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -111,6 +117,18 @@ export interface IStorage {
   createStartupProfile(profile: InsertStartupProfile): Promise<StartupProfile>;
   getStartupProfile(userId: number): Promise<StartupProfile | undefined>;
   updateStartupProfile(id: number, updates: Partial<StartupProfile>): Promise<StartupProfile | undefined>;
+  
+  // Demo Session operations
+  createDemoSession(session: InsertDemoSession): Promise<DemoSession>;
+  getDemoSession(sessionId: string): Promise<DemoSession | undefined>;
+  updateDemoSession(sessionId: string, updates: Partial<DemoSession>): Promise<DemoSession | undefined>;
+  
+  // Artifact operations
+  createArtifact(artifact: InsertArtifact): Promise<Artifact>;
+  getArtifact(id: number): Promise<Artifact | undefined>;
+  getArtifactsBySession(sessionId: string): Promise<Artifact[]>;
+  getArtifactByType(sessionId: string, type: string): Promise<Artifact | undefined>;
+  updateArtifact(id: number, updates: Partial<Artifact>): Promise<Artifact | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -455,6 +473,77 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(passwordResetTokens)
       .where(sql`expires_at < now()`);
+  }
+
+  // Demo Session operations
+  async createDemoSession(insertSession: InsertDemoSession): Promise<DemoSession> {
+    const [session] = await db
+      .insert(demoSessions)
+      .values(insertSession)
+      .returning();
+    return session;
+  }
+
+  async getDemoSession(sessionId: string): Promise<DemoSession | undefined> {
+    const [session] = await db
+      .select()
+      .from(demoSessions)
+      .where(eq(demoSessions.sessionId, sessionId));
+    return session || undefined;
+  }
+
+  async updateDemoSession(sessionId: string, updates: Partial<DemoSession>): Promise<DemoSession | undefined> {
+    const [session] = await db
+      .update(demoSessions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(demoSessions.sessionId, sessionId))
+      .returning();
+    return session || undefined;
+  }
+
+  // Artifact operations
+  async createArtifact(insertArtifact: InsertArtifact): Promise<Artifact> {
+    const [artifact] = await db
+      .insert(artifacts)
+      .values(insertArtifact)
+      .returning();
+    return artifact;
+  }
+
+  async getArtifact(id: number): Promise<Artifact | undefined> {
+    const [artifact] = await db
+      .select()
+      .from(artifacts)
+      .where(eq(artifacts.id, id));
+    return artifact || undefined;
+  }
+
+  async getArtifactsBySession(sessionId: string): Promise<Artifact[]> {
+    return await db
+      .select()
+      .from(artifacts)
+      .where(eq(artifacts.sessionId, sessionId))
+      .orderBy(desc(artifacts.createdAt));
+  }
+
+  async getArtifactByType(sessionId: string, type: string): Promise<Artifact | undefined> {
+    const [artifact] = await db
+      .select()
+      .from(artifacts)
+      .where(and(
+        eq(artifacts.sessionId, sessionId),
+        eq(artifacts.type, type)
+      ));
+    return artifact || undefined;
+  }
+
+  async updateArtifact(id: number, updates: Partial<Artifact>): Promise<Artifact | undefined> {
+    const [artifact] = await db
+      .update(artifacts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(artifacts.id, id))
+      .returning();
+    return artifact || undefined;
   }
 }
 

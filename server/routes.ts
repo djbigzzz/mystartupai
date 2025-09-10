@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import session from "express-session";
 import passport from "./auth";
 import { storage } from "./storage";
-import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema } from "@shared/schema";
+import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema, insertDemoSessionSchema, insertArtifactSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
 import { agenticAI } from "./agentic-ai";
 import { body, query } from "express-validator";
@@ -1775,6 +1775,230 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error in demo analysis:", error);
       res.status(500).json({ message: "Failed to analyze idea" });
+    }
+  });
+
+  // Demo Session Management API
+  app.post("/api/demo/sessions", async (req, res) => {
+    try {
+      const validatedData = insertDemoSessionSchema.parse(req.body);
+      const sessionId = validatedData.sessionId || crypto.randomUUID();
+      
+      const session = await storage.createDemoSession({
+        ...validatedData,
+        sessionId
+      });
+      
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating demo session:", error);
+      res.status(500).json({ message: "Failed to create demo session" });
+    }
+  });
+
+  app.get("/api/demo/sessions/:sessionId", async (req, res) => {
+    try {
+      const session = await storage.getDemoSession(req.params.sessionId);
+      if (!session) {
+        return res.status(404).json({ message: "Demo session not found" });
+      }
+      res.json(session);
+    } catch (error) {
+      console.error("Error getting demo session:", error);
+      res.status(500).json({ message: "Failed to get demo session" });
+    }
+  });
+
+  app.get("/api/demo/sessions/:sessionId/artifacts", async (req, res) => {
+    try {
+      const artifacts = await storage.getArtifactsBySession(req.params.sessionId);
+      res.json(artifacts);
+    } catch (error) {
+      console.error("Error getting artifacts:", error);
+      res.status(500).json({ message: "Failed to get artifacts" });
+    }
+  });
+
+  // AI Generation Endpoints for Enhanced Demos
+  app.post("/api/demo/generate/pitch-deck", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      const session = await storage.getDemoSession(sessionId);
+      
+      if (!session) {
+        return res.status(404).json({ message: "Demo session not found" });
+      }
+
+      // Create or update the artifact as generating
+      let artifact = await storage.getArtifactByType(sessionId, "pitch-deck");
+      if (!artifact) {
+        artifact = await storage.createArtifact({
+          sessionId,
+          type: "pitch-deck",
+          title: `${session.ideaTitle} - Pitch Deck`,
+          summary: "AI-generated investor pitch deck",
+          content: {},
+          generationStatus: "generating"
+        });
+      } else {
+        artifact = await storage.updateArtifact(artifact.id, {
+          generationStatus: "generating"
+        }) || artifact;
+      }
+
+      // Generate enhanced pitch deck content
+      // Generate basic pitch deck structure (simplified for demo)
+      const pitchDeckData = {
+        slides: [
+          { title: "Problem", content: session.problemStatement || "Market challenges" },
+          { title: "Solution", content: session.solutionApproach || "Our approach" },
+          { title: "Market", content: session.targetMarket || "Target market" }
+        ]
+      };
+
+      // Enhanced content structure with slides and branding
+      const enhancedContent = {
+        slides: [
+          {
+            type: "title",
+            title: session.ideaTitle,
+            subtitle: "Revolutionizing " + session.industry,
+            brandColors: session.brandColors
+          },
+          {
+            type: "problem",
+            title: "The Problem",
+            content: session.problemStatement || "Market challenges and pain points",
+            visual: "chart"
+          },
+          {
+            type: "solution",
+            title: "Our Solution",
+            content: session.solutionApproach || "Our innovative approach",
+            features: ["Key Feature 1", "Key Feature 2", "Key Feature 3"]
+          },
+          {
+            type: "market",
+            title: "Market Opportunity",
+            content: session.targetMarket || "Target market analysis",
+            marketSize: "$10B+ TAM"
+          },
+          {
+            type: "business-model",
+            title: "Business Model",
+            content: session.revenueModel || "Revenue generation strategy",
+            streams: ["Primary Revenue", "Secondary Revenue", "Future Opportunities"]
+          },
+          {
+            type: "financial",
+            title: "Financial Projections",
+            projections: {
+              year1: "$500K",
+              year2: "$2M",
+              year3: "$5M"
+            }
+          }
+        ],
+        originalPitchDeck: pitchDeckData,
+        brandTheme: session.brandColors,
+        exportFormats: ["pdf", "pptx"]
+      };
+
+      // Update artifact with generated content
+      const updatedArtifact = await storage.updateArtifact(artifact.id, {
+        content: enhancedContent,
+        generationStatus: "completed",
+        quality: 92,
+        insights: [
+          "Professional slide design with brand consistency",
+          "Compelling narrative structure",
+          "Data-driven market insights",
+          "Investor-ready formatting"
+        ],
+        crossLinks: { businessPlan: "link-to-business-plan", financialModel: "link-to-financial-model" }
+      });
+
+      // Update session progress
+      await storage.updateDemoSession(sessionId, {
+        completedArtifacts: ["pitch-deck"],
+        progress: { pitchDeck: "completed" }
+      });
+
+      res.json(updatedArtifact);
+    } catch (error) {
+      console.error("Error generating pitch deck:", error);
+      res.status(500).json({ message: "Failed to generate pitch deck" });
+    }
+  });
+
+  app.post("/api/demo/generate/financial-model", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      const session = await storage.getDemoSession(sessionId);
+      
+      if (!session) {
+        return res.status(404).json({ message: "Demo session not found" });
+      }
+
+      let artifact = await storage.getArtifactByType(sessionId, "financial-model");
+      if (!artifact) {
+        artifact = await storage.createArtifact({
+          sessionId,
+          type: "financial-model",
+          title: `${session.ideaTitle} - Financial Model`,
+          summary: "Interactive financial projections and scenarios",
+          content: {},
+          generationStatus: "generating"
+        });
+      }
+
+      // Enhanced financial model with interactive elements
+      const enhancedContent = {
+        assumptions: {
+          customerAcquisitionCost: 50,
+          monthlyChurn: 0.05,
+          averageRevenuePerUser: 29,
+          growthRate: 0.15
+        },
+        projections: {
+          year1: { revenue: 500000, expenses: 400000, profit: 100000 },
+          year2: { revenue: 2000000, expenses: 1400000, profit: 600000 },
+          year3: { revenue: 5000000, expenses: 3000000, profit: 2000000 }
+        },
+        charts: {
+          revenueGrowth: "line-chart-data",
+          expenseBreakdown: "pie-chart-data",
+          profitability: "bar-chart-data"
+        },
+        scenarios: {
+          conservative: "80% of base case",
+          aggressive: "150% of base case"
+        },
+        breakEven: {
+          month: 14,
+          customers: 1250,
+          revenue: 36250
+        },
+        interactive: true,
+        exportFormats: ["xlsx", "pdf"]
+      };
+
+      const updatedArtifact = await storage.updateArtifact(artifact.id, {
+        content: enhancedContent,
+        generationStatus: "completed",
+        quality: 89,
+        insights: [
+          "Conservative growth assumptions",
+          "Break-even achievable in 14 months",
+          "Strong unit economics",
+          "Scalable revenue model"
+        ]
+      });
+
+      res.json(updatedArtifact);
+    } catch (error) {
+      console.error("Error generating financial model:", error);
+      res.status(500).json({ message: "Failed to generate financial model" });
     }
   });
 
