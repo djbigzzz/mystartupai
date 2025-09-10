@@ -24,30 +24,24 @@ const navigationSections = [
   {
     title: "Getting Started",
     items: [
-      { href: "/", label: "Home", icon: Home },
+      { href: "/dashboard", label: "Dashboard", icon: Settings },
       { href: "/submit-idea", label: "Submit Your Idea", icon: Lightbulb },
     ]
   },
   {
-    title: "Validation & Planning", 
+    title: "Core Development", 
     items: [
-      { href: "/market-research", label: "Market Research", icon: Search },
       { href: "/business-plan", label: "Business Plan", icon: FileText },
+      { href: "/pitch-deck", label: "Pitch Deck", icon: Presentation },
       { href: "/financial-modeling", label: "Financial Model", icon: Calculator },
+      { href: "/market-research", label: "Market Research", icon: Search },
     ]
   },
   {
-    title: "Building & Launch",
+    title: "Building & Growth",
     items: [
       { href: "/mvp-builder", label: "MVP Builder", icon: Building },
-      { href: "/pitch-deck", label: "Pitch Deck", icon: Presentation },
-    ]
-  },
-  {
-    title: "Growth & Funding",
-    items: [
       { href: "/investor-matching", label: "Find Investors", icon: Users },
-      { href: "/investor-demo", label: "Market Opportunity", icon: Rocket },
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/funding", label: "Funding Tools", icon: Briefcase },
     ]
@@ -55,8 +49,8 @@ const navigationSections = [
   {
     title: "Management",
     items: [
+      { href: "/export", label: "Export Center", icon: Target },
       { href: "/profile", label: "Profile", icon: User },
-      { href: "/dashboard", label: "Dashboard", icon: Settings },
     ]
   }
 ];

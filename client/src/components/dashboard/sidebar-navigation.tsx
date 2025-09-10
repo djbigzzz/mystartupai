@@ -30,7 +30,10 @@ import {
   Target,
   Rocket,
   Code,
-  Brain
+  Brain,
+  Presentation,
+  Calculator,
+  BarChart3
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -112,24 +115,34 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       icon: LayoutDashboard,
     },
     {
-      id: "active-idea",
-      name: "My Active Idea",
-      href: "/active-idea",
+      id: "submit-idea",
+      name: "Idea Submission",
+      href: "/submit-idea",
       icon: Lightbulb,
     },
     {
-      id: "analytics",
-      name: "Analytics",
-      href: "/analytics", 
-      icon: TrendingUp,
-      badge: "Demo",
+      id: "business-plan",
+      name: "Business Plan",
+      href: "/business-plan",
+      icon: FileText,
     },
     {
-      id: "business-plans",
-      name: "Business Plans",
-      href: "/business-plans",
-      icon: FileText,
-      badge: "Demo",
+      id: "pitch-deck",
+      name: "Pitch Deck",
+      href: "/pitch-deck",
+      icon: Presentation,
+    },
+    {
+      id: "financial-modeling",
+      name: "Financial Modeling",
+      href: "/financial-modeling",
+      icon: Calculator,
+    },
+    {
+      id: "market-research",
+      name: "Market Research",
+      href: "/market-research",
+      icon: BarChart3,
     },
     {
       id: "investors",
@@ -138,22 +151,29 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       icon: Users,
       badge: "New",
     },
-    {
-      id: "funding",
-      name: "Funding",
-      href: "/funding",
-      icon: DollarSign,
-      badge: "Demo",
-    },
   ];
 
   const businessTools: NavigationItem[] = [
+    {
+      id: "analytics",
+      name: "Analytics",
+      href: "/analytics", 
+      icon: TrendingUp,
+      badge: "Demo",
+    },
     {
       id: "mvp-builder",
       name: "MVP Builder",
       href: "/mvp-builder",
       icon: Rocket,
       badge: "New",
+    },
+    {
+      id: "funding",
+      name: "Funding",
+      href: "/funding",
+      icon: DollarSign,
+      badge: "Demo",
     },
     {
       id: "company-setup",
@@ -187,23 +207,10 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
 
   const quickActions: NavigationItem[] = [
     {
-      id: "new-idea",
-      name: "Update My Idea",
-      href: "/submit-idea",
-      icon: Plus,
-    },
-    {
       id: "export",
       name: "Export Center",
       href: "/export",
       icon: Download,
-    },
-    {
-      id: "investor-demo",
-      name: "Investor Demo",
-      href: "/investor-demo",
-      icon: Target,
-      badge: "New",
     },
     {
       id: "ai-showcase",
