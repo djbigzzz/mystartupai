@@ -182,7 +182,7 @@ export default function AdvancedIdeaForm() {
       localStorage.setItem("userEmail", data.email);
       
       setTimeout(() => {
-        setLocation("/active-idea");
+        setLocation("/dashboard");
       }, 2000);
     },
     onError: (error) => {
