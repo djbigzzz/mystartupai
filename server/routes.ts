@@ -4,7 +4,7 @@ import session from "express-session";
 import passport from "./auth";
 import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema, insertDemoSessionSchema, insertArtifactSchema } from "@shared/schema";
-import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck, generateWebsiteContent } from "./openai";
+import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck, generateWebsiteContent, generateBusinessPlanSection, assessSectionQuality } from "./openai";
 import { agenticAI, AgenticAICofounder } from "./agentic-ai";
 
 // Initialize the enhanced AI co-founder
@@ -891,6 +891,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error generating business plan:", error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to generate business plan" 
+      });
+    }
+  });
+
+  // Generate individual business plan section
+  app.post("/api/startup-ideas/:id/business-plan/section/:sectionId", requireAuth, async (req, res) => {
+    try {
+      const ideaId = parseInt(req.params.id);
+      const sectionId = req.params.sectionId;
+      const { existingContent } = req.body;
+
+      const idea = await storage.getStartupIdea(ideaId);
+      
+      if (!idea) {
+        return res.status(404).json({ message: "Startup idea not found" });
+      }
+
+      const analysis = idea.analysis as any;
+      const sectionContent = await generateBusinessPlanSection(
+        sectionId,
+        idea.ideaTitle,
+        idea.description,
+        idea.industry,
+        existingContent || {},
+        analysis
+      );
+
+      res.json(sectionContent);
+    } catch (error) {
+      console.error("Error generating section:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to generate section" 
+      });
+    }
+  });
+
+  // Assess quality of business plan section
+  app.post("/api/business-plan/assess-section/:sectionId", requireAuth, async (req, res) => {
+    try {
+      const sectionId = req.params.sectionId;
+      const { content } = req.body;
+
+      if (!content || !sectionId) {
+        return res.status(400).json({ message: "Section ID and content are required" });
+      }
+
+      // Mock section config for assessment (in real implementation, this would come from SECTION_PROMPTS)
+      const sectionConfig = {
+        minWords: 150,
+        maxWords: 500,
+        criticalElements: ['market', 'customer', 'revenue', 'growth']
+      };
+
+      const quality = await assessSectionQuality(content, sectionId, sectionConfig);
+      res.json(quality);
+    } catch (error) {
+      console.error("Error assessing section quality:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to assess section quality" 
+      });
+    }
+  });
+
+  // Export business plan as PDF/DOCX
+  app.post("/api/startup-ideas/:id/business-plan/export", requireAuth, async (req, res) => {
+    try {
+      const ideaId = parseInt(req.params.id);
+      const { format, sections } = req.body; // format: 'pdf' | 'docx'
+
+      const idea = await storage.getStartupIdea(ideaId);
+      
+      if (!idea) {
+        return res.status(404).json({ message: "Startup idea not found" });
+      }
+
+      if (!sections || Object.keys(sections).length === 0) {
+        return res.status(400).json({ message: "No sections provided for export" });
+      }
+
+      // For now, return export URL - full implementation would generate actual files
+      const exportData = {
+        exportUrl: `/exports/business-plan-${ideaId}.${format}`,
+        format,
+        generatedAt: new Date().toISOString(),
+        sections: Object.keys(sections)
+      };
+
+      res.json(exportData);
+    } catch (error) {
+      console.error("Error exporting business plan:", error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to export business plan" 
       });
     }
   });

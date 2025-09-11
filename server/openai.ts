@@ -35,6 +35,23 @@ export interface BusinessPlan {
   timeline: string;
 }
 
+export interface SectionQualityAssessment {
+  score: number; // 1-100
+  strengths: string[];
+  improvements: string[];
+  completeness: number; // 1-100
+  professionalism: number; // 1-100
+  investorAppeal: number; // 1-100
+  wordCount: number;
+  recommendedWordCount: { min: number; max: number };
+  overallFeedback: string;
+}
+
+export interface BusinessPlanSectionContent {
+  content: string;
+  quality: SectionQualityAssessment;
+}
+
 export interface PitchDeck {
   slides: {
     title: string;
@@ -395,6 +412,395 @@ function getDemoPitchDeck(ideaTitle: string, industry: string): PitchDeck {
       }
     ]
   };
+}
+
+// Section-specific generation prompts and settings
+const SECTION_PROMPTS = {
+  'executive-summary': {
+    prompt: `Create a compelling executive summary that captures the essence of the startup. Include:
+    - Company mission and vision
+    - Key problem being solved
+    - Solution overview
+    - Target market size
+    - Competitive advantage
+    - Financial highlights
+    - Funding requirements
+    
+    Write in a professional, confident tone that would engage investors from the first paragraph.`,
+    minWords: 200,
+    maxWords: 400,
+    criticalElements: ['mission', 'problem', 'solution', 'market size', 'competitive advantage', 'financials']
+  },
+  'problem-statement': {
+    prompt: `Define the market problem with clarity and urgency. Include:
+    - Specific pain points customers face
+    - Market size and scope of the problem
+    - Current inadequate solutions
+    - Cost of inaction or current solutions
+    - Supporting data and statistics
+    
+    Make the problem feel real and urgent to investors.`,
+    minWords: 150,
+    maxWords: 300,
+    criticalElements: ['pain points', 'market scope', 'current solutions', 'cost impact', 'supporting data']
+  },
+  'solution-overview': {
+    prompt: `Describe your solution with clarity and differentiation. Include:
+    - Core product/service description
+    - Key features and capabilities
+    - How it solves the identified problem
+    - Technology or methodology advantages
+    - User experience highlights
+    - Proof of concept or validation
+    
+    Focus on benefits over features and demonstrate clear value proposition.`,
+    minWords: 200,
+    maxWords: 350,
+    criticalElements: ['product description', 'key features', 'problem solving', 'advantages', 'user experience']
+  },
+  'market-analysis': {
+    prompt: `Provide comprehensive market analysis. Include:
+    - Total addressable market (TAM) size
+    - Serviceable addressable market (SAM)
+    - Target customer segments
+    - Market growth trends and drivers
+    - Customer behavior and needs
+    - Market entry strategy
+    
+    Use credible data sources and demonstrate thorough market understanding.`,
+    minWords: 300,
+    maxWords: 500,
+    criticalElements: ['TAM', 'customer segments', 'growth trends', 'customer needs', 'entry strategy']
+  },
+  'business-model': {
+    prompt: `Detail your business model and revenue strategy. Include:
+    - Revenue streams and pricing strategy
+    - Unit economics and margins
+    - Customer acquisition cost (CAC) and lifetime value (LTV)
+    - Sales process and channels
+    - Scalability factors
+    - Key partnerships
+    
+    Demonstrate a clear path to profitability with strong unit economics.`,
+    minWords: 250,
+    maxWords: 400,
+    criticalElements: ['revenue streams', 'unit economics', 'CAC/LTV', 'sales channels', 'scalability']
+  },
+  'marketing-strategy': {
+    prompt: `Outline your customer acquisition and marketing strategy. Include:
+    - Target customer personas
+    - Marketing channels and tactics
+    - Customer acquisition strategy
+    - Brand positioning and messaging
+    - Sales funnel and conversion strategy
+    - Customer retention approach
+    
+    Show a clear, cost-effective path to acquiring and retaining customers.`,
+    minWords: 250,
+    maxWords: 400,
+    criticalElements: ['customer personas', 'marketing channels', 'acquisition strategy', 'positioning', 'retention']
+  },
+  'operations-plan': {
+    prompt: `Describe your operational structure and processes. Include:
+    - Key operational processes
+    - Technology infrastructure
+    - Supply chain or service delivery
+    - Quality control measures
+    - Scalability considerations
+    - Key operational metrics
+    
+    Demonstrate operational efficiency and ability to scale.`,
+    minWords: 200,
+    maxWords: 350,
+    criticalElements: ['key processes', 'infrastructure', 'delivery', 'quality control', 'scalability']
+  },
+  'management-team': {
+    prompt: `Present your leadership team and organization. Include:
+    - Founder and key team member backgrounds
+    - Relevant experience and expertise
+    - Team composition and roles
+    - Advisory board members
+    - Hiring plan and key positions to fill
+    - Organizational structure
+    
+    Highlight experience that directly relates to the business success.`,
+    minWords: 200,
+    maxWords: 350,
+    criticalElements: ['founder background', 'relevant experience', 'team roles', 'advisors', 'hiring plan']
+  },
+  'financial-projections': {
+    prompt: `Provide detailed financial forecasts and metrics. Include:
+    - 3-5 year revenue and expense projections
+    - Key financial metrics and assumptions
+    - Break-even analysis
+    - Cash flow projections
+    - Profitability timeline
+    - Key performance indicators (KPIs)
+    
+    Use realistic assumptions and show clear path to profitability.`,
+    minWords: 300,
+    maxWords: 500,
+    criticalElements: ['revenue projections', 'key metrics', 'break-even', 'cash flow', 'profitability', 'KPIs']
+  },
+  'funding-request': {
+    prompt: `Detail your funding requirements and use of capital. Include:
+    - Total funding amount needed
+    - Use of funds breakdown
+    - Milestones to be achieved
+    - Timeline for fund utilization
+    - Return on investment projections
+    - Exit strategy considerations
+    
+    Clearly justify the investment and show expected returns.`,
+    minWords: 200,
+    maxWords: 350,
+    criticalElements: ['funding amount', 'use of funds', 'milestones', 'timeline', 'ROI', 'exit strategy']
+  },
+  'risk-analysis': {
+    prompt: `Identify and address potential risks and challenges. Include:
+    - Market and competitive risks
+    - Operational and technical risks
+    - Financial and funding risks
+    - Regulatory and compliance risks
+    - Mitigation strategies for each risk
+    - Contingency plans
+    
+    Show awareness of challenges and preparedness to address them.`,
+    minWords: 250,
+    maxWords: 400,
+    criticalElements: ['market risks', 'operational risks', 'financial risks', 'regulatory risks', 'mitigation strategies']
+  },
+  'implementation-timeline': {
+    prompt: `Create a detailed roadmap for execution. Include:
+    - Key milestones and deliverables
+    - Timeline for product development
+    - Market entry and scaling phases
+    - Team growth and hiring schedule
+    - Funding and investment rounds
+    - Success metrics and checkpoints
+    
+    Show a clear, achievable path from current state to success.`,
+    minWords: 250,
+    maxWords: 400,
+    criticalElements: ['key milestones', 'product timeline', 'market phases', 'team growth', 'funding rounds']
+  }
+};
+
+// Generate individual business plan section
+export async function generateBusinessPlanSection(
+  sectionId: string,
+  ideaTitle: string,
+  description: string,
+  industry: string,
+  existingContent: Record<string, string> = {},
+  analysis?: IdeaAnalysis
+): Promise<BusinessPlanSectionContent> {
+  const sectionConfig = SECTION_PROMPTS[sectionId as keyof typeof SECTION_PROMPTS];
+  
+  if (!sectionConfig) {
+    throw new Error(`Unknown section: ${sectionId}`);
+  }
+
+  // Check if API key is available
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey || apiKey === "default_key" || apiKey.includes("demo")) {
+    const demoContent = generateDemoSectionContent(sectionId, ideaTitle, description, industry);
+    const quality = await assessSectionQuality(demoContent, sectionId, sectionConfig);
+    return { content: demoContent, quality };
+  }
+
+  try {
+    const contextInfo = [
+      `Startup: ${ideaTitle}`,
+      `Description: ${description}`,
+      `Industry: ${industry}`,
+      analysis ? `Market Score: ${analysis.score}/100` : '',
+      Object.keys(existingContent).length > 0 ? 'Existing sections: ' + Object.keys(existingContent).join(', ') : ''
+    ].filter(Boolean).join('\n');
+
+    const existingContext = Object.entries(existingContent)
+      .map(([key, content]) => `${key}: ${content.substring(0, 200)}...`)
+      .join('\n\n');
+
+    const prompt = `
+      ${sectionConfig.prompt}
+      
+      Context:
+      ${contextInfo}
+      
+      ${existingContext ? `Existing sections for context:\n${existingContext}\n` : ''}
+      
+      ${analysis ? `Analysis insights: ${JSON.stringify(analysis)}` : ''}
+      
+      Generate ${sectionConfig.minWords}-${sectionConfig.maxWords} words of professional, investor-ready content.
+      Focus on being specific, data-driven, and compelling.
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are a startup advisor creating investor-grade business plan sections. Write professionally with specific details and metrics."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      max_tokens: 800,
+      temperature: 0.7
+    });
+
+    const content = response.choices[0].message.content || '';
+    const quality = await assessSectionQuality(content, sectionId, sectionConfig);
+    
+    return { content, quality };
+  } catch (error) {
+    const errorMessage = (error as Error).message;
+    if (errorMessage.includes("429") || errorMessage.includes("quota")) {
+      console.log("OpenAI quota exceeded, using demo content for section:", sectionId);
+      const demoContent = generateDemoSectionContent(sectionId, ideaTitle, description, industry);
+      const quality = await assessSectionQuality(demoContent, sectionId, sectionConfig);
+      return { content: demoContent, quality };
+    }
+    throw new Error(`Failed to generate section ${sectionId}: ${errorMessage}`);
+  }
+}
+
+// Assess the quality of a business plan section
+export async function assessSectionQuality(
+  content: string,
+  sectionId: string,
+  sectionConfig: any
+): Promise<SectionQualityAssessment> {
+  const wordCount = content.split(' ').length;
+  const minWords = sectionConfig.minWords || 150;
+  const maxWords = sectionConfig.maxWords || 500;
+  const criticalElements = sectionConfig.criticalElements || [];
+
+  // Completeness assessment
+  const wordCountScore = Math.min(100, Math.max(0, 
+    (wordCount - minWords) / (maxWords - minWords) * 100
+  ));
+  
+  // Check for critical elements
+  const elementsFound = criticalElements.filter((element: string) => 
+    content.toLowerCase().includes(element.toLowerCase()) ||
+    content.toLowerCase().includes(element.split(' ')[0])
+  );
+  const completenessScore = Math.min(100, 
+    (elementsFound.length / criticalElements.length) * 70 + wordCountScore * 0.3
+  );
+
+  // Professionalism assessment
+  const professionalismIndicators = [
+    /\$[0-9,.]+(M|B|K)?/g.test(content), // Financial figures
+    /[0-9]+%/g.test(content), // Percentages
+    content.includes('market') || content.includes('customer'), // Market focus
+    content.length > 200, // Adequate length
+    !/(?:amazing|awesome|incredible)\s/gi.test(content) // Avoid hyperbolic language
+  ];
+  const professionalismScore = (professionalismIndicators.filter(Boolean).length / professionalismIndicators.length) * 100;
+
+  // Investor appeal assessment
+  const investorAppealIndicators = [
+    content.includes('revenue') || content.includes('growth'), // Business focus
+    content.includes('market') && content.includes('size'), // Market sizing
+    content.includes('competitive') || content.includes('advantage'), // Differentiation
+    /[0-9]+(x|X)\s/.test(content), // Growth multipliers
+    content.includes('scale') || content.includes('scalab') // Scalability
+  ];
+  const investorAppealScore = (investorAppealIndicators.filter(Boolean).length / investorAppealIndicators.length) * 100;
+
+  const overallScore = (completenessScore + professionalismScore + investorAppealScore) / 3;
+
+  // Generate feedback
+  const strengths = [];
+  const improvements = [];
+
+  if (wordCount >= minWords && wordCount <= maxWords) {
+    strengths.push('Appropriate length for section type');
+  } else if (wordCount < minWords) {
+    improvements.push(`Content too short - add ${minWords - wordCount} more words`);
+  } else {
+    improvements.push(`Content too long - reduce by ${wordCount - maxWords} words`);
+  }
+
+  if (elementsFound.length === criticalElements.length) {
+    strengths.push('Contains all critical elements');
+  } else {
+    const missing = criticalElements.filter((el: string) => !elementsFound.includes(el));
+    improvements.push(`Missing critical elements: ${missing.join(', ')}`);
+  }
+
+  if (professionalismScore > 70) {
+    strengths.push('Professional language and tone');
+  } else {
+    improvements.push('Use more professional language and include specific metrics');
+  }
+
+  if (investorAppealScore > 70) {
+    strengths.push('Strong investor appeal with business metrics');
+  } else {
+    improvements.push('Add more business metrics and growth indicators');
+  }
+
+  const overallFeedback = overallScore > 85 ? 
+    'Excellent section ready for investors' :
+    overallScore > 70 ?
+    'Good section with minor improvements needed' :
+    overallScore > 50 ?
+    'Acceptable section but needs significant improvements' :
+    'Section needs major revision before investor presentation';
+
+  return {
+    score: Math.round(overallScore),
+    strengths,
+    improvements,
+    completeness: Math.round(completenessScore),
+    professionalism: Math.round(professionalismScore),
+    investorAppeal: Math.round(investorAppealScore),
+    wordCount,
+    recommendedWordCount: { min: minWords, max: maxWords },
+    overallFeedback
+  };
+}
+
+// Generate demo content for sections when OpenAI is unavailable
+function generateDemoSectionContent(
+  sectionId: string,
+  ideaTitle: string,
+  description: string,
+  industry: string
+): string {
+  const demoContent: Record<string, string> = {
+    'executive-summary': `${ideaTitle} is a revolutionary ${industry} platform that addresses critical market needs through innovative technology solutions. Our company leverages cutting-edge AI and automation to deliver unprecedented value to customers while building a scalable, profitable business model.\n\nThe market opportunity is substantial, with the ${industry} sector experiencing rapid digital transformation and increasing demand for efficient solutions. Our unique approach positions us to capture significant market share while building strong competitive moats through technology and network effects.\n\nWe are seeking $2M in seed funding to accelerate product development and market penetration, targeting $1M ARR within 18 months.`,
+    
+    'problem-statement': `The ${industry} industry faces significant challenges including inefficient processes, high operational costs, and lack of integrated solutions. Current market solutions are fragmented, expensive, and fail to address the core pain points that businesses face daily.\n\nThis creates substantial friction for companies trying to scale and optimize their operations. Market research indicates that businesses lose an average of 23% of potential revenue due to these inefficiencies, representing a $2.5B annual opportunity.`,
+    
+    'solution-overview': `${ideaTitle} provides a comprehensive platform that ${description}. Our solution integrates seamlessly with existing workflows while providing advanced analytics, automation capabilities, and user-friendly interfaces that drive adoption and value creation.\n\nKey features include AI-powered automation, real-time analytics, mobile-first design, and enterprise-grade security. Our unique approach delivers 40% cost savings and 3x productivity improvements for customers.`,
+    
+    'market-analysis': `The ${industry} market is valued at over $15 billion globally and growing at 12-15% annually. Key trends driving growth include digital transformation, regulatory changes, and increasing customer expectations.\n\nOur target market includes mid-market and enterprise customers who are actively seeking modern solutions to replace legacy systems. The serviceable addressable market represents $2.8B with strong tailwinds from technology adoption.`,
+    
+    'business-model': `Our revenue model is based on SaaS subscriptions with tiered pricing starting at $99/month for small businesses and scaling to enterprise packages of $10,000+ monthly. Additional revenue streams include professional services, integrations, and premium features.\n\nWe project 85% gross margins with strong unit economics: $150 CAC, $2,400 LTV, resulting in a 16:1 LTV/CAC ratio. The scalable model supports rapid growth with improving margins.`,
+    
+    'marketing-strategy': `Customer acquisition will focus on digital marketing, content creation, strategic partnerships, and direct sales for enterprise accounts. Our go-to-market strategy emphasizes product-led growth with freemium offerings to drive adoption.\n\nKey channels include SEO/content marketing (40%), direct sales (35%), partnerships (15%), and paid advertising (10%). We target 5% monthly growth rate with declining customer acquisition costs.`,
+    
+    'operations-plan': `Operations will be built around a cloud-first architecture leveraging modern development practices. Key operational areas include product development, customer success, sales, and marketing.\n\nWe plan to scale the team from 5 to 25 employees over 18 months while maintaining high productivity and quality standards. Critical infrastructure includes AWS cloud services, automated CI/CD pipelines, and comprehensive monitoring systems.`,
+    
+    'management-team': `Our founding team combines deep industry expertise with proven track records in building and scaling technology companies. CEO brings 10+ years ${industry} experience with 2 successful exits. CTO has background in enterprise software with previous companies scaling to $50M+ revenue.\n\nKey positions to fill include VP Sales, Head of Product, and Senior Engineers. Advisory board includes industry leaders and successful entrepreneurs who provide strategic guidance and network access.`,
+    
+    'financial-projections': `5-year financial projections show strong growth trajectory:\nYear 1: $250K ARR\nYear 2: $1.2M ARR\nYear 3: $4.5M ARR (profitable)\nYear 4: $12M ARR\nYear 5: $28M ARR\n\nKey assumptions include 15% monthly growth, 5% churn rate, expanding gross margins from 75% to 85%, and improving unit economics with scale.`,
+    
+    'funding-request': `Seeking $2M seed funding to accelerate product development, team growth, and market penetration. Use of funds: 60% engineering and product development ($1.2M), 25% sales and marketing ($500K), 15% operations and working capital ($300K).\n\nKey milestones include completing MVP, acquiring first 100 customers, achieving $500K ARR, and Series A readiness. 18-month runway provides sufficient time to achieve these goals.`,
+    
+    'risk-analysis': `Primary risks include competitive threats from established players, technology execution challenges, and market adoption rates. Large incumbents could launch competing products, though our first-mover advantage and specialized focus provide protection.\n\nMitigation strategies include strong IP protection, agile development practices, close customer relationships, and maintaining lean operations. Regulatory compliance is managed through legal partnerships and industry expertise.`,
+    
+    'implementation-timeline': `12-month roadmap:\nMonths 1-3: Complete MVP development, initial customer pilots\nMonths 4-6: Product launch, first paying customers, achieve $50K ARR\nMonths 7-9: Scale to $200K ARR, expand feature set\nMonths 10-12: Reach $500K ARR, team growth to 15 people\n\nKey milestones include product-market fit validation, customer success metrics, and Series A fundraising preparation.`
+  };
+
+  return demoContent[sectionId] || `Generated content for ${sectionId} section of ${ideaTitle}. This comprehensive section addresses the key requirements for investor-ready business plans in the ${industry} industry.`;
 }
 
 export async function generateWebsiteContent(
