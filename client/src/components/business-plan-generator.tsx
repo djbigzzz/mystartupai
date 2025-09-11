@@ -249,7 +249,7 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
 
       const response = await apiRequest(`/api/startup-ideas/${ideaId}/business-plan/section/${sectionId}`, {
         method: "POST",
-        body: { existingContent }
+        body: JSON.stringify({ existingContent })
       });
       return response;
     },
@@ -291,7 +291,7 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
     mutationFn: async ({ sectionId, content }: { sectionId: string; content: string }) => {
       return apiRequest(`/api/business-plan/assess-section/${sectionId}`, {
         method: "POST",
-        body: { content }
+        body: JSON.stringify({ content })
       });
     },
     onSuccess: (quality, { sectionId }) => {
@@ -326,7 +326,7 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
 
       return apiRequest(`/api/startup-ideas/${ideaId}/business-plan/export`, {
         method: "POST",
-        body: { format, sections }
+        body: JSON.stringify({ format, sections })
       });
     },
     onSuccess: (data) => {
