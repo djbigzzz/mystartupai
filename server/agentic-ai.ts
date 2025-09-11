@@ -350,7 +350,7 @@ Market Data:\n${this.formatSearchResults(marketData)}\n\nCompetitor Data:\n${thi
         lastUpdated: new Date(),
         searchDisclaimer: marketData.results.length > 0 ? 
           `Research from ${marketData.results.length + competitorData.results.length + opportunityData.results.length} live sources including Wikipedia and news feeds` :
-          marketData.disclaimer || \"Enhanced AI analysis with public data\"
+          marketData.disclaimer || 'Enhanced AI analysis with public data'
       };
     } catch (error) {
       console.error("Market research agent error:", error);
