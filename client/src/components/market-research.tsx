@@ -1,10 +1,9 @@
-// Temporary minimal market research component to fix compilation error
-// Note: This is a temporary fix to get the application running
-
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
   Search, 
   Target, 
@@ -20,9 +19,11 @@ import {
   Brain,
   Clock,
   FileText,
-  Download
+  Download,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface MarketSegment {
   name: string;
@@ -67,78 +68,116 @@ interface MarketResearchProps {
 
 export default function MarketResearch({ ideaData, businessPlan }: MarketResearchProps) {
   const { toast } = useToast();
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [researchComplete, setResearchComplete] = useState(false);
 
-  const [marketData, setMarketData] = useState({
-    totalMarketSize: "",
-    servableMarketSize: "",
-    targetMarketSize: "",
-    growthRate: 0,
-    marketMaturity: "emerging",
-    regulations: [] as string[],
-    barriers: [] as string[]
+  // Real AI-powered market research mutation
+  const marketResearchMutation = useMutation({
+    mutationFn: async (data: { ideaTitle: string; description: string; industry?: string; stage?: string }) => {
+      const response = await apiRequest("/api/market-research", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      return response;
+    },
+    onSuccess: (data) => {
+      setMarketData(data);
+      setResearchComplete(true);
+      toast({
+        title: "Market Research Complete!",
+        description: "AI-powered analysis with web research completed successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Research Failed",
+        description: error.message || "Failed to complete market research. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
-  const [competitors] = useState<Competitor[]>([
-    {
-      name: "Market Leader Inc",
-      type: "direct",
-      marketShare: 35,
-      strengths: ["Brand recognition", "Large customer base"],
-      weaknesses: ["Legacy technology", "Slow innovation"],
-      pricing: "$99-299/month",
-      funding: "$500M Series D",
-      description: "Established market leader with traditional approach"
-    }
-  ]);
+  const [marketData, setMarketData] = useState<any>(null);
 
-  const [marketSegments] = useState<MarketSegment[]>([
-    {
-      name: "Enterprise Customers",
-      size: "$1.2B",
-      growth: 18,
-      description: "Large organizations with complex needs",
-      opportunity: "high"
-    }
-  ]);
-
+  // Real AI-powered market research function
   const handleGenerateResearch = () => {
-    setIsAnalyzing(true);
-    setTimeout(() => {
-      setMarketData({
-        totalMarketSize: "$50B",
-        servableMarketSize: "$12B", 
-        targetMarketSize: "$2.5B",
-        growthRate: 15,
-        marketMaturity: "growing",
-        regulations: ["Data Privacy", "Industry Standards"],
-        barriers: ["High customer acquisition cost"]
-      });
-      setResearchComplete(true);
-      setIsAnalyzing(false);
-      
+    if (!ideaData?.ideaTitle || !ideaData?.description) {
       toast({
-        title: "Market research completed!",
-        description: "Basic market analysis ready.",
+        title: "Missing Information",
+        description: "Please provide idea title and description for market research.",
+        variant: "destructive",
       });
-    }, 3000);
+      return;
+    }
+
+    marketResearchMutation.mutate({
+      ideaTitle: ideaData.ideaTitle,
+      description: ideaData.description,
+      industry: ideaData.industry || "Technology",
+      stage: ideaData.stage || "Idea Stage"
+    });
   };
 
-  if (isAnalyzing) {
+  if (marketResearchMutation.isPending) {
     return (
       <Card className="border-0 shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-gray-900 mb-4">
-            Conducting Market Research
+            AI-Powered Market Research
           </CardTitle>
           <div className="flex items-center justify-center mb-6">
-            <Search className="w-12 h-12 text-blue-600 animate-pulse" />
+            <Brain className="w-12 h-12 text-blue-600 animate-pulse" />
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <div className="text-center">
-            <p className="text-gray-600">Analyzing market data...</p>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              Analyzing: {ideaData?.ideaTitle}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Our AI is conducting comprehensive market research using web data and industry analysis
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <span>Research Progress</span>
+              <span>Analyzing...</span>
+            </div>
+            <Progress value={65} className="h-3" />
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto bg-blue-100">
+                <Search className="w-4 h-4 text-blue-600" />
+              </div>
+              <div className="text-xs text-gray-600">Web Research</div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto bg-green-100">
+                <Users className="w-4 h-4 text-green-600" />
+              </div>
+              <div className="text-xs text-gray-600">Competitor Analysis</div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto bg-purple-100">
+                <BarChart3 className="w-4 h-4 text-purple-600" />
+              </div>
+              <div className="text-xs text-gray-600">Market Sizing</div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto bg-orange-100">
+                <TrendingUp className="w-4 h-4 text-orange-600" />
+              </div>
+              <div className="text-xs text-gray-600">Trend Analysis</div>
+            </div>
+          </div>
+          
+          <div className="text-center text-sm text-gray-500">
+            {marketData?.webResearchEnabled ? "✅ Web research enabled" : "⚡ Using AI analysis"}
           </div>
         </CardContent>
       </Card>
@@ -232,7 +271,7 @@ export default function MarketResearch({ ideaData, businessPlan }: MarketResearc
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {competitors.map((competitor, index) => (
+                {marketData?.competitors?.map((competitor: any, index: number) => (
                   <div key={index} className="p-4 border rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -257,7 +296,7 @@ export default function MarketResearch({ ideaData, businessPlan }: MarketResearc
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {marketSegments.map((segment, index) => (
+                {marketData?.marketSegments?.map((segment: any, index: number) => (
                   <div key={index} className="p-4 border rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-bold text-gray-900">{segment.name}</h3>
