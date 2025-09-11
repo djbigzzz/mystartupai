@@ -17,6 +17,7 @@ import {
 import { Link } from "wouter";
 import FinancialModeling from "@/components/financial-modeling";
 import IdeaAnalysisDashboard from "@/components/idea-analysis-dashboard";
+import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 
 export default function FinancialModelingPage() {
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
@@ -183,7 +184,12 @@ export default function FinancialModelingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar Navigation */}
+      <SidebarNavigation />
+      
+      {/* Main Content */}
+      <div className="flex-1">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -230,6 +236,7 @@ export default function FinancialModelingPage() {
             />
           </TabsContent>
         </Tabs>
+      </div>
       </div>
     </div>
   );

@@ -167,9 +167,9 @@ export default function Dashboard() {
     );
   }
 
-  // Mock stats data
+  // Current startup stats - focused on single idea journey  
   const stats: DashboardStats = {
-    totalIdeas: 12,
+    totalIdeas: 0, // Hidden - single idea focus
     completedAnalyses: 8,
     businessPlansGenerated: 5,
     investorConnections: 23
@@ -258,21 +258,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Ideas</CardTitle>
-            <Lightbulb className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalIdeas}</div>
-            <p className="text-xs text-muted-foreground">
-              +2 from last month
-            </p>
-          </CardContent>
-        </Card>
-
+      {/* Key Metrics - Simplified */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">AI Analyses</CardTitle>
@@ -281,7 +268,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.completedAnalyses}</div>
             <p className="text-xs text-muted-foreground">
-              {Math.round((stats.completedAnalyses / stats.totalIdeas) * 100)}% completion rate
+              Analysis completed
             </p>
           </CardContent>
         </Card>
@@ -302,7 +289,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Investor Matches</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.investorConnections}</div>
