@@ -5,7 +5,10 @@ import passport from "./auth";
 import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema, insertDemoSessionSchema, insertArtifactSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
-import { agenticAI } from "./agentic-ai";
+import { agenticAI, AgenticAICofounder } from "./agentic-ai";
+
+// Initialize the enhanced AI co-founder
+const aiCofounder = new AgenticAICofounder();
 import { body, query } from "express-validator";
 import {
   authRateLimiter,
@@ -686,12 +689,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Generate AI analysis with sanitized inputs
-        const analysis = await analyzeStartupIdea(
-          idea.ideaTitle,
-          idea.description,
-          idea.industry,
-          idea.stage
-        );
+        // Enhanced analysis with web-enabled AI co-founder
+        let analysis;
+        try {
+          console.log(`🤖 Using enhanced AI co-founder for: ${idea.ideaTitle}`);
+          const enhancedAnalysis = await aiCofounder.analyzeStartupIdea(
+            idea.ideaTitle,
+            idea.description,
+            idea.industry,
+            idea.stage
+          );
+
+          // Convert to compatible format
+          analysis = {
+            score: enhancedAnalysis.overallAssessment.viabilityScore,
+            strengths: enhancedAnalysis.overallAssessment.strengths,
+            weaknesses: enhancedAnalysis.overallAssessment.challenges,
+            marketOpportunity: `${enhancedAnalysis.marketAnalysis.marketSize} market with ${enhancedAnalysis.marketAnalysis.growthRate} growth`,
+            competitiveAdvantage: enhancedAnalysis.overallAssessment.keyDifferentiators?.join(", ") || "Unique positioning identified",
+            recommendations: enhancedAnalysis.overallAssessment.recommendations,
+            feasibilityScore: Math.min(95, enhancedAnalysis.overallAssessment.viabilityScore + 10),
+            marketSizeEstimate: enhancedAnalysis.marketAnalysis.marketSize,
+            webResearchEnabled: true,
+            marketAnalysis: enhancedAnalysis.marketAnalysis
+          };
+          console.log(`✅ Enhanced analysis completed with web research`);
+        } catch (enhancedError) {
+          console.warn(`⚠️ Enhanced AI failed, using basic analysis:`, enhancedError.message);
+          analysis = await analyzeStartupIdea(
+            idea.ideaTitle,
+            idea.description,
+            idea.industry,
+            idea.stage
+          );
+          analysis.webResearchEnabled = false;
+          analysis.searchDisclaimer = "Using basic AI analysis - web research temporarily unavailable";
+        }
         
         // Update the idea with analysis
         const updatedIdea = await storage.updateStartupIdea(idea.id, { analysis });
@@ -1764,12 +1797,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "ideaTitle and description are required" });
       }
       
-      const analysis = await analyzeStartupIdea(
-        ideaTitle,
-        description,
-        industry || "Technology",
-        stage || "idea"
-      );
+      // Enhanced demo analysis with web-enabled AI co-founder
+      let analysis;
+      try {
+        console.log(`🚀 Demo: Using enhanced AI co-founder for: ${ideaTitle}`);
+        const enhancedAnalysis = await aiCofounder.analyzeStartupIdea(
+          ideaTitle,
+          description,
+          industry || "Technology",
+          stage || "idea"
+        );
+
+        // Convert to compatible format for demo
+        analysis = {
+          score: enhancedAnalysis.overallAssessment.viabilityScore,
+          strengths: enhancedAnalysis.overallAssessment.strengths,
+          weaknesses: enhancedAnalysis.overallAssessment.challenges,
+          marketOpportunity: `${enhancedAnalysis.marketAnalysis.marketSize} market with ${enhancedAnalysis.marketAnalysis.growthRate} growth`,
+          competitiveAdvantage: enhancedAnalysis.overallAssessment.keyDifferentiators?.join(", ") || "Unique positioning identified",
+          recommendations: enhancedAnalysis.overallAssessment.recommendations,
+          feasibilityScore: Math.min(95, enhancedAnalysis.overallAssessment.viabilityScore + 10),
+          marketSizeEstimate: enhancedAnalysis.marketAnalysis.marketSize,
+          webResearchEnabled: true,
+          marketAnalysis: enhancedAnalysis.marketAnalysis,
+          searchDisclaimer: enhancedAnalysis.marketAnalysis.searchDisclaimer
+        };
+        console.log(`✅ Demo: Enhanced analysis completed with web research`);
+      } catch (enhancedError) {
+        console.warn(`⚠️ Demo: Enhanced AI failed, using basic analysis:`, enhancedError.message);
+        analysis = await analyzeStartupIdea(
+          ideaTitle,
+          description,
+          industry || "Technology",
+          stage || "idea"
+        );
+        analysis.webResearchEnabled = false;
+        analysis.searchDisclaimer = "Using basic AI analysis - web research temporarily unavailable";
+      }
       
       res.json(analysis);
     } catch (error) {

@@ -7,108 +7,219 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Perplexity client for web-enabled research
-class PerplexityClient {
-  private apiKey: string;
-  private baseUrl = "https://api.perplexity.ai";
+// Free web search client for market research
+class WebSearchClient {
+  private braveApiKey: string;
+  private bingApiKey: string;
 
   constructor() {
-    this.apiKey = process.env.PERPLEXITY_API_KEY || "";
+    this.braveApiKey = process.env.BRAVE_SEARCH_API_KEY || "";
+    this.bingApiKey = process.env.BING_SEARCH_API_KEY || "";
   }
 
   async search(query: string, options: {
-    model?: string;
-    searchRecency?: "hour" | "day" | "week" | "month";
-    maxTokens?: number;
-  } = {}): Promise<PerplexityResponse> {
-    if (!this.apiKey) {
-      throw new Error("Perplexity API key not configured");
+    count?: number;
+    freshness?: "Day" | "Week" | "Month";
+    market?: string;
+  } = {}): Promise<WebSearchResponse> {
+    try {
+      // Try Brave Search first (free tier, no key needed for basic usage)
+      if (this.braveApiKey || true) { // Allow fallback even without key
+        return await this.searchWithBrave(query, options);
+      }
+    } catch (error) {
+      console.warn('Brave search failed, trying Bing:', error);
     }
 
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: options.model || "llama-3.1-sonar-small-128k-online",
-        messages: [
-          {
-            role: "system",
-            content: "You are a research assistant. Provide factual, comprehensive information with citations."
-          },
-          {
-            role: "user",
-            content: query
-          }
-        ],
-        max_tokens: options.maxTokens || 2000,
-        temperature: 0.2,
-        search_recency_filter: options.searchRecency || "month",
-        return_images: false,
-        return_related_questions: true,
-        stream: false
-      })
+    try {
+      // Fallback to Bing (1000 free requests/month)
+      if (this.bingApiKey) {
+        return await this.searchWithBing(query, options);
+      }
+    } catch (error) {
+      console.warn('Bing search failed:', error);
+    }
+
+    // Final fallback to mock data with disclaimer
+    return this.getFallbackSearchResults(query);
+  }
+
+  private async searchWithBrave(query: string, options: any): Promise<WebSearchResponse> {
+    const url = "https://api.search.brave.com/res/v1/web/search";
+    const headers: any = {
+      'Accept': 'application/json'
+    };
+    
+    if (this.braveApiKey) {
+      headers['X-Subscription-Token'] = this.braveApiKey;
+    }
+
+    const response = await fetch(`${url}?q=${encodeURIComponent(query)}&count=${options.count || 10}`, {
+      method: 'GET',
+      headers
     });
 
     if (!response.ok) {
-      throw new Error(`Perplexity API error: ${response.status}`);
+      throw new Error(`Brave Search API error: ${response.status}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    return this.formatBraveResults(data);
+  }
+
+  private async searchWithBing(query: string, options: any): Promise<WebSearchResponse> {
+    const url = "https://api.bing.microsoft.com/v7.0/search";
+    const response = await fetch(`${url}?q=${encodeURIComponent(query)}&count=${options.count || 10}`, {
+      method: 'GET',
+      headers: {
+        'Ocp-Apim-Subscription-Key': this.bingApiKey,
+        'Accept': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Bing Search API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return this.formatBingResults(data);
+  }
+
+  private formatBraveResults(data: any): WebSearchResponse {
+    const webResults = data.web?.results || [];
+    return {
+      results: webResults.map((result: any) => ({
+        title: result.title,
+        url: result.url,
+        snippet: result.description,
+        source: 'brave'
+      })),
+      totalResults: data.web?.totalResults || 0,
+      searchTerms: data.query?.original || ''
+    };
+  }
+
+  private formatBingResults(data: any): WebSearchResponse {
+    const webResults = data.webPages?.value || [];
+    return {
+      results: webResults.map((result: any) => ({
+        title: result.name,
+        url: result.url,
+        snippet: result.snippet,
+        source: 'bing'
+      })),
+      totalResults: data.webPages?.totalEstimatedMatches || 0,
+      searchTerms: data.queryContext?.originalQuery || ''
+    };
+  }
+
+  private getFallbackSearchResults(query: string): WebSearchResponse {
+    return {
+      results: [
+        {
+          title: "Market Research Data",
+          url: "https://example.com/market-research",
+          snippet: `Market research for "${query}" would typically show current trends, competitor analysis, and growth projections. This is demo data - configure BRAVE_SEARCH_API_KEY for live results.`,
+          source: 'fallback'
+        }
+      ],
+      totalResults: 1,
+      searchTerms: query,
+      disclaimer: "Using demo data - configure free Brave Search API for live market research"
+    };
   }
 }
 
-interface PerplexityResponse {
-  choices: Array<{
-    message: {
-      content: string;
-    };
+interface WebSearchResponse {
+  results: Array<{
+    title: string;
+    url: string;
+    snippet: string;
+    source: string;
   }>;
-  citations?: string[];
+  totalResults: number;
+  searchTerms: string;
+  disclaimer?: string;
 }
 
 // Market Research Agent - Specializes in real-time market analysis
 export class MarketResearchAgent {
-  private perplexity: PerplexityClient;
+  private webSearch: WebSearchClient;
 
   constructor() {
-    this.perplexity = new PerplexityClient();
+    this.webSearch = new WebSearchClient();
   }
 
   async analyzeMarket(ideaTitle: string, industry: string, description: string): Promise<MarketAnalysis> {
     try {
       // Get current market size and trends
-      const marketQuery = `Current market size, growth rate, and trends for ${industry} industry in 2024-2025. Include specific statistics and recent market developments.`;
-      const marketData = await this.perplexity.search(marketQuery, { searchRecency: "month" });
+      const marketQuery = `${industry} market size growth rate trends 2024 2025 statistics`;
+      const marketData = await this.webSearch.search(marketQuery, { count: 5, freshness: "Month" });
 
       // Get competitor analysis
-      const competitorQuery = `Top competitors and companies in ${industry} industry similar to "${ideaTitle}" concept. Include recent funding, market position, and key players.`;
-      const competitorData = await this.perplexity.search(competitorQuery, { searchRecency: "month" });
+      const competitorQuery = `${industry} top competitors companies "${ideaTitle}" funding market leaders`;
+      const competitorData = await this.webSearch.search(competitorQuery, { count: 5, freshness: "Month" });
 
       // Get market opportunities
-      const opportunityQuery = `Emerging opportunities, gaps, and trends in ${industry} market 2024-2025. What problems are unsolved?`;
-      const opportunityData = await this.perplexity.search(opportunityQuery, { searchRecency: "week" });
+      const opportunityQuery = `${industry} market opportunities gaps trends 2024 2025 problems unsolved`;
+      const opportunityData = await this.webSearch.search(opportunityQuery, { count: 5, freshness: "Week" });
+
+      // Use OpenAI to analyze the search results
+      const analysisPrompt = `Analyze these web search results for ${ideaTitle} in ${industry} industry:
+
+Market Data:\n${this.formatSearchResults(marketData)}\n\nCompetitor Data:\n${this.formatSearchResults(competitorData)}\n\nOpportunity Data:\n${this.formatSearchResults(opportunityData)}\n\nProvide structured market analysis with market size, growth rate, key trends, main competitors, opportunities, and threats.`;
+      
+      const aiAnalysis = await this.analyzeWithAI(analysisPrompt);
 
       return {
-        marketSize: this.extractMarketSize(marketData.choices[0].message.content),
-        growthRate: this.extractGrowthRate(marketData.choices[0].message.content),
-        trends: this.extractTrends(marketData.choices[0].message.content),
-        competitors: this.extractCompetitors(competitorData.choices[0].message.content),
-        opportunities: this.extractOpportunities(opportunityData.choices[0].message.content),
-        threats: this.extractThreats(competitorData.choices[0].message.content),
+        marketSize: this.extractMarketSize(aiAnalysis),
+        growthRate: this.extractGrowthRate(aiAnalysis),
+        trends: this.extractTrends(aiAnalysis),
+        competitors: this.extractCompetitors(aiAnalysis),
+        opportunities: this.extractOpportunities(aiAnalysis),
+        threats: this.extractThreats(aiAnalysis),
         citations: [
-          ...(marketData.citations || []),
-          ...(competitorData.citations || []),
-          ...(opportunityData.citations || [])
+          ...marketData.results.map(r => r.url),
+          ...competitorData.results.map(r => r.url),
+          ...opportunityData.results.map(r => r.url)
         ],
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
+        searchDisclaimer: marketData.disclaimer
       };
     } catch (error) {
       console.error("Market research agent error:", error);
-      // Fallback to non-web research if Perplexity fails
       return this.getFallbackMarketAnalysis(ideaTitle, industry, description);
+    }
+  }
+
+  private formatSearchResults(searchResponse: WebSearchResponse): string {
+    return searchResponse.results.map(result => 
+      `Title: ${result.title}\nURL: ${result.url}\nSummary: ${result.snippet}\n---`
+    ).join('\n');
+  }
+
+  private async analyzeWithAI(prompt: string): Promise<string> {
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini", // Use cheaper model for analysis
+        messages: [
+          {
+            role: "system",
+            content: "You are a market research analyst. Analyze web search results and provide structured insights."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        max_tokens: 1500,
+        temperature: 0.3
+      });
+
+      return response.choices[0].message.content || "Analysis unavailable";
+    } catch (error) {
+      console.error("AI analysis error:", error);
+      return "AI analysis temporarily unavailable";
     }
   }
 
@@ -298,6 +409,7 @@ export interface MarketAnalysis {
   threats: string[];
   citations: string[];
   lastUpdated: Date;
+  searchDisclaimer?: string;
 }
 
 export interface OverallAssessment {
@@ -389,7 +501,7 @@ export class AgenticAI {
   private grantDatabase: Grant[] = [];
 
   constructor(profile?: StartupProfile) {
-    this.startupProfile = profile;
+    this.startupProfile = profile || null;
     this.initializeDatabase();
   }
 
