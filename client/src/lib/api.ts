@@ -4,64 +4,52 @@ import type { InsertStartupIdea, StartupIdea, InsertCompany, Company, InsertDocu
 export const api = {
   // Startup Ideas
   async submitIdea(idea: InsertStartupIdea): Promise<StartupIdea> {
-    const response = await apiRequest("POST", "/api/ideas", idea);
-    return response.json();
+    return await apiRequest("/api/ideas", { method: "POST", body: idea });
   },
 
   async getIdea(id: number): Promise<StartupIdea> {
-    const response = await apiRequest("GET", `/api/ideas/${id}`);
-    return response.json();
+    return await apiRequest(`/api/ideas/${id}`);
   },
 
   async getIdeasByEmail(email: string): Promise<StartupIdea[]> {
-    const response = await apiRequest("GET", `/api/ideas?email=${encodeURIComponent(email)}`);
-    return response.json();
+    return await apiRequest(`/api/ideas?email=${encodeURIComponent(email)}`);
   },
 
   async generateBusinessPlan(id: number): Promise<StartupIdea> {
-    const response = await apiRequest("POST", `/api/ideas/${id}/business-plan`);
-    return response.json();
+    return await apiRequest(`/api/ideas/${id}/business-plan`, { method: "POST" });
   },
 
   async generatePitchDeck(id: number): Promise<StartupIdea> {
-    const response = await apiRequest("POST", `/api/ideas/${id}/pitch-deck`);
-    return response.json();
+    return await apiRequest(`/api/ideas/${id}/pitch-deck`, { method: "POST" });
   },
 
   // Companies
   async createCompany(company: InsertCompany & { userId?: number }): Promise<Company> {
-    const response = await apiRequest("POST", "/api/companies", company);
-    return response.json();
+    return await apiRequest("/api/companies", { method: "POST", body: company });
   },
 
   async getCompany(id: number): Promise<Company> {
-    const response = await apiRequest("GET", `/api/companies/${id}`);
-    return response.json();
+    return await apiRequest(`/api/companies/${id}`);
   },
 
   async updateCompany(id: number, updates: Partial<Company>): Promise<Company> {
-    const response = await apiRequest("PUT", `/api/companies/${id}`, updates);
-    return response.json();
+    return await apiRequest(`/api/companies/${id}`, { method: "PUT", body: updates });
   },
 
   // Documents
   async createDocument(companyId: number, document: Omit<InsertDocument, 'companyId'>): Promise<Document> {
-    const response = await apiRequest("POST", `/api/companies/${companyId}/documents`, document);
-    return response.json();
+    return await apiRequest(`/api/companies/${companyId}/documents`, { method: "POST", body: document });
   },
 
   async getCompanyDocuments(companyId: number): Promise<Document[]> {
-    const response = await apiRequest("GET", `/api/companies/${companyId}/documents`);
-    return response.json();
+    return await apiRequest(`/api/companies/${companyId}/documents`);
   },
 
   async updateDocument(id: number, updates: Partial<Document>): Promise<Document> {
-    const response = await apiRequest("PUT", `/api/documents/${id}`, updates);
-    return response.json();
+    return await apiRequest(`/api/documents/${id}`, { method: "PUT", body: updates });
   },
 
   async deleteDocument(id: number): Promise<{ message: string }> {
-    const response = await apiRequest("DELETE", `/api/documents/${id}`);
-    return response.json();
+    return await apiRequest(`/api/documents/${id}`, { method: "DELETE" });
   },
 };
