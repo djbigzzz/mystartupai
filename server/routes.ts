@@ -715,7 +715,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
           console.log(`✅ Enhanced analysis completed with web research`);
         } catch (enhancedError) {
-          console.warn(`⚠️ Enhanced AI failed, using basic analysis:`, enhancedError.message);
+          console.warn(`⚠️ Enhanced AI failed, using basic analysis:`, enhancedError instanceof Error ? enhancedError.message : 'Unknown error');
           analysis = await analyzeStartupIdea(
             idea.ideaTitle,
             idea.description,
@@ -1438,7 +1438,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate website content using AI
   app.post("/api/website/generate-content", 
     requireAuth,
-    advancedRateLimit,
+    advancedRateLimit(5, 10 * 60 * 1000), // 5 website generations per 10 minutes
     body('companyName').notEmpty().isLength({ max: 100 }).trim().escape(),
     body('description').notEmpty().isLength({ max: 1000 }).trim(),
     body('industry').notEmpty().isLength({ max: 50 }).trim().escape(),
@@ -1898,7 +1898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         console.log(`✅ Demo: Enhanced analysis completed with web research`);
       } catch (enhancedError) {
-        console.warn(`⚠️ Demo: Enhanced AI failed, using basic analysis:`, enhancedError.message);
+        console.warn(`⚠️ Demo: Enhanced AI failed, using basic analysis:`, enhancedError instanceof Error ? enhancedError.message : 'Unknown error');
         analysis = await analyzeStartupIdea(
           ideaTitle,
           description,
@@ -1928,7 +1928,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { existingContent } = req.body;
 
       // Get startup idea details for context
-      const startupIdea = await storage.getStartupIdeaById(parseInt(ideaId));
+      const startupIdea = await storage.getStartupIdea(parseInt(ideaId));
       if (!startupIdea) {
         return res.status(404).json({ error: "Startup idea not found" });
       }
@@ -1968,20 +1968,17 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
 
       // Generate section content using AI
       const aiCofounder = new AgenticAICofounder();
-      const sectionContent = await aiCofounder.generateBusinessPlanSection({
-        sectionType: sectionId,
-        prompt,
-        startupData: {
-          title: startupIdea.ideaTitle,
-          description: startupIdea.description,
-          industry: startupIdea.industry,
-          stage: startupIdea.stage,
-          existingContent
-        }
-      });
+      const result = await aiCofounder.generateBusinessPlanSection(
+        sectionId,
+        startupIdea.ideaTitle,
+        startupIdea.description,
+        startupIdea.industry,
+        existingContent || {},
+        startupIdea.analysis
+      );
 
       // Calculate quality metrics
-      const wordCount = sectionContent.split(' ').length;
+      const wordCount = result.content.split(' ').length;
       const qualityScore = Math.max(70, Math.min(95, 75 + Math.floor(wordCount / 50)));
       
       const quality = {
@@ -2005,8 +2002,8 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
       console.log(`✅ Generated ${sectionId} section: ${wordCount} words, ${qualityScore}% quality`);
 
       res.json({
-        content: sectionContent,
-        quality,
+        content: result.content,
+        quality: result.quality,
         sectionId,
         wordCount,
         generatedAt: new Date().toISOString()
@@ -2016,7 +2013,7 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
       console.error(`❌ Business plan section generation failed:`, error);
       res.status(500).json({ 
         error: "Failed to generate business plan section",
-        details: error.message 
+        details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -2064,7 +2061,7 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
       console.error(`❌ Quality assessment failed:`, error);
       res.status(500).json({ 
         error: "Failed to assess section quality",
-        details: error.message 
+        details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -2079,7 +2076,7 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
       const { format = 'pdf', sections } = req.body;
 
       // Get startup idea for context
-      const startupIdea = await storage.getStartupIdeaById(parseInt(ideaId));
+      const startupIdea = await storage.getStartupIdea(parseInt(ideaId));
       if (!startupIdea) {
         return res.status(404).json({ error: "Startup idea not found" });
       }
@@ -2120,7 +2117,7 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
       console.error(`❌ Business plan export failed:`, error);
       res.status(500).json({ 
         error: "Failed to export business plan",
-        details: error.message 
+        details: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
@@ -2190,7 +2187,7 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
             // Competitor analysis from AI research
             competitors: enhancedAnalysis.competitiveAnalysis?.competitors?.map((comp: any, index: number) => ({
               name: comp.name || `Market Competitor ${index + 1}`,
-              type: comp.type || (index === 0 ? "direct" : index === 1 ? "indirect" : "substitute") as const,
+              type: comp.type || (index === 0 ? "direct" : index === 1 ? "indirect" : "substitute"),
               marketShare: comp.marketShare || Math.max(5, Math.floor(30 / (index + 1))),
               strengths: comp.strengths || enhancedAnalysis.overallAssessment.keyDifferentiators?.slice(0, 2) || ["Established presence", "Strong funding"],
               weaknesses: comp.weaknesses || enhancedAnalysis.overallAssessment.challenges?.slice(0, 2) || ["Limited innovation", "High prices"],
@@ -2248,7 +2245,7 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
           
           console.log(`✅ Market research completed with web-enabled AI analysis`);
         } catch (enhancedError) {
-          console.warn(`⚠️ Enhanced market research failed, using basic analysis:`, enhancedError.message);
+          console.warn(`⚠️ Enhanced market research failed, using basic analysis:`, enhancedError instanceof Error ? enhancedError.message : 'Unknown error');
           
           // Fallback to basic AI analysis
           const basicAnalysis = await analyzeStartupIdea(
@@ -2541,6 +2538,163 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
     } catch (error) {
       console.error("Error generating financial model:", error);
       res.status(500).json({ message: "Failed to generate financial model" });
+    }
+  });
+
+  // Gamification API routes
+  app.get("/api/gamification/me", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      
+      // Get user progress, create if doesn't exist
+      let progress = await storage.getUserProgress(userId);
+      if (!progress) {
+        progress = await storage.createUserProgress({ userId });
+      }
+      
+      // Get user badges
+      const userBadges = await storage.getUserBadges(userId);
+      const badges = await storage.getBadges();
+      const badgesWithStatus = badges.map(badge => ({
+        ...badge,
+        earned: userBadges.some(ub => ub.badgeId === badge.id),
+        earnedAt: userBadges.find(ub => ub.badgeId === badge.id)?.earnedAt || null
+      }));
+      
+      // Get user quests
+      const userQuests = await storage.getUserQuests(userId);
+      const activeQuests = await storage.getActiveQuests();
+      const questsWithProgress = activeQuests.map(quest => {
+        const userQuest = userQuests.find(uq => uq.questId === quest.id);
+        return {
+          ...quest,
+          progress: userQuest?.progress || 0,
+          completed: userQuest?.completed || false,
+          claimed: userQuest?.claimed || false,
+          canClaim: userQuest?.completed && !userQuest?.claimed
+        };
+      });
+      
+      res.json({
+        progress,
+        badges: badgesWithStatus,
+        quests: questsWithProgress
+      });
+    } catch (error) {
+      console.error("Error fetching gamification data:", error);
+      res.status(500).json({ message: "Failed to fetch gamification data" });
+    }
+  });
+
+  app.post("/api/gamification/events", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { action, metadata = {} } = req.body;
+      
+      let xpAwarded = 0;
+      let levelUp = false;
+      let newLevel = undefined;
+      
+      // Award XP based on action
+      switch (action) {
+        case "idea_submitted":
+          xpAwarded = 50;
+          break;
+        case "business_plan_generated":
+          xpAwarded = 100;
+          break;
+        case "pitch_deck_generated":
+          xpAwarded = 75;
+          break;
+        case "profile_completed":
+          xpAwarded = 25;
+          break;
+        case "daily_login":
+          xpAwarded = 10;
+          break;
+        default:
+          xpAwarded = 10;
+      }
+      
+      // Award XP
+      const result = await storage.awardXp(userId, xpAwarded, action);
+      levelUp = result.leveledUp;
+      newLevel = result.newLevel;
+      
+      // Update streak for daily actions
+      if (action === "daily_login") {
+        await storage.updateStreak(userId);
+      }
+      
+      // Update quest progress
+      const userQuests = await storage.getUserQuests(userId);
+      const activeQuests = await storage.getActiveQuests();
+      
+      for (const quest of activeQuests) {
+        const userQuest = userQuests.find(uq => uq.questId === quest.id);
+        if (quest.metric === action && userQuest && !userQuest.completed) {
+          const currentProgress = userQuest.progress ?? 0;
+          const newProgress = Math.min(currentProgress + 1, quest.target);
+          await storage.updateQuestProgress(userId, quest.id, newProgress);
+        }
+      }
+      
+      // Check for badge eligibility (simple example)
+      const eligibleBadges = await storage.checkBadgeEligibility(userId);
+      const newBadges = [];
+      
+      for (const badge of eligibleBadges) {
+        // Award "First Idea" badge
+        if (badge.name === "First Idea" && action === "idea_submitted") {
+          await storage.awardBadge(userId, badge.id);
+          newBadges.push(badge);
+        }
+        // Award "Level Up" badge when reaching level 5
+        if (badge.name === "Rising Star" && newLevel && newLevel >= 5) {
+          await storage.awardBadge(userId, badge.id);
+          newBadges.push(badge);
+        }
+      }
+      
+      res.json({
+        xpAwarded,
+        levelUp,
+        newLevel,
+        newBadges
+      });
+    } catch (error) {
+      console.error("Error processing gamification event:", error);
+      res.status(500).json({ message: "Failed to process gamification event" });
+    }
+  });
+
+  app.post("/api/gamification/quests/:questId/claim", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const questId = parseInt(req.params.questId);
+      
+      if (isNaN(questId)) {
+        return res.status(400).json({ message: "Invalid quest ID" });
+      }
+      
+      // Get user quest to verify completion
+      const userQuests = await storage.getUserQuests(userId);
+      const userQuest = userQuests.find(uq => uq.questId === questId);
+      
+      if (!userQuest || !userQuest.completed || userQuest.claimed) {
+        return res.status(400).json({ message: "Quest cannot be claimed" });
+      }
+      
+      // Claim quest and award rewards
+      const rewards = await storage.claimQuest(userId, questId);
+      
+      res.json({
+        message: "Quest claimed successfully!",
+        rewards
+      });
+    } catch (error) {
+      console.error("Error claiming quest:", error);
+      res.status(500).json({ message: "Failed to claim quest" });
     }
   });
 

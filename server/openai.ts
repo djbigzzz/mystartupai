@@ -18,6 +18,8 @@ export interface IdeaAnalysis {
   recommendations: string[];
   feasibilityScore: number;
   marketSizeEstimate: string;
+  webResearchEnabled?: boolean;
+  searchDisclaimer?: string;
 }
 
 export interface BusinessPlan {

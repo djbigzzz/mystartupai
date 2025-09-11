@@ -440,4 +440,100 @@ export type InsertDemoSession = z.infer<typeof insertDemoSessionSchema>;
 export type Artifact = typeof artifacts.$inferSelect;
 export type InsertArtifact = z.infer<typeof insertArtifactSchema>;
 
+// Gamification schemas
+export const userProgress = pgTable("user_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  level: integer("level").default(1),
+  xp: integer("xp").default(0),
+  nextLevelXp: integer("next_level_xp").default(100),
+  streakDays: integer("streak_days").default(0),
+  lastActiveAt: timestamp("last_active_at").defaultNow(),
+  points: integer("points").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const badges = pgTable("badges", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  icon: text("icon").notNull(), // lucide icon name
+  description: text("description").notNull(),
+  rarity: text("rarity").notNull(), // common, rare, epic, legendary
+  criteria: text("criteria").notNull(), // Achievement criteria
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userBadges = pgTable("user_badges", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  badgeId: integer("badge_id").references(() => badges.id).notNull(),
+  earnedAt: timestamp("earned_at").defaultNow(),
+});
+
+export const quests = pgTable("quests", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  period: text("period").notNull(), // daily, weekly, monthly
+  target: integer("target").notNull(), // target number to complete
+  metric: text("metric").notNull(), // ideas_submitted, business_plans_generated, etc.
+  rewardXp: integer("reward_xp").notNull(),
+  rewardPoints: integer("reward_points").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userQuests = pgTable("user_quests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questId: integer("quest_id").references(() => quests.id).notNull(),
+  progress: integer("progress").default(0),
+  completed: boolean("completed").default(false),
+  claimed: boolean("claimed").default(false),
+  completedAt: timestamp("completed_at"),
+  claimedAt: timestamp("claimed_at"),
+  periodStart: timestamp("period_start").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertUserProgressSchema = createInsertSchema(userProgress).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBadgeSchema = createInsertSchema(badges).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserBadgeSchema = createInsertSchema(userBadges).omit({
+  id: true,
+  earnedAt: true,
+});
+
+export const insertQuestSchema = createInsertSchema(quests).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertUserQuestSchema = createInsertSchema(userQuests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type UserProgress = typeof userProgress.$inferSelect;
+export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
+export type Badge = typeof badges.$inferSelect;
+export type InsertBadge = z.infer<typeof insertBadgeSchema>;
+export type UserBadge = typeof userBadges.$inferSelect;
+export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
+export type Quest = typeof quests.$inferSelect;
+export type InsertQuest = z.infer<typeof insertQuestSchema>;
+export type UserQuest = typeof userQuests.$inferSelect;
+export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
+
 

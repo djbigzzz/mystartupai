@@ -12,6 +12,11 @@ import {
   passwordResetTokens,
   demoSessions,
   artifacts,
+  userProgress,
+  badges,
+  userBadges,
+  quests,
+  userQuests,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -38,6 +43,16 @@ import {
   type InsertDemoSession,
   type Artifact,
   type InsertArtifact,
+  type UserProgress,
+  type InsertUserProgress,
+  type Badge,
+  type InsertBadge,
+  type UserBadge,
+  type InsertUserBadge,
+  type Quest,
+  type InsertQuest,
+  type UserQuest,
+  type InsertUserQuest,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -129,6 +144,29 @@ export interface IStorage {
   getArtifactsBySession(sessionId: string): Promise<Artifact[]>;
   getArtifactByType(sessionId: string, type: string): Promise<Artifact | undefined>;
   updateArtifact(id: number, updates: Partial<Artifact>): Promise<Artifact | undefined>;
+  
+  // Gamification operations
+  // User Progress
+  getUserProgress(userId: number): Promise<UserProgress | undefined>;
+  createUserProgress(progress: InsertUserProgress): Promise<UserProgress>;
+  updateUserProgress(userId: number, updates: Partial<UserProgress>): Promise<UserProgress | undefined>;
+  awardXp(userId: number, xp: number, reason: string): Promise<{ leveledUp: boolean; newLevel?: number }>;
+  updateStreak(userId: number): Promise<UserProgress | undefined>;
+  
+  // Badges
+  getBadges(): Promise<Badge[]>;
+  getUserBadges(userId: number): Promise<UserBadge[]>;
+  awardBadge(userId: number, badgeId: number): Promise<UserBadge>;
+  checkBadgeEligibility(userId: number): Promise<Badge[]>;
+  
+  // Quests
+  getActiveQuests(): Promise<Quest[]>;
+  getUserQuests(userId: number): Promise<UserQuest[]>;
+  createUserQuest(userQuest: InsertUserQuest): Promise<UserQuest>;
+  updateQuestProgress(userId: number, questId: number, progress: number): Promise<UserQuest | undefined>;
+  completeQuest(userId: number, questId: number): Promise<UserQuest | undefined>;
+  claimQuest(userId: number, questId: number): Promise<{ xp: number; points: number }>;
+  resetUserQuests(userId: number, period: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -545,6 +583,335 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return artifact || undefined;
   }
+
+  // Gamification operations
+  // User Progress
+  async getUserProgress(userId: number): Promise<UserProgress | undefined> {
+    const [progress] = await db
+      .select()
+      .from(userProgress)
+      .where(eq(userProgress.userId, userId));
+    return progress || undefined;
+  }
+
+  async createUserProgress(insertProgress: InsertUserProgress): Promise<UserProgress> {
+    const [progress] = await db
+      .insert(userProgress)
+      .values(insertProgress)
+      .returning();
+    return progress;
+  }
+
+  async updateUserProgress(userId: number, updates: Partial<UserProgress>): Promise<UserProgress | undefined> {
+    const [progress] = await db
+      .update(userProgress)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(userProgress.userId, userId))
+      .returning();
+    return progress || undefined;
+  }
+
+  async awardXp(userId: number, xp: number, reason: string): Promise<{ leveledUp: boolean; newLevel?: number }> {
+    let progress = await this.getUserProgress(userId);
+    
+    if (!progress) {
+      progress = await this.createUserProgress({ userId, xp, points: xp });
+    } else {
+      const currentXp = progress.xp ?? 0;
+      const currentLevel = progress.level ?? 1;
+      const currentPoints = progress.points ?? 0;
+      
+      const newXp = currentXp + xp;
+      const newLevel = Math.floor(newXp / 100) + 1;
+      const leveledUp = newLevel > currentLevel;
+      const nextLevelXp = newLevel * 100;
+      
+      await this.updateUserProgress(userId, {
+        xp: newXp,
+        level: newLevel,
+        nextLevelXp,
+        points: currentPoints + xp
+      });
+      
+      return { leveledUp, newLevel: leveledUp ? newLevel : undefined };
+    }
+    
+    return { leveledUp: false };
+  }
+
+  async updateStreak(userId: number): Promise<UserProgress | undefined> {
+    const progress = await this.getUserProgress(userId);
+    if (!progress) return undefined;
+
+    const today = new Date();
+    const lastActive = progress.lastActiveAt ? new Date(progress.lastActiveAt) : null;
+    const isConsecutive = lastActive && 
+      (today.getTime() - lastActive.getTime()) <= 24 * 60 * 60 * 1000;
+
+    const currentStreak = progress.streakDays ?? 0;
+    const newStreak = isConsecutive ? currentStreak + 1 : 1;
+    
+    return await this.updateUserProgress(userId, {
+      streakDays: newStreak,
+      lastActiveAt: today
+    });
+  }
+
+  // Badges
+  async getBadges(): Promise<Badge[]> {
+    return await db.select().from(badges).orderBy(desc(badges.createdAt));
+  }
+
+  async getUserBadges(userId: number): Promise<UserBadge[]> {
+    return await db
+      .select()
+      .from(userBadges)
+      .where(eq(userBadges.userId, userId))
+      .orderBy(desc(userBadges.earnedAt));
+  }
+
+  async awardBadge(userId: number, badgeId: number): Promise<UserBadge> {
+    const [userBadge] = await db
+      .insert(userBadges)
+      .values({ userId, badgeId })
+      .returning();
+    return userBadge;
+  }
+
+  async checkBadgeEligibility(userId: number): Promise<Badge[]> {
+    // Simple implementation - could be enhanced with more complex criteria
+    const allBadges = await this.getBadges();
+    const userBadgesList = await this.getUserBadges(userId);
+    const earnedBadgeIds = new Set(userBadgesList.map(ub => ub.badgeId));
+    
+    return allBadges.filter(badge => !earnedBadgeIds.has(badge.id));
+  }
+
+  // Quests
+  async getActiveQuests(): Promise<Quest[]> {
+    return await db
+      .select()
+      .from(quests)
+      .where(eq(quests.isActive, true))
+      .orderBy(desc(quests.createdAt));
+  }
+
+  async getUserQuests(userId: number): Promise<UserQuest[]> {
+    return await db
+      .select()
+      .from(userQuests)
+      .where(eq(userQuests.userId, userId))
+      .orderBy(desc(userQuests.createdAt));
+  }
+
+  async createUserQuest(insertUserQuest: InsertUserQuest): Promise<UserQuest> {
+    const [userQuest] = await db
+      .insert(userQuests)
+      .values(insertUserQuest)
+      .returning();
+    return userQuest;
+  }
+
+  async updateQuestProgress(userId: number, questId: number, progress: number): Promise<UserQuest | undefined> {
+    const [userQuest] = await db
+      .update(userQuests)
+      .set({ 
+        progress,
+        completed: progress >= 100,
+        completedAt: progress >= 100 ? new Date() : null,
+        updatedAt: new Date()
+      })
+      .where(and(eq(userQuests.userId, userId), eq(userQuests.questId, questId)))
+      .returning();
+    return userQuest || undefined;
+  }
+
+  async completeQuest(userId: number, questId: number): Promise<UserQuest | undefined> {
+    const [userQuest] = await db
+      .update(userQuests)
+      .set({ 
+        completed: true,
+        completedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(and(eq(userQuests.userId, userId), eq(userQuests.questId, questId)))
+      .returning();
+    return userQuest || undefined;
+  }
+
+  async claimQuest(userId: number, questId: number): Promise<{ xp: number; points: number }> {
+    // Get quest details
+    const [quest] = await db
+      .select()
+      .from(quests)
+      .where(eq(quests.id, questId));
+    
+    if (!quest) throw new Error('Quest not found');
+
+    // Mark as claimed
+    await db
+      .update(userQuests)
+      .set({ 
+        claimed: true,
+        claimedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(and(eq(userQuests.userId, userId), eq(userQuests.questId, questId)));
+
+    // Award XP
+    await this.awardXp(userId, quest.rewardXp, `Completed quest: ${quest.title}`);
+
+    return { xp: quest.rewardXp, points: quest.rewardPoints || 0 };
+  }
+
+  async resetUserQuests(userId: number, period: string): Promise<void> {
+    await db
+      .delete(userQuests)
+      .where(and(
+        eq(userQuests.userId, userId),
+        eq(userQuests.questId, sql`(SELECT id FROM quests WHERE period = ${period})`)
+      ));
+  }
 }
 
 export const storage = new DatabaseStorage();
+
+// Sample gamification data seeding
+export async function seedGamificationData() {
+  try {
+    // Check if badges already exist
+    const existingBadges = await storage.getBadges();
+    
+    if (existingBadges.length === 0) {
+      console.log("🎮 Seeding badges...");
+      
+      // Sample badges
+      const badgesToSeed = [
+        {
+          name: "First Idea",
+          icon: "lightbulb",
+          description: "Submit your first startup idea",
+          rarity: "common",
+          criteria: "Submit at least 1 startup idea"
+        },
+        {
+          name: "Rising Star", 
+          icon: "star",
+          description: "Reach level 5",
+          rarity: "rare",
+          criteria: "Reach user level 5"
+        },
+        {
+          name: "Business Planner",
+          icon: "fileText",
+          description: "Generate 3 business plans",
+          rarity: "rare", 
+          criteria: "Generate 3 or more business plans"
+        },
+        {
+          name: "Pitch Master",
+          icon: "presentation",
+          description: "Create 5 pitch decks",
+          rarity: "epic",
+          criteria: "Generate 5 or more pitch decks"
+        },
+        {
+          name: "Streak Master",
+          icon: "flame",
+          description: "Maintain a 7-day login streak",
+          rarity: "epic",
+          criteria: "Login for 7 consecutive days"
+        },
+        {
+          name: "Entrepreneur",
+          icon: "trophy",
+          description: "Reach level 10",
+          rarity: "legendary",
+          criteria: "Reach user level 10"
+        }
+      ];
+
+      for (const badge of badgesToSeed) {
+        await db.insert(badges).values(badge);
+      }
+      console.log(`✅ Seeded ${badgesToSeed.length} badges`);
+    }
+
+    // Check if quests already exist
+    const existingQuests = await storage.getActiveQuests();
+    
+    if (existingQuests.length === 0) {
+      console.log("🎯 Seeding quests...");
+      
+      // Sample quests
+      const questsToSeed = [
+        {
+          title: "Daily Login",
+          description: "Login to your account",
+          period: "daily",
+          target: 1,
+          metric: "daily_login",
+          rewardXp: 10,
+          rewardPoints: 5,
+          isActive: true
+        },
+        {
+          title: "Submit an Idea", 
+          description: "Share your startup idea with the community",
+          period: "daily",
+          target: 1,
+          metric: "idea_submitted",
+          rewardXp: 50,
+          rewardPoints: 25,
+          isActive: true
+        },
+        {
+          title: "Complete Profile",
+          description: "Fill out your startup profile",
+          period: "weekly",
+          target: 1, 
+          metric: "profile_completed",
+          rewardXp: 25,
+          rewardPoints: 15,
+          isActive: true
+        },
+        {
+          title: "Business Plan Creator",
+          description: "Generate 2 business plans this week",
+          period: "weekly",
+          target: 2,
+          metric: "business_plan_generated", 
+          rewardXp: 100,
+          rewardPoints: 50,
+          isActive: true
+        },
+        {
+          title: "Pitch Perfect",
+          description: "Create a pitch deck",
+          period: "weekly",
+          target: 1,
+          metric: "pitch_deck_generated",
+          rewardXp: 75,
+          rewardPoints: 40,
+          isActive: true
+        }
+      ];
+
+      for (const quest of questsToSeed) {
+        await db.insert(quests).values(quest);
+      }
+      console.log(`✅ Seeded ${questsToSeed.length} quests`);
+    }
+
+    console.log("🎮 Gamification data seeding completed!");
+  } catch (error) {
+    console.error("❌ Error seeding gamification data:", error);
+  }
+}
+
+// Auto-seed data on startup (for development)
+if (process.env.NODE_ENV !== 'production') {
+  setTimeout(() => {
+    seedGamificationData().catch(console.error);
+  }, 1000); // Wait 1 second for DB connection
+}

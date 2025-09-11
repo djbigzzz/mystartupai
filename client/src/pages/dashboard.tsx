@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TrendingUp,
   FileText,
@@ -17,7 +18,17 @@ import {
   Lightbulb,
   Brain,
   Rocket,
-  Download
+  Download,
+  Flame,
+  Star,
+  Trophy,
+  Zap,
+  Gift,
+  Sparkles,
+  Crown,
+  Award,
+  Gem,
+  Shield
 } from "lucide-react";
 import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
@@ -37,6 +48,49 @@ interface User {
   onboardingCompleted: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+interface UserProgress {
+  id: number;
+  userId: number;
+  level: number;
+  xp: number;
+  nextLevelXp: number;
+  streakDays: number;
+  lastActiveAt: string;
+  points: number;
+}
+
+interface Badge {
+  id: number;
+  name: string;
+  icon: string;
+  description: string;
+  rarity: "common" | "rare" | "epic" | "legendary";
+  criteria: string;
+  earned?: boolean;
+  earnedAt?: string | null;
+}
+
+interface Quest {
+  id: number;
+  title: string;
+  description: string;
+  period: "daily" | "weekly" | "monthly";
+  target: number;
+  metric: string;
+  rewardXp: number;
+  rewardPoints: number;
+  progress?: number;
+  completed?: boolean;
+  claimed?: boolean;
+  canClaim?: boolean;
+}
+
+interface GamificationData {
+  progress: UserProgress;
+  badges: Badge[];
+  quests: Quest[];
 }
 
 interface DashboardStats {
@@ -59,6 +113,8 @@ export default function Dashboard() {
   const [activeSection, setActiveSection] = useState("overview");
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+  const [questTab, setQuestTab] = useState("daily");
 
   useEffect(() => {
     const ideaId = localStorage.getItem("currentIdeaId");
@@ -74,9 +130,72 @@ export default function Dashboard() {
   const { data: user, isLoading: userLoading, error: userError, refetch } = useQuery<User>({
     queryKey: ["/api/auth/me"],
     retry: 1,
-    staleTime: 0, // Always fetch fresh data
-    gcTime: 0, // Don't cache the response
+    staleTime: 0,
+    gcTime: 0,
   });
+
+  // Fetch gamification data
+  const { data: gamificationData, isLoading: gamificationLoading, refetch: refetchGamification } = useQuery<GamificationData>({
+    queryKey: ["/api/gamification/me"],
+    enabled: !!user,
+    staleTime: 30000, // Cache for 30 seconds
+  });
+
+  // Mutation for gamification events
+  const gamificationEventMutation = useMutation({
+    mutationFn: async (action: string) => {
+      return apiRequest("/api/gamification/events", {
+        method: "POST",
+        body: JSON.stringify({ action })
+      } as RequestInit & { body?: any });
+    },
+    onSuccess: (data) => {
+      refetchGamification();
+      if (data.levelUp) {
+        setShowLevelUpModal(true);
+      }
+    }
+  });
+
+  // Mutation for claiming quest rewards
+  const claimQuestMutation = useMutation({
+    mutationFn: async (questId: number) => {
+      return apiRequest(`/api/gamification/quests/${questId}/claim`, {
+        method: "POST"
+      } as RequestInit & { body?: any });
+    },
+    onSuccess: () => {
+      refetchGamification();
+    }
+  });
+
+  // Helper function to get badge icon component
+  const getBadgeIcon = (iconName: string) => {
+    const iconMap: { [key: string]: any } = {
+      lightbulb: Lightbulb,
+      star: Star,
+      fileText: FileText,
+      presentation: FileText,
+      flame: Flame,
+      trophy: Trophy,
+      crown: Crown,
+      award: Award,
+      gem: Gem,
+      shield: Shield
+    };
+    return iconMap[iconName] || Star;
+  };
+
+  // Helper function to get rarity color
+  const getRarityColor = (rarity: string) => {
+    const colorMap = {
+      common: "bg-gray-500 dark:bg-gray-600",
+      rare: "bg-blue-500 dark:bg-blue-600", 
+      epic: "bg-purple-500 dark:bg-purple-600",
+      legendary: "bg-orange-500 dark:bg-orange-600"
+    };
+    return colorMap[rarity as keyof typeof colorMap] || colorMap.common;
+  };
 
   // Check if user needs onboarding
   useEffect(() => {
