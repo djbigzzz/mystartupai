@@ -1,10 +1,28 @@
 // Export utility functions for document generation and download
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export interface ExportOptions {
   format: 'pdf' | 'docx' | 'xlsx' | 'zip';
   items: string[];
   includeMetadata?: boolean;
   watermark?: boolean;
+}
+
+export interface FinancialReportData {
+  companyName: string;
+  scenario: string;
+  metrics: {
+    revenue: any;
+    expenses: any;
+    ltv: number;
+    cac: number;
+    runway: number;
+    breakEvenMonth: number;
+    grossMargin: number;
+  };
+  monthlyData?: any[];
+  chartElements?: HTMLElement[];
 }
 
 export interface DocumentTemplate {
@@ -75,7 +93,126 @@ export async function generatePitchDeck(startupData: any): Promise<Blob> {
   return new Blob([pitchContent], { type: 'application/vnd.ms-powerpoint' });
 }
 
-// Generate financial model
+// Generate financial model PDF
+export async function generateFinancialModelPDF(reportData: FinancialReportData): Promise<Blob> {
+  const pdf = new jsPDF();
+  
+  // Title page
+  pdf.setFontSize(20);
+  pdf.text(`Financial Model Report - ${reportData.companyName}`, 20, 30);
+  
+  pdf.setFontSize(12);
+  pdf.text(`Scenario: ${reportData.scenario}`, 20, 50);
+  pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 60);
+  
+  // Executive Summary
+  pdf.setFontSize(16);
+  pdf.text('Executive Summary', 20, 80);
+  
+  pdf.setFontSize(10);
+  const summaryY = 95;
+  const metrics = reportData.metrics;
+  
+  pdf.text(`• Break-even Month: ${metrics.breakEvenMonth}`, 20, summaryY);
+  pdf.text(`• Runway: ${metrics.runway.toFixed(0)} months`, 20, summaryY + 10);
+  pdf.text(`• Gross Margin: ${metrics.grossMargin}%`, 20, summaryY + 20);
+  pdf.text(`• LTV:CAC Ratio: ${(metrics.ltv / metrics.cac).toFixed(1)}:1`, 20, summaryY + 30);
+  
+  // 5-Year Revenue Projections
+  pdf.setFontSize(16);
+  pdf.text('5-Year Financial Projections', 20, summaryY + 60);
+  
+  pdf.setFontSize(10);
+  let tableY = summaryY + 75;
+  
+  // Table headers
+  pdf.text('Year', 20, tableY);
+  pdf.text('Revenue', 60, tableY);
+  pdf.text('Expenses', 100, tableY);
+  pdf.text('Profit', 140, tableY);
+  pdf.text('Margin', 170, tableY);
+  
+  tableY += 10;
+  
+  // Table data
+  Object.entries(metrics.revenue).forEach(([year, revenue], index) => {
+    const yearNum = index + 1;
+    const expense = metrics.expenses[year as keyof typeof metrics.expenses];
+    const profit = (revenue as number) - expense;
+    const margin = ((profit / (revenue as number)) * 100).toFixed(1);
+    
+    pdf.text(`Year ${yearNum}`, 20, tableY);
+    pdf.text(`$${((revenue as number) / 1000000).toFixed(1)}M`, 60, tableY);
+    pdf.text(`$${(expense / 1000000).toFixed(1)}M`, 100, tableY);
+    pdf.text(`$${(profit / 1000000).toFixed(1)}M`, 140, tableY);
+    pdf.text(`${margin}%`, 170, tableY);
+    
+    tableY += 10;
+  });
+  
+  // Unit Economics
+  pdf.addPage();
+  pdf.setFontSize(16);
+  pdf.text('Unit Economics', 20, 30);
+  
+  pdf.setFontSize(12);
+  pdf.text(`Customer Lifetime Value (LTV): $${metrics.ltv.toFixed(0)}`, 20, 50);
+  pdf.text(`Customer Acquisition Cost (CAC): $${metrics.cac.toFixed(0)}`, 20, 65);
+  pdf.text(`LTV:CAC Ratio: ${(metrics.ltv / metrics.cac).toFixed(1)}:1`, 20, 80);
+  pdf.text(`Gross Margin: ${metrics.grossMargin}%`, 20, 95);
+  
+  // Capture charts if provided
+  if (reportData.chartElements && reportData.chartElements.length > 0) {
+    pdf.addPage();
+    pdf.setFontSize(16);
+    pdf.text('Financial Charts', 20, 30);
+    
+    // Note: In a real implementation, you would capture charts using html2canvas
+    // and add them to the PDF
+    pdf.setFontSize(10);
+    pdf.text('Charts would be embedded here from html2canvas capture', 20, 50);
+  }
+  
+  // Monthly Cash Flow (if available)
+  if (reportData.monthlyData && reportData.monthlyData.length > 0) {
+    pdf.addPage();
+    pdf.setFontSize(16);
+    pdf.text('Monthly Cash Flow Analysis', 20, 30);
+    
+    pdf.setFontSize(8);
+    let monthlyY = 50;
+    
+    // Headers
+    pdf.text('Month', 20, monthlyY);
+    pdf.text('Revenue', 50, monthlyY);
+    pdf.text('Expenses', 80, monthlyY);
+    pdf.text('Cash Flow', 110, monthlyY);
+    pdf.text('Customers', 140, monthlyY);
+    
+    monthlyY += 8;
+    
+    // First 24 months data
+    reportData.monthlyData.slice(0, 24).forEach((month) => {
+      pdf.text(month.month.toString(), 20, monthlyY);
+      pdf.text(`$${(month.revenue / 1000).toFixed(0)}K`, 50, monthlyY);
+      pdf.text(`$${(month.expense / 1000).toFixed(0)}K`, 80, monthlyY);
+      pdf.text(`$${(month.cashFlow / 1000).toFixed(0)}K`, 110, monthlyY);
+      pdf.text(month.customers.toString(), 140, monthlyY);
+      
+      monthlyY += 6;
+      
+      // Add new page if needed
+      if (monthlyY > 250) {
+        pdf.addPage();
+        monthlyY = 30;
+      }
+    });
+  }
+  
+  return new Blob([pdf.output('blob')], { type: 'application/pdf' });
+}
+
+// Generate financial model CSV
 export async function generateFinancialModel(startupData: any): Promise<Blob> {
   const csvContent = `
 Year,Revenue,Expenses,Profit,Growth Rate
