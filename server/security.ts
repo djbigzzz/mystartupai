@@ -113,7 +113,15 @@ export const validateStartupIdea = [
   body('ideaTitle').isLength({ min: 3, max: 200 }).trim().escape(),
   body('description').isLength({ min: 10, max: 2000 }).trim().escape(),
   body('industry').isLength({ min: 2, max: 100 }).trim().escape(),
-  body('stage').isIn(['idea', 'mvp', 'growth', 'scaling']),
+  body('stage').isIn([
+    'Idea Stage',
+    'Concept Development', 
+    'Market Research',
+    'MVP Development',
+    'Beta Testing',
+    'Pre-Launch',
+    'Launched'
+  ]),
   body('targetMarket').optional().isLength({ max: 500 }).trim().escape(),
   body('problemStatement').optional().isLength({ max: 1000 }).trim().escape(),
   body('solutionApproach').optional().isLength({ max: 1000 }).trim().escape(),
