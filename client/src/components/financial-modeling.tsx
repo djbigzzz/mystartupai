@@ -26,7 +26,7 @@ import {
   Tooltip as RechartsTooltip, 
   ResponsiveContainer,
   Legend,
-  ComposedChart
+  ComposedChart,
   Pie
 } from "recharts";
 import { 

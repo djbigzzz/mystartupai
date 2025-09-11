@@ -4,7 +4,7 @@ import session from "express-session";
 import passport from "./auth";
 import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema, insertDemoSessionSchema, insertArtifactSchema } from "@shared/schema";
-import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck } from "./openai";
+import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck, generateWebsiteContent } from "./openai";
 import { agenticAI, AgenticAICofounder } from "./agentic-ai";
 
 // Initialize the enhanced AI co-founder
@@ -1401,6 +1401,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to generate pitch deck" });
     }
   });
+
+  // Generate website content using AI
+  app.post("/api/website/generate-content", 
+    requireAuth,
+    advancedRateLimit,
+    body('companyName').notEmpty().isLength({ max: 100 }).trim().escape(),
+    body('description').notEmpty().isLength({ max: 1000 }).trim(),
+    body('industry').notEmpty().isLength({ max: 50 }).trim().escape(),
+    body('sections').optional().isArray(),
+    body('sections.*').optional().isString().isLength({ max: 50 }),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const { companyName, description, industry, sections, businessPlan } = req.body;
+        
+        // Sanitize inputs
+        const sanitizedCompanyName = sanitizeHtml(companyName.trim());
+        const sanitizedDescription = sanitizeHtml(description.trim());
+        const sanitizedIndustry = sanitizeHtml(industry.trim());
+        const requestedSections = Array.isArray(sections) ? sections.map(s => sanitizeQuery(s)) : undefined;
+
+        // Generate website content using OpenAI
+        const websiteContent = await generateWebsiteContent(
+          sanitizedCompanyName,
+          sanitizedDescription, 
+          sanitizedIndustry,
+          requestedSections,
+          businessPlan
+        );
+
+        res.json(websiteContent);
+      } catch (error) {
+        console.error("Website content generation error:", error);
+        if (error instanceof Error && error.message.includes("rate limit")) {
+          res.status(429).json({ message: "AI service is busy. Please try again in a moment." });
+        } else {
+          res.status(500).json({ message: "Failed to generate website content" });
+        }
+      }
+    }
+  );
 
   // Waitlist API routes
   app.post("/api/waitlist", 

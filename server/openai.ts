@@ -43,6 +43,54 @@ export interface PitchDeck {
   }[];
 }
 
+export interface WebsiteSection {
+  id: string;
+  content: string;
+  aiGenerated: boolean;
+}
+
+export interface WebsiteContent {
+  sections: { [key: string]: WebsiteSection };
+}
+
+// Demo website content for when OpenAI API is unavailable
+function getDemoWebsiteContent(companyName: string, industry: string, businessPlan?: BusinessPlan): WebsiteContent {
+  return {
+    sections: {
+      hero: {
+        id: 'hero',
+        content: `Revolutionize ${industry} with ${companyName}. Transform your business with our innovative solutions and cutting-edge technology.`,
+        aiGenerated: true
+      },
+      about: {
+        id: 'about', 
+        content: `${companyName} is leading the transformation in ${industry}. ${businessPlan?.executiveSummary?.substring(0, 200) || 'Our innovative approach delivers measurable results for businesses of all sizes.'} We combine expertise with technology to create solutions that drive real business value.`,
+        aiGenerated: true
+      },
+      features: {
+        id: 'features',
+        content: `🚀 Industry-leading technology\n✨ Expert support team\n📈 Proven ROI and results\n🔒 Enterprise-grade security\n⚡ Lightning-fast performance\n🎯 Tailored solutions for your needs`,
+        aiGenerated: true
+      },
+      testimonials: {
+        id: 'testimonials',
+        content: `"${companyName} completely transformed our operations. The results exceeded our expectations!" - Sarah Johnson, CEO\n\n"Outstanding service and incredible results. Highly recommended for any ${industry} business." - Michael Chen, CTO`,
+        aiGenerated: true
+      },
+      pricing: {
+        id: 'pricing',
+        content: `Choose the perfect plan for your ${industry} business. Starting from $99/month for small businesses, with enterprise options available. Flexible pricing that grows with your success.`,
+        aiGenerated: true
+      },
+      contact: {
+        id: 'contact',
+        content: `Ready to transform your ${industry} business? Contact ${companyName} today for a free consultation. Our experts are standing by to help you achieve your goals.`,
+        aiGenerated: true
+      }
+    }
+  };
+}
+
 // Demo data for when OpenAI API is unavailable - now with smart context detection
 function getDemoAnalysis(ideaTitle: string, industry: string): IdeaAnalysis {
   const title = ideaTitle.toLowerCase();
@@ -347,6 +395,110 @@ function getDemoPitchDeck(ideaTitle: string, industry: string): PitchDeck {
       }
     ]
   };
+}
+
+export async function generateWebsiteContent(
+  companyName: string,
+  description: string,
+  industry: string,
+  requestedSections: string[] = ['hero', 'about', 'features', 'testimonials', 'pricing', 'contact'],
+  businessPlan?: BusinessPlan
+): Promise<WebsiteContent> {
+  // Check if API key is available and valid for production use
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey || apiKey === "default_key" || apiKey.includes("demo")) {
+    console.log("🔒 OpenAI API key not available, using demo website content");
+    return getDemoWebsiteContent(companyName, industry, businessPlan);
+  }
+
+  try {
+    const contextInfo = [
+      `Company: ${companyName}`,
+      `Description: ${description}`,
+      `Industry: ${industry}`,
+      businessPlan ? `Business Plan Summary: ${businessPlan.executiveSummary}` : '',
+      businessPlan ? `Solution: ${businessPlan.solutionDescription}` : ''
+    ].filter(Boolean).join('\n');
+
+    const prompt = `
+      Generate compelling website copy for each section of a professional business website. Create content that converts visitors into customers.
+      
+      ${contextInfo}
+      
+      Generate content for these sections: ${requestedSections.join(', ')}
+      
+      Return JSON with this structure:
+      {
+        "sections": {
+          "hero": {
+            "id": "hero",
+            "content": "compelling hero section copy (1-2 sentences)",
+            "aiGenerated": true
+          },
+          "about": {
+            "id": "about",
+            "content": "about section copy (2-3 sentences)",
+            "aiGenerated": true
+          },
+          "features": {
+            "id": "features", 
+            "content": "feature list separated by newlines (6 features max)",
+            "aiGenerated": true
+          },
+          "testimonials": {
+            "id": "testimonials",
+            "content": "2 customer testimonials separated by double newlines",
+            "aiGenerated": true
+          },
+          "pricing": {
+            "id": "pricing",
+            "content": "pricing section copy (1-2 sentences)", 
+            "aiGenerated": true
+          },
+          "contact": {
+            "id": "contact",
+            "content": "contact section copy (1-2 sentences)",
+            "aiGenerated": true
+          }
+        }
+      }
+      
+      Make it professional, benefit-focused, and action-oriented. Use the business plan context when available.
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert copywriter who creates high-converting website copy for businesses. Focus on benefits, clear value propositions, and compelling calls-to-action."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 1000, // Keep responses focused
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || "{}");
+    return result as WebsiteContent;
+  } catch (error) {
+    const errorMessage = (error as Error).message;
+    if (errorMessage.includes("429") || errorMessage.includes("quota")) {
+      console.log("OpenAI quota exceeded, using demo website content");
+      return getDemoWebsiteContent(companyName, industry, businessPlan);
+    } else if (errorMessage.includes("401") || errorMessage.includes("unauthorized")) {
+      console.log("🔒 OpenAI API error, using demo website content");
+      return getDemoWebsiteContent(companyName, industry, businessPlan);
+    } else if (errorMessage.includes("rate_limit")) {
+      console.log("Rate limit hit, using demo website content");
+      return getDemoWebsiteContent(companyName, industry, businessPlan);
+    }
+    console.log("API error, using demo website content:", errorMessage);
+    return getDemoWebsiteContent(companyName, industry, businessPlan);
+  }
 }
 
 export async function generatePitchDeck(
