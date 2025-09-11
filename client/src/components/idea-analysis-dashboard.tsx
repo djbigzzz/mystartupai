@@ -20,8 +20,10 @@ import {
   RefreshCw,
   Clock,
   Star,
-  Award
+  Award,
+  MapPin
 } from "lucide-react";
+import StartupHeatmap from "./startup-heatmap";
 
 interface AnalysisResult {
   validationScore: number;
@@ -276,10 +278,14 @@ export default function IdeaAnalysisDashboard({ ideaId, ideaData }: IdeaAnalysis
 
       {/* Detailed Analysis */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="feasibility">Feasibility</TabsTrigger>
           <TabsTrigger value="market">Market</TabsTrigger>
+          <TabsTrigger value="heatmap" className="flex items-center space-x-2">
+            <MapPin className="w-4 h-4" />
+            <span>Heatmap</span>
+          </TabsTrigger>
           <TabsTrigger value="recommendations">Next Steps</TabsTrigger>
         </TabsList>
 
@@ -516,6 +522,10 @@ export default function IdeaAnalysisDashboard({ ideaId, ideaData }: IdeaAnalysis
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="heatmap" className="space-y-6">
+          <StartupHeatmap userIdeaData={ideaData} />
         </TabsContent>
       </Tabs>
     </div>
