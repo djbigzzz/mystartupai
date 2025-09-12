@@ -646,17 +646,45 @@ export class DatabaseStorage implements IStorage {
     const progress = await this.getUserProgress(userId);
     if (!progress) return undefined;
 
-    const today = new Date();
+    // Use UTC for consistent timezone handling
+    const nowUtc = new Date();
+    const todayUtc = new Date(Date.UTC(
+      nowUtc.getUTCFullYear(),
+      nowUtc.getUTCMonth(),
+      nowUtc.getUTCDate(),
+      0, 0, 0, 0
+    ));
+    
     const lastActive = progress.lastActiveAt ? new Date(progress.lastActiveAt) : null;
-    const isConsecutive = lastActive && 
-      (today.getTime() - lastActive.getTime()) <= 24 * 60 * 60 * 1000;
+    let isConsecutive = false;
+    
+    if (lastActive) {
+      // Convert lastActive to UTC date for comparison
+      const lastActiveUtc = new Date(Date.UTC(
+        lastActive.getUTCFullYear(),
+        lastActive.getUTCMonth(),
+        lastActive.getUTCDate(),
+        0, 0, 0, 0
+      ));
+      
+      // Calculate difference in days (UTC)
+      const dayDifference = Math.floor((todayUtc.getTime() - lastActiveUtc.getTime()) / (24 * 60 * 60 * 1000));
+      
+      // Consecutive if last active was yesterday (1 day ago)
+      isConsecutive = dayDifference === 1;
+      
+      // If it's the same day, maintain current streak without incrementing
+      if (dayDifference === 0) {
+        return progress;
+      }
+    }
 
     const currentStreak = progress.streakDays ?? 0;
     const newStreak = isConsecutive ? currentStreak + 1 : 1;
     
     return await this.updateUserProgress(userId, {
       streakDays: newStreak,
-      lastActiveAt: today
+      lastActiveAt: nowUtc
     });
   }
 
@@ -778,19 +806,24 @@ export class DatabaseStorage implements IStorage {
 
   // Daily Check-ins
   async hasCheckedInToday(userId: number): Promise<boolean> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Use UTC for consistent timezone handling
+    const nowUtc = new Date();
+    const todayUtc = new Date(Date.UTC(
+      nowUtc.getUTCFullYear(),
+      nowUtc.getUTCMonth(),
+      nowUtc.getUTCDate(),
+      0, 0, 0, 0
+    ));
     
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowUtc = new Date(todayUtc.getTime() + 24 * 60 * 60 * 1000);
     
     const [checkin] = await db
       .select()
       .from(dailyCheckins)
       .where(and(
         eq(dailyCheckins.userId, userId),
-        sql`${dailyCheckins.checkinDate} >= ${today}`,
-        sql`${dailyCheckins.checkinDate} < ${tomorrow}`
+        sql`${dailyCheckins.checkinDate} AT TIME ZONE 'UTC' >= ${todayUtc.toISOString()}`,
+        sql`${dailyCheckins.checkinDate} AT TIME ZONE 'UTC' < ${tomorrowUtc.toISOString()}`
       ))
       .limit(1);
     
@@ -798,49 +831,63 @@ export class DatabaseStorage implements IStorage {
   }
 
   async performDailyCheckin(userId: number, mood?: string, note?: string): Promise<{ xp: number; bonusXp: number; streakDay: number; leveledUp: boolean; newLevel?: number }> {
-    // Check if already checked in today
-    const alreadyCheckedIn = await this.hasCheckedInToday(userId);
-    if (alreadyCheckedIn) {
-      throw new Error('Already checked in today');
-    }
+    return await db.transaction(async (tx) => {
+      // Check if already checked in today (within transaction)
+      const alreadyCheckedIn = await this.hasCheckedInToday(userId);
+      if (alreadyCheckedIn) {
+        const error = new Error('Already checked in today');
+        (error as any).code = 'DUPLICATE_CHECKIN';
+        throw error;
+      }
 
-    // Update streak and get current streak
-    const progress = await this.updateStreak(userId);
-    const currentStreak = progress?.streakDays ?? 1;
+      // Update streak and get current streak
+      const progress = await this.updateStreak(userId);
+      const currentStreak = progress?.streakDays ?? 1;
 
-    // Calculate bonus XP for streak milestones
-    let bonusXp = 0;
-    if (currentStreak % 7 === 0) bonusXp = 100; // Weekly bonus
-    else if (currentStreak % 30 === 0) bonusXp = 500; // Monthly bonus
-    else if (currentStreak === 3) bonusXp = 25; // First 3-day streak
-    else if (currentStreak === 10) bonusXp = 150; // 10-day milestone
+      // Calculate bonus XP for streak milestones
+      let bonusXp = 0;
+      if (currentStreak % 30 === 0) bonusXp = 500; // Monthly bonus (highest priority)
+      else if (currentStreak % 7 === 0) bonusXp = 100; // Weekly bonus
+      else if (currentStreak === 10) bonusXp = 150; // 10-day milestone
+      else if (currentStreak === 3) bonusXp = 25; // First 3-day streak
 
-    const baseXp = 50;
-    const totalXp = baseXp + bonusXp;
+      const baseXp = 50;
+      const totalXp = baseXp + bonusXp;
 
-    // Record the check-in
-    const [checkin] = await db
-      .insert(dailyCheckins)
-      .values({
-        userId,
-        xpAwarded: baseXp,
-        streakDay: currentStreak,
-        bonusXp,
-        mood: mood || null,
-        note: note || null,
-      })
-      .returning();
+      try {
+        // Record the check-in (atomic within transaction)
+        const [checkin] = await tx
+          .insert(dailyCheckins)
+          .values({
+            userId,
+            xpAwarded: baseXp,
+            streakDay: currentStreak,
+            bonusXp,
+            mood: mood || null,
+            note: note || null,
+          })
+          .returning();
 
-    // Award XP
-    const xpResult = await this.awardXp(userId, totalXp, 'Daily check-in');
+        // Award XP (atomic within transaction)
+        const xpResult = await this.awardXp(userId, totalXp, 'Daily check-in');
 
-    return {
-      xp: baseXp,
-      bonusXp,
-      streakDay: currentStreak,
-      leveledUp: xpResult.leveledUp,
-      newLevel: xpResult.newLevel
-    };
+        return {
+          xp: baseXp,
+          bonusXp,
+          streakDay: currentStreak,
+          leveledUp: xpResult.leveledUp,
+          newLevel: xpResult.newLevel
+        };
+      } catch (error: any) {
+        // Handle unique constraint violation from schema
+        if (error.code === '23505' && error.constraint?.includes('unique_user_date')) {
+          const duplicateError = new Error('Already checked in today');
+          (duplicateError as any).code = 'DUPLICATE_CHECKIN';
+          throw duplicateError;
+        }
+        throw error;
+      }
+    });
   }
 
   async getDailyCheckinHistory(userId: number, limit: number = 30): Promise<DailyCheckin[]> {
@@ -879,8 +926,8 @@ export class DatabaseStorage implements IStorage {
       if (i === 0) {
         tempStreak = checkins[i].streakDay ?? 1;
       } else {
-        const current = new Date(checkins[i].checkinDate);
-        const previous = new Date(checkins[i - 1].checkinDate);
+        const current = new Date(checkins[i].checkinDate!);
+        const previous = new Date(checkins[i - 1].checkinDate!);
         const dayDiff = Math.abs(current.getTime() - previous.getTime()) / (1000 * 60 * 60 * 24);
         
         if (dayDiff <= 1) {

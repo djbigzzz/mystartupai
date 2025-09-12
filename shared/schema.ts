@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, jsonb, timestamp, varchar, decimal } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -540,14 +541,17 @@ export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
 export const dailyCheckins = pgTable("daily_checkins", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  checkinDate: timestamp("checkin_date").defaultNow(),
+  checkinDate: timestamp("checkin_date").notNull().defaultNow(),
   xpAwarded: integer("xp_awarded").default(50),
   streakDay: integer("streak_day").default(1), // What day of the streak this was
   bonusXp: integer("bonus_xp").default(0), // Extra XP for milestones
   mood: text("mood"), // optional: happy, motivated, focused, etc.
   note: text("note"), // optional: personal note about the day
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  // Unique constraint to prevent duplicate check-ins per calendar day
+  uniqueUserDate: sql`UNIQUE (user_id, DATE(checkin_date AT TIME ZONE 'UTC'))`
+}));
 
 export const insertDailyCheckinSchema = createInsertSchema(dailyCheckins).omit({
   id: true,

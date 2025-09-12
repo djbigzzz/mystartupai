@@ -2698,6 +2698,113 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
     }
   });
 
+  // Daily Check-in API routes
+  app.get("/api/checkin/status", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      
+      const hasCheckedIn = await storage.hasCheckedInToday(userId);
+      
+      res.json({
+        hasCheckedInToday: hasCheckedIn
+      });
+    } catch (error) {
+      console.error("Error checking daily check-in status:", error);
+      res.status(500).json({ message: "Failed to check check-in status" });
+    }
+  });
+
+  app.post("/api/checkin", 
+    requireAuth,
+    advancedRateLimit, // Add rate limiting for check-ins
+    body('mood').optional().isString().withMessage('Mood must be a string'),
+    body('note').optional().isString().withMessage('Note must be a string'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { mood, note } = req.body;
+        
+        // Sanitize inputs if provided
+        const sanitizedMood = mood ? sanitizeHtml(mood.trim()) : undefined;
+        const sanitizedNote = note ? sanitizeHtml(note.trim()) : undefined;
+        
+        const result = await storage.performDailyCheckin(userId, sanitizedMood, sanitizedNote);
+        
+        res.json({
+          message: "Daily check-in completed successfully!",
+          ...result
+        });
+      } catch (error: any) {
+        console.error("Error performing daily check-in:", error);
+        
+        // Improved error handling using error codes instead of string matching
+        if (error.code === 'DUPLICATE_CHECKIN') {
+          return res.status(409).json({ 
+            message: "You have already checked in today",
+            error: "DUPLICATE_CHECKIN" 
+          });
+        }
+        
+        // Handle database constraint violations
+        if (error.code === '23505' && error.constraint?.includes('unique_user_date')) {
+          return res.status(409).json({ 
+            message: "You have already checked in today",
+            error: "DUPLICATE_CHECKIN" 
+          });
+        }
+        
+        // Handle validation errors
+        if (error.code === '23502') { // NOT NULL constraint violation
+          return res.status(400).json({ 
+            message: "Invalid check-in data provided",
+            error: "VALIDATION_ERROR" 
+          });
+        }
+        
+        // Generic error fallback
+        res.status(500).json({ 
+          message: "Failed to perform daily check-in",
+          error: "INTERNAL_ERROR" 
+        });
+      }
+    }
+  );
+
+  app.get("/api/checkin/history", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const limit = parseInt(req.query.limit as string) || 30;
+      
+      // Validate limit
+      if (limit < 1 || limit > 365) {
+        return res.status(400).json({ message: "Limit must be between 1 and 365" });
+      }
+      
+      const history = await storage.getDailyCheckinHistory(userId, limit);
+      
+      res.json({
+        history
+      });
+    } catch (error) {
+      console.error("Error fetching daily check-in history:", error);
+      res.status(500).json({ message: "Failed to fetch check-in history" });
+    }
+  });
+
+  app.get("/api/checkin/stats", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      
+      const stats = await storage.getDailyCheckinStats(userId);
+      
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching daily check-in stats:", error);
+      res.status(500).json({ message: "Failed to fetch check-in statistics" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
