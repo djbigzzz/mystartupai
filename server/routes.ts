@@ -2716,7 +2716,7 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
 
   app.post("/api/checkin", 
     requireAuth,
-    advancedRateLimit, // Add rate limiting for check-ins
+    advancedRateLimit(5, 60000), // Add rate limiting for check-ins (5 requests per minute)
     body('mood').optional().isString().withMessage('Mood must be a string'),
     body('note').optional().isString().withMessage('Note must be a string'),
     handleValidationErrors,

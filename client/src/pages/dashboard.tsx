@@ -36,6 +36,7 @@ import ProfileManagement from "@/components/profile/profile-management";
 import StartupWorkflowDashboard from "@/components/startup-workflow-dashboard";
 import { ThemeToggle } from "@/components/theme-toggle";
 import GuidedOnboarding from "@/components/onboarding/guided-onboarding";
+import DailyCheckin from "@/components/daily-checkin";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface User {
@@ -606,6 +607,19 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Daily Check-in Section */}
+      <DailyCheckin 
+        onLevelUp={(newLevel) => {
+          setShowLevelUpModal(true);
+          // Refresh gamification data
+          refetchGamification();
+        }}
+        onCheckinComplete={(result) => {
+          // Trigger gamification event for additional rewards
+          gamificationEventMutation.mutate('daily_checkin');
+        }}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Quick Actions */}
