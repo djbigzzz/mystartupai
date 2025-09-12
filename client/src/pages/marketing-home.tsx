@@ -43,10 +43,10 @@ export default function MarketingHome() {
   const { toast } = useToast();
 
   const stats = [
-    { number: "10,000+", label: "Ideas Analyzed" },
-    { number: "500+", label: "Business Plans Generated" },
-    { number: "95%", label: "Success Rate" },
-    { number: "48hrs", label: "Average Time to MVP" }
+    { number: "AI-Powered", label: "Idea Validation" },
+    { number: "Comprehensive", label: "Business Plans" },
+    { number: "Professional", label: "Pitch Decks" },
+    { number: "Investor-Ready", label: "Financial Models" }
   ];
 
   const features = [

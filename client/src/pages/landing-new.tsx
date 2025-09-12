@@ -218,27 +218,24 @@ export default function LandingNew() {
                 <div className="flex justify-between items-center py-2 border-b border-white/10">
                   <span className="text-gray-300">Pitch Deck</span>
                   <div className="text-right">
-                    <div className="text-gray-400 line-through text-sm">$5,000</div>
-                    <div className="text-green-400 font-semibold">Included</div>
+                    <div className="text-green-400 font-semibold">✓ Included</div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-white/10">
                   <span className="text-gray-300">Financial Model</span>
                   <div className="text-right">
-                    <div className="text-gray-400 line-through text-sm">$3,000</div>
-                    <div className="text-green-400 font-semibold">Included</div>
+                    <div className="text-green-400 font-semibold">✓ Included</div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-white/10">
                   <span className="text-gray-300">Market Research</span>
                   <div className="text-right">
-                    <div className="text-gray-400 line-through text-sm">$2,500</div>
-                    <div className="text-green-400 font-semibold">Included</div>
+                    <div className="text-green-400 font-semibold">✓ Included</div>
                   </div>
                 </div>
                 <div className="pt-4 text-center">
-                  <div className="text-2xl font-bold text-green-400">Save $10,500+</div>
-                  <div className="text-gray-300 text-sm">Plus 3+ months of work</div>
+                  <div className="text-2xl font-bold text-green-400">Everything Included</div>
+                  <div className="text-gray-300 text-sm">Complete startup toolkit</div>
                 </div>
               </div>
             </div>
@@ -350,7 +347,7 @@ export default function LandingNew() {
                   <div className="flex items-center space-x-3 p-3 bg-green-100/10 rounded-lg border-l-4 border-green-500">
                     <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
                     <div className="flex-1">
-                      <div className="text-white text-sm font-medium">🌐 Scanning 500+ fitness app databases</div>
+                      <div className="text-white text-sm font-medium">🌐 Scanning fitness app databases</div>
                       <div className="text-gray-400 text-xs">App Store, Google Play</div>
                     </div>
                   </div>
@@ -358,16 +355,16 @@ export default function LandingNew() {
                   <div className="flex items-center space-x-3 p-3 bg-blue-100/10 rounded-lg border-l-4 border-blue-500 animate-pulse">
                     <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
                     <div className="flex-1">
-                      <div className="text-white text-sm font-medium">📊 Analyzing MyFitnessPal market data</div>
-                      <div className="text-gray-400 text-xs">200M users, $125M revenue</div>
+                      <div className="text-white text-sm font-medium">📊 Analyzing competitor market data</div>
+                      <div className="text-gray-400 text-xs">Leading fitness apps</div>
                     </div>
                   </div>
                   
                   <div className="flex items-center space-x-3 p-3 bg-gray-50/5 rounded-lg border-l-4 border-gray-300">
                     <div className="w-4 h-4 border border-gray-400 rounded-full flex-shrink-0"></div>
                     <div className="flex-1">
-                      <div className="text-gray-300 text-sm">🏃 Researching Nike Training Club</div>
-                      <div className="text-gray-500 text-xs">50M+ users, free model</div>
+                      <div className="text-gray-300 text-sm">🏃 Researching workout platforms</div>
+                      <div className="text-gray-500 text-xs">Popular fitness apps</div>
                     </div>
                   </div>
                 </div>
@@ -377,7 +374,7 @@ export default function LandingNew() {
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-white text-sm font-medium">Live Market Intelligence</span>
                   </div>
-                  <div className="text-xs text-gray-300">📈 Market size: $96B global fitness → $4.5B app segment</div>
+                  <div className="text-xs text-gray-300">📈 Market analysis: Large global fitness market with growing app segment</div>
                 </div>
               </div>
 
