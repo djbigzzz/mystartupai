@@ -536,4 +536,25 @@ export type InsertQuest = z.infer<typeof insertQuestSchema>;
 export type UserQuest = typeof userQuests.$inferSelect;
 export type InsertUserQuest = z.infer<typeof insertUserQuestSchema>;
 
+// Daily Check-ins
+export const dailyCheckins = pgTable("daily_checkins", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  checkinDate: timestamp("checkin_date").defaultNow(),
+  xpAwarded: integer("xp_awarded").default(50),
+  streakDay: integer("streak_day").default(1), // What day of the streak this was
+  bonusXp: integer("bonus_xp").default(0), // Extra XP for milestones
+  mood: text("mood"), // optional: happy, motivated, focused, etc.
+  note: text("note"), // optional: personal note about the day
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertDailyCheckinSchema = createInsertSchema(dailyCheckins).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type DailyCheckin = typeof dailyCheckins.$inferSelect;
+export type InsertDailyCheckin = z.infer<typeof insertDailyCheckinSchema>;
+
 

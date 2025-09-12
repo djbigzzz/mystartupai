@@ -17,6 +17,7 @@ import {
   userBadges,
   quests,
   userQuests,
+  dailyCheckins,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -53,6 +54,8 @@ import {
   type InsertQuest,
   type UserQuest,
   type InsertUserQuest,
+  type DailyCheckin,
+  type InsertDailyCheckin,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -771,6 +774,141 @@ export class DatabaseStorage implements IStorage {
         eq(userQuests.userId, userId),
         eq(userQuests.questId, sql`(SELECT id FROM quests WHERE period = ${period})`)
       ));
+  }
+
+  // Daily Check-ins
+  async hasCheckedInToday(userId: number): Promise<boolean> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const [checkin] = await db
+      .select()
+      .from(dailyCheckins)
+      .where(and(
+        eq(dailyCheckins.userId, userId),
+        sql`${dailyCheckins.checkinDate} >= ${today}`,
+        sql`${dailyCheckins.checkinDate} < ${tomorrow}`
+      ))
+      .limit(1);
+    
+    return !!checkin;
+  }
+
+  async performDailyCheckin(userId: number, mood?: string, note?: string): Promise<{ xp: number; bonusXp: number; streakDay: number; leveledUp: boolean; newLevel?: number }> {
+    // Check if already checked in today
+    const alreadyCheckedIn = await this.hasCheckedInToday(userId);
+    if (alreadyCheckedIn) {
+      throw new Error('Already checked in today');
+    }
+
+    // Update streak and get current streak
+    const progress = await this.updateStreak(userId);
+    const currentStreak = progress?.streakDays ?? 1;
+
+    // Calculate bonus XP for streak milestones
+    let bonusXp = 0;
+    if (currentStreak % 7 === 0) bonusXp = 100; // Weekly bonus
+    else if (currentStreak % 30 === 0) bonusXp = 500; // Monthly bonus
+    else if (currentStreak === 3) bonusXp = 25; // First 3-day streak
+    else if (currentStreak === 10) bonusXp = 150; // 10-day milestone
+
+    const baseXp = 50;
+    const totalXp = baseXp + bonusXp;
+
+    // Record the check-in
+    const [checkin] = await db
+      .insert(dailyCheckins)
+      .values({
+        userId,
+        xpAwarded: baseXp,
+        streakDay: currentStreak,
+        bonusXp,
+        mood: mood || null,
+        note: note || null,
+      })
+      .returning();
+
+    // Award XP
+    const xpResult = await this.awardXp(userId, totalXp, 'Daily check-in');
+
+    return {
+      xp: baseXp,
+      bonusXp,
+      streakDay: currentStreak,
+      leveledUp: xpResult.leveledUp,
+      newLevel: xpResult.newLevel
+    };
+  }
+
+  async getDailyCheckinHistory(userId: number, limit: number = 30): Promise<DailyCheckin[]> {
+    return await db
+      .select()
+      .from(dailyCheckins)
+      .where(eq(dailyCheckins.userId, userId))
+      .orderBy(desc(dailyCheckins.checkinDate))
+      .limit(limit);
+  }
+
+  async getDailyCheckinStats(userId: number): Promise<{
+    totalCheckins: number;
+    currentStreak: number;
+    longestStreak: number;
+    totalXpFromCheckins: number;
+  }> {
+    // Get total check-ins
+    const totalResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(dailyCheckins)
+      .where(eq(dailyCheckins.userId, userId));
+    
+    const totalCheckins = Number(totalResult[0]?.count ?? 0);
+
+    // Get current streak from user progress
+    const progress = await this.getUserProgress(userId);
+    const currentStreak = progress?.streakDays ?? 0;
+
+    // Calculate longest streak from check-in history
+    const checkins = await this.getDailyCheckinHistory(userId, 365);
+    let longestStreak = 0;
+    let tempStreak = 0;
+    
+    for (let i = 0; i < checkins.length; i++) {
+      if (i === 0) {
+        tempStreak = checkins[i].streakDay ?? 1;
+      } else {
+        const current = new Date(checkins[i].checkinDate);
+        const previous = new Date(checkins[i - 1].checkinDate);
+        const dayDiff = Math.abs(current.getTime() - previous.getTime()) / (1000 * 60 * 60 * 24);
+        
+        if (dayDiff <= 1) {
+          tempStreak = Math.max(tempStreak, checkins[i].streakDay ?? 1);
+        } else {
+          longestStreak = Math.max(longestStreak, tempStreak);
+          tempStreak = checkins[i].streakDay ?? 1;
+        }
+      }
+    }
+    longestStreak = Math.max(longestStreak, tempStreak);
+
+    // Calculate total XP from check-ins
+    const xpResult = await db
+      .select({ 
+        totalXp: sql<number>`sum(${dailyCheckins.xpAwarded} + ${dailyCheckins.bonusXp})`
+      })
+      .from(dailyCheckins)
+      .where(eq(dailyCheckins.userId, userId));
+    
+    const totalXpFromCheckins = Number(xpResult[0]?.totalXp ?? 0);
+
+    return {
+      totalCheckins,
+      currentStreak,
+      longestStreak,
+      totalXpFromCheckins
+    };
   }
 }
 
