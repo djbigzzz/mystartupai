@@ -46,7 +46,7 @@ export default function LandingNew() {
     {
       icon: Brain,
       title: "Live AI Research Engine",
-      description: "Watch AI scan 500+ databases, analyze competitors like MyFitnessPal and Nike Training, and generate insights in real-time"
+      description: "Watch AI research multiple data sources, analyze competitors like MyFitnessPal and Nike Training, and generate insights in real-time"
     },
     {
       icon: FileText,
@@ -78,7 +78,7 @@ export default function LandingNew() {
   const stats = [
     { number: "10", label: "Smart Tools", suffix: "" },
     { number: "4", label: "Simple Steps", suffix: "" },
-    { number: "24", label: "Hour Support", suffix: "/7" }
+    { number: "Always", label: "Available", suffix: "" }
   ];
 
   return (
@@ -141,7 +141,7 @@ export default function LandingNew() {
             
             <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
               An intuitive platform that streamlines business plan creation, preparing you for
-              successful investment. Trusted by over 5,000 professionals.
+              successful investment. Used by founders building their next startup.
             </p>
 
 
@@ -174,8 +174,8 @@ export default function LandingNew() {
             <div className="flex justify-center">
               <div className="text-sm text-gray-400 flex items-center">
                 <div className="flex items-center mr-6">
-                  <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                  <span className="font-medium text-gray-300">5.0 reviews</span>
+                  <CheckCircle className="w-4 h-4 text-green-400 mr-1" />
+                  <span className="font-medium text-gray-300">Live & ready to use</span>
                 </div>
               </div>
             </div>
@@ -211,8 +211,8 @@ export default function LandingNew() {
                 <div className="flex justify-between items-center py-2 border-b border-white/10">
                   <span className="text-gray-300">Business Plan</span>
                   <div className="text-right">
-                    <div className="text-gray-400 line-through text-sm">6-8 weeks</div>
-                    <div className="text-green-400 font-semibold">2 hours</div>
+                    <div className="text-gray-400 line-through text-sm">Weeks of work</div>
+                    <div className="text-green-400 font-semibold">Same day*</div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-white/10">
@@ -286,14 +286,14 @@ export default function LandingNew() {
 
           {/* Interactive Journey Timeline */}
           <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 mb-16">
-            <h3 className="text-2xl font-bold text-white mb-8 text-center">Your Journey to Funding</h3>
+            <h3 className="text-2xl font-bold text-white mb-8 text-center">Your Path to Being Investor-Ready</h3>
             
             <div className="grid md:grid-cols-4 gap-6">
               {[
-                { week: "Week 1", title: "Validate & Plan", deliverables: ["Idea Analysis", "Business Plan", "Market Research"], color: "from-purple-500 to-pink-500" },
-                { week: "Week 2", title: "Build & Design", deliverables: ["Pitch Deck", "Financial Model", "MVP Strategy"], color: "from-blue-500 to-cyan-500" },
-                { week: "Week 3", title: "Refine & Polish", deliverables: ["Document Review", "Presentation Prep", "Investor Research"], color: "from-cyan-500 to-green-500" },
-                { week: "Week 4", title: "Launch & Connect", deliverables: ["Investor Outreach", "Network Building", "Feedback Integration"], color: "from-green-500 to-yellow-500" }
+                { phase: "Phase 1", title: "Validate & Plan", deliverables: ["Idea Analysis", "Business Plan", "Market Research"], color: "from-purple-500 to-pink-500" },
+                { phase: "Phase 2", title: "Build & Design", deliverables: ["Pitch Deck", "Financial Model", "MVP Strategy"], color: "from-blue-500 to-cyan-500" },
+                { phase: "Phase 3", title: "Refine & Polish", deliverables: ["Document Review", "Presentation Prep", "Investor Research"], color: "from-cyan-500 to-green-500" },
+                { phase: "Phase 4", title: "Launch & Connect", deliverables: ["Investor Outreach", "Network Building", "Feedback Integration"], color: "from-green-500 to-yellow-500" }
               ].map((phase, index) => (
                 <div key={index} className="relative">
                   {index < 3 && (
@@ -305,7 +305,7 @@ export default function LandingNew() {
                       <span className="text-white font-bold text-sm">{index + 1}</span>
                     </div>
                     
-                    <h4 className="text-white font-semibold mb-1">{phase.week}</h4>
+                    <h4 className="text-white font-semibold mb-1">{phase.phase}</h4>
                     <h5 className="text-purple-300 font-medium mb-3">{phase.title}</h5>
                     
                     <div className="space-y-1">
@@ -441,7 +441,7 @@ export default function LandingNew() {
           {/* Demo CTA */}
           <div className="text-center">
             <h3 className="text-3xl font-bold text-white mb-4">Ready to Experience This Live?</h3>
-            <p className="text-gray-300 mb-8 text-lg">Watch the AI research process in real-time and see your complete startup package generated in minutes</p>
+            <p className="text-gray-300 mb-8 text-lg">Watch the AI research process in real-time and see your complete startup package generated quickly*</p>
             <Link href="/demo">
               <Button size="lg" className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 px-8 py-4 text-lg font-bold shadow-2xl shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
                 <Play className="mr-2 h-5 w-5" />

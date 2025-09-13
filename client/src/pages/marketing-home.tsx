@@ -53,7 +53,7 @@ export default function MarketingHome() {
     {
       icon: Brain,
       title: "AI Startup Idea Validation",
-      description: "Advanced market research, competitor analysis, and business feasibility assessment powered by AI. Validate your startup concept in minutes, not months.",
+      description: "Advanced market research, competitor analysis, and business feasibility assessment powered by AI. Validate your startup concept quickly with comprehensive analysis. Results may vary by idea complexity.",
       color: "from-blue-500 to-blue-600"
     },
     {
@@ -71,7 +71,7 @@ export default function MarketingHome() {
     {
       icon: Rocket,
       title: "MVP Builder & Growth Strategy",
-      description: "Complete MVP development tools, go-to-market strategies, and proven growth tactics to achieve early traction and scale your startup effectively.",
+      description: "Complete MVP development tools, go-to-market strategies, and growth tactics designed to help achieve early traction and scale your startup more effectively.",
       color: "from-orange-500 to-orange-600"
     }
   ];
@@ -80,7 +80,7 @@ export default function MarketingHome() {
     {
       step: "1",
       title: "Register for Free",
-      description: "Create your account in under 30 seconds",
+      description: "Create your account quickly and easily",
       icon: Users
     },
     {
@@ -185,7 +185,7 @@ export default function MarketingHome() {
     },
     {
       title: "Global Access",
-      description: "Founders anywhere can start instantly, 24/7",
+      description: "Founders anywhere can start instantly, anytime",
       icon: Globe
     }
   ];
@@ -299,11 +299,11 @@ export default function MarketingHome() {
                     <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full border-2 border-white"></div>
                     <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-gray-600">+</div>
                   </div>
-                  <span className="text-sm font-medium">2,847+ entrepreneurs started this week</span>
+                  <span className="text-sm font-medium">Join founders building their next startup</span>
                 </div>
                 <div className="flex items-center text-yellow-200">
-                  <Star className="w-4 h-4 fill-current mr-1" />
-                  <span className="text-sm font-medium">4.9/5 from 500+ reviews</span>
+                  <CheckCircle className="w-4 h-4 fill-current mr-1" />
+                  <span className="text-sm font-medium">Platform live & ready</span>
                 </div>
               </div>
               
@@ -328,7 +328,7 @@ export default function MarketingHome() {
                 <CheckCircle className="w-4 h-4 mr-2" />
                 <span className="mr-6">No credit card required</span>
                 <CheckCircle className="w-4 h-4 mr-2" />
-                <span className="mr-6">Setup in 2 minutes</span>
+                <span className="mr-6">Quick setup</span>
                 <CheckCircle className="w-4 h-4 mr-2" />
                 <span>Cancel anytime</span>
               </div>
@@ -364,13 +364,13 @@ export default function MarketingHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6 transform hover:scale-105 transition-transform duration-300">
-              Why 90% of Startups Fail (And How AI Can Help You Succeed)
+              Common Startup Challenges (And How AI Can Help You Avoid Them)
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="text-center p-6">
                 <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Time & Money Wasted on Poor Planning</h3>
-                <p className="text-gray-600 dark:text-gray-300">Without proper business planning and validation, founders waste 6-12 months building products nobody wants</p>
+                <p className="text-gray-600 dark:text-gray-300">Without proper business planning and validation, many founders spend significant time building products without market validation</p>
               </div>
               <div className="text-center p-6">
                 <DollarSign className="w-12 h-12 text-purple-500 mx-auto mb-4" />
@@ -398,7 +398,7 @@ export default function MarketingHome() {
               </h2>
             </div>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Complete AI-powered startup acceleration platform with business plan generator, pitch deck creator, financial modeling tools, and market research capabilities - everything entrepreneurs need to validate ideas and secure funding.
+              Complete AI-powered startup acceleration platform with business plan generator, pitch deck creator, financial modeling tools, and market research capabilities - designed to help entrepreneurs validate ideas and prepare for funding.
             </p>
           </div>
           
@@ -440,7 +440,7 @@ export default function MarketingHome() {
             <div className="flex items-center justify-center mb-6">
               <Logo size="md" showText={false} className="mr-3" />
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                How to Build an Investor-Ready Startup in Hours (Not Months)
+                How to Build Investor-Ready Materials More Efficiently
               </h2>
             </div>
           </div>
