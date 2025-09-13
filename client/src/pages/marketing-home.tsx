@@ -65,13 +65,13 @@ export default function MarketingHome() {
     {
       icon: DollarSign,
       title: "Pitch Deck Creator & Financial Models",
-      description: "Professional pitch deck creator and financial modeling tools. Generate investor presentations and detailed financial projections that help you secure funding.",
+      description: "Professional pitch deck creator and financial modeling tools. Generate investor presentations and detailed financial projections with customizable templates and industry benchmarks.",
       color: "from-purple-500 to-purple-600"
     },
     {
       icon: Rocket,
       title: "MVP Builder & Growth Strategy",
-      description: "Complete MVP development tools, go-to-market strategies, and growth tactics designed to help achieve early traction and scale your startup more effectively.",
+      description: "Complete MVP development framework, go-to-market strategy templates, and growth planning tools. Structured guides and actionable frameworks for startup execution.",
       color: "from-orange-500 to-orange-600"
     }
   ];
@@ -97,9 +97,9 @@ export default function MarketingHome() {
     },
     {
       step: "4",
-      title: "Launch & Fundraise",
-      description: "Use your investor-ready outputs to get funding and grow",
-      icon: TrendingUp
+      title: "Get Your Materials",
+      description: "Download your business plan, pitch deck, and financial models",
+      icon: FileText
     }
   ];
 
@@ -287,7 +287,7 @@ export default function MarketingHome() {
               </h1>
               
               <p className="text-xl text-blue-100 mb-6 leading-relaxed drop-shadow-sm">
-                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. Get funding 67% faster with our startup accelerator platform — no equity required.
+                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. Our startup accelerator platform provides the tools and guidance you need — no equity required.
               </p>
               
               {/* Social Proof & Urgency */}
