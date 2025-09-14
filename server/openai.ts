@@ -250,7 +250,7 @@ function getDemoBusinessPlan(ideaTitle: string, description: string, industry: s
     
     solutionDescription: `${ideaTitle} provides a comprehensive platform that ${description}. Our solution integrates seamlessly with existing workflows while providing advanced analytics, automation capabilities, and user-friendly interfaces that drive adoption and value creation.`,
     
-    marketAnalysis: `The ${industry} market is valued at over $15 billion globally and growing at 12-15% annually. Key trends driving growth include digital transformation, regulatory changes, and increasing customer expectations. Our target market includes mid-market and enterprise customers who are actively seeking modern solutions to replace legacy systems.`,
+    marketAnalysis: `The ${industry} market is valued at approximately $${industry === 'Healthcare' ? '350 billion' : industry === 'Fintech' ? '179 billion' : industry === 'Education' ? '400 billion' : industry === 'Food & Delivery' ? '150 billion' : '250 billion'} globally and growing at ${industry === 'Healthcare' ? '8-12%' : industry === 'Fintech' ? '15-20%' : industry === 'Education' ? '10-15%' : industry === 'Food & Delivery' ? '12-18%' : '10-15%'} annually. Key trends driving growth include digital transformation, regulatory changes, and increasing customer expectations. Our target market includes mid-market and enterprise customers who are actively seeking modern solutions to replace legacy systems.`,
     
     businessModel: `Our revenue model is based on SaaS subscriptions with tiered pricing starting at $99/month for small businesses and scaling to enterprise packages of $10,000+ monthly. Additional revenue streams include professional services, integrations, and premium features. We project 85% gross margins with strong unit economics.`,
     
@@ -270,6 +270,285 @@ function getDemoBusinessPlan(ideaTitle: string, description: string, industry: s
   };
 }
 
+// Helper function to parse various numeric formats into billions
+function parseMarketSizeInBillions(text: string): number | null {
+  const lowerText = text.toLowerCase();
+  
+  // Match patterns like $10B, $10 billion, $10,000,000,000, etc.
+  const patterns = [
+    // $10T, $10 trillion
+    /\$(\d+(?:\.\d+)?)\s*(?:trillion|t)\b/gi,
+    // $10B, $10 billion  
+    /\$(\d+(?:\.\d+)?)\s*(?:billion|b)\b/gi,
+    // $10,000,000,000 (raw billions)
+    /\$(\d{1,3}(?:,\d{3}){3,})\b/g,
+    // Written numbers: ten billion, fifty billion, etc.
+    /\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)\s+(?:billion|trillion)/gi
+  ];
+  
+  let maxValue = 0;
+  
+  // Check trillion patterns (multiply by 1000)
+  const trillionMatch = text.match(/\$(\d+(?:\.\d+)?)\s*(?:trillion|t)\b/gi);
+  if (trillionMatch) {
+    trillionMatch.forEach(match => {
+      const num = parseFloat(match.replace(/[^\d.]/g, ''));
+      if (!isNaN(num)) {
+        maxValue = Math.max(maxValue, num * 1000);
+      }
+    });
+  }
+  
+  // Check billion patterns (with $ prefix)
+  const billionMatch = text.match(/\$(\d+(?:\.\d+)?)\s*(?:billion|b|bn)\b/gi);
+  if (billionMatch) {
+    billionMatch.forEach(match => {
+      const num = parseFloat(match.replace(/[^\d.]/g, ''));
+      if (!isNaN(num)) {
+        maxValue = Math.max(maxValue, num);
+      }
+    });
+  }
+  
+  // Check billion patterns (without $ prefix)
+  const nonDollarBillionMatch = text.match(/\b(\d+(?:\.\d+)?)\s*(?:billion|bn)\b/gi);
+  if (nonDollarBillionMatch) {
+    nonDollarBillionMatch.forEach(match => {
+      const num = parseFloat(match.replace(/[^\d.]/g, ''));
+      if (!isNaN(num)) {
+        maxValue = Math.max(maxValue, num);
+      }
+    });
+  }
+  
+  // Check USD/US$ prefixed amounts
+  const usdMatch = text.match(/(?:USD|US\$)\s*(\d+(?:\.\d+)?)\s*(?:billion|B|bn|trillion|T)\b/gi);
+  if (usdMatch) {
+    usdMatch.forEach(match => {
+      const num = parseFloat(match.replace(/[^\d.]/g, ''));
+      const isTrillion = /trillion|T\b/i.test(match);
+      if (!isNaN(num)) {
+        maxValue = Math.max(maxValue, isTrillion ? num * 1000 : num);
+      }
+    });
+  }
+  
+  // Check raw number patterns (assume billions if very large)
+  const rawMatch = text.match(/\$(\d{1,3}(?:,\d{3}){2,})\b/g);
+  if (rawMatch) {
+    rawMatch.forEach(match => {
+      const numStr = match.replace(/[^\d]/g, '');
+      const num = parseInt(numStr);
+      if (!isNaN(num) && num >= 1000000000) {
+        maxValue = Math.max(maxValue, num / 1000000000);
+      }
+    });
+  }
+  
+  // Check written number patterns
+  const writtenNumbers: { [key: string]: number } = {
+    'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+    'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+    'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14, 'fifteen': 15,
+    'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
+    'twenty': 20, 'thirty': 30, 'forty': 40, 'fifty': 50,
+    'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90,
+    'hundred': 100, 'thousand': 1000
+  };
+  
+  const writtenMatch = text.match(/\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)\s+(?:billion|trillion)/gi);
+  if (writtenMatch) {
+    writtenMatch.forEach(match => {
+      const words = match.toLowerCase().split(/\s+/);
+      const numWord = words[0];
+      const unit = words[words.length - 1];
+      
+      if (writtenNumbers[numWord]) {
+        const value = unit === 'trillion' ? writtenNumbers[numWord] * 1000 : writtenNumbers[numWord];
+        maxValue = Math.max(maxValue, value);
+      }
+    });
+  }
+  
+  return maxValue > 0 ? maxValue : null;
+}
+
+// Classify business idea scale based on title and description
+function classifyBusinessScale(ideaTitle: string, description: string, industry: string): 'local_smb' | 'regional' | 'national' | 'global_saas' {
+  const combined = `${ideaTitle} ${description}`.toLowerCase();
+  
+  // Local SMB indicators
+  const localIndicators = [
+    'cafe', 'coffee shop', 'restaurant', 'bar', 'bakery', 'salon', 'barbershop',
+    'gym', 'fitness center', 'local', 'neighborhood', 'community', 'brick and mortar',
+    'physical store', 'retail store', 'workshop', 'studio', 'clinic', 'practice'
+  ];
+  
+  // Global SaaS indicators
+  const globalIndicators = [
+    'saas', 'software', 'platform', 'api', 'cloud', 'ai', 'machine learning',
+    'automation', 'analytics', 'dashboard', 'crm', 'erp', 'b2b', 'enterprise',
+    'worldwide', 'global', 'international', 'digital platform', 'web app',
+    'mobile app', 'subscription', 'freemium'
+  ];
+  
+  // Regional indicators
+  const regionalIndicators = [
+    'franchise', 'multi-location', 'regional', 'state-wide', 'province',
+    'delivery service', 'logistics', 'supply chain'
+  ];
+  
+  // Count matches
+  const localScore = localIndicators.filter(indicator => combined.includes(indicator)).length;
+  const globalScore = globalIndicators.filter(indicator => combined.includes(indicator)).length;
+  const regionalScore = regionalIndicators.filter(indicator => combined.includes(indicator)).length;
+  
+  // Special cases - prioritize strong local indicators
+  const strongLocalIndicators = ['cafe', 'coffee shop', 'restaurant', 'bar', 'bakery', 'salon'];
+  const hasStrongLocal = strongLocalIndicators.some(indicator => combined.includes(indicator));
+  
+  if (hasStrongLocal) {
+    return 'local_smb'; // Coffee shop with mobile app is still local SMB
+  }
+  
+  if (industry === 'Food & Delivery' && !combined.includes('saas') && !combined.includes('software')) {
+    return 'local_smb';
+  }
+  
+  if (localScore > 0 && globalScore === 0) return 'local_smb';
+  if (globalScore > localScore && globalScore > regionalScore) return 'global_saas';
+  if (regionalScore > localScore) return 'regional';
+  if (localScore > 0) return 'local_smb';
+  
+  // Default based on industry
+  if (['Healthcare', 'Education'].includes(industry)) return 'regional';
+  if (['Technology', 'Fintech'].includes(industry)) return 'global_saas';
+  
+  return 'national';
+}
+
+// Get appropriate market size limits based on business scale and industry
+function getMarketSizeLimits(scale: string, industry: string): { maxTAM: number; preferredTAM: number; maxRevenue: number } {
+  switch (scale) {
+    case 'local_smb':
+      return {
+        maxTAM: 0.5, // $500M max TAM
+        preferredTAM: 0.1, // Prefer $100M TAM
+        maxRevenue: 10 // $10M max revenue projection
+      };
+    case 'regional':
+      return {
+        maxTAM: 5, // $5B max TAM
+        preferredTAM: 2, // Prefer $2B TAM
+        maxRevenue: 50 // $50M max revenue
+      };
+    case 'national':
+      return {
+        maxTAM: 50, // $50B max TAM
+        preferredTAM: 20, // Prefer $20B TAM
+        maxRevenue: 100 // $100M max revenue
+      };
+    case 'global_saas':
+    default:
+      // More lenient for global SaaS but still realistic
+      const industryLimits = {
+        'Healthcare': { maxTAM: 500, preferredTAM: 350, maxRevenue: 200 },
+        'Fintech': { maxTAM: 300, preferredTAM: 179, maxRevenue: 150 },
+        'Education': { maxTAM: 600, preferredTAM: 400, maxRevenue: 200 },
+        'Technology': { maxTAM: 400, preferredTAM: 250, maxRevenue: 150 }
+      };
+      return industryLimits[industry as keyof typeof industryLimits] || industryLimits['Technology'];
+  }
+}
+
+// Clamp market size text with context-aware replacement
+function clampMarketSizeText(text: string, maxValue: number, preferredValue: number): string {
+  let result = text;
+  
+  // Parse current market size
+  const currentSize = parseMarketSizeInBillions(text);
+  
+  if (currentSize && currentSize > maxValue) {
+    const replacementSize = preferredValue;
+    
+    // Replace all occurrences of the inflated market size
+    result = result.replace(/\$\d+(?:\.\d+)?\s*(?:trillion|T)\b/gi, `$${replacementSize} billion`);
+    result = result.replace(/\$\d+(?:\.\d+)?\s*(?:billion|B|bn)\b/gi, `$${replacementSize} billion`);
+    result = result.replace(/\$\d{1,3}(?:,\d{3}){3,}\b/g, `$${replacementSize} billion`);
+    
+    // Handle non-dollar prefixed amounts
+    result = result.replace(/(?:USD|US\$)\s*\d+(?:\.\d+)?\s*(?:billion|B|bn|trillion|T)\b/gi, `$${replacementSize} billion`);
+    result = result.replace(/\b\d+(?:\.\d+)?\s*(?:billion|bn)\b/gi, `${replacementSize} billion`);
+    result = result.replace(/\b\d+(?:\.\d+)?\s*trillion\b/gi, `${replacementSize} billion`);
+    
+    // Replace written numbers (comprehensive coverage)
+    result = result.replace(/\b(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)\s+(?:billion|trillion)/gi, `${replacementSize} billion`);
+  }
+  
+  return result;
+}
+
+// Comprehensive business plan validation with context awareness
+function validateBusinessPlan(plan: any, industry: string, ideaTitle: string = '', description: string = ''): any {
+  // Classify the business scale
+  const businessScale = classifyBusinessScale(ideaTitle, description, industry);
+  const limits = getMarketSizeLimits(businessScale, industry);
+  
+  console.log(`Business scale classified as: ${businessScale}, TAM limit: $${limits.maxTAM}B`);
+  
+  // Validate and fix market analysis
+  if (plan.marketAnalysis && typeof plan.marketAnalysis === 'string') {
+    plan.marketAnalysis = clampMarketSizeText(plan.marketAnalysis, limits.maxTAM, limits.preferredTAM);
+    
+    // Fix unrealistic growth rates (>50%)
+    plan.marketAnalysis = plan.marketAnalysis.replace(/\d{3,}%/g, '15%');
+    plan.marketAnalysis = plan.marketAnalysis.replace(/[6-9]\d%/g, '25%');
+    plan.marketAnalysis = plan.marketAnalysis.replace(/5[0-9]%/g, '35%');
+  }
+  
+  // Validate and fix financial projections
+  if (plan.financialProjections && typeof plan.financialProjections === 'string') {
+    let sanitized = plan.financialProjections;
+    
+    // Replace unrealistic revenue projections based on business scale
+    if (businessScale === 'local_smb') {
+      sanitized = sanitized.replace(/\$\d{3,}M/g, '$5M');
+      sanitized = sanitized.replace(/\$\d+\.?\d*\s*billion/gi, '$10M');
+    } else if (businessScale === 'regional') {
+      sanitized = sanitized.replace(/\$\d{3,}M/g, '$25M');
+      sanitized = sanitized.replace(/\$\d+\.?\d*\s*billion/gi, '$50M');
+    } else {
+      sanitized = sanitized.replace(/\$\d{4,}M/g, '$100M');
+      sanitized = sanitized.replace(/\$\d+\.?\d*\s*billion/gi, `$${limits.maxRevenue}M`);
+    }
+    
+    plan.financialProjections = sanitized;
+  }
+  
+  // Validate executive summary for market size claims
+  if (plan.executiveSummary && typeof plan.executiveSummary === 'string') {
+    plan.executiveSummary = clampMarketSizeText(plan.executiveSummary, limits.maxTAM, limits.preferredTAM);
+  }
+  
+  // Validate funding requirements to be reasonable for scale
+  if (plan.fundingRequirements && typeof plan.fundingRequirements === 'string') {
+    let sanitized = plan.fundingRequirements;
+    
+    if (businessScale === 'local_smb') {
+      // Local businesses shouldn't need $50M+ funding
+      sanitized = sanitized.replace(/\$\d{2,}M/g, '$500K');
+      sanitized = sanitized.replace(/\$\d+\.?\d*\s*billion/gi, '$1M');
+    } else if (businessScale === 'regional') {
+      sanitized = sanitized.replace(/\$\d{3,}M/g, '$5M');
+      sanitized = sanitized.replace(/\$\d+\.?\d*\s*billion/gi, '$10M');
+    }
+    
+    plan.fundingRequirements = sanitized;
+  }
+  
+  return plan;
+}
+
 export async function generateBusinessPlan(
   ideaTitle: string,
   description: string,
@@ -279,7 +558,13 @@ export async function generateBusinessPlan(
   targetMarket?: string,
   analysis?: IdeaAnalysis
 ): Promise<BusinessPlan> {
-  // OpenAI API key validation handled at module initialization
+  // Check if API key is available and valid for production use
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey || apiKey === "default_key" || apiKey.includes("demo")) {
+    console.log("🔒 OpenAI API key not available, using demo business plan");
+    const demoPlan = getDemoBusinessPlan(ideaTitle, description, industry);
+    return validateBusinessPlan(demoPlan, industry, ideaTitle, description) as BusinessPlan;
+  }
 
   try {
     const contextInfo = [
@@ -313,6 +598,13 @@ export async function generateBusinessPlan(
       - riskAnalysis: string (key risks and mitigation strategies)
       - timeline: string (12-24 month roadmap with key milestones)
       
+      IMPORTANT GUIDELINES FOR REALISTIC ESTIMATES:
+      - Market sizes: Healthcare ~$350B, Fintech ~$179B, Education ~$400B, Food & Delivery ~$150B, Technology ~$250B
+      - Growth rates: Healthcare 8-12%, Fintech 15-20%, Education 10-15%, Food & Delivery 12-18%, Technology 10-15%
+      - For local businesses: TAM should be $50M-$5B, not tens of billions
+      - Revenue projections: Start with $50K-$500K Year 1, scale realistically
+      - Be conservative and realistic - avoid inflated numbers that hurt credibility
+      
       Make it professional, detailed, and investor-ready following Y Combinator standards.
     `;
 
@@ -333,15 +625,20 @@ export async function generateBusinessPlan(
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
-    return result as BusinessPlan;
+    
+    // Validate and sanitize the business plan for realistic values
+    const sanitizedPlan = validateBusinessPlan(result, industry, ideaTitle, description);
+    return sanitizedPlan as BusinessPlan;
   } catch (error) {
     const errorMessage = (error as Error).message;
     if (errorMessage.includes("429") || errorMessage.includes("quota")) {
       console.log("OpenAI quota exceeded, using demo business plan");
-      return getDemoBusinessPlan(ideaTitle, description, industry);
+      const demoPlan = getDemoBusinessPlan(ideaTitle, description, industry);
+      return validateBusinessPlan(demoPlan, industry, ideaTitle, description) as BusinessPlan;
     } else if (errorMessage.includes("401") || errorMessage.includes("unauthorized")) {
       console.log("🔒 OpenAI API error, using demo business plan");
-      return getDemoBusinessPlan(ideaTitle, description, industry);
+      const demoPlan = getDemoBusinessPlan(ideaTitle, description, industry);
+      return validateBusinessPlan(demoPlan, industry, ideaTitle, description) as BusinessPlan;
     } else if (errorMessage.includes("rate_limit")) {
       throw new Error("OpenAI rate limit exceeded. Please wait a moment and try again.");
     }
