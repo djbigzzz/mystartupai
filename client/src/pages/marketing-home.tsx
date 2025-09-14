@@ -315,12 +315,6 @@ export default function MarketingHome() {
                     <ArrowRight className="ml-2 w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
-                <Link href="#how-it-works">
-                  <Button size="lg" variant="outline" className="border-2 border-white/50 text-white hover:bg-white/10 px-8 py-4 text-lg font-semibold backdrop-blur-sm hover:scale-105 transform transition-all duration-300" data-testid="button-hero-secondary">
-                    <Play className="mr-2 w-5 h-5" />
-                    See How It Works
-                  </Button>
-                </Link>
               </div>
               
               {/* Trust Indicators */}
