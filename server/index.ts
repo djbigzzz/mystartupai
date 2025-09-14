@@ -21,6 +21,16 @@ validateEnvironment();
 
 const app = express();
 
+// Health check endpoint - MUST be before any middleware that could fail
+app.get("/health", (req, res) => {
+  res.status(200).json({ 
+    status: "ok", 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: process.version
+  });
+});
+
 // OAuth bypass route - MUST be before any middleware that could fail
 app.get("/api/auth/google/bypass", (req, res) => {
   console.log('🔍 Bypass OAuth route called');

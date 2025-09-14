@@ -4,6 +4,9 @@ import cors from "cors";
 import { body, query, param, validationResult } from "express-validator";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
+import { pool } from "./db";
 import type { Request, Response, NextFunction } from "express";
 
 // Security Headers Middleware
@@ -179,12 +182,23 @@ export const verifyPassword = async (password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 };
 
-// Session Security with persistent store
+// Session Security with PostgreSQL store
+const PgSession = connectPgSimple(session);
+
 export const secureSessionConfig = {
   name: 'mystartup_session', // Don't use default session name
   secret: process.env.SESSION_SECRET!,
   resave: false,
   saveUninitialized: false,
+  store: new PgSession({
+    pool: pool, // Use existing database pool
+    tableName: 'sessions', // Table name for sessions
+    createTableIfMissing: true, // Auto-create sessions table
+    pruneSessionInterval: 60 * 15, // Clean up expired sessions every 15 minutes
+    errorLog: (err) => {
+      console.error('Session store error:', err);
+    }
+  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
