@@ -194,7 +194,7 @@ export const secureSessionConfig = {
     pool: pool, // Use existing database pool
     tableName: 'sessions', // Table name for sessions
     createTableIfMissing: true, // Auto-create sessions table
-    pruneSessionInterval: 60 * 15, // Clean up expired sessions every 15 minutes
+    pruneSessionInterval: 1000 * 60 * 15, // Clean up expired sessions every 15 minutes (in milliseconds)
     errorLog: (err) => {
       console.error('Session store error:', err);
     }
