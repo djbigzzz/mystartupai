@@ -518,21 +518,21 @@ export default function InteractiveDemo() {
               <AnimatedResult
                 icon={<Globe className="w-5 h-5 text-blue-600" />}
                 title="Market Size Analysis"
-                content={`The ${userData.industry} market is valued at $${userData.industry === 'Healthcare' ? '4.2 trillion' : userData.industry === 'Fintech' ? '179 billion' : userData.industry === 'Education' ? '7.3 trillion' : userData.industry === 'Food & Delivery' ? '150 billion' : '3.8 trillion'} globally, with your "${userData.idea.substring(0, 50)}..." concept targeting a growing segment.`}
+                content={`The ${userData.industry} market is valued at $${userData.industry === 'Healthcare' ? '350 billion' : userData.industry === 'Fintech' ? '179 billion' : userData.industry === 'Education' ? '400 billion' : userData.industry === 'Food & Delivery' ? '150 billion' : '250 billion'} globally, with your "${userData.idea.substring(0, 50)}..." concept targeting a growing segment.`}
                 delay={500}
                 color="border-blue-500 bg-blue-50 dark:bg-blue-900/20"
               />
               <AnimatedResult
                 icon={<TrendingUp className="w-5 h-5 text-green-600" />}
                 title="Growth Trends"
-                content={`${userData.industry} market analysis shows 25-40% annual growth in digital adoption. Your solution aligns with key trends: sustainability, AI integration, and user-centric design.`}
+                content={`${userData.industry} market analysis shows ${userData.industry === 'Healthcare' ? '8-12%' : userData.industry === 'Fintech' ? '15-20%' : userData.industry === 'Education' ? '10-15%' : userData.industry === 'Food & Delivery' ? '12-18%' : '10-15%'} annual growth in digital adoption. Your solution aligns with key trends: sustainability, AI integration, and user-centric design.`}
                 delay={2000}
                 color="border-green-500 bg-green-50 dark:bg-green-900/20"
               />
               <AnimatedResult
                 icon={<Target className="w-5 h-5 text-purple-600" />}
                 title="Market Opportunity"
-                content={`Target audience analysis for your startup reveals ${userData.industry === 'Healthcare' ? 'aging population' : userData.industry === 'Fintech' ? 'underbanked consumers' : userData.industry === 'Education' ? 'lifelong learners' : userData.industry === 'Food & Delivery' ? 'eco-conscious diners' : 'digital natives'} as primary market. TAM estimated at $2.3B.`}
+                content={`Target audience analysis for your startup reveals ${userData.industry === 'Healthcare' ? 'aging population' : userData.industry === 'Fintech' ? 'underbanked consumers' : userData.industry === 'Education' ? 'lifelong learners' : userData.industry === 'Food & Delivery' ? 'eco-conscious diners' : 'digital natives'} as primary market. Addressable market estimated at $${userData.industry === 'Healthcare' ? '15B' : userData.industry === 'Fintech' ? '8B' : userData.industry === 'Education' ? '12B' : userData.industry === 'Food & Delivery' ? '4.5B' : '6B'}.`}
                 delay={3500}
                 color="border-purple-500 bg-purple-50 dark:bg-purple-900/20"
               />
