@@ -841,46 +841,58 @@ export default function Dashboard() {
       <SidebarNavigation />
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {activeSection === "profile" ? "Profile Management" : "Dashboard"}
-              </h1>
-              <p className="text-gray-600">
-                {activeSection === "profile" 
-                  ? "Manage your personal information and account settings" 
-                  : "Monitor your startup journey and key metrics"}
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button
-                variant={activeSection === "overview" ? "default" : "outline"}
-                onClick={() => setActiveSection("overview")}
-                size="sm"
-              >
-                Dashboard
-              </Button>
-              <Button
-                variant={activeSection === "profile" ? "default" : "outline"}
-                onClick={() => setActiveSection("profile")}
-                size="sm"
-              >
-                Profile
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Bell className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarImage src={user?.avatar || undefined} />
-                  <AvatarFallback>{user?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}</AvatarFallback>
-                </Avatar>
-                <div className="text-sm">
-                  <p className="font-medium text-gray-900">{user?.name || 'User'}</p>
-                  <p className="text-gray-500">Pro Plan</p>
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-8 py-6 flex-shrink-0">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white truncate" data-testid="page-title">
+                  {activeSection === "profile" ? "Profile Management" : "Dashboard"}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-1" data-testid="page-description">
+                  {activeSection === "profile" 
+                    ? "Manage your personal information and account settings" 
+                    : "Monitor your startup journey and key metrics"}
+                </p>
+              </div>
+              <div className="flex items-center space-x-3 ml-6">
+                <Button
+                  variant={activeSection === "overview" ? "default" : "outline"}
+                  onClick={() => setActiveSection("overview")}
+                  size="sm"
+                  className="hidden sm:inline-flex"
+                  data-testid="button-dashboard-tab"
+                >
+                  Dashboard
+                </Button>
+                <Button
+                  variant={activeSection === "profile" ? "default" : "outline"}
+                  onClick={() => setActiveSection("profile")}
+                  size="sm"
+                  className="hidden sm:inline-flex"
+                  data-testid="button-profile-tab"
+                >
+                  Profile
+                </Button>
+                <Button variant="ghost" size="sm" data-testid="button-notifications-header">
+                  <Bell className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={user?.avatar || undefined} />
+                    <AvatarFallback className="text-sm font-semibold">
+                      {user?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="text-sm min-w-0 hidden lg:block">
+                    <p className="font-semibold text-gray-900 dark:text-white truncate" data-testid="text-header-user-name">
+                      {user?.name || 'User'}
+                    </p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs" data-testid="text-header-plan">
+                      Pro Plan
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -888,8 +900,10 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 p-6 overflow-auto">
-          {renderMainContent()}
+        <div className="flex-1 px-8 py-6 overflow-auto">
+          <div className="max-w-7xl mx-auto">
+            {renderMainContent()}
+          </div>
         </div>
       </div>
     </div>
