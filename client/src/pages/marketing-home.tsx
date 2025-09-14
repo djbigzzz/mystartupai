@@ -567,7 +567,7 @@ export default function MarketingHome() {
             </h2>
           </div>
           <p className="text-xl text-gray-600 mb-8">
-            Join thousands of founders who are already using AI to accelerate their startup journey.
+            Start using AI to accelerate your startup journey with comprehensive business planning tools.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -585,7 +585,7 @@ export default function MarketingHome() {
           </div>
           
           <p className="text-sm text-gray-500 mt-6">
-            No credit card required • Start building in 30 seconds • Join 10,000+ founders
+            No credit card required • Start building in 30 seconds • Cancel anytime
           </p>
         </div>
       </section>
