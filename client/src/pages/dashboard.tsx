@@ -366,7 +366,7 @@ export default function Dashboard() {
               Welcome back, {user?.name || 'Entrepreneur'}!
             </h1>
             <p className="text-blue-100 text-sm" data-testid="text-welcome-subtitle">
-              {ideaData ? `Working on: ${ideaData.ideaTitle}` : 'Ready to build your startup?'}
+              {ideaData ? `Working on: ${(ideaData as any).ideaTitle}` : 'Ready to build your startup?'}
             </p>
           </div>
           <Link href="/export">
@@ -379,7 +379,7 @@ export default function Dashboard() {
       </div>
 
       {/* Startup Progress Overview */}
-      {ideaData && (
+      {ideaData && ideaData as any && (
         <Card data-testid="card-startup-progress">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center space-x-2 text-lg">
