@@ -2122,7 +2122,240 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
     }
   });
 
-  // Market Research API - Real AI-powered research
+  // Intelligent Idea Analysis API - Understands business context first
+  app.post("/api/intelligent-analysis",
+    advancedRateLimit(10, 10 * 60 * 1000), // 10 analysis requests per 10 minutes
+    body('ideaTitle').isLength({ min: 3, max: 200 }).withMessage('Idea title must be between 3 and 200 characters'),
+    body('description').isLength({ min: 10, max: 2000 }).withMessage('Description must be between 10 and 2000 characters'),
+    body('industry').optional().isLength({ max: 100 }).trim(),
+    body('stage').optional().isLength({ max: 50 }).trim(),
+    body('ideaId').optional().isNumeric().withMessage('Idea ID must be a valid number'),
+    handleValidationErrors,
+    async (req: Request, res: Response) => {
+      try {
+        const { ideaTitle, description, industry, stage, ideaId } = req.body;
+        
+        // Sanitize inputs
+        const sanitizedTitle = sanitizeHtml(ideaTitle.trim());
+        const sanitizedDescription = sanitizeHtml(description.trim());
+        const sanitizedIndustry = sanitizeQuery(industry || "Technology");
+        const sanitizedStage = sanitizeQuery(stage || "Idea Stage");
+        
+        console.log(`🧠 Starting intelligent analysis for: ${sanitizedTitle}`);
+
+        // Generate intelligent analysis with contextual understanding
+        const analysisPrompt = `As an expert business analyst, analyze this startup idea and determine if you need more information to provide accurate market insights.
+
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+STAGE: "${sanitizedStage}"
+
+Analyze and respond with ONLY a valid JSON object in this exact format:
+{
+  "businessType": "specific business category (e.g., 'Local Coffee Shop', 'SaaS Platform', 'E-commerce Store')",
+  "industry": "refined industry classification",
+  "location": {
+    "type": "local|regional|national|global",
+    "specificLocation": "extracted location if mentioned, null if not"
+  },
+  "targetMarket": {
+    "primary": "primary customer segment",
+    "demographics": ["demographic1", "demographic2"],
+    "size": "realistic size description"
+  },
+  "revenueModel": "how the business makes money",
+  "marketPosition": "positioning strategy",
+  "clarifyingQuestions": [
+    {
+      "id": "unique_id",
+      "question": "specific question to understand the business better",
+      "type": "text|number|select",
+      "options": ["option1", "option2"] or null,
+      "placeholder": "helpful placeholder text",
+      "required": true/false,
+      "category": "location|target_market|business_model|competition|goals"
+    }
+  ],
+  "confidence": 0-100,
+  "needsClarification": true/false,
+  "summary": "2-sentence summary of your understanding"
+}
+
+IMPORTANT: 
+- Only ask clarifying questions if truly needed for accurate market sizing
+- Focus on questions that would significantly impact market analysis
+- Be realistic about business scope (local coffee shop vs global tech company)
+- Confidence should reflect how well you understand the specific market context`;
+
+        const analysisResponse = await aiCofounder.openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: analysisPrompt }],
+          temperature: 0.3,
+          max_tokens: 1500
+        });
+
+        const analysisText = analysisResponse.choices[0]?.message?.content?.trim() || "";
+        
+        let analysisData;
+        try {
+          // Clean the response to extract JSON
+          const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+          const jsonStr = jsonMatch ? jsonMatch[0] : analysisText;
+          analysisData = JSON.parse(jsonStr);
+        } catch (parseError) {
+          console.error("❌ Failed to parse analysis response:", parseError);
+          throw new Error("Failed to analyze idea - please try again");
+        }
+
+        // Add realistic clarifying questions if confidence is low
+        if (analysisData.confidence < 70 && analysisData.clarifyingQuestions.length === 0) {
+          analysisData.clarifyingQuestions = [
+            {
+              id: "location",
+              question: "Where specifically do you plan to operate this business?",
+              type: "text",
+              placeholder: "e.g., Dublin city center, Ireland",
+              required: true,
+              category: "location"
+            },
+            {
+              id: "target_customers",
+              question: "Who is your primary target customer?",
+              type: "text", 
+              placeholder: "e.g., office workers, students, tourists",
+              required: true,
+              category: "target_market"
+            }
+          ];
+          analysisData.needsClarification = true;
+        }
+
+        console.log(`✅ Intelligent analysis completed with ${analysisData.confidence}% confidence`);
+        res.json(analysisData);
+
+      } catch (error) {
+        console.error(`❌ Intelligent analysis failed:`, error);
+        res.status(500).json({ 
+          error: "Failed to analyze idea",
+          details: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  );
+
+  // Contextual Market Research API - Uses understanding from analysis
+  app.post("/api/contextual-market-research",
+    advancedRateLimit(5, 10 * 60 * 1000), // 5 research requests per 10 minutes  
+    body('ideaId').isNumeric().withMessage('Valid idea ID is required'),
+    handleValidationErrors,
+    async (req: Request, res: Response) => {
+      try {
+        const { ideaId, ideaAnalysis, questionAnswers, editedAnalysis, ideaTitle, description, industry, stage } = req.body;
+        
+        if (!ideaAnalysis) {
+          return res.status(400).json({ error: "Analysis data is required" });
+        }
+
+        console.log(`🎯 Starting contextual market research for: ${ideaAnalysis.businessType}`);
+
+        // Merge analysis with user edits and answers
+        const finalAnalysis = { ...ideaAnalysis, ...editedAnalysis };
+        const location = questionAnswers?.location || finalAnalysis.location?.specificLocation || "local area";
+        const targetCustomers = questionAnswers?.target_customers || finalAnalysis.targetMarket?.primary || "general customers";
+
+        // Generate realistic market research based on business context
+        const researchPrompt = `As a market research expert, provide realistic market insights for this specific business:
+
+BUSINESS: ${finalAnalysis.businessType}
+LOCATION: ${location}
+TARGET MARKET: ${targetCustomers}
+BUSINESS SCOPE: ${finalAnalysis.location?.type || "local"}
+REVENUE MODEL: ${finalAnalysis.revenueModel}
+
+User provided clarifications: ${JSON.stringify(questionAnswers)}
+
+Provide ONLY a valid JSON response with realistic market data appropriate for this business type and scope:
+
+{
+  "marketSize": {
+    ${finalAnalysis.location?.type === "local" ? '"local": "realistic local market size (e.g., €50K-200K annually)",' : ""}
+    ${finalAnalysis.location?.type === "regional" ? '"regional": "realistic regional opportunity",' : ""}
+    "realistic": "total addressable market appropriate for business type and location"
+  },
+  "competitors": [
+    {
+      "name": "actual competitor name or type",
+      "type": "direct|indirect", 
+      "location": "specific location if local business",
+      "description": "what they offer and why they compete",
+      "marketShare": "realistic percentage or description"
+    }
+  ],
+  "opportunities": [
+    "specific, realistic opportunities for this business type"
+  ],
+  "challenges": [
+    "realistic challenges this business will face"  
+  ],
+  "marketTrends": [
+    {
+      "trend": "relevant trend affecting this business",
+      "impact": "positive|negative|neutral",
+      "relevance": "how this specifically affects the business"
+    }
+  ]
+}
+
+IMPORTANT:
+- Market sizes must be realistic for the business type (local coffee shop ≠ $250M market)
+- Competitors should be actual businesses that would compete in the same space
+- For local businesses, focus on local/regional competitors
+- Opportunities should be specific and actionable
+- Base everything on the actual business context, not generic startup advice`;
+
+        const researchResponse = await aiCofounder.openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: researchPrompt }],
+          temperature: 0.2,
+          max_tokens: 2000
+        });
+
+        const researchText = researchResponse.choices[0]?.message?.content?.trim() || "";
+        
+        let marketData;
+        try {
+          const jsonMatch = researchText.match(/\{[\s\S]*\}/);
+          const jsonStr = jsonMatch ? jsonMatch[0] : researchText;
+          marketData = JSON.parse(jsonStr);
+        } catch (parseError) {
+          console.error("❌ Failed to parse research response:", parseError);
+          throw new Error("Failed to generate market research - please try again");
+        }
+
+        // Save results to database
+        const savedIdea = await storage.updateStartupIdea(parseInt(ideaId), {
+          analysis: {
+            marketAnalysis: marketData,
+            businessContext: finalAnalysis,
+            clarificationAnswers: questionAnswers
+          }
+        });
+
+        console.log(`✅ Contextual market research completed and saved for ${finalAnalysis.businessType}`);
+        res.json({ success: true, marketData, idea: savedIdea });
+
+      } catch (error) {
+        console.error(`❌ Contextual market research failed:`, error);
+        res.status(500).json({ 
+          error: "Failed to complete market research",
+          details: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  );
+
+  // Market Research API - Real AI-powered research (Legacy - keep for compatibility)
   app.post("/api/market-research", 
     advancedRateLimit(5, 10 * 60 * 1000), // 5 market research requests per 10 minutes
     body('ideaTitle').isLength({ min: 3, max: 200 }).withMessage('Idea title must be between 3 and 200 characters'),

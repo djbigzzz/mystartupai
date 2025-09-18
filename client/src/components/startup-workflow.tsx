@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import IntelligentIdeaAnalyzer from "@/components/intelligent-idea-analyzer";
 import { 
   Lightbulb, 
   Search,
@@ -73,11 +74,11 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
       dependencies: []
     },
     {
-      id: "market-research",
-      title: "2. Market Research & Competitor Analysis",
-      description: "AI-powered analysis of market size, competitors, trends, and opportunities - FIRST step after idea submission",
-      route: "/market-research",
-      icon: Search,
+      id: "intelligent-analysis",
+      title: "2. Intelligent Idea Analysis",
+      description: "AI asks clarifying questions and provides realistic, contextual market insights - FIRST step after idea submission",
+      route: "/intelligent-analysis",
+      icon: Brain,
       status: "locked",
       completionPercentage: 0,
       estimatedTime: "15-25 minutes",
@@ -85,14 +86,14 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
     },
     {
       id: "approval-gate-1",
-      title: "3. Review & Approve Market Research",
-      description: "Review the market research results and decide if you're happy to proceed",
+      title: "3. Review & Approve Analysis",
+      description: "Review the intelligent analysis results and decide if you're happy to proceed",
       route: "#",
       icon: CheckCircle,
       status: "locked",
       completionPercentage: 0,
       estimatedTime: "5-10 minutes",
-      dependencies: ["market-research"],
+      dependencies: ["intelligent-analysis"],
       requiresApproval: true
     },
     {
@@ -142,7 +143,7 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
               completionPercentage: 100
             };
           
-          case "market-research":
+          case "intelligent-analysis":
             // Available if idea is submitted
             return {
               ...step,
@@ -152,7 +153,7 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
           
           case "approval-gate-1":
             const marketResearchCompleted = ideaData.analysis?.marketAnalysis;
-            const approvalStatus = approvalStates["market-research"];
+            const approvalStatus = approvalStates["intelligent-analysis"];
             
             if (!marketResearchCompleted) return { ...step, status: "locked" as const };
             if (approvalStatus === null) return { ...step, status: "pending-approval" as const };
@@ -160,7 +161,7 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
             return { ...step, status: "available" as const }; // If rejected, allow retry
           
           case "business-plan":
-            const approved = approvalStates["market-research"] === true;
+            const approved = approvalStates["intelligent-analysis"] === true;
             return {
               ...step,
               status: ideaData.businessPlan ? "completed" as const : 
@@ -192,7 +193,7 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
 
   // Handle approval decisions
   const handleApproval = (stepId: string, approved: boolean) => {
-    const previousStepId = stepId === "approval-gate-1" ? "market-research" : stepId;
+    const previousStepId = stepId === "approval-gate-1" ? "intelligent-analysis" : stepId;
     
     setApprovalStates(prev => ({
       ...prev,
@@ -220,13 +221,13 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
     mutationFn: async () => {
       if (!ideaData) throw new Error("No idea data available");
       
-      const response = await apiRequest("/api/market-research", {
+      const response = await apiRequest("/api/contextual-market-research", {
         method: "POST",
         body: {
-          ideaTitle: ideaData.ideaTitle,
-          description: ideaData.description,
-          industry: ideaData.industry || "Technology",
-          stage: ideaData.stage || "Idea Stage"
+          ideaId: ideaData.id,
+          ideaAnalysis: ideaData.analysis?.businessContext,
+          questionAnswers: ideaData.analysis?.clarificationAnswers,
+          editedAnalysis: null
         },
       } as any);
       return response;
@@ -241,7 +242,7 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
       // Reset approval state
       setApprovalStates(prev => ({
         ...prev,
-        "market-research": null
+        "intelligent-analysis": null
       }));
     },
     onError: (error: any) => {
@@ -341,12 +342,12 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
                       <ThumbsDown className="w-4 h-4 mr-2" />
                       Need Changes
                     </Button>
-                    {previousStep?.id === "market-research" && (
+                    {previousStep?.id === "intelligent-analysis" && (
                       <Button 
                         variant="outline"
                         onClick={() => regenerateMarketResearch.mutate()}
                         disabled={regenerateMarketResearch.isPending}
-                        data-testid="button-regenerate-market-research"
+                        data-testid="button-regenerate-intelligent-analysis"
                       >
                         <RefreshCw className={`w-4 h-4 mr-2 ${regenerateMarketResearch.isPending ? 'animate-spin' : ''}`} />
                         Regenerate
@@ -530,7 +531,7 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
                       </div>
                       
                       {isClickable && (
-                        <Link href={step.route}>
+                        <Link href={step.route + (step.id === "intelligent-analysis" ? `?ideaId=${currentIdeaId}` : "")}>
                           <Button variant="outline" size="sm" data-testid={`button-start-${step.id}`}>
                             {step.status === "completed" ? "View" : "Start"}
                             <ArrowRight className="w-4 h-4 ml-2" />
@@ -596,6 +597,27 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
           </div>
         </CardContent>
       </Card>
+      
+      {/* Render Intelligent Idea Analyzer if needed */}
+      {ideaData && nextStep?.id === "intelligent-analysis" && (
+        <div className="mt-8">
+          <IntelligentIdeaAnalyzer 
+            ideaData={ideaData}
+            onAnalysisComplete={(analysis, insights) => {
+              // Handle completion - refresh the idea data and update approvals
+              queryClient.invalidateQueries({ queryKey: [`/api/ideas/${currentIdeaId}`] });
+              setApprovalStates(prev => ({
+                ...prev,
+                "intelligent-analysis": null // Reset to pending approval
+              }));
+              toast({
+                title: "🎯 Analysis Complete!",
+                description: "Review your results and decide if you want to proceed to business planning.",
+              });
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
