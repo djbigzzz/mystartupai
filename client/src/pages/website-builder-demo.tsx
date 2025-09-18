@@ -24,11 +24,11 @@ export default function WebsiteBuilderDemo() {
   const websiteProjects = [
     {
       id: 1,
-      name: "CryptoCafe Landing Page",
+      name: "EcoTracker Landing Page",
       type: "Landing Page",
       status: "Published",
       progress: 100,
-      url: "cryptocafe.com",
+      url: "ecotracker.com",
       lastUpdated: "2 hours ago",
       visitors: "1,247",
       conversion: "8.3%"
@@ -39,7 +39,7 @@ export default function WebsiteBuilderDemo() {
       type: "Documentation",
       status: "In Progress",
       progress: 75,
-      url: "docs.cryptocafe.com",
+      url: "docs.ecotracker.com",
       lastUpdated: "1 day ago",
       visitors: "432",
       conversion: "N/A"
@@ -50,7 +50,7 @@ export default function WebsiteBuilderDemo() {
       type: "Blog",
       status: "Draft",
       progress: 45,
-      url: "blog.cryptocafe.com",
+      url: "blog.ecotracker.com",
       lastUpdated: "3 days ago",
       visitors: "0",
       conversion: "N/A"

@@ -52,7 +52,7 @@ export default function AnalyticsDemo() {
   ];
 
   const recentActivity = [
-    { action: "New idea analyzed", time: "2 hours ago", idea: "CryptoCafe" },
+    { action: "New idea analyzed", time: "2 hours ago", idea: "EcoTracker" },
     { action: "Business plan generated", time: "1 day ago", idea: "FitAI" },
     { action: "Investor match found", time: "3 days ago", idea: "EduTech" },
     { action: "Market research completed", time: "1 week ago", idea: "GreenDeliver" }

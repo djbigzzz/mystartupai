@@ -205,8 +205,8 @@ export default function ExportCenter() {
     
     try {
       const startupData = {
-        companyName: "CryptoCafe Technologies",
-        executiveSummary: "Revolutionary crypto payment platform for cafes and restaurants...",
+        companyName: "EcoTracker Technologies",
+        executiveSummary: "Revolutionary sustainability tracking platform for businesses...",
         marketAnalysis: "The global payment processing market is valued at $87.2 billion...",
         financials: "Projecting $2M ARR by year 3 with 40% gross margins...",
         marketing: "Multi-channel acquisition strategy targeting 50,000 merchants..."
@@ -252,7 +252,7 @@ export default function ExportCenter() {
           })),
           { format: exportFormat as any, items: selectedItems }
         );
-        downloadFile(packageBlob, `CryptoCafe_Export_Package.zip`);
+        downloadFile(packageBlob, `EcoTracker_Export_Package.zip`);
       } else {
         // Download individual file
         const result = results[0];

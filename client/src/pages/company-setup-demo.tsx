@@ -59,15 +59,15 @@ export default function CompanySetupDemo() {
   ];
 
   const companyProfile = {
-    name: "CryptoCafe Technologies LLC",
+    name: "EcoTracker Technologies LLC",
     structure: "Limited Liability Company (LLC)",
     ein: "88-1234567",
     founded: "January 15, 2025",
     state: "Delaware",
     address: "123 Innovation Drive, Wilmington, DE 19801",
     phone: "(555) 123-4567",
-    email: "hello@cryptocafe.com",
-    website: "www.cryptocafe.com",
+    email: "hello@ecotracker.com",
+    website: "www.ecotracker.com",
     industry: "Financial Technology"
   };
 

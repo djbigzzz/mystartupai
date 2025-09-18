@@ -17,7 +17,7 @@ import {
 
 export default function BusinessPlansDemo() {
   const demoPlan = {
-    title: "CryptoCafe - AI-Powered Trading Hub",
+    title: "EcoTracker - Sustainability Platform",
     status: "Complete",
     progress: 100,
     lastUpdated: "2 hours ago",
@@ -36,7 +36,7 @@ export default function BusinessPlansDemo() {
   const demoPlans = [
     {
       id: 1,
-      title: "CryptoCafe - Trading Hub",
+      title: "EcoTracker - Sustainability Platform",
       industry: "FinTech",
       status: "Complete",
       progress: 100,
