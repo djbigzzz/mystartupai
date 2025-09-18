@@ -35,7 +35,7 @@ import {
 import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
-import StartupWorkflowDashboard from "@/components/startup-workflow-dashboard";
+import StartupWorkflow from "@/components/startup-workflow";
 import { ThemeToggle } from "@/components/theme-toggle";
 import GuidedOnboarding from "@/components/onboarding/guided-onboarding";
 import DailyCheckin from "@/components/daily-checkin";
@@ -358,7 +358,7 @@ export default function Dashboard() {
 
   const renderDashboardOverview = () => (
     <div className="space-y-6">
-      {/* Startup Progress Header */}
+      {/* Welcome Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-4 text-white">
         <div className="flex items-center justify-between">
           <div>
@@ -377,6 +377,12 @@ export default function Dashboard() {
           </Link>
         </div>
       </div>
+
+      {/* Primary Startup Workflow - This is now the main feature */}
+      <StartupWorkflow 
+        currentIdeaId={ideaData?.id} 
+        ideaData={ideaData}
+      />
 
       {/* Startup Progress Overview */}
       {ideaData && ideaData as any && (

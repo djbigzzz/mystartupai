@@ -1129,7 +1129,7 @@ export default function PitchDeckGenerator({ ideaId, ideaData, businessPlan }: P
                       }`}
                       style={{ 
                         borderLeftColor: brandTheme.primaryColor,
-                        ringColor: index === currentSlideIndex ? `${brandTheme.primaryColor}40` : undefined
+                        '--tw-ring-color': index === currentSlideIndex ? `${brandTheme.primaryColor}40` : undefined
                       }}
                       onClick={() => setCurrentSlideIndex(index)}
                       data-testid={`card-slide-${slide.id}`}
