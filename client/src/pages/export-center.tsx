@@ -246,7 +246,7 @@ export default function ExportCenter() {
           results.map(r => ({ 
             id: r.name, 
             name: r.name, 
-            type: 'document', 
+            type: 'business-plan' as const, 
             content: r.blob,
             lastUpdated: new Date()
           })),
