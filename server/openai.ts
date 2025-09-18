@@ -1073,6 +1073,10 @@ function generateDemoSectionContent(
   description: string,
   industry: string
 ): string {
+  // Get industry-specific customizations
+  const industryCustomizations = getIndustryCustomizations(industry);
+  const businessModelType = getBusinessModelType(description, industry);
+  
   const demoContent: Record<string, string> = {
     'executive-summary': `${ideaTitle} is a revolutionary ${industry} platform that addresses critical market needs through innovative technology solutions. Our company leverages cutting-edge AI and automation to deliver unprecedented value to customers while building a scalable, profitable business model.\n\nThe market opportunity is substantial, with the ${industry} sector experiencing rapid digital transformation and increasing demand for efficient solutions. Our unique approach positions us to capture significant market share while building strong competitive moats through technology and network effects.\n\nWe are seeking $2M in seed funding to accelerate product development and market penetration, targeting $1M ARR within 18 months.`,
     
@@ -1082,15 +1086,15 @@ function generateDemoSectionContent(
     
     'market-analysis': `The ${industry} market is valued at over $15 billion globally and growing at 12-15% annually. Key trends driving growth include digital transformation, regulatory changes, and increasing customer expectations.\n\nOur target market includes mid-market and enterprise customers who are actively seeking modern solutions to replace legacy systems. The serviceable addressable market represents $2.8B with strong tailwinds from technology adoption.`,
     
-    'business-model': `Our revenue model is based on SaaS subscriptions with tiered pricing starting at $99/month for small businesses and scaling to enterprise packages of $10,000+ monthly. Additional revenue streams include professional services, integrations, and premium features.\n\nWe project 85% gross margins with strong unit economics: $150 CAC, $2,400 LTV, resulting in a 16:1 LTV/CAC ratio. The scalable model supports rapid growth with improving margins.`,
+    'business-model': generateBusinessModelContent(ideaTitle, businessModelType, industryCustomizations),
     
     'marketing-strategy': `Customer acquisition will focus on digital marketing, content creation, strategic partnerships, and direct sales for enterprise accounts. Our go-to-market strategy emphasizes product-led growth with freemium offerings to drive adoption.\n\nKey channels include SEO/content marketing (40%), direct sales (35%), partnerships (15%), and paid advertising (10%). We target 5% monthly growth rate with declining customer acquisition costs.`,
     
-    'operations-plan': `Operations will be built around a cloud-first architecture leveraging modern development practices. Key operational areas include product development, customer success, sales, and marketing.\n\nWe plan to scale the team from 5 to 25 employees over 18 months while maintaining high productivity and quality standards. Critical infrastructure includes AWS cloud services, automated CI/CD pipelines, and comprehensive monitoring systems.`,
+    'operations-plan': generateOperationsContent(businessModelType, industryCustomizations),
     
     'management-team': `Our founding team combines deep industry expertise with proven track records in building and scaling technology companies. CEO brings 10+ years ${industry} experience with 2 successful exits. CTO has background in enterprise software with previous companies scaling to $50M+ revenue.\n\nKey positions to fill include VP Sales, Head of Product, and Senior Engineers. Advisory board includes industry leaders and successful entrepreneurs who provide strategic guidance and network access.`,
     
-    'financial-projections': `5-year financial projections show strong growth trajectory:\nYear 1: $250K ARR\nYear 2: $1.2M ARR\nYear 3: $4.5M ARR (profitable)\nYear 4: $12M ARR\nYear 5: $28M ARR\n\nKey assumptions include 15% monthly growth, 5% churn rate, expanding gross margins from 75% to 85%, and improving unit economics with scale.`,
+    'financial-projections': generateFinancialProjections(businessModelType, industryCustomizations),
     
     'funding-request': `Seeking $2M seed funding to accelerate product development, team growth, and market penetration. Use of funds: 60% engineering and product development ($1.2M), 25% sales and marketing ($500K), 15% operations and working capital ($300K).\n\nKey milestones include completing MVP, acquiring first 100 customers, achieving $500K ARR, and Series A readiness. 18-month runway provides sufficient time to achieve these goals.`,
     
@@ -1100,6 +1104,169 @@ function generateDemoSectionContent(
   };
 
   return demoContent[sectionId] || `Generated content for ${sectionId} section of ${ideaTitle}. This comprehensive section addresses the key requirements for investor-ready business plans in the ${industry} industry.`;
+}
+
+// Helper functions for industry-specific customization
+function getIndustryCustomizations(industry: string) {
+  const industryData: Record<string, any> = {
+    'fintech': {
+      metrics: ['AUM (Assets Under Management)', 'Transaction Volume', 'Revenue per User'],
+      regulatoryFocus: 'compliance with financial regulations',
+      marketSize: '$4.5 trillion',
+      investorConcerns: ['regulatory compliance', 'security', 'customer trust']
+    },
+    'healthtech': {
+      metrics: ['Patient Engagement Rate', 'Clinical Outcomes', 'Cost per Patient'],
+      regulatoryFocus: 'HIPAA compliance and FDA approval processes',
+      marketSize: '$2.4 trillion',
+      investorConcerns: ['regulatory approval', 'clinical validation', 'reimbursement']
+    },
+    'e-commerce': {
+      metrics: ['GMV (Gross Merchandise Value)', 'Take Rate', 'Customer Lifetime Value'],
+      regulatoryFocus: 'consumer protection and data privacy',
+      marketSize: '$5.7 trillion',
+      investorConcerns: ['customer acquisition', 'logistics', 'competition']
+    },
+    'saas': {
+      metrics: ['MRR/ARR', 'Churn Rate', 'NPS Score'],
+      regulatoryFocus: 'data privacy and security',
+      marketSize: '$195 billion',
+      investorConcerns: ['product-market fit', 'scalability', 'competitive moats']
+    },
+    'edtech': {
+      metrics: ['Student Engagement', 'Learning Outcomes', 'Course Completion Rate'],
+      regulatoryFocus: 'educational compliance and student data protection',
+      marketSize: '$404 billion',
+      investorConcerns: ['adoption rates', 'learning efficacy', 'scalability']
+    }
+  };
+  
+  return industryData[industry.toLowerCase()] || {
+    metrics: ['Revenue Growth', 'Customer Acquisition', 'Market Share'],
+    regulatoryFocus: 'industry-specific compliance requirements',
+    marketSize: '$10+ billion',
+    investorConcerns: ['market adoption', 'scalability', 'competition']
+  };
+}
+
+function getBusinessModelType(description: string, industry: string): string {
+  const desc = description.toLowerCase();
+  
+  if (desc.includes('subscription') || desc.includes('saas') || industry.toLowerCase() === 'saas') {
+    return 'saas';
+  } else if (desc.includes('marketplace') || desc.includes('platform') || desc.includes('connect')) {
+    return 'marketplace';
+  } else if (desc.includes('hardware') || desc.includes('device') || desc.includes('product')) {
+    return 'hardware';
+  } else if (desc.includes('service') || desc.includes('consulting') || desc.includes('agency')) {
+    return 'services';
+  } else if (desc.includes('content') || desc.includes('media') || desc.includes('advertising')) {
+    return 'media';
+  }
+  return 'saas'; // default
+}
+
+function generateBusinessModelContent(ideaTitle: string, modelType: string, industryCustomizations: any): string {
+  const businessModels: Record<string, string> = {
+    'saas': `Our revenue model is built on a recurring SaaS subscription framework with tiered pricing designed to grow with customer needs. Starting at $49/month for startups, scaling to $2,000+ monthly for enterprise clients, with usage-based scaling for high-volume customers.
+
+Key revenue streams include: core platform subscriptions (70%), premium features and add-ons (20%), professional services and implementation (10%). We project 87% gross margins with strong unit economics: $120 CAC, $2,800 LTV, achieving an industry-leading 23:1 LTV/CAC ratio. Focus on ${industryCustomizations.metrics[0]} and ${industryCustomizations.metrics[1]} as key performance indicators.`,
+
+    'marketplace': `Our marketplace model generates revenue through commission-based transactions, connecting buyers and sellers while capturing value from successful interactions. Primary revenue streams include transaction fees (2.9% + $0.30), listing fees for premium placements, and subscription tiers for power sellers.
+
+We project gross take rates of 8-12% as the platform matures, with network effects driving user acquisition and retention. Key metrics include ${industryCustomizations.metrics[0]}, active buyer/seller ratios, and repeat transaction rates. The model benefits from viral growth and improving unit economics with scale.`,
+
+    'hardware': `Our hardware business model combines direct sales with recurring software revenue streams. Initial product sales generate 40-50% gross margins, while ongoing software subscriptions and services provide high-margin recurring revenue of $15-30/month per device.
+
+Revenue streams include: hardware sales (60%), subscription services (25%), extended warranties and support (10%), data licensing (5%). Manufacturing partnerships and just-in-time inventory management optimize working capital while maintaining quality. Focus on lifetime customer value through software and service attach rates.`,
+
+    'services': `Our professional services model leverages specialized expertise to deliver high-value outcomes for clients. Pricing combines retainer agreements, project-based engagements, and success-based pricing aligned with client outcomes.
+
+Revenue structure: monthly retainers ($5K-25K), project work ($25K-100K+), and performance bonuses tied to client success metrics. We maintain 65-75% gross margins through efficient delivery processes and proprietary methodologies. The model scales through team expansion and productization of common solutions.`,
+
+    'media': `Our content and media model monetizes audience engagement through advertising, subscriptions, and premium content offerings. Revenue streams include display advertising, sponsored content, premium subscriptions, and licensing deals with content creators.
+
+Key metrics include MAU (Monthly Active Users), engagement rates, and ARPU (Average Revenue per User). We project $2-8 CPM for advertising and $9.99-29.99 monthly subscriptions for premium content. The model scales through content creation, audience growth, and advertiser demand in the ${industryCustomizations.marketSize} market.`
+  };
+
+  return businessModels[modelType] || businessModels['saas'];
+}
+
+function generateOperationsContent(modelType: string, industryCustomizations: any): string {
+  const operationsPlans: Record<string, string> = {
+    'saas': `Operations center on cloud-native architecture with automated scaling and high availability. Core operational functions include product development (40% of team), customer success (25%), sales and marketing (25%), and operations (10%).
+
+Technical infrastructure leverages AWS/GCP with microservices architecture, automated CI/CD pipelines, and comprehensive monitoring. Key operational metrics include uptime (99.9% SLA), page load times (<2s), and customer support response times (<4 hours). Emphasis on ${industryCustomizations.regulatoryFocus} and security best practices.`,
+
+    'marketplace': `Operations focus on dual-sided market dynamics, managing both buyer and seller experiences while maintaining platform integrity. Key operational areas include marketplace operations (30%), trust and safety (25%), product development (25%), and growth marketing (20%).
+
+Platform architecture supports high-transaction volumes with real-time matching, fraud prevention, and dispute resolution systems. Critical operational metrics include transaction success rates, user satisfaction scores, and time-to-resolution for issues. Strong focus on community management and ${industryCustomizations.regulatoryFocus}.`,
+
+    'hardware': `Operations span product development, manufacturing partnerships, quality assurance, and global distribution. Key functions include R&D (35%), supply chain management (25%), manufacturing oversight (20%), and customer support (20%).
+
+Manufacturing partnerships in Asia provide cost advantages while maintaining quality through rigorous QA processes. Inventory management uses demand forecasting and just-in-time principles. Critical focus on ${industryCustomizations.regulatoryFocus} and international shipping logistics.`,
+
+    'services': `Operations emphasize talent acquisition, knowledge management, and client delivery excellence. Core areas include service delivery (40%), business development (30%), talent management (20%), and operations support (10%).
+
+Delivery methodology combines proven frameworks with custom solutions for each client. Knowledge management systems capture learnings and best practices for reuse. Key operational metrics include client satisfaction scores, project margin analysis, and utilization rates across consultants.`,
+
+    'media': `Operations focus on content creation workflows, audience engagement, and monetization optimization. Key areas include content production (35%), audience development (25%), advertising operations (25%), and platform maintenance (15%).
+
+Content management systems support multi-format publishing with SEO optimization and social media integration. Analytics platforms track engagement metrics, conversion rates, and advertiser performance. Strong emphasis on ${industryCustomizations.regulatoryFocus} and content quality standards.`
+  };
+
+  return operationsPlans[modelType] || operationsPlans['saas'];
+}
+
+function generateFinancialProjections(modelType: string, industryCustomizations: any): string {
+  const projections: Record<string, string> = {
+    'saas': `5-year SaaS financial projections with focus on recurring revenue growth:
+Year 1: $180K ARR (150 customers at $1.2K ACV)
+Year 2: $850K ARR (708 customers, improved retention)
+Year 3: $3.2M ARR (2,667 customers, profitability achieved)
+Year 4: $9.5M ARR (7,917 customers, market expansion)
+Year 5: $24M ARR (20K customers, enterprise focus)
+
+Key assumptions: 12% monthly growth, 5% churn, expanding from 85% to 90% gross margins, ${industryCustomizations.metrics[0]} growth of 25% annually, and ${industryCustomizations.metrics[1]} improvement driving expansion revenue.`,
+
+    'marketplace': `5-year marketplace financial projections based on transaction volume growth:
+Year 1: $280K revenue (8% take rate on $3.5M GMV)
+Year 2: $1.4M revenue (9% take rate on $15.6M GMV)
+Year 3: $5.8M revenue (10% take rate on $58M GMV)
+Year 4: $18.2M revenue (11% take rate on $165M GMV)
+Year 5: $45M revenue (12% take rate on $375M GMV)
+
+Growth driven by network effects, increasing ${industryCustomizations.metrics[0]}, and expanding take rates as value-added services launch. Marketplace commission model provides 80-85% gross margins with high scalability.`,
+
+    'hardware': `5-year hardware + software revenue projections with recurring components:
+Year 1: $320K (800 units × $400 hardware, limited software)
+Year 2: $1.8M (3,200 units sold, $45K monthly software ARR)
+Year 3: $6.2M (8,500 units sold, $280K monthly software ARR)
+Year 4: $14.8M (15,000 units sold, $680K monthly software ARR)
+Year 5: $28.5M (22,000 units sold, $1.2M monthly software ARR)
+
+Business model evolution from hardware-focused (Year 1: 90% hardware) to software-driven (Year 5: 50% recurring). Improving margins from 45% to 68% as software revenue scales.`,
+
+    'services': `5-year professional services financial projections with scaling team:
+Year 1: $450K (3 consultants, $150K revenue per consultant)
+Year 2: $1.4M (7 consultants, improved utilization rates)
+Year 3: $3.8M (15 consultants, premium service tiers)
+Year 4: $8.2M (25 consultants, enterprise accounts)
+Year 5: $16.5M (35 consultants, productized offerings)
+
+Growth through team expansion, premium pricing ($250-500/hour), and productization of common solutions. Gross margins improve from 65% to 78% through efficiency gains and premium positioning in ${industryCustomizations.marketSize} market.`,
+
+    'media': `5-year media and content financial projections based on audience growth:
+Year 1: $125K (50K MAU, $2.50 ARPU annually)
+Year 2: $680K (200K MAU, $3.40 ARPU)
+Year 3: $2.8M (700K MAU, $4.00 ARPU)
+Year 4: $8.4M (1.8M MAU, $4.67 ARPU)
+Year 5: $21M (3.5M MAU, $6.00 ARPU)
+
+Revenue mix evolves: advertising (60% to 40%), subscriptions (20% to 45%), premium content (20% to 15%). Focus on ${industryCustomizations.metrics[1]} and content engagement driving advertiser demand and subscription growth.`
+  };
+
+  return projections[modelType] || projections['saas'];
 }
 
 export async function generateWebsiteContent(
