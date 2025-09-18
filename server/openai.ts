@@ -110,41 +110,8 @@ function getDemoWebsiteContent(companyName: string, industry: string, businessPl
   };
 }
 
-// Demo data for when OpenAI API is unavailable - now with smart context detection
+// Generic demo data for when OpenAI API is unavailable
 function getDemoAnalysis(ideaTitle: string, industry: string): IdeaAnalysis {
-  const title = ideaTitle.toLowerCase();
-  
-  // Crypto cafe specific analysis
-  if (title.includes('crypto') && (title.includes('cafe') || title.includes('coffee'))) {
-    return {
-      score: 82,
-      strengths: [
-        "Unique hybrid concept combining food service with cryptocurrency education and trading",
-        "Growing crypto adoption creates demand for physical community spaces",
-        "Multiple revenue streams: food/beverage sales, event hosting, crypto services",
-        "Appeals to tech-savvy demographics in major cities like Dublin"
-      ],
-      weaknesses: [
-        "Regulatory uncertainty around cryptocurrency services in food establishments",
-        "Need for specialized staff knowledgeable in both hospitality and crypto",
-        "Market volatility could affect customer spending patterns",
-        "Requires significant upfront investment in technology infrastructure"
-      ],
-      marketOpportunity: `The cafe and cryptocurrency sectors are both experiencing growth, with the global coffee shop market valued at $45B+ and cryptocurrency adoption accelerating. Dublin's tech scene creates an ideal market for an innovative crypto cafe concept.`,
-      competitiveAdvantage: "First crypto-themed cafe in Dublin, combining physical community space with digital asset education and trading capabilities.",
-      recommendations: [
-        "Research local regulations for cryptocurrency services in food establishments",
-        "Partner with established crypto platforms for secure trading infrastructure",
-        "Start with crypto education events before adding trading services", 
-        "Focus on building a community of crypto enthusiasts and coffee lovers",
-        "Consider franchising model for expansion to other tech-forward cities"
-      ],
-      feasibilityScore: 75,
-      marketSizeEstimate: `Dublin cafe market estimated at €200M+ with cryptocurrency users growing 15% annually`
-    };
-  }
-  
-  // Generic analysis for other concepts
   return {
     score: 78,
     strengths: [
