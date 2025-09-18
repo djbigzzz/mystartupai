@@ -28,7 +28,9 @@ import {
   Crown,
   Award,
   Gem,
-  Shield
+  Shield,
+  Clock,
+  BarChart3
 } from "lucide-react";
 import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
@@ -355,266 +357,215 @@ export default function Dashboard() {
   ];
 
   const renderDashboardOverview = () => (
-    <div className="space-y-8">
-      {/* Hero Level Banner */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-xl p-6 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Crown className="w-8 h-8 text-yellow-300" />
-                <div>
-                  <h1 className="text-2xl font-bold" data-testid="text-welcome-user">
-                    Level {gamificationData?.progress?.level || 1} Entrepreneur
-                  </h1>
-                  <p className="text-blue-100" data-testid="text-welcome-subtitle">
-                    Welcome back, {user?.name || 'Entrepreneur'}!
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/export">
-                <Button variant="outline" className="text-blue-600 border-white hover:bg-white/10" data-testid="button-export">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Docs
-                </Button>
-              </Link>
-              {/* Streak Widget */}
-              <div className="text-right bg-white/10 rounded-lg p-3">
-                <div className="flex items-center space-x-2 mb-1">
-                  <Flame className={`w-5 h-5 ${(gamificationData?.progress?.streakDays || 0) > 0 ? 'text-orange-400 animate-pulse' : 'text-gray-400'}`} />
-                  <span className="text-xl font-bold" data-testid="text-streak-days">
-                    {gamificationData?.progress?.streakDays || 0}
-                  </span>
-                </div>
-                <div className="text-blue-100 text-xs" data-testid="text-streak-label">Day Streak</div>
-              </div>
-            </div>
+    <div className="space-y-6">
+      {/* Startup Progress Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-4 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold" data-testid="text-welcome-user">
+              Welcome back, {user?.name || 'Entrepreneur'}!
+            </h1>
+            <p className="text-blue-100 text-sm" data-testid="text-welcome-subtitle">
+              {ideaData ? `Working on: ${ideaData.ideaTitle}` : 'Ready to build your startup?'}
+            </p>
           </div>
-          
-          {/* XP Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span data-testid="text-current-xp">
-                {gamificationData?.progress?.xp || 0} XP
-              </span>
-              <span data-testid="text-next-level-xp">
-                Next Level: {gamificationData?.progress?.nextLevelXp || 100} XP
-              </span>
-            </div>
-            <div className="w-full bg-white/20 rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-500 ease-out"
-                style={{
-                  width: `${Math.min(100, ((gamificationData?.progress?.xp || 0) / (gamificationData?.progress?.nextLevelXp || 100)) * 100)}%`
-                }}
-                data-testid="progress-xp-bar"
-              ></div>
-            </div>
-          </div>
+          <Link href="/export">
+            <Button variant="outline" className="text-blue-600 border-white hover:bg-white/10" size="sm" data-testid="button-export">
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Badges Carousel */}
-      {gamificationData?.badges && gamificationData.badges.length > 0 && (
-        <Card data-testid="card-badges">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Trophy className="w-5 h-5 text-yellow-500" />
-              <span>Achievement Badges</span>
-              <Badge variant="secondary" className="ml-2">
-                {gamificationData.badges.filter(b => b.earned).length}/{gamificationData.badges.length}
-              </Badge>
+      {/* Startup Progress Overview */}
+      {ideaData && (
+        <Card data-testid="card-startup-progress">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center space-x-2 text-lg">
+              <Rocket className="w-5 h-5 text-blue-600" />
+              <span>Your Startup Progress</span>
             </CardTitle>
-            <CardDescription>Your startup journey achievements</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex space-x-3 overflow-x-auto pb-2" data-testid="carousel-badges">
-              {gamificationData.badges.map((badge) => {
-                const IconComponent = getBadgeIcon(badge.icon);
-                return (
-                  <div
-                    key={badge.id}
-                    className={`flex-shrink-0 p-3 rounded-lg border transition-all duration-200 hover:scale-105 cursor-pointer ${
-                      badge.earned 
-                        ? `${getRarityColor(badge.rarity)} text-white shadow-lg` 
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-400 border-gray-200 dark:border-gray-700'
-                    }`}
-                    data-testid={`badge-${badge.id}`}
-                    title={badge.description}
-                  >
-                    <div className="text-center">
-                      <IconComponent className="w-6 h-6 mx-auto mb-2" />
-                      <div className="text-xs font-medium">{badge.name}</div>
-                      {badge.earned && badge.earnedAt && (
-                        <div className="text-xs opacity-75 mt-1">
-                          {new Date(badge.earnedAt).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <Brain className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                <div className="text-sm font-medium text-gray-900 dark:text-white">Idea Analyzed</div>
+                <div className="text-xs text-gray-600 dark:text-gray-300">AI validation complete</div>
+              </div>
+              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <FileText className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                <div className="text-sm font-medium text-gray-900 dark:text-white">Business Plan</div>
+                <div className="text-xs text-gray-600 dark:text-gray-300">Ready to generate</div>
+              </div>
+              <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <Users className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                <div className="text-sm font-medium text-gray-900 dark:text-white">Investor Ready</div>
+                <div className="text-xs text-gray-600 dark:text-gray-300">Next milestone</div>
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Gamified Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card data-testid="card-metric-points">
+      {/* Startup Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card data-testid="card-metric-ideas">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Points</CardTitle>
-            <Sparkles className="h-4 w-4 text-yellow-500" />
+            <CardTitle className="text-sm font-medium">Ideas Analyzed</CardTitle>
+            <Brain className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600" data-testid="text-total-points">
-              {gamificationData?.progress?.points || 0}
+            <div className="text-2xl font-bold text-blue-600" data-testid="text-total-ideas">
+              {stats.completedAnalyses}
             </div>
-            <p className="text-xs text-muted-foreground">Points earned</p>
+            <p className="text-xs text-muted-foreground">AI validations done</p>
           </CardContent>
         </Card>
 
-        <Card data-testid="card-metric-level">
+        <Card data-testid="card-metric-plans">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Level</CardTitle>
-            <Crown className="h-4 w-4 text-purple-500" />
+            <CardTitle className="text-sm font-medium">Business Plans</CardTitle>
+            <FileText className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600" data-testid="text-current-level">
-              {gamificationData?.progress?.level || 1}
+            <div className="text-2xl font-bold text-green-600" data-testid="text-business-plans">
+              {stats.businessPlansGenerated}
             </div>
-            <p className="text-xs text-muted-foreground">Entrepreneur level</p>
+            <p className="text-xs text-muted-foreground">Generated & ready</p>
           </CardContent>
         </Card>
 
-        <Card data-testid="card-metric-quests">
+        <Card data-testid="card-metric-investors">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Quests Completed</CardTitle>
-            <Target className="h-4 w-4 text-green-500" />
+            <CardTitle className="text-sm font-medium">Investor Matches</CardTitle>
+            <Users className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600" data-testid="text-quests-completed">
-              {gamificationData?.quests?.filter(q => q.completed).length || 0}
+            <div className="text-2xl font-bold text-purple-600" data-testid="text-investor-matches">
+              {stats.investorConnections}
             </div>
-            <p className="text-xs text-muted-foreground">This period</p>
-          </CardContent>
-        </Card>
-
-        <Card data-testid="card-metric-streak">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Daily Streak</CardTitle>
-            <Flame className="h-4 w-4 text-orange-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600" data-testid="text-daily-streak">
-              {gamificationData?.progress?.streakDays || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">Consecutive days</p>
+            <p className="text-xs text-muted-foreground">Potential connections</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quests Panel */}
+      {/* Quick Actions */}
+      <Card data-testid="card-quick-actions">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-lg">
+            <Zap className="w-5 h-5 text-orange-500" />
+            <span>Quick Actions</span>
+          </CardTitle>
+          <CardDescription>Essential tools for your startup journey</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Link href="/submit-idea">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col py-3" data-testid="button-submit-idea">
+                <Plus className="w-5 h-5 mb-1" />
+                <span className="text-xs">Submit Idea</span>
+              </Button>
+            </Link>
+            <Link href="/business-plan">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col py-3" data-testid="button-business-plan">
+                <FileText className="w-5 h-5 mb-1" />
+                <span className="text-xs">Business Plan</span>
+              </Button>
+            </Link>
+            <Link href="/pitch-deck">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col py-3" data-testid="button-pitch-deck">
+                <BarChart3 className="w-5 h-5 mb-1" />
+                <span className="text-xs">Pitch Deck</span>
+              </Button>
+            </Link>
+            <Link href="/find-investors">
+              <Button variant="outline" size="sm" className="w-full h-auto flex-col py-3" data-testid="button-find-investors">
+                <Users className="w-5 h-5 mb-1" />
+                <span className="text-xs">Find Investors</span>
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Simplified Goals */}
       {gamificationData?.quests && gamificationData.quests.length > 0 && (
-        <Card data-testid="card-quests">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+        <Card data-testid="card-goals" className="">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center space-x-2 text-lg">
               <Target className="w-5 h-5 text-green-500" />
-              <span>Active Quests</span>
+              <span>Today's Goals</span>
             </CardTitle>
-            <CardDescription>Complete daily, weekly, and monthly challenges for rewards</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={questTab} onValueChange={setQuestTab} data-testid="tabs-quests">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="daily" data-testid="tab-daily">Daily</TabsTrigger>
-                <TabsTrigger value="weekly" data-testid="tab-weekly">Weekly</TabsTrigger>
-                <TabsTrigger value="monthly" data-testid="tab-monthly">Monthly</TabsTrigger>
-              </TabsList>
-              
-              {['daily', 'weekly', 'monthly'].map((period) => (
-                <TabsContent key={period} value={period} className="space-y-4">
-                  {gamificationData.quests
-                    .filter(quest => quest.period === period)
-                    .map((quest) => (
-                      <div
-                        key={quest.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                        data-testid={`quest-${quest.id}`}
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium" data-testid={`quest-title-${quest.id}`}>
-                              {quest.title}
-                            </h4>
-                            <div className="text-sm text-muted-foreground">
-                              <span data-testid={`quest-progress-${quest.id}`}>
-                                {quest.progress || 0}/{quest.target}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-2" data-testid={`quest-description-${quest.id}`}>
-                            {quest.description}
-                          </p>
-                          <div className="flex items-center space-x-4">
-                            <Progress 
-                              value={Math.min(100, ((quest.progress || 0) / quest.target) * 100)} 
-                              className="flex-1"
-                              data-testid={`quest-progress-bar-${quest.id}`}
-                            />
-                            <div className="text-xs text-muted-foreground">
-                              +{quest.rewardXp} XP, +{quest.rewardPoints} pts
-                            </div>
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          {quest.completed && !quest.claimed ? (
-                            <Button
-                              size="sm"
-                              onClick={() => claimQuestMutation.mutate(quest.id)}
-                              disabled={claimQuestMutation.isPending}
-                              className="bg-green-600 hover:bg-green-700"
-                              data-testid={`button-claim-quest-${quest.id}`}
-                            >
-                              <Gift className="w-4 h-4 mr-1" />
-                              Claim
-                            </Button>
-                          ) : quest.claimed ? (
-                            <Badge variant="secondary" data-testid={`badge-claimed-${quest.id}`}>
-                              <Zap className="w-3 h-3 mr-1" />
-                              Claimed
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" data-testid={`badge-in-progress-${quest.id}`}>
-                              In Progress
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  {gamificationData.quests.filter(quest => quest.period === period).length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground" data-testid={`empty-quests-${period}`}>
-                      <Target className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>No {period} quests available</p>
+            <div className="space-y-3">
+              {gamificationData.quests
+                .filter(quest => quest.period === 'daily')
+                .slice(0, 3)
+                .map((quest) => (
+                  <div key={quest.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800/50 rounded" data-testid={`goal-${quest.id}`}>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">{quest.title}</div>
+                      <div className="text-xs text-muted-foreground">{quest.progress || 0}/{quest.target}</div>
                     </div>
-                  )}
-                </TabsContent>
-              ))}
-            </Tabs>
+                    <div className="w-16 ml-3">
+                      <Progress 
+                        value={Math.min(100, ((quest.progress || 0) / quest.target) * 100)} 
+                        className="h-2"
+                      />
+                    </div>
+                  </div>
+                ))}
+            </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Daily Check-in Section */}
+      {/* Recent Activity */}
+      <Card data-testid="card-recent-activity">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2 text-lg">
+            <Clock className="w-5 h-5 text-gray-500" />
+            <span>Recent Activity</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {recentActivity.map((activity) => {
+              const getActivityIcon = (type: string) => {
+                switch(type) {
+                  case 'analysis': return Brain;
+                  case 'business_plan': return FileText;
+                  case 'investor': return Users;
+                  default: return Lightbulb;
+                }
+              };
+              const IconComponent = getActivityIcon(activity.type);
+              
+              return (
+                <div key={activity.id} className="flex items-center space-x-3 p-2" data-testid={`activity-${activity.id}`}>
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                    <IconComponent className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">{activity.title}</div>
+                    <div className="text-xs text-gray-500">{activity.timestamp}</div>
+                  </div>
+                  <Badge variant={activity.status === 'completed' ? 'default' : 'secondary'} className="text-xs">
+                    {activity.status === 'completed' ? 'Done' : 'Active'}
+                  </Badge>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Compact Daily Check-in */}
       <DailyCheckin 
-        onLevelUp={(newLevel) => {
-          setShowLevelUpModal(true);
-          // Refresh gamification data
-          refetchGamification();
-        }}
+        onLevelUp={() => {}}
         onCheckinComplete={(result) => {
           // Trigger gamification event for additional rewards
           gamificationEventMutation.mutate('daily_checkin');
