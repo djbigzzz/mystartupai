@@ -222,13 +222,13 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
       
       const response = await apiRequest("/api/market-research", {
         method: "POST",
-        body: JSON.stringify({
+        body: {
           ideaTitle: ideaData.ideaTitle,
           description: ideaData.description,
           industry: ideaData.industry || "Technology",
           stage: ideaData.stage || "Idea Stage"
-        }),
-      });
+        },
+      } as any);
       return response;
     },
     onSuccess: () => {

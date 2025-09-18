@@ -75,8 +75,8 @@ export default function MarketResearch({ ideaData, businessPlan }: MarketResearc
     mutationFn: async (data: { ideaTitle: string; description: string; industry?: string; stage?: string }) => {
       const response = await apiRequest("/api/market-research", {
         method: "POST",
-        body: JSON.stringify(data),
-      });
+        body: data,
+      } as any);
       return response;
     },
     onSuccess: (data) => {
