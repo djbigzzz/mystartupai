@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { insertStartupIdeaSchema } from "@shared/schema";
 import type { InsertStartupIdea } from "@shared/schema";
 import { api } from "@/lib/api";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -19,12 +20,13 @@ import { useToast } from "@/hooks/use-toast";
 export default function IdeaForm() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
 
   const form = useForm<InsertStartupIdea>({
     resolver: zodResolver(insertStartupIdeaSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      name: isAuthenticated ? user?.name || "" : "",
+      email: isAuthenticated ? user?.email || "" : "",
       ideaTitle: "",
       description: "",
       industry: "",
@@ -59,56 +61,81 @@ export default function IdeaForm() {
   });
 
   const onSubmit = (data: InsertStartupIdea) => {
+    // For authenticated users, ensure we have the user data
+    if (isAuthenticated && user) {
+      data.name = user.name || data.name;
+      data.email = user.email || data.email;
+    }
     submitIdeaMutation.mutate(data);
   };
+  
+  // Update form values when authentication changes
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      form.setValue('name', user.name || '');
+      form.setValue('email', user.email || '');
+    }
+  }, [isAuthenticated, user, form]);
 
   return (
     <Card className="bg-slate-50 border border-slate-200">
       <CardContent className="p-8">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center text-sm font-semibold text-slate-700">
-                      <User className="w-4 h-4 mr-2" />
-                      Full Name
-                    </FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="Enter your full name" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center text-sm font-semibold text-slate-700">
-                      <Mail className="w-4 h-4 mr-2" />
-                      Email Address
-                    </FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="email"
-                        placeholder="your@email.com" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Only show name/email fields for non-authenticated users */}
+            {!isAuthenticated && (
+              <div className="grid md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center text-sm font-semibold text-slate-700">
+                        <User className="w-4 h-4 mr-2" />
+                        Full Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter your full name" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center text-sm font-semibold text-slate-700">
+                        <Mail className="w-4 h-4 mr-2" />
+                        Email Address
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email"
+                          placeholder="your@email.com" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+            
+            {/* Show a welcome message for authenticated users */}
+            {isAuthenticated && user && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <p className="text-blue-800 text-sm">
+                  <span className="font-medium">Welcome back, {user.name}!</span> We'll use your account details for this submission.
+                </p>
+              </div>
+            )}
             
             <FormField
               control={form.control}

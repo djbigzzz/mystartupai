@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { insertStartupIdeaSchema } from "@shared/schema";
 import type { InsertStartupIdea } from "@shared/schema";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
@@ -34,7 +35,6 @@ import {
   Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 
 const industries = [
   "Technology",
@@ -86,37 +86,54 @@ interface ValidationStep {
 export default function AdvancedIdeaForm() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
+  
+  // Start from step 0 for both authenticated and non-authenticated users
   const [currentStep, setCurrentStep] = useState(0);
-  const [validationSteps, setValidationSteps] = useState<ValidationStep[]>([
-    {
-      id: "basic-info",
-      title: "Basic Information",
-      description: "Personal and contact details",
-      completed: false,
-      icon: User
-    },
-    {
-      id: "idea-concept",
-      title: "Idea Concept",
-      description: "Core startup idea and description",
-      completed: false,
-      icon: Lightbulb
-    },
-    {
-      id: "market-details",
-      title: "Market Details",
-      description: "Industry, target market, and stage",
-      completed: false,
-      icon: Target
-    },
-    {
-      id: "problem-solution",
-      title: "Problem & Solution",
-      description: "Problem statement and solution approach",
-      completed: false,
-      icon: Brain
+  // Create validation steps based on authentication status
+  const createValidationSteps = () => {
+    const baseSteps = [
+      {
+        id: "idea-concept",
+        title: "Idea Concept",
+        description: "Core startup idea and description",
+        completed: false,
+        icon: Lightbulb
+      },
+      {
+        id: "market-details",
+        title: "Market Details",
+        description: "Industry, target market, and stage",
+        completed: false,
+        icon: Target
+      },
+      {
+        id: "problem-solution",
+        title: "Problem & Solution",
+        description: "Problem statement and solution approach",
+        completed: false,
+        icon: Brain
+      }
+    ];
+    
+    // Only add basic info step for non-authenticated users
+    if (!isAuthenticated) {
+      return [
+        {
+          id: "basic-info",
+          title: "Basic Information",
+          description: "Personal and contact details",
+          completed: false,
+          icon: User
+        },
+        ...baseSteps
+      ];
     }
-  ]);
+    
+    return baseSteps;
+  };
+  
+  const [validationSteps, setValidationSteps] = useState<ValidationStep[]>(createValidationSteps());
 
   const form = useForm<InsertStartupIdea & {
     targetMarket: string;
@@ -133,8 +150,8 @@ export default function AdvancedIdeaForm() {
       revenueModel: insertStartupIdeaSchema.shape.description.optional(),
     })),
     defaultValues: {
-      name: "",
-      email: "",
+      name: isAuthenticated ? user?.name || "" : "",
+      email: isAuthenticated ? user?.email || "" : "",
       ideaTitle: "",
       description: "",
       industry: "",
@@ -148,11 +165,30 @@ export default function AdvancedIdeaForm() {
   });
 
   const watchedFields = form.watch();
+  
+  // Update form values and validation steps when authentication changes
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Auto-populate user data for authenticated users
+      form.setValue('name', user.name || '');
+      form.setValue('email', user.email || '');
+      
+      // Update validation steps to remove basic info step
+      setValidationSteps(createValidationSteps());
+      
+      // Keep currentStep at 0 since authenticated users start from the first valid step
+    } else {
+      // Update validation steps to include basic info step for non-authenticated
+      setValidationSteps(createValidationSteps());
+    }
+  }, [isAuthenticated, user, form, currentStep]);
 
-  // Calculate completion progress
+  // Calculate completion progress based on authentication status
   const calculateProgress = () => {
-    const requiredFields = ['name', 'email', 'ideaTitle', 'description', 'industry', 'stage'];
-    const completedFields = requiredFields.filter(field => watchedFields[field as keyof typeof watchedFields]?.toString().trim());
+    const requiredFields = isAuthenticated 
+      ? ['ideaTitle', 'description', 'industry', 'stage'] // Skip name/email for authenticated users
+      : ['name', 'email', 'ideaTitle', 'description', 'industry', 'stage'];
+    const completedFields = requiredFields.filter(field => watchedFields[field as keyof typeof watchedFields]?.toString()?.trim());
     return (completedFields.length / requiredFields.length) * 100;
   };
 
@@ -198,8 +234,10 @@ export default function AdvancedIdeaForm() {
     submitIdeaMutation.mutate(data);
   };
 
+  const maxSteps = validationSteps.length - 1; // Derive from validation steps length
+  
   const nextStep = () => {
-    if (currentStep < 3) {
+    if (currentStep < maxSteps) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -211,14 +249,17 @@ export default function AdvancedIdeaForm() {
   };
 
   const isStepValid = (step: number) => {
-    switch (step) {
-      case 0:
+    if (step < 0 || step >= validationSteps.length) return false;
+    
+    const stepId = validationSteps[step].id;
+    switch (stepId) {
+      case "basic-info":
         return watchedFields.name && watchedFields.email;
-      case 1:
+      case "idea-concept":
         return watchedFields.ideaTitle && watchedFields.description;
-      case 2:
+      case "market-details":
         return watchedFields.industry && watchedFields.stage && watchedFields.targetMarket;
-      case 3:
+      case "problem-solution":
         return watchedFields.problemStatement && watchedFields.solutionApproach;
       default:
         return false;
@@ -226,8 +267,11 @@ export default function AdvancedIdeaForm() {
   };
 
   const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
+    if (currentStep < 0 || currentStep >= validationSteps.length) return null;
+    
+    const stepId = validationSteps[currentStep].id;
+    switch (stepId) {
+      case "basic-info":
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -285,7 +329,7 @@ export default function AdvancedIdeaForm() {
           </div>
         );
 
-      case 1:
+      case "idea-concept":
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -344,7 +388,7 @@ export default function AdvancedIdeaForm() {
           </div>
         );
 
-      case 2:
+      case "market-details":
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -443,7 +487,7 @@ export default function AdvancedIdeaForm() {
           </div>
         );
 
-      case 3:
+      case "problem-solution":
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -566,7 +610,7 @@ export default function AdvancedIdeaForm() {
               Submit Your Startup Idea
             </CardTitle>
             <Badge variant="secondary" className="text-sm">
-              Step {currentStep + 1} of 4
+              Step {currentStep + 1} of {validationSteps.length}
             </Badge>
           </div>
           
@@ -630,7 +674,7 @@ export default function AdvancedIdeaForm() {
                 </Button>
                 
                 <div className="flex items-center space-x-4">
-                  {currentStep < 3 ? (
+                  {currentStep < maxSteps ? (
                     <Button
                       type="button"
                       onClick={nextStep}
