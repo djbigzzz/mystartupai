@@ -6,9 +6,15 @@ import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema, insertDemoSessionSchema, insertArtifactSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck, generateWebsiteContent, generateBusinessPlanSection, assessSectionQuality } from "./openai";
 import { agenticAI, AgenticAICofounder } from "./agentic-ai";
+import OpenAI from "openai";
 
 // Initialize the enhanced AI co-founder
 const aiCofounder = new AgenticAICofounder();
+
+// Initialize OpenAI client for direct API calls
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY
+});
 import { body, query } from "express-validator";
 import {
   authRateLimiter,
@@ -2188,7 +2194,7 @@ IMPORTANT:
 - Be realistic about business scope (local coffee shop vs global tech company)
 - Confidence should reflect how well you understand the specific market context`;
 
-        const analysisResponse = await aiCofounder.openai.chat.completions.create({
+        const analysisResponse = await openai.chat.completions.create({
           model: "gpt-4",
           messages: [{ role: "user", content: analysisPrompt }],
           temperature: 0.3,
@@ -2314,7 +2320,7 @@ IMPORTANT:
 - Opportunities should be specific and actionable
 - Base everything on the actual business context, not generic startup advice`;
 
-        const researchResponse = await aiCofounder.openai.chat.completions.create({
+        const researchResponse = await openai.chat.completions.create({
           model: "gpt-4",
           messages: [{ role: "user", content: researchPrompt }],
           temperature: 0.2,
