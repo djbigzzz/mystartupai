@@ -149,7 +149,7 @@ class FreeWebResearchClient {
     const articles = [];
     try {
       // Simple regex-based XML parsing (more reliable than full XML parser)
-      const itemMatches = xmlText.match(/<item[^>]*>.*?<\/item>/gs) || [];
+      const itemMatches = xmlText.match(/<item[^>]*>[\s\S]*?<\/item>/g) || [];
       
       for (const item of itemMatches.slice(0, 5)) {
         const title = this.extractXMLContent(item, 'title') || 'News Update';
