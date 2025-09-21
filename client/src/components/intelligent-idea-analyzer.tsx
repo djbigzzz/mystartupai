@@ -24,10 +24,12 @@ import {
   Lightbulb,
   BarChart3,
   PieChart,
-  Globe
+  Globe,
+  FileText
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 interface ClarifyingQuestion {
   id: string;
@@ -88,6 +90,7 @@ interface IntelligentAnalyzerProps {
 
 export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }: IntelligentAnalyzerProps) {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState<"analyzing" | "questions" | "confirming" | "researching" | "complete">("analyzing");
   const [ideaAnalysis, setIdeaAnalysis] = useState<IdeaAnalysis | null>(null);
   const [marketInsights, setMarketInsights] = useState<MarketInsights | null>(null);
@@ -676,6 +679,57 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
             </CardContent>
           </Card>
         </div>
+
+        {/* Navigation Actions */}
+        <Card className="border-0 shadow-xl bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
+          <CardContent className="p-8 text-center">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  🎉 Analysis Complete!
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Your idea has been thoroughly analyzed. Choose your next step to continue building your startup.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  onClick={() => setLocation("/dashboard")}
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  data-testid="button-continue-dashboard"
+                >
+                  <ArrowRight className="w-5 h-5 mr-2" />
+                  Continue to Dashboard
+                </Button>
+                
+                <Button 
+                  onClick={() => setLocation("/business-plan")}
+                  size="lg"
+                  variant="outline"
+                  className="border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                  data-testid="button-create-business-plan"
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Create Business Plan
+                </Button>
+              </div>
+              
+              <div className="flex justify-center">
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentStep("confirming")}
+                  data-testid="button-edit-analysis"
+                >
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Edit Analysis Details
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

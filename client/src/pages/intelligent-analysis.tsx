@@ -30,8 +30,8 @@ export default function IntelligentAnalysisPage() {
     // Invalidate and refresh the idea data
     queryClient.invalidateQueries({ queryKey: [`/api/ideas/${currentIdeaId}`] });
     
-    // Navigate back to dashboard to see the updated workflow
-    setLocation("/dashboard");
+    // Don't automatically redirect - let user view results first
+    // They can choose to continue from the results screen
   };
 
   if (!currentIdeaId) {
