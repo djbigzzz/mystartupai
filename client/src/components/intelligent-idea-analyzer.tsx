@@ -121,7 +121,9 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
       if (data.needsClarification) {
         setCurrentStep("questions");
       } else {
-        setCurrentStep("confirming");
+        setCurrentStep("researching");
+        // Auto-trigger market research immediately
+        contextualMarketResearch.mutate();
       }
       toast({
         title: "🧠 Analysis Complete!",
@@ -691,41 +693,88 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
               <Building className="w-8 h-8 text-blue-600 mr-3" />
-              Relevant Competitors
+              Competitive Landscape
             </CardTitle>
             <p className="text-gray-600 dark:text-gray-300">
-              Actual competitors in your market and location
+              Real competitors in your market space with detailed insights
             </p>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
               {marketInsights.competitors.map((competitor, index) => (
-                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div 
+                  key={index} 
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 transform transition-all duration-500 hover:shadow-md hover:-translate-y-1 animate-fade-in-up"
+                  style={{ 
+                    animationDelay: `${index * 200}ms`,
+                    animationFillMode: 'forwards'
+                  }}
+                  data-testid={`competitor-card-${index}`}
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{competitor.name}</h3>
-                        <Badge variant={competitor.type === "direct" ? "destructive" : "secondary"}>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white" data-testid={`competitor-name-${index}`}>
+                            {competitor.name}
+                          </h3>
+                        </div>
+                        <Badge 
+                          variant={competitor.type === "direct" ? "destructive" : competitor.type === "indirect" ? "secondary" : "outline"}
+                          className="transition-all duration-200 hover:scale-105"
+                        >
                           {competitor.type} competitor
                         </Badge>
                         {competitor.location && (
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="transition-all duration-200 hover:scale-105">
                             <MapPin className="w-3 h-3 mr-1" />
                             {competitor.location}
                           </Badge>
                         )}
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 text-sm">{competitor.description}</p>
-                    </div>
-                    {competitor.marketShare && (
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{competitor.marketShare}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Market Share</p>
+                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3" data-testid={`competitor-description-${index}`}>
+                        {competitor.description}
+                      </p>
+                      
+                      {/* Additional competitive intelligence */}
+                      <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                        <span>Market Player</span>
+                        <span>•</span>
+                        <span>Active</span>
+                        {competitor.marketShare && (
+                          <>
+                            <span>•</span>
+                            <span>{competitor.marketShare} share</span>
+                          </>
+                        )}
                       </div>
-                    )}
+                    </div>
+                    
+                    {/* Competitive strength indicator */}
+                    <div className="text-right">
+                      <div className="w-16 h-16 rounded-full border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center mb-2 transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-700">
+                        <div className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                          {competitor.marketShare || "N/A"}
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Market Share</p>
+                    </div>
                   </div>
                 </div>
               ))}
+            </div>
+            
+            {/* Competitive insights summary */}
+            <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center space-x-3 mb-2">
+                <Lightbulb className="w-5 h-5 text-blue-600" />
+                <h4 className="font-semibold text-gray-900 dark:text-white">Competitive Insights</h4>
+              </div>
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                Based on current market research, you're competing in {marketInsights.competitors.filter(c => c.type === "direct").length > 0 ? "a competitive" : "an emerging"} space. 
+                Focus on differentiation through {ideaAnalysis.businessType === "local" ? "superior local service" : ideaAnalysis.businessType === "digital" ? "better user experience" : "unique value proposition"}.
+              </p>
             </div>
           </CardContent>
         </Card>

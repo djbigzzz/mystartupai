@@ -53,24 +53,59 @@ class FreeWebResearchClient {
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
     try {
-      const response = await fetch(
-        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`,
-        { signal: controller.signal }
-      );
+      // First, search for relevant pages using Wikipedia search API
+      const searchUrl = `https://en.wikipedia.org/api/rest_v1/page/search?q=${encodeURIComponent(query)}&limit=5`;
+      const searchResponse = await fetch(searchUrl, { 
+        signal: controller.signal,
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MyStartup.ai/1.0)' }
+      });
       clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        return {
-          results: [{
-            title: data.title || query,
-            url: data.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${encodeURIComponent(query)}`,
-            snippet: data.extract || `Wikipedia information about ${query}`,
-            source: 'wikipedia'
-          }],
-          totalResults: 1,
-          searchTerms: query
-        };
+      
+      if (searchResponse.ok) {
+        const searchData = await searchResponse.json();
+        const results = [];
+        
+        // Fetch summaries for top 3 results
+        for (const page of (searchData.pages || []).slice(0, 3)) {
+          try {
+            const summaryController = new AbortController();
+            const summaryTimeoutId = setTimeout(() => summaryController.abort(), this.timeout);
+            
+            const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(page.key)}`;
+            const summaryResponse = await fetch(summaryUrl, { 
+              signal: summaryController.signal,
+              headers: { 'User-Agent': 'Mozilla/5.0 (compatible; MyStartup.ai/1.0)' }
+            });
+            clearTimeout(summaryTimeoutId);
+            
+            if (summaryResponse.ok) {
+              const summaryData = await summaryResponse.json();
+              results.push({
+                title: summaryData.title || page.title,
+                url: summaryData.content_urls?.desktop?.page || `https://en.wikipedia.org/wiki/${encodeURIComponent(page.key)}`,
+                snippet: summaryData.extract || page.description || `Information about ${page.title}`,
+                source: 'wikipedia'
+              });
+            }
+          } catch (summaryError) {
+            console.warn('Wikipedia summary fetch failed for:', page.title, summaryError);
+            // Add basic info even if summary fails
+            results.push({
+              title: page.title,
+              url: `https://en.wikipedia.org/wiki/${encodeURIComponent(page.key)}`,
+              snippet: page.description || `Information about ${page.title}`,
+              source: 'wikipedia'
+            });
+          }
+        }
+        
+        if (results.length > 0) {
+          return {
+            results,
+            totalResults: searchData.pages?.length || results.length,
+            searchTerms: query
+          };
+        }
       }
     } catch (error) {
       clearTimeout(timeoutId);
@@ -328,20 +363,29 @@ export class MarketResearchAgent {
       const opportunityQuery = `${industry} trends opportunities 2024 2025`;
       const opportunityData = await this.webResearch.search(opportunityQuery, { count: 5, type: "trends" });
 
-      // Use OpenAI to analyze the search results
-      const analysisPrompt = `Analyze these web search results for ${ideaTitle} in ${industry} industry:
+      // Use OpenAI to analyze the search results with structured output
+      const analysisPrompt = `Analyze these web search results for ${ideaTitle} in ${industry} industry.
 
-Market Data:\n${this.formatSearchResults(marketData)}\n\nCompetitor Data:\n${this.formatSearchResults(competitorData)}\n\nOpportunity Data:\n${this.formatSearchResults(opportunityData)}\n\nProvide structured market analysis with market size, growth rate, key trends, main competitors, opportunities, and threats.`;
+Market Data Sources:
+${this.formatSearchResults(marketData)}
+
+Competitor Data Sources:
+${this.formatSearchResults(competitorData)}
+
+Opportunity Data Sources:
+${this.formatSearchResults(opportunityData)}
+
+Extract factual information from the provided sources only. If information is not found in sources, mark as null and explain in uncertainty field.`;
       
-      const aiAnalysis = await this.analyzeWithAI(analysisPrompt);
+      const aiAnalysis = await this.analyzeWithStructuredAI(analysisPrompt);
 
       return {
-        marketSize: this.extractMarketSize(aiAnalysis),
-        growthRate: this.extractGrowthRate(aiAnalysis),
-        trends: this.extractTrends(aiAnalysis),
-        competitors: this.extractCompetitors(aiAnalysis),
-        opportunities: this.extractOpportunities(aiAnalysis),
-        threats: this.extractThreats(aiAnalysis),
+        marketSize: aiAnalysis.market_size?.value || "Data not available from sources",
+        growthRate: aiAnalysis.growth_rate?.cagr || "Growth data not available from sources", 
+        trends: aiAnalysis.trends?.map((t: any) => t.trend) || ["Insufficient trend data from sources"],
+        competitors: aiAnalysis.competitors?.map((c: any) => c.name) || ["Competitor data not available from sources"],
+        opportunities: aiAnalysis.opportunities || ["Opportunity data not available from sources"],
+        threats: aiAnalysis.threats || ["Threat data not available from sources"],
         citations: [
           ...marketData.results.map(r => r.url).filter(Boolean),
           ...competitorData.results.map(r => r.url).filter(Boolean),
@@ -349,8 +393,8 @@ Market Data:\n${this.formatSearchResults(marketData)}\n\nCompetitor Data:\n${thi
         ].filter(url => url && url !== ''),
         lastUpdated: new Date(),
         searchDisclaimer: marketData.results.length > 0 ? 
-          `Research from ${marketData.results.length + competitorData.results.length + opportunityData.results.length} live sources including Wikipedia and news feeds` :
-          marketData.disclaimer || 'Enhanced AI analysis with public data'
+          `Fact-based research from ${marketData.results.length + competitorData.results.length + opportunityData.results.length} live sources` :
+          marketData.disclaimer || 'Limited data available from public sources'
       };
     } catch (error) {
       console.error("Market research agent error:", error);
@@ -364,9 +408,44 @@ Market Data:\n${this.formatSearchResults(marketData)}\n\nCompetitor Data:\n${thi
     ).join('\n');
   }
 
+  private async analyzeWithStructuredAI(prompt: string): Promise<any> {
+    try {
+      // Try OpenAI with structured JSON output if available
+      if (process.env.OPENAI_API_KEY) {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: "You are a market research analyst. Only use facts present in provided sources. If information is not found in sources, set value to null and explain in explain_uncertainty field. Always include citations from source URLs. Respond with valid JSON only."
+            },
+            {
+              role: "user", 
+              content: prompt
+            }
+          ],
+          max_tokens: 2000,
+          temperature: 0,
+          top_p: 0,
+          seed: 12345,
+          response_format: { type: "json_object" }
+        });
+
+        const content = response.choices[0].message.content || "{}";
+        return JSON.parse(content);
+      } else {
+        // Fallback to heuristic analysis without AI
+        return this.getStructuredFallback(prompt);
+      }
+    } catch (error) {
+      console.error("AI analysis error:", error);
+      return this.getStructuredFallback(prompt);
+    }
+  }
+
   private async analyzeWithAI(prompt: string): Promise<string> {
     try {
-      // Try OpenAI if available
+      // Legacy method for backward compatibility
       if (process.env.OPENAI_API_KEY) {
         const response = await openai.chat.completions.create({
           model: "gpt-4o-mini",
@@ -386,7 +465,6 @@ Market Data:\n${this.formatSearchResults(marketData)}\n\nCompetitor Data:\n${thi
 
         return response.choices[0].message.content || "Analysis unavailable";
       } else {
-        // Fallback to heuristic analysis without AI
         return this.heuristicAnalysis(prompt);
       }
     } catch (error) {
@@ -474,6 +552,41 @@ Market Data:\n${this.formatSearchResults(marketData)}\n\nCompetitor Data:\n${thi
       "Market saturation risks",
       "Regulatory challenges"
     ];
+  }
+
+  private getStructuredFallback(prompt: string): any {
+    // Extract key information using regex and heuristics
+    const lines = prompt.split('\n');
+    let marketSize = null;
+    let competitors = [];
+    let trends = [];
+    
+    // Look for market size indicators
+    for (const line of lines) {
+      if (line.toLowerCase().includes('market') && (line.includes('billion') || line.includes('million') || line.includes('trillion'))) {
+        const sizeMatch = line.match(/\$?\d+(?:\.\d+)?\s*(?:billion|million|trillion|B|M|T)/i);
+        if (sizeMatch) {
+          marketSize = { value: sizeMatch[0], unit: sizeMatch[0].includes('B') ? 'billion' : sizeMatch[0].includes('M') ? 'million' : sizeMatch[0].includes('T') ? 'trillion' : 'unknown', year: '2024' };
+        }
+      }
+      
+      if (line.toLowerCase().includes('competitor') || line.toLowerCase().includes('company')) {
+        const companyMatch = line.match(/([A-Z][a-zA-Z\s&]+(?:Inc|Corp|LLC|Ltd)?)/g);
+        if (companyMatch) {
+          competitors.push(...companyMatch.slice(0, 3).map(name => ({ name: name.trim(), type: 'direct', url: null })));
+        }
+      }
+    }
+
+    return {
+      market_size: marketSize,
+      growth_rate: null,
+      competitors: competitors.length > 0 ? competitors : [{ name: "Competitor data not found in sources", type: "unknown", url: null }],
+      trends: [{ trend: "Trend data not found in sources", impact: "neutral" }],
+      opportunities: ["Opportunity data not found in sources"],
+      threats: ["Threat data not found in sources"],
+      explain_uncertainty: "Limited data available from public sources - analysis based on heuristic extraction"
+    };
   }
 
   private getFallbackMarketAnalysis(ideaTitle: string, industry: string, description: string): MarketAnalysis {
