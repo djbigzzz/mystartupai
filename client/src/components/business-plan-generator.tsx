@@ -237,6 +237,54 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
     }
   ]);
 
+  // Load existing business plan data if available
+  useEffect(() => {
+    if (ideaData?.businessPlan && typeof ideaData.businessPlan === 'object') {
+      const existingPlan = ideaData.businessPlan;
+      
+      setBusinessPlan(prev => prev.map(section => {
+        // Map the section IDs to the existing business plan fields
+        const sectionKey = getSectionKey(section.id);
+        const existingContent = existingPlan[sectionKey];
+        
+        if (existingContent && typeof existingContent === 'string' && existingContent.trim()) {
+          return {
+            ...section,
+            content: existingContent,
+            wordCount: existingContent.split(' ').length,
+            status: "generated" as const,
+            lastGenerated: new Date().toISOString()
+          };
+        }
+        return section;
+      }));
+
+      toast({
+        title: "Business plan loaded",
+        description: "Your previously generated content has been restored.",
+      });
+    }
+  }, [ideaData?.businessPlan, toast]);
+
+  // Helper function to map section IDs to business plan fields
+  const getSectionKey = (sectionId: string): string => {
+    const sectionMapping: Record<string, string> = {
+      'executive-summary': 'executiveSummary',
+      'problem-statement': 'problemStatement', 
+      'solution-overview': 'solutionDescription',
+      'market-analysis': 'marketAnalysis',
+      'business-model': 'businessModel',
+      'marketing-strategy': 'marketingStrategy',
+      'operational-plan': 'operationalPlan',
+      'management-team': 'managementTeam',
+      'financial-projections': 'financialProjections',
+      'funding-request': 'fundingRequirements',
+      'risk-analysis': 'riskAnalysis',
+      'implementation-timeline': 'timeline'
+    };
+    return sectionMapping[sectionId] || sectionId;
+  };
+
   // Generate individual section with AI
   const generateSectionMutation = useMutation({
     mutationFn: async (sectionId: string) => {
