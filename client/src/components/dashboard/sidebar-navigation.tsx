@@ -138,12 +138,6 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       href: "/financial-modeling",
       icon: Calculator,
     },
-    {
-      id: "market-research",
-      name: "Market Research",
-      href: "/market-research",
-      icon: BarChart3,
-    },
   ];
 
   // Essential tools only

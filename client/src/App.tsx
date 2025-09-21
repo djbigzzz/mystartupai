@@ -46,7 +46,6 @@ function Router() {
       <Route path="/business-plan" component={BusinessPlan} />
       <Route path="/pitch-deck" component={PitchDeck} />
       <Route path="/financial-modeling" component={FinancialModelingPage} />
-      <Route path="/market-research" component={MarketResearchPage} />
       <Route path="/intelligent-analysis" component={IntelligentAnalysisPage} />
       <Route path="/events-networking" component={EventsNetworking} />
       <Route path="/platform" component={CompletePlatform} />
