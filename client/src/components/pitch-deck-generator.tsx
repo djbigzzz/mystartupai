@@ -466,6 +466,43 @@ export default function PitchDeckGenerator({ ideaId, ideaData, businessPlan }: P
     }
   };
 
+  // Keyboard navigation for presentation mode - MOVED BEFORE CONDITIONAL RETURNS
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (!presentationMode) return;
+      
+      switch (event.key) {
+        case 'ArrowRight':
+        case ' ': // Space bar
+          event.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+          event.preventDefault();
+          prevSlide();
+          break;
+        case 'Escape':
+          setPresentationMode(false);
+          break;
+        case 'p':
+        case 'P':
+          setAutoPlay(!autoPlay);
+          break;
+        case 'n':
+        case 'N':
+          if (isNarrating) {
+            stopNarration();
+          } else {
+            startNarration();
+          }
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, autoPlay, isNarrating, currentSlideIndex]);
+
   if (isGenerating) {
     return (
       <Card className="border-0 shadow-lg">
@@ -502,43 +539,6 @@ export default function PitchDeckGenerator({ ideaId, ideaData, businessPlan }: P
       </Card>
     );
   }
-
-  // Keyboard navigation for presentation mode
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (!presentationMode) return;
-      
-      switch (event.key) {
-        case 'ArrowRight':
-        case ' ': // Space bar
-          event.preventDefault();
-          nextSlide();
-          break;
-        case 'ArrowLeft':
-          event.preventDefault();
-          prevSlide();
-          break;
-        case 'Escape':
-          setPresentationMode(false);
-          break;
-        case 'p':
-        case 'P':
-          setAutoPlay(!autoPlay);
-          break;
-        case 'n':
-        case 'N':
-          if (isNarrating) {
-            stopNarration();
-          } else {
-            startNarration();
-          }
-          break;
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [presentationMode, autoPlay, isNarrating, currentSlideIndex]);
 
   if (presentationMode) {
     return (
