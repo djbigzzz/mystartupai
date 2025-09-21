@@ -2128,6 +2128,77 @@ Context: ${startupIdea.description}. Industry: ${startupIdea.industry}.`
     }
   });
 
+  // AI Suggestions for Form Fields
+  app.post("/api/ai-suggestions",
+    requireAuth,
+    advancedRateLimit(20, 5 * 60 * 1000), // 20 suggestion requests per 5 minutes
+    body('question').isLength({ min: 5, max: 500 }).withMessage('Question must be between 5 and 500 characters'),
+    body('ideaTitle').isLength({ min: 3, max: 200 }).withMessage('Idea title must be between 3 and 200 characters'),
+    handleValidationErrors,
+    async (req: Request, res: Response) => {
+      try {
+        const { questionId, question, ideaTitle, description, industry, businessType, ideaContext } = req.body;
+
+        console.log(`🤖 Generating AI suggestion for question: ${question}`);
+
+        const suggestionPrompt = `You are a business mentor helping entrepreneurs answer specific business questions about their startup idea.
+
+STARTUP CONTEXT:
+- Idea: ${ideaTitle}
+- Description: ${description || 'Not provided'}
+- Industry: ${industry || 'Not specified'}
+- Business Type: ${businessType || 'Not specified'}
+- Analysis Summary: ${ideaContext?.summary || 'Not available'}
+- Target Market: ${ideaContext?.targetMarket?.primary || 'Not specified'}
+- Location: ${ideaContext?.location?.type || 'Not specified'}
+
+QUESTION TO ANSWER:
+"${question}"
+
+EXISTING ANSWERS PROVIDED:
+${Object.entries(ideaContext?.existingAnswers || {}).map(([key, value]) => `- ${key}: ${value}`).join('\n') || 'None yet'}
+
+INSTRUCTIONS:
+- Provide a specific, actionable answer that would be realistic for this exact business
+- Base your response on the startup context provided
+- Keep responses concise but informative (1-3 sentences max)
+- If asking about competitors, provide real company names when possible
+- If asking about strategies, provide concrete actionable tactics
+- If asking about features, focus on differentiation and user value
+- Don't use generic startup advice - be specific to this business idea
+
+Provide ONLY the suggested answer, no explanation or preamble:`;
+
+        const suggestionResponse = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: suggestionPrompt }],
+          temperature: 0.7,
+          max_tokens: 200
+        });
+
+        const suggestion = suggestionResponse.choices[0]?.message?.content?.trim();
+
+        if (!suggestion) {
+          return res.status(500).json({ error: 'Failed to generate suggestion' });
+        }
+
+        console.log(`✅ AI suggestion generated for question: ${questionId}`);
+
+        res.json({ 
+          suggestion,
+          questionId 
+        });
+
+      } catch (error) {
+        console.error('❌ AI suggestion generation error:', error);
+        res.status(500).json({ 
+          error: 'Failed to generate AI suggestion',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  );
+
   // Intelligent Idea Analysis API - Understands business context first
   app.post("/api/intelligent-analysis",
     advancedRateLimit(10, 10 * 60 * 1000), // 10 analysis requests per 10 minutes

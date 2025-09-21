@@ -25,7 +25,9 @@ import {
   BarChart3,
   PieChart,
   Globe,
-  FileText
+  FileText,
+  Sparkles,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -96,6 +98,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   const [marketInsights, setMarketInsights] = useState<MarketInsights | null>(null);
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
   const [editedAnalysis, setEditedAnalysis] = useState<Partial<IdeaAnalysis>>({});
+  const [suggestingFor, setSuggestingFor] = useState<string | null>(null);
 
   // Step 1: Intelligent Idea Analysis
   const analyzeIdeaMutation = useMutation({
@@ -129,6 +132,44 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
       toast({
         title: "Analysis Failed",
         description: error.message || "Failed to analyze your idea. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // AI Suggestion Helper
+  const aiSuggestionMutation = useMutation({
+    mutationFn: async ({ questionId, question, ideaContext }: { questionId: string; question: string; ideaContext: any }) => {
+      const response = await apiRequest("/api/ai-suggestions", {
+        method: "POST",
+        body: {
+          questionId,
+          question,
+          ideaTitle: ideaData.ideaTitle,
+          description: ideaData.description,
+          industry: ideaData.industry,
+          businessType: ideaAnalysis?.businessType,
+          ideaContext
+        },
+      } as any);
+      return response;
+    },
+    onSuccess: (response: any, variables) => {
+      const suggestion = response.suggestion || response.suggestions?.[0];
+      if (suggestion) {
+        handleQuestionAnswer(variables.questionId, suggestion);
+        setSuggestingFor(null);
+        toast({
+          title: "✨ AI Suggestion Added!",
+          description: "You can edit this suggestion or use it as-is.",
+        });
+      }
+    },
+    onError: (error: any) => {
+      setSuggestingFor(null);
+      toast({
+        title: "Suggestion Failed",
+        description: "Unable to generate suggestion. Please try again.",
         variant: "destructive",
       });
     },
@@ -191,6 +232,22 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   const proceedToResearch = () => {
     setCurrentStep("researching");
     contextualMarketResearch.mutate();
+  };
+
+  const handleAISuggestion = (questionId: string, question: string) => {
+    setSuggestingFor(questionId);
+    aiSuggestionMutation.mutate({
+      questionId,
+      question,
+      ideaContext: {
+        summary: ideaAnalysis?.summary,
+        businessType: ideaAnalysis?.businessType,
+        industry: ideaAnalysis?.industry,
+        targetMarket: ideaAnalysis?.targetMarket,
+        location: ideaAnalysis?.location,
+        existingAnswers: questionAnswers
+      }
+    });
   };
 
   // Step 1: Analysis in Progress
@@ -312,12 +369,31 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                       </Label>
                       
                       {question.type === "text" && (
-                        <Input
-                          placeholder={question.placeholder}
-                          value={questionAnswers[question.id] || ""}
-                          onChange={(e) => handleQuestionAnswer(question.id, e.target.value)}
-                          data-testid={`input-question-${question.id}`}
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder={question.placeholder}
+                            value={questionAnswers[question.id] || ""}
+                            onChange={(e) => handleQuestionAnswer(question.id, e.target.value)}
+                            data-testid={`input-question-${question.id}`}
+                            className="flex-1"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleAISuggestion(question.id, question.question)}
+                            disabled={suggestingFor === question.id}
+                            className="px-3 whitespace-nowrap"
+                            data-testid={`button-ai-suggest-${question.id}`}
+                          >
+                            {suggestingFor === question.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Sparkles className="w-4 h-4" />
+                            )}
+                            <span className="ml-1 hidden sm:inline">AI Suggest</span>
+                          </Button>
+                        </div>
                       )}
                       
                       {question.type === "number" && (
@@ -345,12 +421,33 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                       )}
                       
                       {question.type === "multiselect" && question.options && (
-                        <Textarea
-                          placeholder="Select multiple options or add your own (comma-separated)"
-                          value={questionAnswers[question.id] || ""}
-                          onChange={(e) => handleQuestionAnswer(question.id, e.target.value)}
-                          data-testid={`textarea-${question.id}`}
-                        />
+                        <div className="space-y-2">
+                          <div className="flex gap-2 items-start">
+                            <Textarea
+                              placeholder="Select multiple options or add your own (comma-separated)"
+                              value={questionAnswers[question.id] || ""}
+                              onChange={(e) => handleQuestionAnswer(question.id, e.target.value)}
+                              data-testid={`textarea-${question.id}`}
+                              className="flex-1"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAISuggestion(question.id, question.question)}
+                              disabled={suggestingFor === question.id}
+                              className="px-3 whitespace-nowrap mt-1"
+                              data-testid={`button-ai-suggest-textarea-${question.id}`}
+                            >
+                              {suggestingFor === question.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Sparkles className="w-4 h-4" />
+                              )}
+                              <span className="ml-1 hidden sm:inline">AI Suggest</span>
+                            </Button>
+                          </div>
+                        </div>
                       )}
                     </div>
                   ))}
