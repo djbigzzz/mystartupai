@@ -115,6 +115,12 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       icon: Lightbulb,
     },
     {
+      id: "idea-analysis",
+      name: "Idea Analysis",
+      href: "/intelligent-analysis",
+      icon: Brain,
+    },
+    {
       id: "business-plan",
       name: "Business Plan",
       href: "/business-plan",
