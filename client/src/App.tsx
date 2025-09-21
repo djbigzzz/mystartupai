@@ -12,7 +12,6 @@ import SubmitIdea from "@/pages/submit-idea";
 import BusinessPlan from "@/pages/business-plan";
 import PitchDeck from "@/pages/pitch-deck";
 import FinancialModelingPage from "@/pages/financial-modeling";
-import MarketResearchPage from "@/pages/market-research";
 import IntelligentAnalysisPage from "@/pages/intelligent-analysis";
 import EventsNetworking from "@/pages/events-networking";
 import CompletePlatform from "@/pages/complete-platform";
