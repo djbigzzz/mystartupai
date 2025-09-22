@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Sparkles, Mail, Chrome, ArrowRight, Eye, EyeOff, CheckCircle, XCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Sparkles, Mail, Chrome, ArrowRight, Eye, EyeOff, CheckCircle, XCircle, AlertCircle, Loader2, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -47,12 +47,28 @@ export default function AppEntry() {
 
   const validatePassword = (password: string): string => {
     if (!password) return "Password is required";
-    if (password.length < 8) return "Password must be at least 8 characters";
+    if (password.length < 8 || password.length > 128) return "Password must be 8-128 characters";
     if (!/(?=.*[a-z])/.test(password)) return "Password must contain at least one lowercase letter";
     if (!/(?=.*[A-Z])/.test(password)) return "Password must contain at least one uppercase letter";
     if (!/(?=.*\d)/.test(password)) return "Password must contain at least one number";
+    if (!/(?=.*[@$!%*?&])/.test(password)) return "Password must contain at least one special character (@$!%*?&)";
     return "";
   };
+
+  // Password requirements checker
+  const getPasswordRequirements = (password: string) => {
+    return {
+      length: password.length >= 8 && password.length <= 128,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      special: /[@$!%*?&]/.test(password)
+    };
+  };
+
+  const passwordRequirements = getPasswordRequirements(password);
+  const requirementsMet = Object.values(passwordRequirements).filter(Boolean).length;
+  const allRequirementsMet = requirementsMet === 5;
 
   const validateName = (name: string): string => {
     if (!name) return "Name is required";
@@ -122,9 +138,21 @@ export default function AppEntry() {
       }, 1000);
     },
     onError: (error: any) => {
+      console.error("Authentication error:", error);
+      let errorMessage = error.message || "Please try again.";
+      
+      // Handle specific validation errors
+      if (error.message && error.message.includes("Password must")) {
+        errorMessage = "Please check your password meets all requirements above.";
+      } else if (error.message && error.message.includes("User already exists")) {
+        errorMessage = "An account with this email already exists. Try logging in instead.";
+      } else if (error.message && error.message.includes("email")) {
+        errorMessage = "Please enter a valid email address.";
+      }
+      
       toast({
         title: "Authentication failed",
-        description: error.message || "Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -427,7 +455,102 @@ export default function AppEntry() {
                     {validationErrors.password}
                   </div>
                 )}
-                {isSignUp && formTouched.password && !validationErrors.password && (
+                
+                {/* Password Requirements Checklist - Show during signup when user is typing */}
+                {isSignUp && password && (
+                  <div className="space-y-3 mt-3">
+                    {/* Password Strength Bar */}
+                    <div className="flex space-x-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-1 w-full rounded ${
+                            i < requirementsMet 
+                              ? requirementsMet <= 2 
+                                ? "bg-red-500" 
+                                : requirementsMet <= 3 
+                                ? "bg-orange-500" 
+                                : requirementsMet <= 4 
+                                ? "bg-yellow-500" 
+                                : "bg-green-500"
+                              : "bg-gray-200 dark:bg-gray-700"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Password strength: {
+                        requirementsMet <= 1 ? "Very Weak" :
+                        requirementsMet <= 2 ? "Weak" :
+                        requirementsMet <= 3 ? "Fair" :
+                        requirementsMet <= 4 ? "Good" : "Strong"
+                      }
+                    </p>
+                    
+                    {/* Password Requirements Checklist */}
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 space-y-2">
+                      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Password Requirements:</p>
+                      
+                      <div className="grid grid-cols-1 gap-1 text-xs">
+                        <div className={`flex items-center space-x-2 ${passwordRequirements.length ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {passwordRequirements.length ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <X className="w-3 h-3" />
+                          )}
+                          <span>8-128 characters long</span>
+                        </div>
+                        
+                        <div className={`flex items-center space-x-2 ${passwordRequirements.lowercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {passwordRequirements.lowercase ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <X className="w-3 h-3" />
+                          )}
+                          <span>One lowercase letter (a-z)</span>
+                        </div>
+                        
+                        <div className={`flex items-center space-x-2 ${passwordRequirements.uppercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {passwordRequirements.uppercase ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <X className="w-3 h-3" />
+                          )}
+                          <span>One uppercase letter (A-Z)</span>
+                        </div>
+                        
+                        <div className={`flex items-center space-x-2 ${passwordRequirements.number ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {passwordRequirements.number ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <X className="w-3 h-3" />
+                          )}
+                          <span>One number (0-9)</span>
+                        </div>
+                        
+                        <div className={`flex items-center space-x-2 ${passwordRequirements.special ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {passwordRequirements.special ? (
+                            <Check className="w-3 h-3" />
+                          ) : (
+                            <X className="w-3 h-3" />
+                          )}
+                          <span>One special character (@$!%*?&)</span>
+                        </div>
+                      </div>
+                      
+                      {allRequirementsMet && (
+                        <div className="flex items-center space-x-2 mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                          <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                          <span className="text-xs font-medium text-green-700 dark:text-green-300">
+                            All requirements met! 🎉
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {isSignUp && formTouched.password && !validationErrors.password && allRequirementsMet && (
                   <div className="text-sm text-green-600 flex items-center">
                     <CheckCircle className="w-4 h-4 mr-1" />
                     Strong password!
