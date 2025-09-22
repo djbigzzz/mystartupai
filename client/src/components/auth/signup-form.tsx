@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Mail, Lock, User, Sparkles, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Sparkles, CheckCircle, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const signupSchema = z.object({
@@ -16,7 +16,8 @@ const signupSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string()
     .min(8, "Password must be at least 8 characters")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number"),
+    .max(128, "Password must be less than 128 characters")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/, "Password must contain uppercase, lowercase, number and special character (@$!%*?&)"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -55,6 +56,22 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
       
       if (!response.ok) {
         const error = await response.json();
+        
+        // Handle specific backend validation errors
+        if (error.errors && Array.isArray(error.errors)) {
+          const passwordErrors = error.errors
+            .filter((err: any) => err.param === 'password')
+            .map((err: any) => err.msg);
+          
+          if (passwordErrors.length > 0) {
+            throw new Error(`Password validation failed: ${passwordErrors.join(', ')}`);
+          }
+          
+          // Handle other validation errors
+          const errorMessages = error.errors.map((err: any) => err.msg).join(', ');
+          throw new Error(errorMessages);
+        }
+        
         throw new Error(error.message || "Signup failed");
       }
       
@@ -68,9 +85,21 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
       onSuccess?.(user);
     },
     onError: (error) => {
+      console.error("Signup error:", error);
+      let errorMessage = error.message;
+      
+      // Handle specific validation errors
+      if (error.message.includes("validation") || error.message.includes("Password must")) {
+        errorMessage = "Please check your password meets all requirements above.";
+      } else if (error.message.includes("User already exists")) {
+        errorMessage = "An account with this email already exists. Try logging in instead.";
+      } else if (error.message.includes("email")) {
+        errorMessage = "Please enter a valid email address.";
+      }
+      
       toast({
         title: "Signup failed",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -81,18 +110,22 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
     signupMutation.mutate(signupData);
   };
 
-  const passwordStrength = form.watch("password");
-  const getPasswordStrength = (password: string) => {
-    let score = 0;
-    if (password.length >= 8) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/\d/.test(password)) score++;
-    if (/[!@#$%^&*]/.test(password)) score++;
-    return score;
+  const passwordValue = form.watch("password");
+  
+  const getPasswordRequirements = (password: string) => {
+    return {
+      length: password.length >= 8 && password.length <= 128,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      special: /[@$!%*?&]/.test(password)
+    };
   };
 
-  const strengthScore = getPasswordStrength(passwordStrength || "");
+  const passwordRequirements = getPasswordRequirements(passwordValue || "");
+  const requirementsMet = Object.values(passwordRequirements).filter(Boolean).length;
+  const allRequirementsMet = requirementsMet === 5;
+
   const strengthLabels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
   const strengthColors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-green-500"];
 
@@ -185,21 +218,82 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
                       </Button>
                     </div>
                   </FormControl>
-                  {passwordStrength && (
-                    <div className="space-y-2">
+                  {passwordValue && (
+                    <div className="space-y-3 mt-3">
                       <div className="flex space-x-1">
                         {[...Array(5)].map((_, i) => (
                           <div
                             key={i}
                             className={`h-1 w-full rounded ${
-                              i < strengthScore ? strengthColors[strengthScore - 1] : "bg-gray-200"
+                              i < requirementsMet ? strengthColors[Math.min(requirementsMet - 1, 4)] : "bg-gray-200 dark:bg-gray-700"
                             }`}
                           />
                         ))}
                       </div>
-                      <p className="text-xs text-gray-600">
-                        Password strength: {strengthLabels[strengthScore - 1] || "Very Weak"}
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                        Password strength: {strengthLabels[Math.min(requirementsMet - 1, 4)] || "Very Weak"}
                       </p>
+                      
+                      {/* Password Requirements Checklist */}
+                      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 space-y-2">
+                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Password Requirements:</p>
+                        
+                        <div className="grid grid-cols-1 gap-1 text-xs">
+                          <div className={`flex items-center space-x-2 ${passwordRequirements.length ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                            {passwordRequirements.length ? (
+                              <Check className="w-3 h-3" />
+                            ) : (
+                              <X className="w-3 h-3" />
+                            )}
+                            <span>8-128 characters long</span>
+                          </div>
+                          
+                          <div className={`flex items-center space-x-2 ${passwordRequirements.lowercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                            {passwordRequirements.lowercase ? (
+                              <Check className="w-3 h-3" />
+                            ) : (
+                              <X className="w-3 h-3" />
+                            )}
+                            <span>One lowercase letter (a-z)</span>
+                          </div>
+                          
+                          <div className={`flex items-center space-x-2 ${passwordRequirements.uppercase ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                            {passwordRequirements.uppercase ? (
+                              <Check className="w-3 h-3" />
+                            ) : (
+                              <X className="w-3 h-3" />
+                            )}
+                            <span>One uppercase letter (A-Z)</span>
+                          </div>
+                          
+                          <div className={`flex items-center space-x-2 ${passwordRequirements.number ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                            {passwordRequirements.number ? (
+                              <Check className="w-3 h-3" />
+                            ) : (
+                              <X className="w-3 h-3" />
+                            )}
+                            <span>One number (0-9)</span>
+                          </div>
+                          
+                          <div className={`flex items-center space-x-2 ${passwordRequirements.special ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                            {passwordRequirements.special ? (
+                              <Check className="w-3 h-3" />
+                            ) : (
+                              <X className="w-3 h-3" />
+                            )}
+                            <span>One special character (@$!%*?&)</span>
+                          </div>
+                        </div>
+                        
+                        {allRequirementsMet && (
+                          <div className="flex items-center space-x-2 mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                            <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            <span className="text-xs font-medium text-green-700 dark:text-green-300">
+                              All requirements met! 🎉
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                   <FormMessage />
