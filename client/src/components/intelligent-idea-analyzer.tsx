@@ -100,6 +100,24 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   const [editedAnalysis, setEditedAnalysis] = useState<Partial<IdeaAnalysis>>({});
   const [suggestingFor, setSuggestingFor] = useState<string | null>(null);
 
+  // Check if idea already has analysis results
+  useEffect(() => {
+    if (ideaData?.intelligentAnalysis && ideaData?.marketInsights) {
+      // Analysis already exists, show results directly
+      setIdeaAnalysis(ideaData.intelligentAnalysis);
+      setMarketInsights(ideaData.marketInsights);
+      setCurrentStep("complete");
+    } else if (ideaData?.intelligentAnalysis) {
+      // Has initial analysis but may need market research
+      setIdeaAnalysis(ideaData.intelligentAnalysis);
+      setCurrentStep("researching");
+      // Auto-trigger market research
+      setTimeout(() => {
+        contextualMarketResearch.mutate();
+      }, 100);
+    }
+  }, [ideaData]);
+
   // Step 1: Intelligent Idea Analysis
   const analyzeIdeaMutation = useMutation({
     mutationFn: async () => {
@@ -210,12 +228,12 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
     },
   });
 
-  // Auto-start analysis
+  // Auto-start analysis only if no existing analysis
   useEffect(() => {
-    if (ideaData && currentStep === "analyzing") {
+    if (ideaData && currentStep === "analyzing" && !ideaData?.intelligentAnalysis) {
       analyzeIdeaMutation.mutate();
     }
-  }, [ideaData]);
+  }, [ideaData, currentStep]);
 
   const handleQuestionAnswer = (questionId: string, answer: string) => {
     setQuestionAnswers(prev => ({
