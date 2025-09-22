@@ -19,6 +19,7 @@ import WaitlistClean from "@/pages/waitlist-clean";
 import DemoJourneyNew from "@/pages/demo-journey-new";
 import AgenticDemoUnified from "@/pages/agentic-demo-unified";
 import AppEntry from "@/pages/app-entry";
+import MobileNavigation from "@/components/mobile-navigation";
 
 import Profile from "@/pages/profile";
 import StartupProfile from "@/pages/startup-profile";
