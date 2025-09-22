@@ -85,31 +85,19 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
       dependencies: ["submit-idea"]
     },
     {
-      id: "approval-gate-1",
-      title: "3. Review & Approve Analysis",
-      description: "Review the intelligent analysis results and decide if you're happy to proceed",
-      route: "#",
-      icon: CheckCircle,
-      status: "locked",
-      completionPercentage: 0,
-      estimatedTime: "5-10 minutes",
-      dependencies: ["intelligent-analysis"],
-      requiresApproval: true
-    },
-    {
       id: "business-plan",
-      title: "4. Business Plan Generation",
+      title: "3. Business Plan Generation",
       description: "Create a comprehensive 12-section business plan with AI assistance",
       route: "/business-plan",
       icon: FileText,
       status: "locked",
       completionPercentage: 0,
       estimatedTime: "20-30 minutes",
-      dependencies: ["approval-gate-1"]
+      dependencies: ["intelligent-analysis"]
     },
     {
       id: "pitch-deck",
-      title: "5. Pitch Deck Creation",
+      title: "4. Pitch Deck Creation",
       description: "Generate professional investor presentations with interactive components",
       route: "/pitch-deck",
       icon: Presentation,
@@ -120,7 +108,7 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
     },
     {
       id: "investor-database",
-      title: "6. Investor Database & Funding",
+      title: "5. Investor Database & Funding",
       description: "Access investor matching and funding opportunities tailored to your startup",
       route: "/investor-matching",
       icon: Users,
@@ -151,21 +139,12 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
               completionPercentage: ideaData.analysis?.marketAnalysis ? 100 : 0
             };
           
-          case "approval-gate-1":
-            const marketResearchCompleted = ideaData.analysis?.marketAnalysis;
-            const approvalStatus = approvalStates["intelligent-analysis"];
-            
-            if (!marketResearchCompleted) return { ...step, status: "locked" as const };
-            if (approvalStatus === null) return { ...step, status: "pending-approval" as const };
-            if (approvalStatus === true) return { ...step, status: "completed" as const, completionPercentage: 100 };
-            return { ...step, status: "available" as const }; // If rejected, allow retry
-          
           case "business-plan":
-            const approved = approvalStates["intelligent-analysis"] === true;
+            const analysisCompleted = ideaData.analysis?.marketAnalysis;
             return {
               ...step,
               status: ideaData.businessPlan ? "completed" as const : 
-                      approved ? "available" as const : "locked" as const,
+                      analysisCompleted ? "available" as const : "locked" as const,
               completionPercentage: ideaData.businessPlan ? 100 : 0
             };
           
@@ -473,85 +452,102 @@ export default function StartupWorkflow({ currentIdeaId, ideaData }: StartupWork
         </Card>
       )}
 
-      {/* Workflow Steps */}
-      <div className="grid gap-6" data-testid="workflow-steps">
-        {workflowSteps.map((step, index) => {
-          // Render approval gates differently
-          if (step.requiresApproval) {
-            return renderApprovalGate(step);
-          }
-
-          const IconComponent = step.icon;
-          const StatusIcon = getStatusIcon(step.status);
-          const isClickable = (step.status === "available" || step.status === "completed") && step.route !== "#";
-          
-          return (
-            <Card key={step.id} className={`transition-all duration-200 ${
-              isClickable ? "hover:shadow-md cursor-pointer" : "opacity-60"
-            }`} data-testid={`workflow-step-${step.id}`}>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  {/* Step Number/Icon */}
-                  <div className="flex-shrink-0">
-                    <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${getStatusColor(step.status)}`}>
-                      {step.status === "completed" ? (
-                        <CheckCircle className="w-5 h-5" />
-                      ) : (
-                        <IconComponent className="w-5 h-5" />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Step Content */}
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-3">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{step.title}</h3>
+      {/* Workflow Steps - Horizontal Roadmap */}
+      <div className="overflow-x-auto" data-testid="workflow-steps">
+        <div className="flex space-x-4 pb-4 min-w-max">
+          {workflowSteps.map((step, index) => {
+            const IconComponent = step.icon;
+            const isClickable = (step.status === "available" || step.status === "completed") && step.route !== "#";
+            const isLast = index === workflowSteps.length - 1;
+            
+            return (
+              <div key={step.id} className="flex items-center" data-testid={`workflow-step-${step.id}`}>
+                {/* Step Card */}
+                <Card className={`w-64 transition-all duration-200 border-2 ${
+                  step.status === "completed" ? "border-green-500 bg-green-50 dark:bg-green-900/20" :
+                  step.status === "available" ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" :
+                  step.status === "in-progress" ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20" :
+                  "border-gray-300 bg-gray-50 dark:bg-gray-800/50 opacity-60"
+                } ${
+                  isClickable ? "hover:shadow-lg cursor-pointer transform hover:-translate-y-1" : ""
+                }`}>
+                  <CardContent className="p-4">
+                    {/* Icon and Status */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
+                        step.status === "completed" ? "bg-green-500 border-green-500" :
+                        step.status === "available" ? "bg-blue-500 border-blue-500" :
+                        step.status === "in-progress" ? "bg-orange-500 border-orange-500" :
+                        "bg-gray-400 border-gray-400"
+                      }`}>
+                        {step.status === "completed" ? (
+                          <CheckCircle className="w-5 h-5 text-white" />
+                        ) : (
+                          <IconComponent className="w-5 h-5 text-white" />
+                        )}
                       </div>
-                      <Badge className={getStatusColor(step.status)} variant="secondary" data-testid={`status-${step.id}`}>
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs ${
+                          step.status === "completed" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                          step.status === "available" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400" :
+                          step.status === "in-progress" ? "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400" :
+                          "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
+                        }`}
+                        data-testid={`status-${step.id}`}
+                      >
                         {step.status.replace("-", " ")}
                       </Badge>
                     </div>
                     
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">{step.description}</p>
+                    {/* Title */}
+                    <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-2 leading-tight">
+                      {step.title}
+                    </h3>
                     
+                    {/* Description */}
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mb-3 line-clamp-2 leading-relaxed">
+                      {step.description}
+                    </p>
+                    
+                    {/* Time and Action */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {step.estimatedTime}
-                        </span>
-                        {step.dependencies.length > 0 && (
-                          <span>
-                            Requires: {step.dependencies.map(dep => 
-                              workflowSteps.find(s => s.id === dep)?.title.replace(/^\d+\.\s/, '') || dep
-                            ).join(", ")}
-                          </span>
-                        )}
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                        <Clock className="w-3 h-3 mr-1" />
+                        <span>{step.estimatedTime}</span>
                       </div>
                       
                       {isClickable && (
                         <Link href={step.route + (step.id === "intelligent-analysis" ? `?ideaId=${currentIdeaId}` : "")}>
-                          <Button variant="outline" size="sm" data-testid={`button-start-${step.id}`}>
+                          <Button variant="outline" size="sm" className="text-xs px-2 py-1 h-7" data-testid={`button-start-${step.id}`}>
                             {step.status === "completed" ? "View" : "Start"}
-                            <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                         </Link>
                       )}
                     </div>
-
-                    {/* Progress Bar for Completed Steps */}
+                    
+                    {/* Progress Bar */}
                     {step.status === "completed" && (
-                      <div className="mt-4">
-                        <Progress value={step.completionPercentage} className="h-2" />
+                      <div className="mt-3">
+                        <Progress value={step.completionPercentage} className="h-1" />
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+                
+                {/* Arrow Connector */}
+                {!isLast && (
+                  <div className="flex items-center mx-2">
+                    <ArrowRight className={`w-5 h-5 ${
+                      workflowSteps[index + 1]?.status === "completed" || workflowSteps[index + 1]?.status === "available" 
+                        ? "text-blue-500" : "text-gray-400"
+                    }`} />
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Workflow Benefits Footer */}
