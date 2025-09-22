@@ -601,15 +601,15 @@ export default function AdvancedIdeaForm() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Progress Header */}
-      <Card className="mb-8 border-0 shadow-lg bg-gradient-to-r from-blue-50 to-purple-50">
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <CardTitle className="text-2xl font-bold text-gray-900">
+      <Card className="mb-8 border-0 shadow-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Submit Your Startup Idea
             </CardTitle>
-            <Badge variant="secondary" className="text-sm">
+            <Badge variant="secondary" className="text-sm self-start sm:self-auto">
               Step {currentStep + 1} of {validationSteps.length}
             </Badge>
           </div>
@@ -623,28 +623,28 @@ export default function AdvancedIdeaForm() {
           </div>
           
           {/* Step indicators */}
-          <div className="flex items-center justify-between mt-6">
+          <div className="flex items-center justify-between mt-6 overflow-x-auto pb-2">
             {validationSteps.map((step, index) => {
               const IconComponent = step.icon;
               const isActive = index === currentStep;
               const isCompleted = isStepValid(index);
               
               return (
-                <div key={step.id} className="flex flex-col items-center text-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${
+                <div key={step.id} className="flex flex-col items-center text-center min-w-0 flex-shrink-0 px-1">
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mb-2 transition-colors ${
                     isActive 
                       ? 'bg-blue-600 text-white' 
                       : isCompleted 
                         ? 'bg-green-500 text-white' 
-                        : 'bg-gray-200 text-gray-500'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                   }`}>
                     {isCompleted && !isActive ? (
-                      <CheckCircle className="w-5 h-5" />
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                     ) : (
-                      <IconComponent className="w-5 h-5" />
+                      <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
                     )}
                   </div>
-                  <div className="text-xs font-medium text-gray-700 max-w-20">
+                  <div className="text-xs font-medium text-gray-700 dark:text-gray-300 max-w-16 sm:max-w-20 leading-tight">
                     {step.title}
                   </div>
                 </div>
@@ -656,49 +656,55 @@ export default function AdvancedIdeaForm() {
 
       {/* Form Content */}
       <Card className="border-0 shadow-lg">
-        <CardContent className="p-8">
+        <CardContent className="p-4 sm:p-6 lg:p-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
               {renderStepContent()}
               
               {/* Navigation Buttons */}
-              <div className="flex items-center justify-between pt-8 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-6 sm:pt-8 border-t border-gray-200 dark:border-gray-700 space-y-4 sm:space-y-0">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={prevStep}
                   disabled={currentStep === 0}
-                  className="px-6"
+                  className="w-full sm:w-auto px-6 order-2 sm:order-1"
+                  data-testid="button-previous-step"
                 >
                   Previous
                 </Button>
                 
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 sm:space-x-4 order-1 sm:order-2">
                   {currentStep < maxSteps ? (
                     <Button
                       type="button"
                       onClick={nextStep}
                       disabled={!isStepValid(currentStep)}
-                      className="px-6 bg-blue-600 hover:bg-blue-700"
+                      className="flex-1 sm:flex-none px-6 bg-blue-600 hover:bg-blue-700 touch-manipulation"
+                      data-testid="button-next-step"
                     >
-                      Next Step
+                      <span className="sm:hidden">Next</span>
+                      <span className="hidden sm:inline">Next Step</span>
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   ) : (
                     <Button
                       type="submit"
                       disabled={submitIdeaMutation.isPending || !isStepValid(currentStep)}
-                      className="px-8 bg-green-600 hover:bg-green-700"
+                      className="flex-1 sm:flex-none px-6 sm:px-8 bg-green-600 hover:bg-green-700 touch-manipulation"
+                      data-testid="button-submit-idea"
                     >
                       {submitIdeaMutation.isPending ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          AI Analysis in Progress...
+                          <span className="sm:hidden">Processing...</span>
+                          <span className="hidden sm:inline">AI Analysis in Progress...</span>
                         </>
                       ) : (
                         <>
                           <Brain className="w-4 h-4 mr-2" />
-                          Update & Re-analyze
+                          <span className="sm:hidden">Analyze</span>
+                          <span className="hidden sm:inline">Update & Re-analyze</span>
                         </>
                       )}
                     </Button>
