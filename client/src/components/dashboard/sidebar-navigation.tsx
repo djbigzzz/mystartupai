@@ -240,22 +240,19 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
               </div>
             </div>
           )}
-          <div className="flex items-center space-x-2">
-            {!collapsed && <ThemeToggle />}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setCollapsed(!collapsed)}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
-              data-testid="button-toggle-sidebar"
-            >
-              {collapsed ? (
-                <ChevronRight className="h-4 w-4" />
-              ) : (
-                <ChevronLeft className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+            data-testid="button-toggle-sidebar"
+          >
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
         </div>
         
         {!collapsed && (
@@ -269,52 +266,6 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
                 className="pl-10 h-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                 data-testid="input-search"
               />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* User Profile Section - Always visible */}
-      <div className={`border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 ${collapsed ? "p-3" : "p-4"}`}>
-        {!collapsed && user && (
-          <div className="flex items-center space-x-3" data-testid="profile-section">
-            <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
-              <AvatarImage src={user.avatar || undefined} />
-              <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold">
-                {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-gray-900 dark:text-white truncate" data-testid="text-user-name">
-                {user.name || 'User'}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-email">
-                {user.email || 'No email'}
-              </div>
-            </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleLogout}
-              disabled={logoutMutation.isPending}
-              className="h-8 w-8 p-0 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-              title="Logout"
-              data-testid="button-logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-
-        {collapsed && user && (
-          <div className="flex justify-center">
-            <div className="relative">
-              <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
-                <AvatarImage src={user.avatar || undefined} />
-                <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold">
-                  {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-                </AvatarFallback>
-              </Avatar>
             </div>
           </div>
         )}
@@ -357,34 +308,64 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
         </nav>
       </div>
 
-      {/* Footer Actions */}
-      <div className={`border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 ${collapsed ? "p-2" : "p-4"}`}>
+      {/* Footer - User Profile & Controls */}
+      <div className={`border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 ${collapsed ? "p-2" : "p-4"} space-y-3`}>
+        
+        {/* User Profile Section */}
+        {!collapsed && user && (
+          <div className="flex items-center space-x-3 pb-3 border-b border-gray-200 dark:border-gray-700" data-testid="profile-section">
+            <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
+              <AvatarImage src={user.avatar || undefined} />
+              <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold">
+                {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold text-gray-900 dark:text-white truncate" data-testid="text-user-name">
+                {user.name || 'User'}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-email">
+                {user.email || 'No email'}
+              </div>
+            </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+              className="h-8 w-8 p-0 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+              title="Logout"
+              data-testid="button-logout"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
+        {collapsed && user && (
+          <div className="flex justify-center pb-2 border-b border-gray-200 dark:border-gray-700">
+            <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
+              <AvatarImage src={user.avatar || undefined} />
+              <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold">
+                {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        )}
+
+        {/* Controls */}
         {!collapsed && (
-          <div className="space-y-2">
-            {/* Quick Actions */}
-            <div className="flex space-x-2">
-              <Link href="/profile" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full justify-start h-9" data-testid="button-profile">
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
-                </Button>
-              </Link>
-              <Button variant="outline" size="sm" className="px-3" title="Notifications" data-testid="button-notifications">
-                <Bell className="h-4 w-4" />
+          <div className="flex items-center space-x-2">
+            <Link href="/profile" className="flex-1">
+              <Button variant="outline" size="sm" className="w-full justify-start h-9" data-testid="button-profile-settings">
+                <User className="h-4 w-4 mr-2" />
+                Profile & Settings
               </Button>
-            </div>
-            
-            <div className="flex space-x-2">
-              <Link href="/settings" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full justify-start h-9" data-testid="button-settings">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </Button>
-              </Link>
-              <Button variant="outline" size="sm" className="px-3" title="Help" data-testid="button-help">
-                <HelpCircle className="h-4 w-4" />
-              </Button>
-            </div>
+            </Link>
+            <ThemeToggle />
+            <Button variant="outline" size="sm" className="px-3" title="Help" data-testid="button-help">
+              <HelpCircle className="h-4 w-4" />
+            </Button>
           </div>
         )}
 
@@ -395,14 +376,12 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
                 <User className="h-4 w-4" />
               </Button>
             </Link>
-            <Button variant="ghost" size="sm" className="w-10 h-10 p-0" title="Notifications" data-testid="button-notifications-collapsed">
-              <Bell className="h-4 w-4" />
+            <div className="w-10 h-10 flex justify-center items-center">
+              <ThemeToggle />
+            </div>
+            <Button variant="ghost" size="sm" className="w-10 h-10 p-0" title="Help" data-testid="button-help-collapsed">
+              <HelpCircle className="h-4 w-4" />
             </Button>
-            <Link href="/settings">
-              <Button variant="ghost" size="sm" className="w-10 h-10 p-0" data-testid="button-settings-collapsed">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </Link>
           </div>
         )}
       </div>
