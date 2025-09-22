@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
+import MobileNavigation from "@/components/mobile-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
 import StartupWorkflow from "@/components/startup-workflow";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -794,26 +795,33 @@ export default function Dashboard() {
         />
       )}
       
-      {/* Sidebar Navigation */}
-      <SidebarNavigation />
+      {/* Mobile Navigation */}
+      <div className="lg:hidden">
+        <MobileNavigation />
+      </div>
+      
+      {/* Sidebar Navigation - Desktop Only */}
+      <div className="hidden lg:block">
+        <SidebarNavigation />
+      </div>
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
         {/* Top Header */}
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-8 py-6 flex-shrink-0">
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-shrink-0">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
-              <div className="min-w-0 flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white truncate" data-testid="page-title">
+              <div className="min-w-0 flex-1 ml-16 lg:ml-0">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white truncate" data-testid="page-title">
                   {activeSection === "profile" ? "Profile Management" : "Dashboard"}
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-1" data-testid="page-description">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1" data-testid="page-description">
                   {activeSection === "profile" 
                     ? "Manage your personal information and account settings" 
                     : "Monitor your startup journey and key metrics"}
                 </p>
               </div>
-              <div className="flex items-center space-x-3 ml-6">
+              <div className="flex items-center space-x-2 sm:space-x-3 ml-4 sm:ml-6">
                 <Button
                   variant={activeSection === "overview" ? "default" : "outline"}
                   onClick={() => setActiveSection("overview")}
@@ -835,8 +843,8 @@ export default function Dashboard() {
                 <Button variant="ghost" size="sm" data-testid="button-notifications-header">
                   <Bell className="h-4 w-4" />
                 </Button>
-                <div className="flex items-center space-x-3 pl-3 border-l border-gray-200 dark:border-gray-700">
-                  <Avatar className="h-9 w-9">
+                <div className="flex items-center space-x-2 sm:space-x-3 pl-2 sm:pl-3 border-l border-gray-200 dark:border-gray-700">
+                  <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                     <AvatarImage src={user?.avatar || undefined} />
                     <AvatarFallback className="text-sm font-semibold">
                       {user?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
@@ -857,7 +865,7 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 px-8 py-6 overflow-auto">
+        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             {renderMainContent()}
           </div>
