@@ -113,12 +113,16 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
   const passwordValue = form.watch("password");
   
   const getPasswordRequirements = (password: string) => {
+    // Match the exact backend validation logic
+    const backendRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/;
+    const isValidByBackend = backendRegex.test(password) && password.length >= 8 && password.length <= 128;
+    
     return {
       length: password.length >= 8 && password.length <= 128,
       lowercase: /[a-z]/.test(password),
       uppercase: /[A-Z]/.test(password),
       number: /\d/.test(password),
-      special: /[@$!%*?&]/.test(password)
+      special: /[@$!%*?&]/.test(password) && /^[A-Za-z\d@$!%*?&]*$/.test(password)
     };
   };
 

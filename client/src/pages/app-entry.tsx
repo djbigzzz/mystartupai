@@ -48,21 +48,21 @@ export default function AppEntry() {
   const validatePassword = (password: string): string => {
     if (!password) return "Password is required";
     if (password.length < 8 || password.length > 128) return "Password must be 8-128 characters";
-    if (!/(?=.*[a-z])/.test(password)) return "Password must contain at least one lowercase letter";
-    if (!/(?=.*[A-Z])/.test(password)) return "Password must contain at least one uppercase letter";
-    if (!/(?=.*\d)/.test(password)) return "Password must contain at least one number";
-    if (!/(?=.*[@$!%*?&])/.test(password)) return "Password must contain at least one special character (@$!%*?&)";
+    // Use exact same regex as backend
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/.test(password)) {
+      return "Password must contain uppercase, lowercase, number and special character (@$!%*?&)";
+    }
     return "";
   };
 
-  // Password requirements checker
+  // Password requirements checker - simplified to match backend exactly
   const getPasswordRequirements = (password: string) => {
     return {
       length: password.length >= 8 && password.length <= 128,
       lowercase: /[a-z]/.test(password),
       uppercase: /[A-Z]/.test(password),
       number: /\d/.test(password),
-      special: /[@$!%*?&]/.test(password)
+      special: /[@$!%*?&]/.test(password) && /^[A-Za-z\d@$!%*?&]*$/.test(password)
     };
   };
 
