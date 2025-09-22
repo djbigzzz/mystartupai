@@ -2341,6 +2341,49 @@ IMPORTANT:
         const location = questionAnswers?.location || finalAnalysis.location?.specificLocation || "local area";
         const targetCustomers = questionAnswers?.target_customers || finalAnalysis.targetMarket?.primary || "general customers";
 
+        // Get accurate market size data for specific industries
+        const getAccurateMarketSize = (businessType: string, industry: string): string => {
+          const businessLower = businessType.toLowerCase();
+          const industryLower = industry?.toLowerCase() || "";
+          
+          // Crypto/Trading platforms - Updated data
+          if (businessLower.includes('trading') || businessLower.includes('crypto') || 
+              businessLower.includes('web3') || businessLower.includes('blockchain') ||
+              industryLower.includes('crypto') || industryLower.includes('fintech') ||
+              businessLower.includes('financial') || businessLower.includes('exchange')) {
+            return "$4.2 trillion global cryptocurrency market (2024), with trading platforms capturing $50+ billion annually";
+          }
+          
+          // AI/ML platforms
+          if (businessLower.includes('ai') || businessLower.includes('artificial intelligence') ||
+              businessLower.includes('machine learning') || businessLower.includes('ml')) {
+            return "$184 billion AI market (2024), growing 37% annually to $826 billion by 2030";
+          }
+          
+          // SaaS platforms
+          if (businessLower.includes('software') || businessLower.includes('saas') ||
+              businessLower.includes('platform')) {
+            return "$195 billion global SaaS market (2024), growing 18% annually";
+          }
+          
+          // E-commerce
+          if (businessLower.includes('ecommerce') || businessLower.includes('marketplace') ||
+              businessLower.includes('online store')) {
+            return "$5.7 trillion global e-commerce market (2024)";
+          }
+          
+          // Default fallback based on business scope
+          if (finalAnalysis.location?.type === "local") {
+            return "€200K-2M local market opportunity annually";
+          } else if (finalAnalysis.location?.type === "regional") {
+            return "€10M-100M regional market opportunity";
+          }
+          
+          return "$10+ billion addressable market with strong growth potential";
+        };
+
+        const accurateMarketSize = getAccurateMarketSize(finalAnalysis.businessType, finalAnalysis.industry);
+
         // Generate realistic market research based on business context
         const researchPrompt = `As a market research expert, provide realistic market insights for this specific business:
 
@@ -2349,16 +2392,17 @@ LOCATION: ${location}
 TARGET MARKET: ${targetCustomers}
 BUSINESS SCOPE: ${finalAnalysis.location?.type || "local"}
 REVENUE MODEL: ${finalAnalysis.revenueModel}
+ACCURATE MARKET SIZE: ${accurateMarketSize}
 
 User provided clarifications: ${JSON.stringify(questionAnswers)}
 
-Provide ONLY a valid JSON response with realistic market data appropriate for this business type and scope:
+Provide ONLY a valid JSON response with realistic market data appropriate for this business type and scope. Use the accurate market size provided above:
 
 {
   "marketSize": {
     ${finalAnalysis.location?.type === "local" ? '"local": "realistic local market size (e.g., €50K-200K annually)",' : ""}
     ${finalAnalysis.location?.type === "regional" ? '"regional": "realistic regional opportunity",' : ""}
-    "realistic": "total addressable market appropriate for business type and location"
+    "realistic": "${accurateMarketSize}"
   },
   "competitors": [
     {
@@ -2385,7 +2429,9 @@ Provide ONLY a valid JSON response with realistic market data appropriate for th
 }
 
 IMPORTANT:
+- Use the ACCURATE MARKET SIZE provided above - do not generate different market size figures
 - Market sizes must be realistic for the business type (local coffee shop ≠ $250M market)
+- For crypto/trading platforms, reference the $4.2T crypto market accurately
 - Competitors should be actual businesses that would compete in the same space
 - For local businesses, focus on local/regional competitors
 - Opportunities should be specific and actionable

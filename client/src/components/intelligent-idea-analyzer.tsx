@@ -718,65 +718,49 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
             </p>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {marketInsights.competitors.map((competitor, index) => (
                 <div 
                   key={index} 
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 transform transition-all duration-500 hover:shadow-md hover:-translate-y-1 animate-fade-in-up"
-                  style={{ 
-                    animationDelay: `${index * 200}ms`,
-                    animationFillMode: 'forwards'
-                  }}
+                  className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
                   data-testid={`competitor-card-${index}`}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white" data-testid={`competitor-name-${index}`}>
-                            {competitor.name}
-                          </h3>
-                        </div>
-                        <Badge 
-                          variant={competitor.type === "direct" ? "destructive" : competitor.type === "indirect" ? "secondary" : "outline"}
-                          className="transition-all duration-200 hover:scale-105"
-                        >
-                          {competitor.type} competitor
-                        </Badge>
-                        {competitor.location && (
-                          <Badge variant="outline" className="transition-all duration-200 hover:scale-105">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            {competitor.location}
-                          </Badge>
-                        )}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                        <Building className="w-4 h-4 text-white" />
                       </div>
-                      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3" data-testid={`competitor-description-${index}`}>
-                        {competitor.description}
-                      </p>
-                      
-                      {/* Additional competitive intelligence */}
-                      <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                        <span>Market Player</span>
-                        <span>•</span>
-                        <span>Active</span>
-                        {competitor.marketShare && (
-                          <>
-                            <span>•</span>
-                            <span>{competitor.marketShare} share</span>
-                          </>
-                        )}
+                      <div>
+                        <h3 className="font-semibold text-sm text-gray-900 dark:text-white leading-tight" data-testid={`competitor-name-${index}`}>
+                          {competitor.name}
+                        </h3>
+                        <Badge 
+                          variant={competitor.type === "direct" ? "destructive" : "secondary"}
+                          className="text-xs px-2 py-0 mt-1"
+                        >
+                          {competitor.type === "direct" ? "Direct" : "Indirect"}
+                        </Badge>
                       </div>
                     </div>
-                    
-                    {/* Competitive strength indicator */}
-                    <div className="text-right">
-                      <div className="w-16 h-16 rounded-full border-4 border-blue-100 dark:border-blue-900 flex items-center justify-center mb-2 transition-all duration-300 hover:border-blue-300 dark:hover:border-blue-700">
-                        <div className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                          {competitor.marketShare || "N/A"}
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Market Share</p>
+                  </div>
+                  
+                  {competitor.location && (
+                    <div className="flex items-center text-xs text-gray-600 dark:text-gray-400 mb-2">
+                      <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">{competitor.location}</span>
+                    </div>
+                  )}
+                  
+                  <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed mb-3 line-clamp-3" data-testid={`competitor-description-${index}`}>
+                    {competitor.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-600">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Market Share</span>
+                    <div className="bg-white dark:bg-gray-800 rounded-md px-2 py-1 border border-gray-300 dark:border-gray-600">
+                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                        {competitor.marketShare || "N/A"}
+                      </span>
                     </div>
                   </div>
                 </div>
