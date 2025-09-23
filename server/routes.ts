@@ -2354,7 +2354,7 @@ Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutl
           messages: [{ role: "user", content: prompt }],
           temperature: 0.3,
           max_tokens: 1000,
-          response_format: { type: "json_object" }
+
         });
 
         const analysisText = analysisResponse.choices[0]?.message?.content?.trim() || "";
@@ -2549,7 +2549,7 @@ Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutl
                   messages: [{ role: "user", content: prompt }],
                   temperature: 0.3,
                   max_tokens: 1000,
-                  response_format: { type: "json_object" }
+        
                 });
 
                 const sectionText = sectionResponse.choices[0]?.message?.content?.trim() || "";
@@ -2649,7 +2649,7 @@ IMPORTANT:
           messages: [{ role: "user", content: analysisPrompt }],
           temperature: 0.3,
           max_tokens: 1500,
-          response_format: { type: "json_object" }
+
         });
 
         const analysisText = analysisResponse.choices[0]?.message?.content?.trim() || "";

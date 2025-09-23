@@ -1000,17 +1000,17 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
             <div className="grid md:grid-cols-3 gap-6">
               <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <DollarSign className="w-12 h-12 text-green-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-green-900 dark:text-green-100">{marketInsights.marketSize.realistic}</h3>
+                <h3 className="text-xl font-bold text-green-900 dark:text-green-100">{marketInsights?.marketSize?.realistic || "Analysis in progress..."}</h3>
                 <p className="text-sm text-green-700 dark:text-green-300">Realistic Market Size</p>
               </div>
-              {marketInsights.marketSize.local && (
+              {marketInsights?.marketSize?.local && (
                 <div className="text-center p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <MapPin className="w-12 h-12 text-blue-600 mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-blue-900 dark:text-blue-100">{marketInsights.marketSize.local}</h3>
                   <p className="text-sm text-blue-700 dark:text-blue-300">Local Market Size</p>
                 </div>
               )}
-              {marketInsights.marketSize.regional && (
+              {marketInsights?.marketSize?.regional && (
                 <div className="text-center p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                   <Globe className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-purple-900 dark:text-purple-100">{marketInsights.marketSize.regional}</h3>
@@ -1034,7 +1034,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {marketInsights.competitors.map((competitor, index) => (
+              {marketInsights?.competitors?.map((competitor, index) => (
                 <div 
                   key={index} 
                   className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"

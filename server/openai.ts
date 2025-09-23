@@ -187,7 +187,7 @@ export async function analyzeStartupIdea(
           content: prompt
         }
       ],
-      response_format: { type: "json_object" },
+
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
@@ -587,7 +587,7 @@ export async function generateBusinessPlan(
           content: `Generate concise business plan for ${ideaTitle}: ${description}. Return JSON with 12 sections: executiveSummary, problemStatement, solutionDescription, marketAnalysis, businessModel, marketingStrategy, operationalPlan, managementTeam, financialProjections, fundingRequirements, riskAnalysis, timeline. Each section 1-2 paragraphs.`
         }
       ],
-      response_format: { type: "json_object" },
+
       max_tokens: 1500, // Reduced for faster generation
     });
 
@@ -1317,7 +1317,7 @@ export async function generateWebsiteContent(
           content: prompt
         }
       ],
-      response_format: { type: "json_object" },
+
       max_tokens: 1000, // Keep responses focused
     });
 
@@ -1392,7 +1392,7 @@ export async function generatePitchDeck(
           content: prompt
         }
       ],
-      response_format: { type: "json_object" },
+
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
