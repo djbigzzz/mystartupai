@@ -2592,6 +2592,21 @@ Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutl
           };
 
           console.log(`✅ Modular analysis completed for ${sections.length} sections`);
+          
+          // Save analysis results to database if ideaId is provided
+          if (ideaId) {
+            try {
+              await storage.updateStartupIdea(ideaId, {
+                intelligentAnalysis: analysisData,
+                marketInsights: sectionResults
+              });
+              console.log(`💾 Analysis results saved to idea ${ideaId}`);
+            } catch (saveError) {
+              console.error(`❌ Failed to save analysis to database:`, saveError);
+              // Continue without failing the request
+            }
+          }
+          
           return res.json({
             analysis: analysisData,
             insights: sectionResults,
@@ -2836,13 +2851,10 @@ IMPORTANT:
           throw new Error("Failed to generate market research - please try again");
         }
 
-        // Save results to database
+        // Save results to database in the correct format for frontend
         const savedIdea = await storage.updateStartupIdea(parseInt(ideaId), {
-          analysis: {
-            marketAnalysis: marketData,
-            businessContext: finalAnalysis,
-            clarificationAnswers: questionAnswers
-          }
+          marketInsights: marketData,
+          intelligentAnalysis: finalAnalysis
         });
 
         console.log(`✅ Contextual market research completed and saved for ${finalAnalysis.businessType}`);
