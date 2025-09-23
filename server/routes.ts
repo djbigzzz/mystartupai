@@ -2199,18 +2199,19 @@ Provide ONLY the suggested answer, no explanation or preamble:`;
     }
   );
 
-  // Intelligent Idea Analysis API - Understands business context first
-  app.post("/api/intelligent-analysis",
-    advancedRateLimit(10, 10 * 60 * 1000), // 10 analysis requests per 10 minutes
+  // Individual Section Analysis API - Modular analysis approach
+  app.post("/api/section-analysis",
+    advancedRateLimit(20, 10 * 60 * 1000), // 20 section requests per 10 minutes
     body('ideaTitle').isLength({ min: 3, max: 200 }).withMessage('Idea title must be between 3 and 200 characters'),
     body('description').isLength({ min: 10, max: 2000 }).withMessage('Description must be between 10 and 2000 characters'),
+    body('sectionId').isIn(['business-model', 'target-market', 'competitive-analysis', 'market-opportunity', 'location-analysis', 'revenue-model', 'risk-analysis', 'trend-analysis']).withMessage('Invalid section ID'),
     body('industry').optional().isLength({ max: 100 }).trim(),
     body('stage').optional().isLength({ max: 50 }).trim(),
     body('ideaId').optional().isNumeric().withMessage('Idea ID must be a valid number'),
     handleValidationErrors,
     async (req: Request, res: Response) => {
       try {
-        const { ideaTitle, description, industry, stage, ideaId } = req.body;
+        const { ideaTitle, description, industry, stage, ideaId, sectionId } = req.body;
         
         // Sanitize inputs
         const sanitizedTitle = sanitizeHtml(ideaTitle.trim());
@@ -2218,7 +2219,385 @@ Provide ONLY the suggested answer, no explanation or preamble:`;
         const sanitizedIndustry = sanitizeQuery(industry || "Technology");
         const sanitizedStage = sanitizeQuery(stage || "Idea Stage");
         
-        console.log(`🧠 Starting intelligent analysis for: ${sanitizedTitle}`);
+        console.log(`🔍 Starting ${sectionId} analysis for: ${sanitizedTitle}`);
+
+        // Section-specific analysis prompts
+        const sectionPrompts = {
+          'business-model': `Analyze the business model for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Business type and classification
+- Core value proposition
+- Revenue generation method
+- Key business activities
+- Resource requirements
+- Business model viability
+
+Respond with JSON: {"businessType": "...", "industry": "...", "valueProposition": "...", "revenueMethod": "...", "keyActivities": [...], "resources": [...], "viability": "..."}`,
+
+          'target-market': `Analyze the target market for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Primary target demographics
+- Customer personas
+- Market segments
+- Customer needs and pain points
+- Market size estimation
+- Customer acquisition strategy
+
+Respond with JSON: {"primaryMarket": "...", "demographics": [...], "personas": [...], "segments": [...], "painPoints": [...], "marketSize": "...", "acquisitionStrategy": "..."}`,
+
+          'competitive-analysis': `Analyze the competitive landscape for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Direct competitors
+- Indirect competitors  
+- Competitive advantages
+- Market positioning
+- Barriers to entry
+- Competitive threats
+
+Respond with JSON: {"directCompetitors": [...], "indirectCompetitors": [...], "advantages": [...], "positioning": "...", "barriers": [...], "threats": [...]}`,
+
+          'market-opportunity': `Analyze the market opportunity for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Total addressable market (TAM)
+- Serviceable addressable market (SAM)
+- Market growth rate
+- Market trends
+- Business opportunities
+- Growth potential
+
+Respond with JSON: {"tam": "...", "sam": "...", "growthRate": "...", "trends": [...], "opportunities": [...], "growthPotential": "..."}`,
+
+          'location-analysis': `Analyze the location and geographic factors for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Optimal location strategy
+- Geographic scope (local/regional/national/global)
+- Location-specific factors
+- Regional opportunities
+- Location-based challenges
+- Expansion potential
+
+Respond with JSON: {"optimalLocation": "...", "scope": "...", "locationFactors": [...], "regionalOpportunities": [...], "challenges": [...], "expansionPotential": "..."}`,
+
+          'revenue-model': `Analyze the revenue model and monetization for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Revenue streams
+- Pricing strategy
+- Monetization methods
+- Revenue projections
+- Scalability
+- Financial sustainability
+
+Respond with JSON: {"revenueStreams": [...], "pricingStrategy": "...", "monetization": [...], "projections": "...", "scalability": "...", "sustainability": "..."}`,
+
+          'risk-analysis': `Analyze the risks and challenges for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Market risks
+- Operational risks
+- Financial risks
+- Competitive risks
+- Regulatory risks
+- Mitigation strategies
+
+Respond with JSON: {"marketRisks": [...], "operationalRisks": [...], "financialRisks": [...], "competitiveRisks": [...], "regulatoryRisks": [...], "mitigationStrategies": [...]}`,
+
+          'trend-analysis': `Analyze market trends and future outlook for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Current market trends
+- Emerging technologies
+- Industry outlook
+- Future opportunities
+- Trend impact on business
+- Strategic recommendations
+
+Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutlook": "...", "futureOpportunities": [...], "trendImpact": "...", "recommendations": [...]}`
+        };
+
+        const prompt = sectionPrompts[sectionId as keyof typeof sectionPrompts];
+        if (!prompt) {
+          return res.status(400).json({ error: 'Invalid section ID' });
+        }
+
+        const analysisResponse = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.3,
+          max_tokens: 1000,
+          response_format: { type: "json_object" }
+        });
+
+        const analysisText = analysisResponse.choices[0]?.message?.content?.trim() || "";
+        
+        let analysisData;
+        try {
+          const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+          const jsonStr = jsonMatch ? jsonMatch[0] : analysisText;
+          analysisData = JSON.parse(jsonStr);
+        } catch (parseError) {
+          console.error(`❌ Failed to parse ${sectionId} analysis:`, parseError);
+          throw new Error(`Failed to analyze ${sectionId} - please try again`);
+        }
+
+        console.log(`✅ ${sectionId} analysis completed`);
+        res.json({ 
+          sectionId,
+          content: analysisData,
+          timestamp: new Date().toISOString()
+        });
+
+      } catch (error) {
+        console.error(`❌ Section analysis failed:`, error);
+        res.status(500).json({ 
+          error: "Failed to analyze section",
+          details: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  );
+
+  // Intelligent Idea Analysis API - Now supports modular analysis
+  app.post("/api/intelligent-analysis",
+    advancedRateLimit(10, 10 * 60 * 1000), // 10 analysis requests per 10 minutes
+    body('ideaTitle').isLength({ min: 3, max: 200 }).withMessage('Idea title must be between 3 and 200 characters'),
+    body('description').isLength({ min: 10, max: 2000 }).withMessage('Description must be between 10 and 2000 characters'),
+    body('industry').optional().isLength({ max: 100 }).trim(),
+    body('stage').optional().isLength({ max: 50 }).trim(),
+    body('ideaId').optional().isNumeric().withMessage('Idea ID must be a valid number'),
+    body('sections').optional().isArray().withMessage('Sections must be an array'),
+    handleValidationErrors,
+    async (req: Request, res: Response) => {
+      try {
+        const { ideaTitle, description, industry, stage, ideaId, sections } = req.body;
+        
+        // Sanitize inputs
+        const sanitizedTitle = sanitizeHtml(ideaTitle.trim());
+        const sanitizedDescription = sanitizeHtml(description.trim());
+        const sanitizedIndustry = sanitizeQuery(industry || "Technology");
+        const sanitizedStage = sanitizeQuery(stage || "Idea Stage");
+        
+        console.log(`🧠 Starting intelligent analysis for: ${sanitizedTitle}${sections ? ` (${sections.length} sections selected)` : ""}`);
+
+        // Check if this is a modular analysis request
+        if (sections && Array.isArray(sections) && sections.length > 0) {
+          console.log(`🔍 Running modular analysis for sections: ${sections.join(", ")}`);
+          
+          // Run individual section analysis for each selected section
+          const sectionResults: Record<string, any> = {};
+          
+          for (const sectionId of sections) {
+            try {
+              console.log(`🔍 Analyzing section: ${sectionId}`);
+              
+              // Use the same section prompts from the individual section analysis
+              const sectionPrompts = {
+                'business-model': `Analyze the business model for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Business type and classification
+- Core value proposition
+- Revenue generation method
+- Key business activities
+- Resource requirements
+- Business model viability
+
+Respond with JSON: {"businessType": "...", "industry": "...", "valueProposition": "...", "revenueMethod": "...", "keyActivities": [...], "resources": [...], "viability": "..."}`,
+                
+                'target-market': `Analyze the target market for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Primary target demographics
+- Customer personas
+- Market segments
+- Customer needs and pain points
+- Market size estimation
+- Customer acquisition strategy
+
+Respond with JSON: {"primaryMarket": "...", "demographics": [...], "personas": [...], "segments": [...], "painPoints": [...], "marketSize": "...", "acquisitionStrategy": "..."}`,
+                
+                'competitive-analysis': `Analyze the competitive landscape for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Direct competitors
+- Indirect competitors  
+- Competitive advantages
+- Market positioning
+- Barriers to entry
+- Competitive threats
+
+Respond with JSON: {"directCompetitors": [...], "indirectCompetitors": [...], "advantages": [...], "positioning": "...", "barriers": [...], "threats": [...]}`,
+                
+                'market-opportunity': `Analyze the market opportunity for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Total addressable market (TAM)
+- Serviceable addressable market (SAM)
+- Market growth rate
+- Market trends
+- Business opportunities
+- Growth potential
+
+Respond with JSON: {"tam": "...", "sam": "...", "growthRate": "...", "trends": [...], "opportunities": [...], "growthPotential": "..."}`,
+                
+                'location-analysis': `Analyze the location and geographic factors for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Optimal location strategy
+- Geographic scope (local/regional/national/global)
+- Location-specific factors
+- Regional opportunities
+- Location-based challenges
+- Expansion potential
+
+Respond with JSON: {"optimalLocation": "...", "scope": "...", "locationFactors": [...], "regionalOpportunities": [...], "challenges": [...], "expansionPotential": "..."}`,
+                
+                'revenue-model': `Analyze the revenue model and monetization for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Revenue streams
+- Pricing strategy
+- Monetization methods
+- Revenue projections
+- Scalability
+- Financial sustainability
+
+Respond with JSON: {"revenueStreams": [...], "pricingStrategy": "...", "monetization": [...], "projections": "...", "scalability": "...", "sustainability": "..."}`,
+                
+                'risk-analysis': `Analyze the risks and challenges for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Market risks
+- Operational risks
+- Financial risks
+- Competitive risks
+- Regulatory risks
+- Mitigation strategies
+
+Respond with JSON: {"marketRisks": [...], "operationalRisks": [...], "financialRisks": [...], "competitiveRisks": [...], "regulatoryRisks": [...], "mitigationStrategies": [...]}`,
+                
+                'trend-analysis': `Analyze market trends and future outlook for this startup idea:
+IDEA: "${sanitizedTitle}"
+DESCRIPTION: "${sanitizedDescription}"
+INDUSTRY: "${sanitizedIndustry}"
+
+Provide detailed analysis of:
+- Current market trends
+- Emerging technologies
+- Industry outlook
+- Future opportunities
+- Trend impact on business
+- Strategic recommendations
+
+Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutlook": "...", "futureOpportunities": [...], "trendImpact": "...", "recommendations": [...]}`
+              };
+
+              const prompt = sectionPrompts[sectionId as keyof typeof sectionPrompts];
+              if (prompt) {
+                const sectionResponse = await openai.chat.completions.create({
+                  model: "gpt-4",
+                  messages: [{ role: "user", content: prompt }],
+                  temperature: 0.3,
+                  max_tokens: 1000,
+                  response_format: { type: "json_object" }
+                });
+
+                const sectionText = sectionResponse.choices[0]?.message?.content?.trim() || "";
+                try {
+                  const jsonMatch = sectionText.match(/\{[\s\S]*\}/);
+                  const jsonStr = jsonMatch ? jsonMatch[0] : sectionText;
+                  sectionResults[sectionId] = JSON.parse(jsonStr);
+                  console.log(`✅ Section ${sectionId} completed`);
+                } catch (parseError) {
+                  console.error(`❌ Failed to parse ${sectionId} section:`, parseError);
+                  sectionResults[sectionId] = { error: `Failed to analyze ${sectionId}` };
+                }
+              }
+            } catch (error) {
+              console.error(`❌ Error analyzing section ${sectionId}:`, error);
+              sectionResults[sectionId] = { error: `Failed to analyze ${sectionId}` };
+            }
+          }
+
+          // Create a basic intelligent analysis structure
+          const analysisData = {
+            businessType: sectionResults['business-model']?.businessType || "Technology Startup",
+            industry: sanitizedIndustry,
+            location: {
+              type: sectionResults['location-analysis']?.scope || "global",
+              specificLocation: sectionResults['location-analysis']?.optimalLocation || null
+            },
+            targetMarket: {
+              primary: sectionResults['target-market']?.primaryMarket || "Technology users",
+              demographics: sectionResults['target-market']?.demographics || [],
+              size: sectionResults['target-market']?.marketSize || "Medium"
+            },
+            revenueModel: sectionResults['revenue-model']?.pricingStrategy || "Subscription model",
+            marketPosition: "Innovative solution",
+            clarifyingQuestions: [],
+            confidence: 85,
+            needsClarification: false,
+            summary: `Comprehensive analysis of ${sanitizedTitle} covering ${sections.length} key areas.`,
+            sectionData: sectionResults
+          };
+
+          console.log(`✅ Modular analysis completed for ${sections.length} sections`);
+          return res.json({
+            analysis: analysisData,
+            insights: sectionResults,
+            sectionData: sectionResults
+          });
+        }
 
         // Generate intelligent analysis with contextual understanding
         const analysisPrompt = `As an expert business analyst, analyze this startup idea and determine if you need more information to provide accurate market insights.
@@ -2269,7 +2648,8 @@ IMPORTANT:
           model: "gpt-4",
           messages: [{ role: "user", content: analysisPrompt }],
           temperature: 0.3,
-          max_tokens: 1500
+          max_tokens: 1500,
+          response_format: { type: "json_object" }
         });
 
         const analysisText = analysisResponse.choices[0]?.message?.content?.trim() || "";
