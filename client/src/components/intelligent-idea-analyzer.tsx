@@ -27,7 +27,10 @@ import {
   Globe,
   FileText,
   Sparkles,
-  Loader2
+  Loader2,
+  Play,
+  CheckSquare,
+  Square
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -63,6 +66,18 @@ interface IdeaAnalysis {
   summary: string;
 }
 
+interface AnalysisSection {
+  id: string;
+  title: string;
+  description: string;
+  icon: any;
+  status: "pending" | "generating" | "completed" | "error";
+  content?: any;
+  estimatedTime: string;
+  order: number;
+  dependencies?: string[];
+}
+
 interface MarketInsights {
   marketSize: {
     local?: string;
@@ -93,12 +108,87 @@ interface IntelligentAnalyzerProps {
 export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }: IntelligentAnalyzerProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const [currentStep, setCurrentStep] = useState<"analyzing" | "questions" | "confirming" | "researching" | "complete">("analyzing");
+  const [currentStep, setCurrentStep] = useState<"selecting" | "analyzing" | "questions" | "confirming" | "researching" | "complete">("selecting");
   const [ideaAnalysis, setIdeaAnalysis] = useState<IdeaAnalysis | null>(null);
   const [marketInsights, setMarketInsights] = useState<MarketInsights | null>(null);
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
   const [editedAnalysis, setEditedAnalysis] = useState<Partial<IdeaAnalysis>>({});
   const [suggestingFor, setSuggestingFor] = useState<string | null>(null);
+  const [selectedSections, setSelectedSections] = useState<string[]>([]);
+  const [analysisSections, setAnalysisSections] = useState<AnalysisSection[]>([
+    {
+      id: "business-model",
+      title: "Business Model Analysis",
+      description: "Analyze business type, industry classification, and core business model",
+      icon: Building,
+      status: "pending",
+      estimatedTime: "2-3 minutes",
+      order: 1
+    },
+    {
+      id: "target-market",
+      title: "Target Market Analysis",
+      description: "Identify target demographics, customer personas, and market segments",
+      icon: Users,
+      status: "pending",
+      estimatedTime: "3-4 minutes",
+      order: 2
+    },
+    {
+      id: "competitive-analysis",
+      title: "Competitive Analysis",
+      description: "Research competitors, market position, and competitive advantages",
+      icon: Target,
+      status: "pending",
+      estimatedTime: "4-5 minutes",
+      order: 3
+    },
+    {
+      id: "market-opportunity",
+      title: "Market Size & Opportunity",
+      description: "Analyze market size, growth potential, and business opportunities",
+      icon: TrendingUp,
+      status: "pending",
+      estimatedTime: "3-4 minutes",
+      order: 4
+    },
+    {
+      id: "location-analysis",
+      title: "Location & Geographic Analysis",
+      description: "Evaluate location strategy, geographic scope, and regional factors",
+      icon: MapPin,
+      status: "pending",
+      estimatedTime: "2-3 minutes",
+      order: 5
+    },
+    {
+      id: "revenue-model",
+      title: "Revenue & Monetization",
+      description: "Analyze revenue streams, pricing strategy, and monetization models",
+      icon: DollarSign,
+      status: "pending",
+      estimatedTime: "3-4 minutes",
+      order: 6
+    },
+    {
+      id: "risk-analysis",
+      title: "Risk & Challenge Analysis",
+      description: "Identify potential challenges, threats, and market risks",
+      icon: BarChart3,
+      status: "pending",
+      estimatedTime: "2-3 minutes",
+      order: 7
+    },
+    {
+      id: "trend-analysis",
+      title: "Market Trends Analysis",
+      description: "Research market trends, industry shifts, and emerging opportunities",
+      icon: Globe,
+      status: "pending",
+      estimatedTime: "3-4 minutes",
+      order: 8
+    }
+  ]);
 
   // Check if idea already has analysis results
   useEffect(() => {
@@ -107,19 +197,75 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
       setIdeaAnalysis(ideaData.intelligentAnalysis);
       setMarketInsights(ideaData.marketInsights);
       setCurrentStep("complete");
-    } else if (ideaData?.intelligentAnalysis) {
-      // Has initial analysis but may need market research
-      setIdeaAnalysis(ideaData.intelligentAnalysis);
-      setCurrentStep("researching");
-      // Auto-trigger market research
-      setTimeout(() => {
-        contextualMarketResearch.mutate();
-      }, 100);
+      // Mark all sections as completed if we have existing analysis
+      setAnalysisSections(prev => prev.map(section => ({
+        ...section,
+        status: "completed" as const
+      })));
+    } else {
+      // Start with section selection
+      setCurrentStep("selecting");
     }
   }, [ideaData]);
 
-  // Step 1: Intelligent Idea Analysis
-  const analyzeIdeaMutation = useMutation({
+  // Handle section selection
+  const toggleSection = (sectionId: string) => {
+    setSelectedSections(prev => 
+      prev.includes(sectionId) 
+        ? prev.filter(id => id !== sectionId)
+        : [...prev, sectionId]
+    );
+  };
+
+  const selectAllSections = () => {
+    setSelectedSections(analysisSections.map(s => s.id));
+  };
+
+  const clearAllSections = () => {
+    setSelectedSections([]);
+  };
+
+  // Individual Section Analysis
+  const analyzeSectionMutation = useMutation({
+    mutationFn: async ({ sectionId }: { sectionId: string }) => {
+      const response = await apiRequest("/api/section-analysis", {
+        method: "POST",
+        body: {
+          ideaId: ideaData.id,
+          ideaTitle: ideaData.ideaTitle,
+          description: ideaData.description,
+          industry: ideaData.industry,
+          stage: ideaData.stage,
+          sectionId
+        },
+      } as any);
+      return { sectionId, ...response };
+    },
+    onSuccess: (response: any) => {
+      const { sectionId } = response;
+      // Update the specific section status and content
+      setAnalysisSections(prev => prev.map(section => 
+        section.id === sectionId 
+          ? { ...section, status: "completed" as const, content: response.content }
+          : section
+      ));
+      
+      toast({
+        title: "✅ Section Complete!",
+        description: `${analysisSections.find(s => s.id === sectionId)?.title} analysis completed.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Analysis Failed",
+        description: error.message || "Failed to analyze section. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Run All Sections Analysis
+  const runAllAnalysisMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("/api/intelligent-analysis", {
         method: "POST",
@@ -128,7 +274,8 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
           ideaTitle: ideaData.ideaTitle,
           description: ideaData.description,
           industry: ideaData.industry,
-          stage: ideaData.stage
+          stage: ideaData.stage,
+          sections: selectedSections
         },
       } as any);
       return response;
@@ -136,26 +283,49 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
     onSuccess: (response: any) => {
       const data = response.analysis || response;
       setIdeaAnalysis(data);
-      if (data.needsClarification) {
-        setCurrentStep("questions");
-      } else {
-        setCurrentStep("researching");
-        // Auto-trigger market research immediately
-        contextualMarketResearch.mutate();
-      }
+      setMarketInsights(response.insights);
+      
+      // Mark all selected sections as completed
+      setAnalysisSections(prev => prev.map(section => 
+        selectedSections.includes(section.id)
+          ? { ...section, status: "completed" as const, content: response.sectionData?.[section.id] }
+          : section
+      ));
+      
+      setCurrentStep("complete");
+      
       toast({
-        title: "🧠 Analysis Complete!",
-        description: `AI understands your ${data.businessType} idea with ${data.confidence}% confidence.`,
+        title: "🎯 Complete Analysis Done!",
+        description: `All ${selectedSections.length} sections analyzed successfully.`,
       });
+      
+      if (onAnalysisComplete) {
+        onAnalysisComplete(data, response.insights);
+      }
     },
     onError: (error: any) => {
       toast({
         title: "Analysis Failed",
-        description: error.message || "Failed to analyze your idea. Please try again.",
+        description: error.message || "Failed to run complete analysis. Please try again.",
         variant: "destructive",
       });
     },
   });
+
+  // Start selected analyses
+  const startAnalysis = () => {
+    if (selectedSections.length === 0) {
+      toast({
+        title: "No Sections Selected",
+        description: "Please select at least one analysis section to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setCurrentStep("analyzing");
+    runAllAnalysisMutation.mutate();
+  };
 
   // AI Suggestion Helper
   const aiSuggestionMutation = useMutation({
@@ -231,7 +401,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   // Auto-start analysis only if no existing analysis
   useEffect(() => {
     if (ideaData && currentStep === "analyzing" && !ideaData?.intelligentAnalysis) {
-      analyzeIdeaMutation.mutate();
+      runAllAnalysisMutation.mutate();
     }
   }, [ideaData, currentStep]);
 
@@ -270,8 +440,153 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
     });
   };
 
-  // Step 1: Analysis in Progress
-  if (currentStep === "analyzing" && analyzeIdeaMutation.isPending) {
+  // Step 1: Section Selection
+  if (currentStep === "selecting") {
+    return (
+      <div className="space-y-6">
+        <Card className="border-0 shadow-xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center">
+              <Brain className="w-8 h-8 text-purple-600 mr-3" />
+              Choose Your Analysis Modules
+            </CardTitle>
+            <p className="text-gray-600 dark:text-gray-300">
+              Select which aspects of your startup idea you'd like to analyze. You can run individual modules or all at once.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Selection Controls */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Button 
+                onClick={selectAllSections}
+                variant="outline"
+                size="sm"
+                className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                data-testid="button-select-all"
+              >
+                <CheckSquare className="w-4 h-4 mr-2" />
+                Select All
+              </Button>
+              <Button 
+                onClick={clearAllSections}
+                variant="outline"
+                size="sm"
+                className="text-gray-600 border-gray-600 hover:bg-gray-50"
+                data-testid="button-clear-all"
+              >
+                <Square className="w-4 h-4 mr-2" />
+                Clear All
+              </Button>
+            </div>
+
+            {/* Analysis Sections Grid */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {analysisSections
+                .sort((a, b) => a.order - b.order)
+                .map((section) => {
+                  const IconComponent = section.icon;
+                  const isSelected = selectedSections.includes(section.id);
+                  
+                  return (
+                    <div
+                      key={section.id}
+                      onClick={() => toggleSection(section.id)}
+                      className={`cursor-pointer transition-all duration-200 border-2 rounded-xl p-4 ${
+                        isSelected 
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md" 
+                          : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                      }`}
+                      data-testid={`section-${section.id}`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          isSelected ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
+                        }`}>
+                          <IconComponent className={`w-5 h-5 ${
+                            isSelected ? "text-white" : "text-gray-600"
+                          }`} />
+                        </div>
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                          isSelected 
+                            ? "bg-blue-500 border-blue-500" 
+                            : "border-gray-300 dark:border-gray-600"
+                        }`}>
+                          {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                        </div>
+                      </div>
+                      
+                      <h3 className="font-semibold text-sm text-gray-900 dark:text-white mb-2">
+                        {section.title}
+                      </h3>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">
+                        {section.description}
+                      </p>
+                      
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                        <Clock className="w-3 h-3 mr-1" />
+                        <span>{section.estimatedTime}</span>
+                      </div>
+                    </div>
+                  );
+                })
+              }
+            </div>
+
+            {/* Selected Summary */}
+            {selectedSections.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold text-gray-900 dark:text-white">
+                    Selected Analysis ({selectedSections.length} modules)
+                  </h4>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Est. {Math.max(5, selectedSections.length * 3)}-{selectedSections.length * 5} minutes
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {selectedSections.map(sectionId => {
+                    const section = analysisSections.find(s => s.id === sectionId);
+                    return (
+                      <Badge key={sectionId} variant="secondary" className="text-xs">
+                        {section?.title}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button 
+                onClick={startAnalysis}
+                disabled={selectedSections.length === 0 || runAllAnalysisMutation.isPending}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-bold shadow-xl"
+                data-testid="button-start-selected-analysis"
+              >
+                {runAllAnalysisMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5 mr-2" />
+                    Start Analysis ({selectedSections.length} modules)
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Step 2: Analysis in Progress
+  if (currentStep === "analyzing" && runAllAnalysisMutation.isPending) {
     return (
       <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20">
         <CardHeader className="text-center pb-8">
