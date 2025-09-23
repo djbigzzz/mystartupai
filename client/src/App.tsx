@@ -36,6 +36,7 @@ import InvestorReadyDemo from "@/pages/investor-ready-demo";
 import AIShowcase from "@/pages/ai-showcase";
 import MVPBuilder from "@/pages/mvp-builder";
 import InvestorMatching from "@/pages/investor-matching";
+import MarketResearchPage from "@/pages/market-research";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -70,6 +71,7 @@ function Router() {
       <Route path="/ai-showcase" component={AIShowcase} />
       <Route path="/mvp-builder" component={MVPBuilder} />
       <Route path="/investor-matching" component={InvestorMatching} />
+      <Route path="/market-research" component={MarketResearchPage} />
       <Route component={NotFound} />
     </Switch>
   );
