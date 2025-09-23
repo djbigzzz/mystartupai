@@ -2597,8 +2597,11 @@ Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutl
           if (ideaId) {
             try {
               await storage.updateStartupIdea(ideaId, {
-                intelligentAnalysis: analysisData,
-                marketInsights: sectionResults
+                analysis: {
+                  intelligentAnalysis: analysisData,
+                  marketInsights: sectionResults,
+                  timestamp: new Date().toISOString()
+                }
               });
               console.log(`💾 Analysis results saved to idea ${ideaId}`);
             } catch (saveError) {
@@ -2851,10 +2854,13 @@ IMPORTANT:
           throw new Error("Failed to generate market research - please try again");
         }
 
-        // Save results to database in the correct format for frontend
+        // Save results to database in the correct format
         const savedIdea = await storage.updateStartupIdea(parseInt(ideaId), {
-          marketInsights: marketData,
-          intelligentAnalysis: finalAnalysis
+          analysis: {
+            intelligentAnalysis: finalAnalysis,
+            marketInsights: marketData,
+            timestamp: new Date().toISOString()
+          }
         });
 
         console.log(`✅ Contextual market research completed and saved for ${finalAnalysis.businessType}`);
