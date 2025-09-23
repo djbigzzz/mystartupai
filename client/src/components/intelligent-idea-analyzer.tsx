@@ -192,9 +192,9 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
 
   // Check for existing analysis
   useEffect(() => {
-    if (ideaData?.intelligentAnalysis && ideaData?.marketInsights) {
-      setIdeaAnalysis(ideaData.intelligentAnalysis);
-      setMarketInsights(ideaData.marketInsights);
+    if (ideaData?.analysis?.intelligentAnalysis && ideaData?.analysis?.marketInsights) {
+      setIdeaAnalysis(ideaData.analysis.intelligentAnalysis);
+      setMarketInsights(ideaData.analysis.marketInsights);
       setCurrentStep("results");
     }
   }, [ideaData]);
