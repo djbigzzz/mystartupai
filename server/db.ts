@@ -1,5 +1,6 @@
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 import { Pool } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 
 if (!process.env.DATABASE_URL) {
@@ -8,28 +9,24 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure connection pool with proper limits and timeouts
+// Create Neon serverless connection for main application
+const sql = neon(process.env.DATABASE_URL);
+export const db = drizzle(sql, { schema });
+
+// Create a separate PostgreSQL pool for session store (required by connect-pg-simple)
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  max: 5, // Maximum number of connections in the pool
-  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-  connectionTimeoutMillis: 5000, // Timeout after 5 seconds if unable to connect
+  max: 3, // Smaller pool for session storage
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
 });
 
-export const db = drizzle(pool, { schema });
-
-// Add error handling for pool events
+// Add minimal error handling for the session pool
 pool.on('error', (err) => {
-  console.error('🚨 Database pool error:', err);
+  console.error('🚨 Session store pool error:', err);
 });
 
-pool.on('connect', (client) => {
-  console.log('🔗 Database client connected');
-});
-
-pool.on('remove', (client) => {
-  console.log('💔 Database client disconnected');
-});
+console.log('🔗 Database client connected');
 
 // Database operation wrapper with retry logic - ONLY for read operations and idempotent writes
 export async function withRetryRead<T>(
