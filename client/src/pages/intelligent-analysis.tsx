@@ -16,9 +16,20 @@ export default function IntelligentAnalysisPage() {
   // Get current idea ID from URL params or local storage
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const ideaId = urlParams.get("ideaId") || localStorage.getItem("currentIdeaId");
+    const ideaIdFromUrl = urlParams.get("ideaId");
+    const ideaIdFromStorage = localStorage.getItem("currentIdeaId");
+    
+    console.log("🔍 URL Search Params:", window.location.search);
+    console.log("🔍 ideaId from URL:", ideaIdFromUrl);
+    console.log("🔍 ideaId from localStorage:", ideaIdFromStorage);
+    
+    const ideaId = ideaIdFromUrl || ideaIdFromStorage;
+    console.log("🔍 Final ideaId:", ideaId);
+    
     if (ideaId) {
       setCurrentIdeaId(ideaId);
+      // Also store it in localStorage for future use
+      localStorage.setItem("currentIdeaId", ideaId);
     }
   }, []);
 

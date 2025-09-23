@@ -192,21 +192,24 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
 
   // Check if idea already has analysis results
   useEffect(() => {
-    if (ideaData?.intelligentAnalysis && ideaData?.marketInsights) {
-      // Analysis already exists, show results directly
-      setIdeaAnalysis(ideaData.intelligentAnalysis);
-      setMarketInsights(ideaData.marketInsights);
-      setCurrentStep("complete");
-      // Mark all sections as completed if we have existing analysis
-      setAnalysisSections(prev => prev.map(section => ({
-        ...section,
-        status: "completed" as const
-      })));
-    } else {
-      // Start with section selection
-      setCurrentStep("selecting");
+    // Only reset to selecting if we don't already have a completed analysis in this session
+    if (currentStep !== "complete" && !ideaAnalysis) {
+      if (ideaData?.intelligentAnalysis && ideaData?.marketInsights) {
+        // Analysis already exists, show results directly
+        setIdeaAnalysis(ideaData.intelligentAnalysis);
+        setMarketInsights(ideaData.marketInsights);
+        setCurrentStep("complete");
+        // Mark all sections as completed if we have existing analysis
+        setAnalysisSections(prev => prev.map(section => ({
+          ...section,
+          status: "completed" as const
+        })));
+      } else {
+        // Start with section selection
+        setCurrentStep("selecting");
+      }
     }
-  }, [ideaData]);
+  }, [ideaData, currentStep, ideaAnalysis]);
 
   // Handle section selection
   const toggleSection = (sectionId: string) => {
@@ -298,6 +301,10 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
         title: "🎯 Complete Analysis Done!",
         description: `All ${selectedSections.length} sections analyzed successfully.`,
       });
+      
+      console.log("✅ Analysis completed - setting currentStep to 'complete'");
+      console.log("✅ Analysis data:", data);
+      console.log("✅ Market insights:", response.insights);
       
       if (onAnalysisComplete) {
         onAnalysisComplete(data, response.insights);
@@ -633,7 +640,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
 
   // Step 2: Clarifying Questions
   if (currentStep === "questions" && ideaAnalysis) {
-    const questionsByCategory = ideaAnalysis.clarifyingQuestions.reduce((acc, q) => {
+    const questionsByCategory = ideaAnalysis?.clarifyingQuestions?.reduce((acc, q) => {
       if (!acc[q.category]) acc[q.category] = [];
       acc[q.category].push(q);
       return acc;
@@ -673,11 +680,11 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
           {/* Analysis Summary */}
           <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6">
             <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">My Initial Understanding:</h4>
-            <p className="text-blue-800 dark:text-blue-200 text-sm">{ideaAnalysis.summary}</p>
+            <p className="text-blue-800 dark:text-blue-200 text-sm">{ideaAnalysis?.summary}</p>
             <div className="flex items-center mt-3">
               <Brain className="w-4 h-4 text-blue-600 mr-2" />
               <span className="text-sm text-blue-700 dark:text-blue-300">
-                Confidence: {ideaAnalysis.confidence}% - {ideaAnalysis.confidence >= 80 ? "High" : ideaAnalysis.confidence >= 60 ? "Medium" : "Needs clarification"}
+                Confidence: {ideaAnalysis?.confidence}% - {ideaAnalysis?.confidence >= 80 ? "High" : ideaAnalysis?.confidence >= 60 ? "Medium" : "Needs clarification"}
               </span>
             </div>
           </div>
@@ -835,7 +842,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
               <div>
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Business Type</Label>
                 <Input
-                  value={editedAnalysis.businessType || ideaAnalysis.businessType}
+                  value={editedAnalysis.businessType || ideaAnalysis?.businessType}
                   onChange={(e) => handleAnalysisEdit("businessType", e.target.value)}
                   className="mt-1"
                   data-testid="input-business-type"
@@ -845,7 +852,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
               <div>
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Industry</Label>
                 <Input
-                  value={editedAnalysis.industry || ideaAnalysis.industry}
+                  value={editedAnalysis.industry || ideaAnalysis?.industry}
                   onChange={(e) => handleAnalysisEdit("industry", e.target.value)}
                   className="mt-1"
                   data-testid="input-industry"
@@ -855,7 +862,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
               <div>
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Revenue Model</Label>
                 <Input
-                  value={editedAnalysis.revenueModel || ideaAnalysis.revenueModel}
+                  value={editedAnalysis.revenueModel || ideaAnalysis?.revenueModel}
                   onChange={(e) => handleAnalysisEdit("revenueModel", e.target.value)}
                   className="mt-1"
                   data-testid="input-revenue-model"
@@ -867,8 +874,8 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
               <div>
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Market Scope</Label>
                 <select
-                  value={editedAnalysis.location?.type || ideaAnalysis.location.type}
-                  onChange={(e) => handleAnalysisEdit("location", { ...ideaAnalysis.location, type: e.target.value })}
+                  value={editedAnalysis.location?.type || ideaAnalysis?.location?.type}
+                  onChange={(e) => handleAnalysisEdit("location", { ...ideaAnalysis?.location, type: e.target.value })}
                   className="w-full mt-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800"
                   data-testid="select-market-scope"
                 >
@@ -882,8 +889,8 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
               <div>
                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Primary Target Market</Label>
                 <Input
-                  value={editedAnalysis.targetMarket?.primary || ideaAnalysis.targetMarket.primary}
-                  onChange={(e) => handleAnalysisEdit("targetMarket", { ...ideaAnalysis.targetMarket, primary: e.target.value })}
+                  value={editedAnalysis.targetMarket?.primary || ideaAnalysis?.targetMarket?.primary}
+                  onChange={(e) => handleAnalysisEdit("targetMarket", { ...ideaAnalysis?.targetMarket, primary: e.target.value })}
                   className="mt-1"
                   data-testid="input-target-market"
                 />
@@ -1089,8 +1096,8 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                 <h4 className="font-semibold text-gray-900 dark:text-white">Competitive Insights</h4>
               </div>
               <p className="text-sm text-gray-700 dark:text-gray-300">
-                Based on current market research, you're competing in {marketInsights.competitors.filter(c => c.type === "direct").length > 0 ? "a competitive" : "an emerging"} space. 
-                Focus on differentiation through {ideaAnalysis.businessType === "local" ? "superior local service" : ideaAnalysis.businessType === "digital" ? "better user experience" : "unique value proposition"}.
+                Based on current market research, you're competing in {marketInsights?.competitors?.filter(c => c.type === "direct")?.length > 0 ? "a competitive" : "an emerging"} space. 
+                Focus on differentiation through {ideaAnalysis?.businessType === "local" ? "superior local service" : ideaAnalysis?.businessType === "digital" ? "better user experience" : "unique value proposition"}.
               </p>
             </div>
           </CardContent>
@@ -1107,12 +1114,12 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                {marketInsights.opportunities.map((opportunity, index) => (
+                {marketInsights?.opportunities?.map((opportunity, index) => (
                   <li key={index} className="flex items-start space-x-3">
                     <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                     <span className="text-gray-700 dark:text-gray-300 text-sm">{opportunity}</span>
                   </li>
-                ))}
+                )) || []}
               </ul>
             </CardContent>
           </Card>
@@ -1126,7 +1133,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {marketInsights.marketTrends.map((trend, index) => (
+                {marketInsights?.marketTrends?.map((trend, index) => (
                   <div key={index} className="flex items-start space-x-3">
                     <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 ${
                       trend.impact === "positive" ? "bg-green-500" :
@@ -1137,7 +1144,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                       <p className="text-xs text-gray-600 dark:text-gray-400">{trend.relevance}</p>
                     </div>
                   </div>
-                ))}
+                )) || []}
               </div>
             </CardContent>
           </Card>

@@ -212,15 +212,14 @@ export default function AdvancedIdeaForm() {
     onSuccess: (data) => {
       toast({
         title: "Idea updated successfully!",
-        description: "Your startup idea has been updated. Redirecting to view analysis...",
+        description: "Your startup idea has been updated. Redirecting to analysis...",
       });
       
       localStorage.setItem("currentIdeaId", data.id.toString());
       localStorage.setItem("userEmail", data.email);
       
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 2000);
+      // Redirect immediately after toast
+      setLocation(`/intelligent-analysis?ideaId=${data.id}`);
     },
     onError: (error) => {
       toast({
@@ -261,10 +260,23 @@ export default function AdvancedIdeaForm() {
       case "market-details":
         return watchedFields.industry && watchedFields.stage && watchedFields.targetMarket;
       case "problem-solution":
+        // Only require core fields, competitive advantage and revenue model are optional
         return watchedFields.problemStatement && watchedFields.solutionApproach;
       default:
         return false;
     }
+  };
+
+  // Check if all required fields are valid for final submission
+  const isFormCompleteForSubmission = () => {
+    const requiredFields = isAuthenticated 
+      ? ['ideaTitle', 'description', 'industry', 'stage', 'targetMarket', 'problemStatement', 'solutionApproach']
+      : ['name', 'email', 'ideaTitle', 'description', 'industry', 'stage', 'targetMarket', 'problemStatement', 'solutionApproach'];
+    
+    return requiredFields.every(field => {
+      const value = watchedFields[field as keyof typeof watchedFields];
+      return value && value.toString().trim().length > 0;
+    });
   };
 
   const renderStepContent = () => {
@@ -697,7 +709,7 @@ export default function AdvancedIdeaForm() {
                   ) : (
                     <Button
                       type="submit"
-                      disabled={submitIdeaMutation.isPending || !isStepValid(currentStep)}
+                      disabled={submitIdeaMutation.isPending || !isFormCompleteForSubmission()}
                       className="flex-1 sm:flex-none px-6 sm:px-8 bg-green-600 hover:bg-green-700 touch-manipulation"
                       data-testid="button-submit-idea"
                     >
