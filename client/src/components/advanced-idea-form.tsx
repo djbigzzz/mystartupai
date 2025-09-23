@@ -162,6 +162,7 @@ export default function AdvancedIdeaForm() {
       competitiveAdvantage: "",
       revenueModel: "",
     },
+    mode: "onChange",
   });
 
   const watchedFields = form.watch();
@@ -533,8 +534,14 @@ export default function AdvancedIdeaForm() {
                     <Textarea 
                       rows={4}
                       placeholder="How does your startup solve this problem? What makes your approach unique?" 
-                      {...field} 
+                      value={field.value || ""}
+                      onChange={(e) => {
+                        field.onChange(e.target.value);
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
                       className="border-gray-300 focus:border-blue-500"
+                      data-testid="solution-approach-textarea"
                     />
                   </FormControl>
                   <FormDescription>
