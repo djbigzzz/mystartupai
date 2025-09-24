@@ -16,9 +16,12 @@ export const db = drizzle(sql, { schema });
 // Create a separate PostgreSQL pool for session store (required by connect-pg-simple)
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  max: 3, // Smaller pool for session storage
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  max: 5, // Increased pool size for better performance
+  idleTimeoutMillis: 60000, // Increased idle timeout
+  connectionTimeoutMillis: 30000, // Increased connection timeout for initial setup
+  acquireTimeoutMillis: 60000, // Timeout for acquiring connection from pool
+  statementTimeout: 30000, // Timeout for individual statements
+  query_timeout: 30000, // Overall query timeout
 });
 
 // Add minimal error handling for the session pool
