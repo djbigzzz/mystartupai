@@ -283,43 +283,39 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   // Quick Start Screen
   if (currentStep === "quickstart") {
     return (
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 mb-4">
-            <Brain className="w-8 h-8 text-white" />
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 mb-3">
+            <Brain className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Let's Analyze Your Idea
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Intelligent Idea Analysis
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Get AI-powered insights about "<span className="font-semibold text-blue-600">{ideaData?.ideaTitle}</span>" 
-            with realistic market analysis tailored to your business.
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            AI will analyze your idea, ask clarifying questions if needed, and provide 
+            realistic market insights tailored to your specific business context.
           </p>
         </div>
 
         {/* View Previous Analysis Option - Show if analysis already exists */}
         {ideaAnalysis && marketInsights && (
-          <Card className="border-2 border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 shadow-xl">
-            <CardHeader>
+          <Card className="border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
+            <CardHeader className="pb-3">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 rounded-lg bg-green-500 flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-gray-900 dark:text-white">
-                    Previous Analysis Available
-                  </CardTitle>
+                  <CardTitle className="text-lg text-gray-900 dark:text-white">Previous Analysis Available</CardTitle>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     View your previously completed analysis results
                   </p>
                 </div>
-                <Badge variant="outline" className="ml-auto border-green-500 text-green-600">
-                  Completed
-                </Badge>
+                <Badge variant="outline" className="ml-auto border-green-500 text-green-600">Completed</Badge>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               <Button 
                 onClick={() => setCurrentStep("results")}
                 variant="outline" 
@@ -333,75 +329,24 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
           </Card>
         )}
 
-        {/* Quick Start Option */}
-        <Card className="border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-xl">
-          <CardHeader>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
+        {/* Individual Analysis Modules - Primary Option */}
+        <Card className="border-2 border-blue-200 dark:border-blue-800">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
+                  <MousePointer className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg text-gray-900 dark:text-white">Choose Specific Modules</CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Select exactly what you need</p>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-xl text-gray-900 dark:text-white">
-                  Quick Analysis (Recommended)
-                </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Complete analysis in 8-12 minutes
-                </p>
-              </div>
-              <Badge variant="secondary" className="ml-auto">
-                Popular
-              </Badge>
+              <Badge variant="secondary">Recommended</Badge>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {quickAnalysisPreset.map(sectionId => {
-                const section = analysisSections.find(s => s.id === sectionId);
-                const IconComponent = section?.icon;
-                return (
-                  <div key={sectionId} className="text-center space-y-2">
-                    <div className="w-12 h-12 rounded-lg bg-white dark:bg-gray-800 mx-auto flex items-center justify-center shadow-sm">
-                      {IconComponent && <IconComponent className="w-6 h-6 text-blue-600" />}
-                    </div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {section?.title}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-            <Button 
-              onClick={startQuickAnalysis}
-              size="lg" 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 text-lg shadow-lg"
-              data-testid="button-quick-analysis"
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Start Quick Analysis
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Custom Analysis Option */}
-        <Card className="shadow-lg">
-          <CardHeader>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                <MousePointer className="w-5 h-5 text-gray-600" />
-              </div>
-              <div>
-                <CardTitle className="text-xl text-gray-900 dark:text-white">
-                  Custom Analysis
-                </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Choose specific modules to analyze
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {analysisSections.map(section => {
                 const IconComponent = section.icon;
                 const isSelected = selectedSections.includes(section.id);
@@ -416,65 +361,89 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                           : [...prev, section.id]
                       );
                     }}
-                    className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-4 ${
+                    className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-3 text-center ${
                       isSelected 
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md" 
-                        : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
+                        : "border-gray-200 hover:border-gray-300"
                     }`}
                     data-testid={`section-${section.id}`}
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        isSelected ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
-                      }`}>
-                        <IconComponent className={`w-4 h-4 ${
-                          isSelected ? "text-white" : "text-gray-600"
-                        }`} />
-                      </div>
-                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                        isSelected 
-                          ? "bg-blue-500 border-blue-500" 
-                          : "border-gray-300"
-                      }`}>
-                        {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
-                      </div>
+                    <div className="w-8 h-8 mx-auto mb-2">
+                      <IconComponent className={`w-full h-full ${
+                        isSelected ? "text-blue-600" : "text-gray-600"
+                      }`} />
                     </div>
-                    
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                    <h3 className="font-medium text-sm text-gray-900 dark:text-white mb-1">
                       {section.title}
                     </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                      {section.description}
-                    </p>
-                    
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {section.estimatedTime}
-                    </div>
+                    <p className="text-xs text-gray-500">{section.estimatedTime}</p>
                   </div>
                 );
               })}
             </div>
-
+            
             {selectedSections.length > 0 && (
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                <div className="flex items-center justify-between text-sm mb-3">
+                  <span className="font-medium text-gray-900 dark:text-white">
                     {selectedSections.length} modules selected
                   </span>
-                  <span className="text-xs text-gray-500">
-                    Est. {selectedSections.length * 3}-{selectedSections.length * 5} min
+                  <span className="text-gray-600 dark:text-gray-400">
+                    ~{selectedSections.length * 4} min
                   </span>
                 </div>
                 <Button 
                   onClick={startCustomAnalysis}
-                  className="w-full mt-2"
+                  className="w-full"
                   data-testid="button-custom-analysis"
                 >
-                  Start Custom Analysis
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Generate Selected ({selectedSections.length})
                 </Button>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Quick Bundle Analysis - Secondary Option */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-lg bg-purple-500 flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-lg text-gray-900 dark:text-white">Complete Analysis Bundle</CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-400">All 4 modules • 8-12 minutes</p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-4 gap-3">
+              {quickAnalysisPreset.map(sectionId => {
+                const section = analysisSections.find(s => s.id === sectionId);
+                const IconComponent = section?.icon;
+                return (
+                  <div key={sectionId} className="text-center">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 mx-auto flex items-center justify-center mb-2">
+                      {IconComponent && <IconComponent className="w-4 h-4 text-purple-600" />}
+                    </div>
+                    <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                      {section?.title}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            <Button 
+              onClick={startQuickAnalysis}
+              variant="outline"
+              className="w-full"
+              data-testid="button-quick-analysis"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Start Quick Analysis
+            </Button>
           </CardContent>
         </Card>
       </div>
