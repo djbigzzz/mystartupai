@@ -128,12 +128,11 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   const [currentStep, setCurrentStep] = useState<"quickstart" | "analyzing" | "results">("quickstart");
   const [ideaAnalysis, setIdeaAnalysis] = useState<IdeaAnalysis | null>(null);
   const [marketInsights, setMarketInsights] = useState<MarketInsights | null>(null);
-  const [selectedSections, setSelectedSections] = useState<string[]>([]);
+  const quickAnalysisPreset = ["business-model", "target-market", "competitive-analysis", "market-opportunity"];
+  const [selectedSections, setSelectedSections] = useState<string[]>(quickAnalysisPreset);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [currentlyAnalyzing, setCurrentlyAnalyzing] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
-
-  const quickAnalysisPreset = ["business-model", "target-market", "competitive-analysis", "market-opportunity"];
 
   const analysisSections: AnalysisSection[] = [
     {
@@ -204,6 +203,9 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   // Analysis mutation
   const runAnalysisMutation = useMutation({
     mutationFn: async () => {
+      // Ensure we have sections selected - default to quick analysis if none
+      const sectionsToAnalyze = selectedSections.length > 0 ? selectedSections : quickAnalysisPreset;
+      
       const response = await apiRequest("/api/intelligent-analysis", {
         method: "POST",
         body: {
@@ -212,7 +214,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
           description: ideaData.description,
           industry: ideaData.industry,
           stage: ideaData.stage,
-          sections: selectedSections
+          sections: sectionsToAnalyze
         },
       } as any);
       return response;
