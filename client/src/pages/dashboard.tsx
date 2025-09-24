@@ -18,6 +18,9 @@ import {
   Lightbulb,
   Brain,
   Rocket,
+  ArrowRight,
+  Presentation,
+  CheckCircle,
   Download,
   Flame,
   Star,
@@ -36,7 +39,6 @@ import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import MobileNavigation from "@/components/mobile-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
-import StartupWorkflow from "@/components/startup-workflow";
 import { ThemeToggle } from "@/components/theme-toggle";
 import GuidedOnboarding from "@/components/onboarding/guided-onboarding";
 import DailyCheckin from "@/components/daily-checkin";
@@ -379,11 +381,100 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Primary Startup Workflow - This is now the main feature */}
-      <StartupWorkflow 
-        currentIdeaId={ideaData?.id} 
-        ideaData={ideaData}
-      />
+      {/* Simple Step Indicators Only - No detailed analysis content */}
+      <Card data-testid="card-workflow-steps">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Target className="w-5 h-5 text-blue-600" />
+            <span>Your Next Step</span>
+          </CardTitle>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Ready to level up your startup?
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-4 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg mb-2">2. Intelligent Idea Analysis</h3>
+                <p className="text-purple-100 text-sm mb-3">
+                  AI asks clarifying questions and provides realistic, contextual market insights - FIRST step after idea submission
+                </p>
+                <div className="flex items-center space-x-4 text-sm">
+                  <div className="flex items-center space-x-1">
+                    <Clock className="w-4 h-4" />
+                    <span>Time: 15-25 minutes</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Progress: +20%</span>
+                  </div>
+                </div>
+              </div>
+              <Link href="/intelligent-analysis">
+                <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30" data-testid="button-start-analysis">
+                  Start Now
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+          
+          {/* Step Progression Indicators */}
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Startup Development Progress</span>
+              <span className="text-sm text-gray-500">Step 2 of 10</span>
+            </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{width: '20%'}}></div>
+            </div>
+            
+            {/* Simple Step List */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
+              <div className="flex flex-col items-center p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mb-1">
+                  <CheckCircle className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xs text-green-700 dark:text-green-300 text-center font-medium">Submit Idea</span>
+                <span className="text-xs text-green-600 dark:text-green-400">completed</span>
+              </div>
+              
+              <div className="flex flex-col items-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mb-1">
+                  <Brain className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xs text-blue-700 dark:text-blue-300 text-center font-medium">Intelligent Analysis</span>
+                <span className="text-xs text-blue-600 dark:text-blue-400">available</span>
+              </div>
+              
+              <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-1">
+                  <FileText className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 text-center">Business Plan</span>
+                <span className="text-xs text-gray-500">locked</span>
+              </div>
+              
+              <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-1">
+                  <Presentation className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 text-center">Pitch Deck</span>
+                <span className="text-xs text-gray-500">locked</span>
+              </div>
+              
+              <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-1">
+                  <Users className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                <span className="text-xs text-gray-600 dark:text-gray-400 text-center">Investor Ready</span>
+                <span className="text-xs text-gray-500">locked</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Startup Progress Overview */}
       {ideaData && ideaData as any && (
