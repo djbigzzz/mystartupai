@@ -616,21 +616,23 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                 <div className="space-y-3">
                   <div>
                     <Label className="text-xs text-gray-500 uppercase tracking-wide">Business Type</Label>
-                    <p className="font-semibold text-gray-900 dark:text-white">{ideaAnalysis.businessType}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {ideaAnalysis?.businessType || "Analyzing..."}
+                    </p>
                   </div>
                   
                   <div>
                     <Label className="text-xs text-gray-500 uppercase tracking-wide">Market Scope</Label>
                     <Badge variant="secondary" className="capitalize">
-                      {ideaAnalysis.location.type}
+                      {ideaAnalysis?.location?.type || "global"}
                     </Badge>
                   </div>
                   
                   <div>
                     <Label className="text-xs text-gray-500 uppercase tracking-wide">Confidence Score</Label>
                     <div className="flex items-center space-x-2">
-                      <Progress value={ideaAnalysis.confidence} className="h-2 flex-1" />
-                      <span className="text-sm font-medium">{ideaAnalysis.confidence}%</span>
+                      <Progress value={ideaAnalysis?.confidence || 0} className="h-2 flex-1" />
+                      <span className="text-sm font-medium">{ideaAnalysis?.confidence || 0}%</span>
                     </div>
                   </div>
                 </div>
@@ -672,7 +674,9 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                       <DollarSign className="w-6 h-6 text-blue-600" />
                     </div>
                     <p className="font-semibold text-gray-900 dark:text-white">Market Size</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{marketInsights.marketSize.realistic}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {marketInsights?.marketSize?.realistic || marketInsights?.marketSize?.local || marketInsights?.marketSize?.regional || "Analyzing market size..."}
+                    </p>
                   </div>
                   
                   <div className="text-center space-y-2">
@@ -680,7 +684,9 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                       <Target className="w-6 h-6 text-green-600" />
                     </div>
                     <p className="font-semibold text-gray-900 dark:text-white">Primary Market</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{ideaAnalysis.targetMarket.primary}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {ideaAnalysis?.targetMarket?.primary || "Identifying target market..."}
+                    </p>
                   </div>
                   
                   <div className="text-center space-y-2">
@@ -688,13 +694,17 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                       <TrendingUp className="w-6 h-6 text-purple-600" />
                     </div>
                     <p className="font-semibold text-gray-900 dark:text-white">Revenue Model</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{ideaAnalysis.revenueModel}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {ideaAnalysis?.revenueModel || "Analyzing revenue model..."}
+                    </p>
                   </div>
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
                   <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Executive Summary</h4>
-                  <p className="text-gray-600 dark:text-gray-400">{ideaAnalysis.summary}</p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {ideaAnalysis?.summary || "Generating comprehensive analysis summary..."}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -725,15 +735,15 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                         <CardContent className="space-y-3">
                           <div>
                             <Label className="text-xs text-gray-500 uppercase">Industry</Label>
-                            <p className="font-medium">{ideaAnalysis.industry}</p>
+                            <p className="font-medium">{ideaAnalysis?.industry || "Analyzing industry..."}</p>
                           </div>
                           <div>
                             <Label className="text-xs text-gray-500 uppercase">Business Type</Label>
-                            <p className="font-medium">{ideaAnalysis.businessType}</p>
+                            <p className="font-medium">{ideaAnalysis?.businessType || "Analyzing business type..."}</p>
                           </div>
                           <div>
                             <Label className="text-xs text-gray-500 uppercase">Market Position</Label>
-                            <p className="font-medium">{ideaAnalysis.marketPosition}</p>
+                            <p className="font-medium">{ideaAnalysis?.marketPosition || "Analyzing market position..."}</p>
                           </div>
                         </CardContent>
                       </Card>
@@ -748,18 +758,21 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                         <CardContent className="space-y-3">
                           <div>
                             <Label className="text-xs text-gray-500 uppercase">Primary Customers</Label>
-                            <p className="font-medium">{ideaAnalysis.targetMarket.primary}</p>
+                            <p className="font-medium">{ideaAnalysis?.targetMarket?.primary || "Analyzing target market..."}</p>
                           </div>
                           <div>
                             <Label className="text-xs text-gray-500 uppercase">Market Size</Label>
-                            <p className="font-medium">{ideaAnalysis.targetMarket.size}</p>
+                            <p className="font-medium">{ideaAnalysis?.targetMarket?.size || "Analyzing market size..."}</p>
                           </div>
                           <div>
                             <Label className="text-xs text-gray-500 uppercase">Demographics</Label>
                             <div className="flex flex-wrap gap-1">
-                              {ideaAnalysis.targetMarket.demographics.map(demo => (
+                              {(ideaAnalysis?.targetMarket?.demographics || []).map(demo => (
                                 <Badge key={demo} variant="outline" className="text-xs">{demo}</Badge>
                               ))}
+                              {(!ideaAnalysis?.targetMarket?.demographics || ideaAnalysis?.targetMarket?.demographics?.length === 0) && (
+                                <span className="text-sm text-gray-500">Analyzing demographics...</span>
+                              )}
                             </div>
                           </div>
                         </CardContent>
@@ -769,7 +782,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
 
                   <TabsContent value="competition" className="space-y-4 mt-6">
                     <div className="space-y-4">
-                      {marketInsights.competitors.map((competitor, index) => (
+                      {(marketInsights?.competitors || []).map((competitor, index) => (
                         <Card key={index}>
                           <CardContent className="pt-6">
                             <div className="flex items-start justify-between mb-3">
@@ -810,7 +823,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-3">
-                            {marketInsights.opportunities.map((opportunity, index) => (
+                            {(marketInsights?.opportunities || []).map((opportunity, index) => (
                               <div key={index} className="flex items-start space-x-3">
                                 <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                                   <Award className="w-3 h-3 text-green-600" />
@@ -831,7 +844,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-3">
-                            {marketInsights.challenges.map((challenge, index) => (
+                            {(marketInsights?.challenges || []).map((challenge, index) => (
                               <div key={index} className="flex items-start space-x-3">
                                 <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                                   <Shield className="w-3 h-3 text-orange-600" />
@@ -847,7 +860,7 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
 
                   <TabsContent value="trends" className="space-y-4 mt-6">
                     <div className="space-y-4">
-                      {marketInsights.marketTrends.map((trend, index) => (
+                      {(marketInsights?.marketTrends || []).map((trend, index) => (
                         <Card key={index}>
                           <CardContent className="pt-6">
                             <div className="flex items-start justify-between mb-3">
