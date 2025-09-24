@@ -42,10 +42,12 @@ import {
   RefreshCw,
   Activity,
   AlertTriangle,
+  AlertCircle,
   TrendingDown,
   Award,
   MousePointer,
-  ExternalLink
+  ExternalLink,
+  Search
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -640,15 +642,56 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                 <Separator />
 
                 <div className="space-y-2">
-                  <Button className="w-full" size="sm" data-testid="button-create-business-plan">
+                  <Button 
+                    className="w-full" 
+                    size="sm" 
+                    onClick={() => window.open('/business-plan', '_blank')}
+                    data-testid="button-create-business-plan"
+                  >
                     <FileText className="w-4 h-4 mr-2" />
                     Create Business Plan
                   </Button>
-                  <Button variant="outline" className="w-full" size="sm" data-testid="button-export-analysis">
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="sm" 
+                    onClick={() => {
+                      if (ideaAnalysis && marketInsights) {
+                        // Create comprehensive analysis export
+                        const analysisData = {
+                          idea: ideaData,
+                          analysis: ideaAnalysis,
+                          insights: marketInsights,
+                          exportDate: new Date().toISOString()
+                        };
+                        
+                        const blob = new Blob([JSON.stringify(analysisData, null, 2)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${ideaData?.ideaTitle || 'idea'}-analysis.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }
+                    }}
+                    data-testid="button-export-analysis"
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Export Analysis
                   </Button>
-                  <Button variant="outline" className="w-full" size="sm" data-testid="button-refine-analysis">
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    size="sm" 
+                    onClick={() => {
+                      setCurrentStep('analyzing');
+                      setAnalysisProgress(0);
+                      startCustomAnalysis();
+                    }}
+                    data-testid="button-refine-analysis"
+                  >
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Refine Analysis
                   </Button>
@@ -659,23 +702,31 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
 
           {/* Main Results Content */}
           <div className="flex-1 space-y-6">
-            {/* Key Insights Overview */}
+            {/* Enhanced Key Insights Overview */}
             <Card className="shadow-lg bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Star className="w-6 h-6 text-yellow-500" />
-                  <span>Key Insights</span>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Star className="w-6 h-6 text-yellow-500" />
+                    <span>AI Analysis Results</span>
+                  </div>
+                  <Badge 
+                    variant={ideaAnalysis?.confidence >= 80 ? "default" : ideaAnalysis?.confidence >= 60 ? "secondary" : "outline"}
+                    className="text-xs"
+                  >
+                    {ideaAnalysis?.confidence || 0}% Confidence
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid md:grid-cols-3 gap-6 mb-6">
+                <div className="grid md:grid-cols-4 gap-4 mb-6">
                   <div className="text-center space-y-2">
                     <div className="w-12 h-12 rounded-full bg-blue-100 mx-auto flex items-center justify-center">
                       <DollarSign className="w-6 h-6 text-blue-600" />
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Market Size</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {marketInsights?.marketSize?.realistic || marketInsights?.marketSize?.local || marketInsights?.marketSize?.regional || "Analyzing market size..."}
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Market Size</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {marketInsights?.marketSize?.realistic || marketInsights?.marketSize?.local || marketInsights?.marketSize?.regional || "Analyzing..."}
                     </p>
                   </div>
                   
@@ -683,9 +734,9 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                     <div className="w-12 h-12 rounded-full bg-green-100 mx-auto flex items-center justify-center">
                       <Target className="w-6 h-6 text-green-600" />
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Primary Market</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {ideaAnalysis?.targetMarket?.primary || "Identifying target market..."}
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Target Market</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {ideaAnalysis?.targetMarket?.primary || "Analyzing..."}
                     </p>
                   </div>
                   
@@ -693,34 +744,86 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                     <div className="w-12 h-12 rounded-full bg-purple-100 mx-auto flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-purple-600" />
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Revenue Model</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {ideaAnalysis?.revenueModel || "Analyzing revenue model..."}
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Revenue Model</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {ideaAnalysis?.revenueModel || "Analyzing..."}
+                    </p>
+                  </div>
+                  
+                  <div className="text-center space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-orange-100 mx-auto flex items-center justify-center">
+                      <AlertCircle className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">Risk Level</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      {(marketInsights?.challenges?.length || 0) > 3 ? "High" : (marketInsights?.challenges?.length || 0) > 1 ? "Medium" : "Low"}
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-4">
-                  <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Executive Summary</h4>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {ideaAnalysis?.summary || "Generating comprehensive analysis summary..."}
+                {/* Executive Summary with better formatting */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border-l-4 border-blue-500">
+                  <div className="flex items-center mb-3">
+                    <FileText className="w-5 h-5 text-blue-600 mr-2" />
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Executive Summary</h4>
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {ideaAnalysis?.summary || "Generating comprehensive analysis summary with market positioning, competitive landscape, and growth potential assessment..."}
                   </p>
+                  
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-blue-600">{(marketInsights?.competitors || []).length}</p>
+                      <p className="text-xs text-gray-500">Competitors</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-green-600">{(marketInsights?.opportunities || []).length}</p>
+                      <p className="text-xs text-gray-500">Opportunities</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-orange-600">{(marketInsights?.challenges || []).length}</p>
+                      <p className="text-xs text-gray-500">Challenges</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-lg font-bold text-purple-600">{(marketInsights?.marketTrends || []).length}</p>
+                      <p className="text-xs text-gray-500">Market Trends</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Detailed Analysis Tabs */}
+            {/* Enhanced Detailed Analysis */}
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle>Detailed Analysis</CardTitle>
+                <CardTitle className="flex items-center space-x-2">
+                  <BarChart3 className="w-5 h-5 text-blue-600" />
+                  <span>Deep Dive Analysis</span>
+                </CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Comprehensive market intelligence and strategic insights for your startup idea
+                </p>
               </CardHeader>
               <CardContent>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                   <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
-                    <TabsTrigger value="competition" data-testid="tab-competition">Competition</TabsTrigger>
-                    <TabsTrigger value="opportunities" data-testid="tab-opportunities">Opportunities</TabsTrigger>
-                    <TabsTrigger value="trends" data-testid="tab-trends">Trends & Risks</TabsTrigger>
+                    <TabsTrigger value="overview" data-testid="tab-overview" className="flex items-center space-x-1">
+                      <Building className="w-4 h-4" />
+                      <span>Business Model</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="competition" data-testid="tab-competition" className="flex items-center space-x-1">
+                      <Zap className="w-4 h-4" />
+                      <span>Competition</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="opportunities" data-testid="tab-opportunities" className="flex items-center space-x-1">
+                      <TrendingUp className="w-4 h-4" />
+                      <span>Market Outlook</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="trends" data-testid="tab-trends" className="flex items-center space-x-1">
+                      <AlertTriangle className="w-4 h-4" />
+                      <span>Risk Assessment</span>
+                    </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="overview" className="space-y-6 mt-6">
@@ -781,78 +884,125 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                   </TabsContent>
 
                   <TabsContent value="competition" className="space-y-4 mt-6">
+                    <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Competitive Landscape Analysis</h3>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Identified {(marketInsights?.competitors || []).length} key competitors. Study their strategies to differentiate your offering.
+                      </p>
+                    </div>
+                    
                     <div className="space-y-4">
-                      {(marketInsights?.competitors || []).map((competitor, index) => (
-                        <Card key={index}>
-                          <CardContent className="pt-6">
-                            <div className="flex items-start justify-between mb-3">
-                              <div>
-                                <h4 className="font-semibold text-gray-900 dark:text-white">{competitor.name}</h4>
-                                <Badge variant={competitor.type === "direct" ? "destructive" : "secondary"} className="mt-1">
-                                  {competitor.type} competitor
-                                </Badge>
-                              </div>
-                              {competitor.marketShare && (
-                                <div className="text-right">
-                                  <p className="text-sm text-gray-500">Market Share</p>
-                                  <p className="font-semibold">{competitor.marketShare}</p>
-                                </div>
-                              )}
+                      {(marketInsights?.competitors || []).length === 0 ? (
+                        <Card>
+                          <CardContent className="pt-6 text-center">
+                            <div className="w-16 h-16 rounded-full bg-gray-100 mx-auto flex items-center justify-center mb-4">
+                              <Search className="w-8 h-8 text-gray-400" />
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400">{competitor.description}</p>
-                            {competitor.location && (
-                              <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <MapPin className="w-4 h-4 mr-1" />
-                                {competitor.location}
-                              </div>
-                            )}
+                            <p className="text-gray-600 dark:text-gray-400">Analyzing competitive landscape...</p>
                           </CardContent>
                         </Card>
-                      ))}
+                      ) : (
+                        (marketInsights?.competitors || []).map((competitor, index) => (
+                          <Card key={index} className="border-l-4 border-l-orange-500">
+                            <CardContent className="pt-6">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <h4 className="font-semibold text-gray-900 dark:text-white">{competitor.name}</h4>
+                                    <Badge variant={competitor.type === "direct" ? "destructive" : "secondary"} className="text-xs">
+                                      {competitor.type}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">{competitor.description}</p>
+                                  {competitor.location && (
+                                    <div className="flex items-center text-xs text-gray-500">
+                                      <MapPin className="w-3 h-3 mr-1" />
+                                      {competitor.location}
+                                    </div>
+                                  )}
+                                </div>
+                                {competitor.marketShare && (
+                                  <div className="text-right ml-4">
+                                    <p className="text-xs text-gray-500">Market Share</p>
+                                    <p className="font-semibold text-lg text-orange-600">{competitor.marketShare}</p>
+                                  </div>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))
+                      )}
                     </div>
                   </TabsContent>
 
                   <TabsContent value="opportunities" className="space-y-4 mt-6">
+                    <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <h3 className="font-semibold text-green-900 dark:text-green-100 mb-2">Market Opportunity Assessment</h3>
+                      <p className="text-sm text-green-700 dark:text-green-300">
+                        Capitalize on {(marketInsights?.opportunities || []).length} identified opportunities while addressing {(marketInsights?.challenges || []).length} key challenges.
+                      </p>
+                    </div>
+                    
                     <div className="grid md:grid-cols-2 gap-6">
-                      <Card>
+                      <Card className="border-l-4 border-l-green-500">
                         <CardHeader>
                           <CardTitle className="text-lg flex items-center text-green-600">
                             <TrendingUp className="w-5 h-5 mr-2" />
-                            Opportunities
+                            Growth Opportunities
                           </CardTitle>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Strategic advantages to leverage</p>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-3">
-                            {(marketInsights?.opportunities || []).map((opportunity, index) => (
-                              <div key={index} className="flex items-start space-x-3">
-                                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                  <Award className="w-3 h-3 text-green-600" />
-                                </div>
-                                <p className="text-sm text-gray-700 dark:text-gray-300">{opportunity}</p>
+                          {(marketInsights?.opportunities || []).length === 0 ? (
+                            <div className="text-center py-8">
+                              <div className="w-12 h-12 rounded-full bg-green-100 mx-auto flex items-center justify-center mb-3">
+                                <TrendingUp className="w-6 h-6 text-green-600" />
                               </div>
-                            ))}
-                          </div>
+                              <p className="text-gray-600 dark:text-gray-400 text-sm">Analyzing market opportunities...</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {(marketInsights?.opportunities || []).map((opportunity, index) => (
+                                <div key={index} className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                  <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <Award className="w-3 h-3 text-white" />
+                                  </div>
+                                  <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{opportunity}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
 
-                      <Card>
+                      <Card className="border-l-4 border-l-orange-500">
                         <CardHeader>
                           <CardTitle className="text-lg flex items-center text-orange-600">
                             <AlertTriangle className="w-5 h-5 mr-2" />
-                            Challenges
+                            Strategic Challenges
                           </CardTitle>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Critical risks to mitigate</p>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-3">
-                            {(marketInsights?.challenges || []).map((challenge, index) => (
-                              <div key={index} className="flex items-start space-x-3">
-                                <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                  <Shield className="w-3 h-3 text-orange-600" />
-                                </div>
-                                <p className="text-sm text-gray-700 dark:text-gray-300">{challenge}</p>
+                          {(marketInsights?.challenges || []).length === 0 ? (
+                            <div className="text-center py-8">
+                              <div className="w-12 h-12 rounded-full bg-orange-100 mx-auto flex items-center justify-center mb-3">
+                                <AlertTriangle className="w-6 h-6 text-orange-600" />
                               </div>
-                            ))}
-                          </div>
+                              <p className="text-gray-600 dark:text-gray-400 text-sm">Analyzing potential challenges...</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {(marketInsights?.challenges || []).map((challenge, index) => (
+                                <div key={index} className="flex items-start space-x-3 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                                  <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <Shield className="w-3 h-3 text-white" />
+                                  </div>
+                                  <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{challenge}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     </div>
