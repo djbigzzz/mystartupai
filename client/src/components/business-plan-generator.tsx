@@ -40,7 +40,8 @@ import {
   Award,
   TrendingDown,
   ThumbsUp,
-  AlertTriangle
+  AlertTriangle,
+  CheckSquare
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -664,52 +665,52 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
         </CardHeader>
       </Card>
 
-      {/* Enhanced Generation Controls */}
+      {/* Bulk Generation Controls */}
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-6">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                AI Business Plan Generation
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Generate comprehensive, investor-ready business plan with quality assessment
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Generate Multiple Sections</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Select sections to generate together</p>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const allSectionIds = businessPlan.map(s => s.id);
+                  const allSelected = businessPlan.every(s => s.status !== 'draft');
+                  // Toggle selection logic would go here
+                }}
+              >
+                <CheckSquare className="w-4 h-4 mr-1" />
+                Select All
+              </Button>
               <Button
                 onClick={handleGenerateAll}
                 disabled={isGenerating}
-                className="bg-blue-600 hover:bg-blue-700"
+                size="sm"
                 data-testid="generate-all-button"
               >
                 {isGenerating ? (
                   <>
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
                     Generating...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate All Sections
+                    <Zap className="w-4 h-4 mr-1" />
+                    Generate All ({businessPlan.filter(s => s.status === 'draft').length})
                   </>
                 )}
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowQualityPanel(!showQualityPanel)}
-                data-testid="toggle-quality-panel"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                {showQualityPanel ? 'Hide' : 'Show'} Quality
-              </Button>
             </div>
           </div>
-
+          
           {/* Export Options */}
-          <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              Export your professional business plan for investors
+              Export your professional business plan
             </div>
             <div className="flex space-x-2">
               <Button
@@ -719,8 +720,7 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
                 disabled={getTotalWordCount() === 0}
                 data-testid="export-pdf"
               >
-                <FileDown className="w-4 h-4 mr-2" />
-                PDF
+                <FileDown className="w-4 h-4 mr-1" />PDF
               </Button>
               <Button
                 variant="outline"
@@ -729,8 +729,7 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
                 disabled={getTotalWordCount() === 0}
                 data-testid="export-docx"
               >
-                <Download className="w-4 h-4 mr-2" />
-                DOCX
+                <Download className="w-4 h-4 mr-1" />DOCX
               </Button>
               <Button
                 variant="outline"
@@ -738,8 +737,7 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
                 disabled={getTotalWordCount() === 0}
                 data-testid="print-plan"
               >
-                <Printer className="w-4 h-4 mr-2" />
-                Print
+                <Printer className="w-4 h-4 mr-1" />Print
               </Button>
             </div>
           </div>
@@ -754,254 +752,170 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
           <TabsTrigger value="quality-overview">Quality Overview</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="sections" className="space-y-6">
-          <div className="grid gap-6">
-            {businessPlan
-              .sort((a, b) => a.order - b.order)
-              .map((section) => {
-                const IconComponent = section.icon;
-                const isEditing = editingSection === section.id;
-                
-                return (
-                  <Card 
-                    key={section.id} 
-                    className="border-0 shadow-sm hover:shadow-md transition-all duration-200"
-                    data-testid={`section-${section.id}`}
-                  >
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-                            <IconComponent className="w-5 h-5 text-blue-600" />
-                          </div>
-                          <div className="flex-1">
-                            <CardTitle className="text-lg">{section.title}</CardTitle>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{section.description}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-2">
-                          {/* Quality indicator */}
-                          {section.quality && (
-                            <Badge 
-                              variant="outline" 
-                              className={`text-xs ${getQualityColor(section.quality.score)}`}
-                              data-testid={`quality-badge-${section.id}`}
-                            >
-                              {section.quality.score}/100
-                            </Badge>
-                          )}
-                          
-                          {/* Status badge */}
-                          <Badge className={`${getStatusColor(section.status)} text-xs`} variant="secondary">
-                            {section.status}
-                          </Badge>
-
-                          {/* Section controls */}
-                          <div className="flex items-center space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleReorderSection(section.id, 'up')}
-                              disabled={section.order === 1}
-                              data-testid={`move-up-${section.id}`}
-                            >
-                              <ArrowUp className="w-3 h-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleReorderSection(section.id, 'down')}
-                              disabled={section.order === businessPlan.length}
-                              data-testid={`move-down-${section.id}`}
-                            >
-                              <ArrowDown className="w-3 h-3" />
-                            </Button>
-                          </div>
-
-                          {/* Generate AI button */}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleGenerateSection(section.id)}
-                            disabled={section.isGenerating}
-                            data-testid={`generate-ai-${section.id}`}
-                          >
-                            {section.isGenerating ? (
-                              <>
-                                <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
-                                Generating...
-                              </>
-                            ) : (
-                              <>
-                                <Brain className="w-4 h-4 mr-1" />
-                                Generate with AI
-                              </>
-                            )}
-                          </Button>
-
-                          {/* Edit button */}
-                          {section.content && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setEditingSection(isEditing ? null : section.id)}
-                              data-testid={`edit-${section.id}`}
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Template and suggestions */}
-                      {!section.content && !isEditing && (
-                        <div className="mt-4 space-y-3">
-                          <Alert>
-                            <BookOpen className="w-4 h-4" />
-                            <AlertDescription>
-                              <div className="font-medium mb-2">Template Guide:</div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400">{section.template}</div>
-                            </AlertDescription>
-                          </Alert>
-                          
-                          {section.suggestions && section.suggestions.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Suggestions:</span>
-                              {section.suggestions.map((suggestion, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {suggestion}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </CardHeader>
+        <TabsContent value="sections">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Business Plan Sections</CardTitle>
+                <Badge variant="secondary" className="text-sm">
+                  {businessPlan.filter(s => s.status !== 'draft').length}/{businessPlan.length} Complete
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="divide-y">
+                {businessPlan
+                  .sort((a, b) => a.order - b.order)
+                  .map((section) => {
+                    const IconComponent = section.icon;
+                    const isEditing = editingSection === section.id;
                     
-                    <CardContent>
-                      {isEditing ? (
-                        <div className="space-y-4">
-                          <Textarea
-                            value={section.content}
-                            onChange={(e) => {
-                              const updatedContent = e.target.value;
-                              setBusinessPlan(prev => prev.map(s => 
-                                s.id === section.id ? { ...s, content: updatedContent, wordCount: updatedContent.split(' ').length } : s
-                              ));
-                            }}
-                            rows={12}
-                            className="min-h-[300px] font-mono text-sm"
-                            placeholder={`Enter content for ${section.title}...\n\n${section.template}`}
-                            data-testid={`textarea-${section.id}`}
-                          />
-                          <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {section.content.split(' ').length} words
-                              {section.quality && (
-                                <span className="ml-2">
-                                  (recommended: {section.quality.recommendedWordCount.min}-{section.quality.recommendedWordCount.max})
-                                </span>
+                    return (
+                      <div
+                        key={section.id}
+                        className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                        data-testid={`section-${section.id}`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3 flex-1">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                              section.status === 'draft' ? 'bg-gray-100' : 'bg-green-100'
+                            }`}>
+                              {section.status === 'draft' ? (
+                                <IconComponent className="w-4 h-4 text-gray-600" />
+                              ) : (
+                                <CheckCircle className="w-4 h-4 text-green-600" />
                               )}
                             </div>
-                            <div className="space-x-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setEditingSection(null)}
-                                data-testid={`cancel-edit-${section.id}`}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={() => handleSaveSection(section.id, section.content)}
-                                data-testid={`save-${section.id}`}
-                              >
-                                <Save className="w-4 h-4 mr-2" />
-                                Save & Assess
-                              </Button>
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <p className="font-medium text-gray-900 dark:text-white">{section.title}</p>
+                                {section.quality && (
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`text-xs ${getQualityColor(section.quality.score)}`}
+                                  >
+                                    {section.quality.score}/100
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-500">{section.description}</p>
                             </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div>
-                          {section.content ? (
-                            <div className="space-y-4">
-                              <div className="prose max-w-none dark:prose-invert">
-                                <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed">
-                                  {section.content}
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 pt-4 border-t">
-                                <div className="flex items-center space-x-4">
-                                  <span>{section.wordCount} words</span>
-                                  {section.lastGenerated && (
-                                    <span>Generated: {new Date(section.lastGenerated).toLocaleDateString()}</span>
-                                  )}
-                                </div>
-                                
-                                <div className="flex items-center space-x-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleAssessQuality(section.id, section.content)}
-                                    disabled={section.isAssessing}
-                                    data-testid={`assess-quality-${section.id}`}
-                                  >
-                                    {section.isAssessing ? (
-                                      <>
-                                        <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
-                                        Assessing...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Star className="w-3 h-3 mr-1" />
-                                        Assess Quality
-                                      </>
-                                    )}
-                                  </Button>
-                                </div>
-                              </div>
-
-                              {/* Quality assessment panel */}
-                              {showQualityPanel && section.quality && (
-                                <QualityMeter quality={section.quality} />
-                              )}
-                            </div>
-                          ) : (
-                            <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-                              <FileText className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                              <h3 className="text-lg font-semibold mb-2">Ready to Generate</h3>
-                              <p className="mb-4">Use "Generate with AI" to create this section automatically</p>
+                          
+                          <div className="flex items-center space-x-2">
+                            {section.status === 'draft' ? (
                               <Button
+                                size="sm"
                                 onClick={() => handleGenerateSection(section.id)}
                                 disabled={section.isGenerating}
-                                className="bg-blue-600 hover:bg-blue-700"
-                                data-testid={`generate-empty-${section.id}`}
+                                data-testid={`generate-ai-${section.id}`}
                               >
                                 {section.isGenerating ? (
                                   <>
-                                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                                    <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
                                     Generating...
                                   </>
                                 ) : (
                                   <>
-                                    <Brain className="w-4 h-4 mr-2" />
-                                    Generate with AI
+                                    <Sparkles className="w-4 h-4 mr-1" />
+                                    Generate
                                   </>
                                 )}
                               </Button>
-                            </div>
-                          )}
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setEditingSection(isEditing ? null : section.id)}
+                                data-testid={`edit-${section.id}`}
+                              >
+                                <Edit3 className="w-4 h-4 mr-1" />
+                                Edit
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                        
+                        {/* Template and suggestions - only show for draft sections */}
+                        {section.status === 'draft' && !isEditing && (
+                          <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                              <span className="font-medium">Template:</span> {section.template}
+                            </div>
+                            {section.suggestions && section.suggestions.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {section.suggestions.slice(0, 3).map((suggestion, index) => (
+                                  <Badge key={index} variant="secondary" className="text-xs">
+                                    {suggestion}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {isEditing && (
+                          <div className="mt-3 space-y-3">
+                            <Textarea
+                              value={section.content}
+                              onChange={(e) => {
+                                const updatedContent = e.target.value;
+                                setBusinessPlan(prev => prev.map(s => s.id === section.id ? { ...s, content: updatedContent } : s));
+                              }}
+                              className="min-h-[200px] resize-none"
+                              placeholder={`Enter content for ${section.title}...`}
+                              data-testid={`textarea-${section.id}`}
+                            />
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-gray-500">
+                                {section.content.split(' ').length} words
+                              </span>
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setEditingSection(null)}
+                                  data-testid={`cancel-edit-${section.id}`}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleSaveSection(section.id, section.content)}
+                                  data-testid={`save-${section.id}`}
+                                >
+                                  <Save className="w-4 h-4 mr-1" />
+                                  Save
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Content preview - show first 150 chars */}
+                        {section.content && !isEditing && (
+                          <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            <div className="text-sm text-gray-700 dark:text-gray-300">
+                              {section.content.length > 150 
+                                ? `${section.content.substring(0, 150)}...` 
+                                : section.content
+                              }
+                            </div>
+                            <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+                              <span>{section.wordCount} words</span>
+                              {section.lastGenerated && (
+                                <span>Updated: {new Date(section.lastGenerated).toLocaleDateString()}</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                 );
               })}
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="full-document" className="space-y-6">
