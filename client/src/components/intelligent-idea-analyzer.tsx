@@ -191,12 +191,13 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
     }
   ];
 
-  // Check for existing analysis
+  // Load existing analysis data if available, but always start with quickstart
   useEffect(() => {
     if (ideaData?.analysis?.intelligentAnalysis && ideaData?.analysis?.marketInsights) {
       setIdeaAnalysis(ideaData.analysis.intelligentAnalysis);
       setMarketInsights(ideaData.analysis.marketInsights);
-      setCurrentStep("results");
+      // Always start with quickstart to let user choose analysis type
+      // setCurrentStep("results"); // Commented out - always show selection first
     }
   }, [ideaData]);
 
@@ -296,6 +297,41 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
             with realistic market analysis tailored to your business.
           </p>
         </div>
+
+        {/* View Previous Analysis Option - Show if analysis already exists */}
+        {ideaAnalysis && marketInsights && (
+          <Card className="border-2 border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 shadow-xl">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                  <Eye className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl text-gray-900 dark:text-white">
+                    Previous Analysis Available
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    View your previously completed analysis results
+                  </p>
+                </div>
+                <Badge variant="outline" className="ml-auto border-green-500 text-green-600">
+                  Completed
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                onClick={() => setCurrentStep("results")}
+                variant="outline" 
+                className="w-full border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                data-testid="button-view-previous-analysis"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                View Previous Analysis Results
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Quick Start Option */}
         <Card className="border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-xl">
