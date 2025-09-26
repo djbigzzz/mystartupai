@@ -60,7 +60,7 @@ export default function IntelligentAnalysisPage() {
         
         {/* Main Content */}
         <div className="flex-1 lg:ml-0">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export default function IntelligentAnalysisPage() {
         
         {/* Main Content */}
         <div className="flex-1 lg:ml-0">
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-red-600">Error Loading Idea</CardTitle>
@@ -152,14 +152,14 @@ export default function IntelligentAnalysisPage() {
       
       {/* Main Content */}
       <div className="flex-1 lg:ml-0 overflow-auto">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-6">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-4 sm:mb-6">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 🧠 Intelligent Idea Analysis
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
                 AI will analyze your idea, ask clarifying questions if needed, and provide realistic market insights tailored to your specific business context.
               </p>
             </div>

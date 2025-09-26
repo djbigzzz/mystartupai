@@ -283,13 +283,13 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   // Quick Start Screen
   if (currentStep === "quickstart") {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-4">
         {/* Header */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 mb-3">
             <Brain className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
             Intelligent Idea Analysis
           </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -454,14 +454,14 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   if (currentStep === "analyzing") {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="flex gap-8">
+        <div className="flex gap-4 sm:gap-6 lg:gap-8">
           {/* Left Timeline */}
-          <div className="w-64 space-y-4">
+          <div className="w-64 space-y-3">
             <Card className="sticky top-4">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg">Analysis Progress</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3">
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span>Overall Progress</span>
@@ -609,9 +609,9 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
   if (currentStep === "results" && ideaAnalysis && marketInsights) {
     return (
       <div className="max-w-7xl mx-auto">
-        <div className="flex gap-8">
+        <div className="flex gap-4 sm:gap-6 lg:gap-8">
           {/* Sticky Sidebar Summary */}
-          <div className="w-80 space-y-4">
+          <div className="w-80 space-y-3">
             <Card className="sticky top-4">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -621,8 +621,8 @@ export default function IntelligentIdeaAnalyzer({ ideaData, onAnalysisComplete }
                   <span>Analysis Complete</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
                   <div>
                     <Label className="text-xs text-gray-500 uppercase tracking-wide">Business Type</Label>
                     <p className="font-semibold text-gray-900 dark:text-white">
