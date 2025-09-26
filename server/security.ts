@@ -99,8 +99,8 @@ export const validateEmail = body('email')
 export const validatePassword = body('password')
   .isLength({ min: 8, max: 128 })
   .withMessage('Password must be 8-128 characters')
-  .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-  .withMessage('Password must contain uppercase, lowercase, number and special character');
+  .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/)
+  .withMessage('Password must contain uppercase, lowercase, and number');
 
 export const validateName = body('name')
   .isLength({ min: 1, max: 100 })

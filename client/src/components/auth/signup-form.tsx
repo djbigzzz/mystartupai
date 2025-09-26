@@ -17,7 +17,7 @@ const signupSchema = z.object({
   password: z.string()
     .min(8, "Password must be at least 8 characters")
     .max(128, "Password must be less than 128 characters")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/, "Password must contain uppercase, lowercase, number and special character (@$!%*?&)"),
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, "Password must contain uppercase, lowercase, and number"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -113,22 +113,21 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
   const passwordValue = form.watch("password");
   
   const getPasswordRequirements = (password: string) => {
-    // Match the exact backend validation logic
-    const backendRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/;
+    // Simplified validation logic - no special characters required
+    const backendRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     const isValidByBackend = backendRegex.test(password) && password.length >= 8 && password.length <= 128;
     
     return {
       length: password.length >= 8 && password.length <= 128,
       lowercase: /[a-z]/.test(password),
       uppercase: /[A-Z]/.test(password),
-      number: /\d/.test(password),
-      special: /[@$!%*?&]/.test(password) && /^[A-Za-z\d@$!%*?&]*$/.test(password)
+      number: /\d/.test(password)
     };
   };
 
   const passwordRequirements = getPasswordRequirements(passwordValue || "");
   const requirementsMet = Object.values(passwordRequirements).filter(Boolean).length;
-  const allRequirementsMet = requirementsMet === 5;
+  const allRequirementsMet = requirementsMet === 4;
 
   const strengthLabels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
   const strengthColors = ["bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-blue-500", "bg-green-500"];
@@ -279,14 +278,6 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
                             <span>One number (0-9)</span>
                           </div>
                           
-                          <div className={`flex items-center space-x-2 ${passwordRequirements.special ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                            {passwordRequirements.special ? (
-                              <Check className="w-3 h-3" />
-                            ) : (
-                              <X className="w-3 h-3" />
-                            )}
-                            <span>One special character (@$!%*?&)</span>
-                          </div>
                         </div>
                         
                         {allRequirementsMet && (
