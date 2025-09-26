@@ -48,27 +48,26 @@ export default function AppEntry() {
   const validatePassword = (password: string): string => {
     if (!password) return "Password is required";
     if (password.length < 8 || password.length > 128) return "Password must be 8-128 characters";
-    // Use exact same regex as backend
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]*$/.test(password)) {
-      return "Password must contain uppercase, lowercase, number and special character (@$!%*?&)";
+    // Use simplified regex matching backend
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+      return "Password must contain uppercase, lowercase, and number";
     }
     return "";
   };
 
-  // Password requirements checker - simplified to match backend exactly
+  // Password requirements checker - simplified (no special characters required)
   const getPasswordRequirements = (password: string) => {
     return {
       length: password.length >= 8 && password.length <= 128,
       lowercase: /[a-z]/.test(password),
       uppercase: /[A-Z]/.test(password),
-      number: /\d/.test(password),
-      special: /[@$!%*?&]/.test(password) && /^[A-Za-z\d@$!%*?&]*$/.test(password)
+      number: /\d/.test(password)
     };
   };
 
   const passwordRequirements = getPasswordRequirements(password);
   const requirementsMet = Object.values(passwordRequirements).filter(Boolean).length;
-  const allRequirementsMet = requirementsMet === 5;
+  const allRequirementsMet = requirementsMet === 4;
 
   const validateName = (name: string): string => {
     if (!name) return "Name is required";
@@ -547,15 +546,6 @@ export default function AppEntry() {
                             <X className="w-3 h-3" />
                           )}
                           <span>One number (0-9)</span>
-                        </div>
-                        
-                        <div className={`flex items-center space-x-2 ${passwordRequirements.special ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                          {passwordRequirements.special ? (
-                            <Check className="w-3 h-3" />
-                          ) : (
-                            <X className="w-3 h-3" />
-                          )}
-                          <span>One special character (@$!%*?&)</span>
                         </div>
                       </div>
                       

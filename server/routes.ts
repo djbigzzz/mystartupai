@@ -594,8 +594,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     body('newPassword')
       .isLength({ min: 8, max: 128 })
       .withMessage('Password must be 8-128 characters')
-      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-      .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/)
+      .withMessage('Password must contain uppercase, lowercase, and number'),
     handleValidationErrors,
     async (req, res) => {
       try {
