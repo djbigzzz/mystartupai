@@ -1076,7 +1076,7 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   );
 
-  // Get startup idea by ID with validation
+  // Get startup idea by ID with validation and ownership check
   app.get("/api/ideas/:id", 
     requireAuth,
     validateId,
@@ -1084,10 +1084,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     async (req, res) => {
       try {
         const id = parseInt(req.params.id);
+        const user = req.user as any;
         const idea = await storage.getStartupIdea(id);
         
         if (!idea) {
           return res.status(404).json({ message: "Startup idea not found" });
+        }
+        
+        // Security check: Ensure the user owns this idea
+        if (idea.email !== user.email) {
+          return res.status(403).json({ message: "Access denied: You don't have permission to view this startup idea" });
         }
         
         res.json(idea);
