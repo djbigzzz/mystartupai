@@ -375,27 +375,40 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
                   const response = await window.solana.connect();
                   const publicKey = response.publicKey.toString();
                   
-                  // Generate challenge message for signing
-                  const message = `Sign this message to authenticate with MyStartup.ai:\n\nWallet: ${publicKey}\nTimestamp: ${Date.now()}`;
-                  const encodedMessage = new TextEncoder().encode(message);
+                  // Step 1: Request challenge from server
+                  const challengeResponse = await fetch("/api/auth/challenge", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                  });
                   
-                  // Sign the message
+                  if (!challengeResponse.ok) {
+                    throw new Error("Failed to get authentication challenge");
+                  }
+                  
+                  const challenge = await challengeResponse.json();
+                  
+                  // Step 2: Enhance message with wallet address
+                  const messageToSign = `${challenge.message}\n\nAddress: ${publicKey}`;
+                  const encodedMessage = new TextEncoder().encode(messageToSign);
+                  
+                  // Step 3: Sign the message
                   const signedMessage = await window.solana.signMessage(encodedMessage);
                   
-                  // Send to backend for authentication
+                  // Step 4: Send signature to backend for verification
                   const authResponse = await fetch("/api/auth/wallet-signin", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      walletAddress: publicKey,
                       signature: Array.from(signedMessage.signature),
-                      message: message,
+                      message: messageToSign,
+                      nonce: challenge.nonce,
                       authMethod: "phantom"
                     }),
                   });
                   
                   if (!authResponse.ok) {
-                    throw new Error("Authentication failed");
+                    const error = await authResponse.json();
+                    throw new Error(error.message || "Authentication failed");
                   }
                   
                   const user = await authResponse.json();
@@ -432,29 +445,42 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
                   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                   const address = accounts[0];
                   
-                  // Generate challenge message for signing
-                  const message = `Sign this message to authenticate with MyStartup.ai:\n\nWallet: ${address}\nTimestamp: ${Date.now()}`;
-                  
-                  // Sign the message
-                  const signature = await window.ethereum.request({
-                    method: 'personal_sign',
-                    params: [message, address],
+                  // Step 1: Request challenge from server
+                  const challengeResponse = await fetch("/api/auth/challenge", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
                   });
                   
-                  // Send to backend for authentication
+                  if (!challengeResponse.ok) {
+                    throw new Error("Failed to get authentication challenge");
+                  }
+                  
+                  const challenge = await challengeResponse.json();
+                  
+                  // Step 2: Enhance message with wallet address  
+                  const messageToSign = `${challenge.message}\n\nAddress: ${address}`;
+                  
+                  // Step 3: Sign the message
+                  const signature = await window.ethereum.request({
+                    method: 'personal_sign',
+                    params: [messageToSign, address],
+                  });
+                  
+                  // Step 4: Send signature to backend for verification
                   const authResponse = await fetch("/api/auth/wallet-signin", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                      walletAddress: address,
                       signature: signature,
-                      message: message,
+                      message: messageToSign,
+                      nonce: challenge.nonce,
                       authMethod: "metamask"
                     }),
                   });
                   
                   if (!authResponse.ok) {
-                    throw new Error("Authentication failed");
+                    const error = await authResponse.json();
+                    throw new Error(error.message || "Authentication failed");
                   }
                   
                   const user = await authResponse.json();
