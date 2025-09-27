@@ -387,8 +387,8 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
                   
                   const challenge = await challengeResponse.json();
                   
-                  // Step 2: Enhance message with wallet address
-                  const messageToSign = `${challenge.message}\n\nAddress: ${publicKey}`;
+                  // Step 2: Use Solana-specific message and add wallet address
+                  const messageToSign = challenge.solanaMessage.replace('ADDRESS_PLACEHOLDER', publicKey);
                   const encodedMessage = new TextEncoder().encode(messageToSign);
                   
                   // Step 3: Sign the message
@@ -457,8 +457,8 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
                   
                   const challenge = await challengeResponse.json();
                   
-                  // Step 2: Enhance message with wallet address  
-                  const messageToSign = `${challenge.message}\n\nAddress: ${address}`;
+                  // Step 2: Use SIWE message and replace address placeholder
+                  const messageToSign = challenge.siweMessage.replace('ADDRESS_PLACEHOLDER', address);
                   
                   // Step 3: Sign the message
                   const signature = await window.ethereum.request({

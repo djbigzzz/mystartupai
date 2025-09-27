@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Mail, Lock, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import GoogleSignIn from "./google-sign-in";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -86,8 +85,154 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
       </CardHeader>
       
       <CardContent className="space-y-6">
-        {/* Google OAuth */}
-        <GoogleSignIn disabled={loginMutation.isPending} />
+        {/* Web3 Wallet Authentication */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button 
+            variant="outline" 
+            onClick={async () => {
+              try {
+                // Connect to Phantom wallet
+                if (window.solana && window.solana.isPhantom) {
+                  const response = await window.solana.connect();
+                  const publicKey = response.publicKey.toString();
+                  
+                  // Step 1: Request challenge from server
+                  const challengeResponse = await fetch("/api/auth/challenge", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                  });
+                  
+                  if (!challengeResponse.ok) {
+                    throw new Error("Failed to get authentication challenge");
+                  }
+                  
+                  const challenge = await challengeResponse.json();
+                  
+                  // Step 2: Use Solana-specific message and add wallet address
+                  const messageToSign = challenge.solanaMessage.replace('ADDRESS_PLACEHOLDER', publicKey);
+                  const encodedMessage = new TextEncoder().encode(messageToSign);
+                  
+                  // Step 3: Sign the message
+                  const signedMessage = await window.solana.signMessage(encodedMessage);
+                  
+                  // Step 4: Send signature to backend for verification
+                  const authResponse = await fetch("/api/auth/wallet-signin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      signature: Array.from(signedMessage.signature),
+                      message: messageToSign,
+                      nonce: challenge.nonce,
+                      authMethod: "phantom"
+                    }),
+                  });
+                  
+                  if (!authResponse.ok) {
+                    const error = await authResponse.json();
+                    throw new Error(error.message || "Authentication failed");
+                  }
+                  
+                  const user = await authResponse.json();
+                  toast({
+                    title: "Phantom Connected!",
+                    description: "Welcome back to MyStartup.ai",
+                  });
+                  onSuccess?.(user);
+                } else {
+                  window.open('https://phantom.app/', '_blank');
+                }
+              } catch (error: any) {
+                console.error('Phantom authentication failed:', error);
+                toast({
+                  title: "Authentication Failed",
+                  description: error.message || "Please try again",
+                  variant: "destructive",
+                });
+              }
+            }}
+            disabled={loginMutation.isPending}
+            data-testid="button-signin-phantom"
+          >
+            <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-xs text-white font-bold">P</span>
+            </div>
+            Phantom
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={async () => {
+              try {
+                // Connect to MetaMask wallet
+                if (window.ethereum) {
+                  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  const address = accounts[0];
+                  
+                  // Step 1: Request challenge from server
+                  const challengeResponse = await fetch("/api/auth/challenge", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                  });
+                  
+                  if (!challengeResponse.ok) {
+                    throw new Error("Failed to get authentication challenge");
+                  }
+                  
+                  const challenge = await challengeResponse.json();
+                  
+                  // Step 2: Use SIWE message and replace address placeholder
+                  const messageToSign = challenge.siweMessage.replace('ADDRESS_PLACEHOLDER', address);
+                  
+                  // Step 3: Sign the message
+                  const signature = await window.ethereum.request({
+                    method: 'personal_sign',
+                    params: [messageToSign, address],
+                  });
+                  
+                  // Step 4: Send signature to backend for verification
+                  const authResponse = await fetch("/api/auth/wallet-signin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      signature: signature,
+                      message: messageToSign,
+                      nonce: challenge.nonce,
+                      authMethod: "metamask"
+                    }),
+                  });
+                  
+                  if (!authResponse.ok) {
+                    const error = await authResponse.json();
+                    throw new Error(error.message || "Authentication failed");
+                  }
+                  
+                  const user = await authResponse.json();
+                  toast({
+                    title: "MetaMask Connected!",
+                    description: "Welcome back to MyStartup.ai",
+                  });
+                  onSuccess?.(user);
+                } else {
+                  window.open('https://metamask.io/', '_blank');
+                }
+              } catch (error: any) {
+                console.error('MetaMask authentication failed:', error);
+                toast({
+                  title: "Authentication Failed",
+                  description: error.message || "Please try again",
+                  variant: "destructive",
+                });
+              }
+            }}
+            disabled={loginMutation.isPending}
+            data-testid="button-signin-metamask"
+          >
+            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.5 12c0 5.799-4.701 10.5-10.5 10.5S1.5 17.799 1.5 12 6.201 1.5 12 1.5s10.5 4.701 10.5 10.5z"/>
+              <path d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25z" fill="white"/>
+            </svg>
+            MetaMask
+          </Button>
+        </div>
         
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
@@ -179,32 +324,6 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
           </form>
         </Form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <Separator className="w-full" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" disabled>
-            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-              <path
-                fill="currentColor"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-            </svg>
-            Google
-          </Button>
-          <Button variant="outline" disabled>
-            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-            </svg>
-            Twitter
-          </Button>
-        </div>
 
         <div className="text-center text-sm">
           <span className="text-muted-foreground">Don't have an account? </span>
