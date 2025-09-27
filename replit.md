@@ -4,6 +4,12 @@
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
 ## Recent Changes
+- **Web3 Authentication Migration**: Complete transition from Google OAuth to Web3 wallet authentication (Sept 27, 2025)
+  - **Primary Authentication**: Phantom (Solana) and MetaMask (Ethereum) wallet integration
+  - **UI Overhaul**: Replaced all Google OAuth buttons with Web3 wallet connection buttons
+  - **Database Schema**: Added wallet address columns and auth method tracking
+  - **Security**: Production-ready challenge-response system with SIWE compliance and ed25519 verification
+  - **Fallback Option**: Maintained email/password authentication for broader accessibility
 - **OAuth System Fixed**: Resolved 404 errors by correcting callback URL configuration and session handling (Jan 18, 2025)
 - **Google Console Configuration**: Properly configured redirect URIs for both callback endpoints
 - **Session Deserialization**: Fixed Passport.js session errors that were causing server crashes
@@ -52,7 +58,7 @@ MyStartup.ai utilizes a modern web application architecture with a React fronten
 - **MVP Development Tools**: AI-powered code generation for various MVP templates (SaaS, marketplace, mobile apps) with support for React, Node.js, Python, and React Native.
 - **Comprehensive Workflow Dashboard**: A guided 10-step workflow (Company Setup to Launch & Scale) with progress tracking and progressive unlocking of modules.
 - **Security**: Enterprise-grade security measures implemented against OWASP Top 10 vulnerabilities, including input validation, rate limiting, secure session management, and comprehensive privacy protection for user data.
-- **User Authentication**: Supports email/password and Google OAuth authentication.
+- **User Authentication**: Web3-first authentication with Phantom (Solana) and MetaMask (Ethereum) wallets as primary methods, with email/password as fallback option.
 
 ## External Dependencies
 

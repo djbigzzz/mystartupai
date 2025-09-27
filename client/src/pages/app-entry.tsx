@@ -363,18 +363,165 @@ export default function AppEntry() {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            {/* Google OAuth */}
+            {/* Web3 Wallet Authentication */}
             <div className="space-y-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-11 border-2 hover:bg-muted/50 transition-colors"
-                onClick={() => window.location.href = '/api/auth/google'}
-                data-testid="button-google-auth"
-              >
-                <Chrome className="w-5 h-5 mr-2" />
-                Continue with Google
-              </Button>
+              <div className="grid grid-cols-2 gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={async () => {
+                    try {
+                      // Connect to Phantom wallet
+                      if (window.solana && window.solana.isPhantom) {
+                        const response = await window.solana.connect();
+                        const publicKey = response.publicKey.toString();
+                        
+                        // Step 1: Request challenge from server
+                        const challengeResponse = await fetch("/api/auth/challenge", {
+                          method: "GET",
+                          headers: { "Content-Type": "application/json" },
+                        });
+                        
+                        if (!challengeResponse.ok) {
+                          throw new Error("Failed to get authentication challenge");
+                        }
+                        
+                        const challenge = await challengeResponse.json();
+                        
+                        // Step 2: Use Solana-specific message and add wallet address
+                        const messageToSign = challenge.solanaMessage.replace('ADDRESS_PLACEHOLDER', publicKey);
+                        const encodedMessage = new TextEncoder().encode(messageToSign);
+                        
+                        // Step 3: Sign the message
+                        const signedMessage = await window.solana.signMessage(encodedMessage);
+                        
+                        // Step 4: Send signature to backend for verification
+                        const authResponse = await fetch(isSignUp ? "/api/auth/wallet-signup" : "/api/auth/wallet-signin", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            signature: Array.from(signedMessage.signature),
+                            message: messageToSign,
+                            nonce: challenge.nonce,
+                            authMethod: "phantom"
+                          }),
+                        });
+                        
+                        if (!authResponse.ok) {
+                          const error = await authResponse.json();
+                          throw new Error(error.message || "Authentication failed");
+                        }
+                        
+                        const user = await authResponse.json();
+                        toast({
+                          title: "Phantom Connected!",
+                          description: "Redirecting to your dashboard...",
+                        });
+                        
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                          window.location.href = "/dashboard";
+                        }, 1000);
+                      } else {
+                        window.open('https://phantom.app/', '_blank');
+                      }
+                    } catch (error: any) {
+                      console.error('Phantom authentication failed:', error);
+                      toast({
+                        title: "Authentication Failed",
+                        description: error.message || "Please try again",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                  disabled={authMutation.isPending}
+                  data-testid="button-signin-phantom"
+                  className="h-11 border-2 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white font-bold">P</span>
+                  </div>
+                  Phantom
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={async () => {
+                    try {
+                      // Connect to MetaMask wallet
+                      if (window.ethereum) {
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        const address = accounts[0];
+                        
+                        // Step 1: Request challenge from server
+                        const challengeResponse = await fetch("/api/auth/challenge", {
+                          method: "GET",
+                          headers: { "Content-Type": "application/json" },
+                        });
+                        
+                        if (!challengeResponse.ok) {
+                          throw new Error("Failed to get authentication challenge");
+                        }
+                        
+                        const challenge = await challengeResponse.json();
+                        
+                        // Step 2: Use SIWE message and replace address placeholder
+                        const messageToSign = challenge.siweMessage.replace('ADDRESS_PLACEHOLDER', address);
+                        
+                        // Step 3: Sign the message
+                        const signature = await window.ethereum.request({
+                          method: 'personal_sign',
+                          params: [messageToSign, address],
+                        });
+                        
+                        // Step 4: Send signature to backend for verification
+                        const authResponse = await fetch(isSignUp ? "/api/auth/wallet-signup" : "/api/auth/wallet-signin", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            signature: signature,
+                            message: messageToSign,
+                            nonce: challenge.nonce,
+                            authMethod: "metamask"
+                          }),
+                        });
+                        
+                        if (!authResponse.ok) {
+                          const error = await authResponse.json();
+                          throw new Error(error.message || "Authentication failed");
+                        }
+                        
+                        const user = await authResponse.json();
+                        toast({
+                          title: "MetaMask Connected!",
+                          description: "Redirecting to your dashboard...",
+                        });
+                        
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                          window.location.href = "/dashboard";
+                        }, 1000);
+                      } else {
+                        window.open('https://metamask.io/', '_blank');
+                      }
+                    } catch (error: any) {
+                      console.error('MetaMask authentication failed:', error);
+                      toast({
+                        title: "Authentication Failed",
+                        description: error.message || "Please try again",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                  disabled={authMutation.isPending}
+                  data-testid="button-signin-metamask"
+                  className="h-11 border-2 hover:bg-muted/50 transition-colors"
+                >
+                  <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.5 12c0 5.799-4.701 10.5-10.5 10.5S1.5 17.799 1.5 12 6.201 1.5 12 1.5s10.5 4.701 10.5 10.5z"/>
+                    <path d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25z" fill="white"/>
+                  </svg>
+                  MetaMask
+                </Button>
+              </div>
               
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
