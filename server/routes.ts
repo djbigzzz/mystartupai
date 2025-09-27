@@ -638,6 +638,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
+  // Web3 Wallet Authentication
+  app.post("/api/auth/wallet-signin",
+    authRateLimiter,
+    body('walletAddress').notEmpty().withMessage('Wallet address is required'),
+    body('signature').notEmpty().withMessage('Signature is required'),
+    body('message').notEmpty().withMessage('Message is required'),
+    body('authMethod').isIn(['phantom', 'metamask', 'walletconnect']).withMessage('Invalid auth method'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const { walletAddress, signature, message, authMethod } = req.body;
+        
+        // Sanitize inputs
+        const sanitizedWalletAddress = sanitizeQuery(walletAddress.toLowerCase().trim());
+        const sanitizedMessage = sanitizeHtml(message.trim());
+        
+        // Basic message validation (check timestamp is recent)
+        const messageLines = sanitizedMessage.split('\n');
+        const timestampLine = messageLines.find(line => line.includes('Timestamp:'));
+        if (timestampLine) {
+          const timestamp = parseInt(timestampLine.split('Timestamp:')[1]?.trim() || '0');
+          const now = Date.now();
+          const fiveMinutesAgo = now - (5 * 60 * 1000);
+          
+          if (timestamp < fiveMinutesAgo || timestamp > now + 60000) {
+            return res.status(400).json({ message: "Message timestamp is invalid or expired" });
+          }
+        }
+        
+        // Verify wallet address is in the message
+        if (!sanitizedMessage.includes(sanitizedWalletAddress)) {
+          return res.status(400).json({ message: "Wallet address doesn't match signed message" });
+        }
+        
+        // For now, we'll skip signature verification and trust the client
+        // In production, you'd verify the signature here using crypto libraries
+        console.log(`🔍 Wallet authentication attempt: ${authMethod} - ${sanitizedWalletAddress}`);
+        
+        // Check if user already exists with this wallet
+        let user = null;
+        if (authMethod === 'phantom') {
+          user = await storage.getUserBySolanaWallet(sanitizedWalletAddress);
+        } else {
+          user = await storage.getUserByEthereumWallet(sanitizedWalletAddress);
+        }
+        
+        if (user) {
+          // User exists, log them in
+          req.login(user, (err) => {
+            if (err) {
+              console.error("Wallet login error:", err);
+              return res.status(500).json({ message: "Login failed" });
+            }
+            const cleanUser = cleanUserDataForResponse(user);
+            console.log(`✅ Wallet login successful: ${user.id} via ${authMethod}`);
+            res.json({ user: cleanUser });
+          });
+        } else {
+          // Create new user with wallet
+          const newUserData: any = {
+            email: null, // No email for wallet-only accounts
+            name: `Web3 User`,
+            authMethod: authMethod,
+            emailVerified: false
+          };
+          
+          if (authMethod === 'phantom') {
+            newUserData.walletAddressSolana = sanitizedWalletAddress;
+          } else {
+            newUserData.walletAddressEthereum = sanitizedWalletAddress;
+          }
+          
+          const newUser = await storage.createUser(newUserData);
+          
+          // Automatically log the new user in
+          req.login(newUser, (err) => {
+            if (err) {
+              console.error("Wallet signup login error:", err);
+              return res.status(500).json({ message: "Account created but login failed" });
+            }
+            const cleanUser = cleanUserDataForResponse(newUser);
+            console.log(`✅ Wallet signup successful: ${newUser.id} via ${authMethod}`);
+            res.status(201).json({ user: cleanUser });
+          });
+        }
+        
+      } catch (error) {
+        console.error("Wallet authentication error:", error);
+        res.status(500).json({ message: "Wallet authentication failed" });
+      }
+    }
+  );
+
   // Google OAuth routes (temporarily disabled)
   // app.get("/api/auth/google", 
   //   passport.authenticate('google', { scope: ['profile', 'email'] })

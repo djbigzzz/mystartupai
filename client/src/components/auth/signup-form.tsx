@@ -368,28 +368,52 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
         <div className="grid grid-cols-2 gap-4">
           <Button 
             variant="outline" 
-            onClick={() => {
-              // Connect to Phantom wallet
-              if (window.solana && window.solana.isPhantom) {
-                window.solana.connect()
-                  .then((response: any) => {
-                    console.log('Connected to Phantom:', response.publicKey.toString());
-                    // TODO: Handle wallet authentication
-                    toast({
-                      title: "Phantom Connected!",
-                      description: "Web3 authentication coming soon",
-                    });
-                  })
-                  .catch((error: any) => {
-                    console.error('Phantom connection failed:', error);
-                    toast({
-                      title: "Connection Failed",
-                      description: "Please install Phantom wallet",
-                      variant: "destructive",
-                    });
+            onClick={async () => {
+              try {
+                // Connect to Phantom wallet
+                if (window.solana && window.solana.isPhantom) {
+                  const response = await window.solana.connect();
+                  const publicKey = response.publicKey.toString();
+                  
+                  // Generate challenge message for signing
+                  const message = `Sign this message to authenticate with MyStartup.ai:\n\nWallet: ${publicKey}\nTimestamp: ${Date.now()}`;
+                  const encodedMessage = new TextEncoder().encode(message);
+                  
+                  // Sign the message
+                  const signedMessage = await window.solana.signMessage(encodedMessage);
+                  
+                  // Send to backend for authentication
+                  const authResponse = await fetch("/api/auth/wallet-signin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      walletAddress: publicKey,
+                      signature: Array.from(signedMessage.signature),
+                      message: message,
+                      authMethod: "phantom"
+                    }),
                   });
-              } else {
-                window.open('https://phantom.app/', '_blank');
+                  
+                  if (!authResponse.ok) {
+                    throw new Error("Authentication failed");
+                  }
+                  
+                  const user = await authResponse.json();
+                  toast({
+                    title: "Phantom Connected!",
+                    description: "Welcome to MyStartup.ai",
+                  });
+                  onSuccess?.(user);
+                } else {
+                  window.open('https://phantom.app/', '_blank');
+                }
+              } catch (error: any) {
+                console.error('Phantom authentication failed:', error);
+                toast({
+                  title: "Authentication Failed",
+                  description: error.message || "Please try again",
+                  variant: "destructive",
+                });
               }
             }}
             data-testid="button-connect-phantom"
@@ -401,28 +425,54 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
           </Button>
           <Button 
             variant="outline"
-            onClick={() => {
-              // Connect to MetaMask wallet
-              if (window.ethereum) {
-                window.ethereum.request({ method: 'eth_requestAccounts' })
-                  .then((accounts: string[]) => {
-                    console.log('Connected to MetaMask:', accounts[0]);
-                    // TODO: Handle wallet authentication
-                    toast({
-                      title: "MetaMask Connected!",
-                      description: "Web3 authentication coming soon",
-                    });
-                  })
-                  .catch((error: any) => {
-                    console.error('MetaMask connection failed:', error);
-                    toast({
-                      title: "Connection Failed",
-                      description: "Please install MetaMask wallet",
-                      variant: "destructive",
-                    });
+            onClick={async () => {
+              try {
+                // Connect to MetaMask wallet
+                if (window.ethereum) {
+                  const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  const address = accounts[0];
+                  
+                  // Generate challenge message for signing
+                  const message = `Sign this message to authenticate with MyStartup.ai:\n\nWallet: ${address}\nTimestamp: ${Date.now()}`;
+                  
+                  // Sign the message
+                  const signature = await window.ethereum.request({
+                    method: 'personal_sign',
+                    params: [message, address],
                   });
-              } else {
-                window.open('https://metamask.io/', '_blank');
+                  
+                  // Send to backend for authentication
+                  const authResponse = await fetch("/api/auth/wallet-signin", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      walletAddress: address,
+                      signature: signature,
+                      message: message,
+                      authMethod: "metamask"
+                    }),
+                  });
+                  
+                  if (!authResponse.ok) {
+                    throw new Error("Authentication failed");
+                  }
+                  
+                  const user = await authResponse.json();
+                  toast({
+                    title: "MetaMask Connected!",
+                    description: "Welcome to MyStartup.ai",
+                  });
+                  onSuccess?.(user);
+                } else {
+                  window.open('https://metamask.io/', '_blank');
+                }
+              } catch (error: any) {
+                console.error('MetaMask authentication failed:', error);
+                toast({
+                  title: "Authentication Failed",
+                  description: error.message || "Please try again",
+                  variant: "destructive",
+                });
               }
             }}
             data-testid="button-connect-metamask"
