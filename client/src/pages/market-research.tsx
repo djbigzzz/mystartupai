@@ -38,8 +38,7 @@ export default function MarketResearchPage() {
   });
 
   const { data: userIdeas = [] } = useQuery({
-    queryKey: [`/api/ideas?email=${userEmail}`],
-    enabled: !!userEmail,
+    queryKey: ['/api/ideas'],
   });
 
   const idea = ideaData as any;

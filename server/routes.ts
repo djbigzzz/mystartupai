@@ -1098,17 +1098,13 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   );
 
-  // Get startup ideas by email (protected route)
+  // Get startup ideas for authenticated user (protected route)
   app.get("/api/ideas", requireAuth, async (req, res) => {
     try {
-      const email = req.query.email as string;
+      const user = req.user as any;
       
-      // Validate email parameter
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return res.status(400).json({ message: "Valid email parameter is required" });
-      }
-      
-      const ideas = await storage.getStartupIdeasByEmail(email);
+      // Use authenticated user's email - never trust client-provided email
+      const ideas = await storage.getStartupIdeasByEmail(user.email);
       res.json(ideas);
     } catch (error) {
       console.error("Error fetching ideas:", error);

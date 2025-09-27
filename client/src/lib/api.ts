@@ -11,8 +11,8 @@ export const api = {
     return await apiRequest(`/api/ideas/${id}`);
   },
 
-  async getIdeasByEmail(email: string): Promise<StartupIdea[]> {
-    return await apiRequest(`/api/ideas?email=${encodeURIComponent(email)}`);
+  async getUserIdeas(): Promise<StartupIdea[]> {
+    return await apiRequest('/api/ideas');
   },
 
   async generateBusinessPlan(id: number): Promise<StartupIdea> {

@@ -37,8 +37,7 @@ export default function SubmitIdea() {
 
   // Fetch user's submitted ideas
   const { data: userIdeas = [], isLoading: ideasLoading } = useQuery({
-    queryKey: [`/api/ideas?email=${userEmail}`],
-    enabled: !!userEmail,
+    queryKey: ['/api/ideas'],
   });
 
   // Fetch current idea details

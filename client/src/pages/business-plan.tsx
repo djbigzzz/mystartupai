@@ -46,8 +46,7 @@ export default function BusinessPlan() {
   const idea = ideaData as any;
 
   const { data: userIdeas = [] } = useQuery({
-    queryKey: [`/api/ideas?email=${userEmail}`],
-    enabled: !!userEmail,
+    queryKey: ['/api/ideas'],
   });
 
   const benefits = [
