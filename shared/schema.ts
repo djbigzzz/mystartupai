@@ -10,6 +10,11 @@ export const users = pgTable("users", {
   username: text("username").unique(),
   password: text("password"),
   googleId: text("google_id").unique(),
+  
+  // Web3 wallet authentication
+  walletAddressSolana: text("wallet_address_solana").unique(),
+  walletAddressEthereum: text("wallet_address_ethereum").unique(),
+  authMethod: text("auth_method").default("email"), // email, google, phantom, metamask, walletconnect
 
   avatar: text("avatar"),
   emailVerified: boolean("email_verified").default(false),
