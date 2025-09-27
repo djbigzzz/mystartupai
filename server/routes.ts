@@ -41,6 +41,9 @@ import { initiateGoogleOAuth, handleGoogleOAuthCallback } from "./manual-oauth";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { emailService } from "./email-service";
+import { SiweMessage } from "siwe";
+import nacl from "tweetnacl";
+import bs58 from "bs58";
 
 // Helper function to parse AI analysis for profile form
 function parseAIAnalysisForProfile(analysis: any) {
@@ -668,8 +671,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           used: false
         };
         
-        // Create the message to be signed (following SIWE format for consistency)
-        const message = `MyStartup.ai wants you to sign in with your Web3 wallet.
+        // Create SIWE-compliant message format for Ethereum wallets
+        // For Solana, we'll use a simpler format since SIWE is Ethereum-specific
+        const siweMessage = `MyStartup.ai wants you to sign in with your Web3 wallet.
 
 URI: ${origin}
 Version: 1
@@ -677,10 +681,19 @@ Chain ID: 1
 Nonce: ${nonce}
 Issued At: ${new Date(timestamp).toISOString()}`;
 
+        // For non-SIWE wallets (like Solana), we'll provide a simpler format
+        const simpleMessage = `MyStartup.ai wants you to sign in with your Web3 wallet.
+
+URI: ${origin}
+Version: 1
+Nonce: ${nonce}
+Issued At: ${new Date(timestamp).toISOString()}`;
+
         console.log(`🔐 Generated auth challenge: ${nonce.substring(0, 8)}... for origin: ${origin}`);
         
         res.json({ 
-          message,
+          message: siweMessage,  // Default to SIWE format
+          simpleMessage,         // Alternative for Solana
           nonce,
           timestamp 
         });
@@ -736,33 +749,89 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         try {
           if (authMethod === 'phantom') {
             // For Solana/Phantom - verify ed25519 signature
-            // TODO: Implement proper ed25519 verification with tweetnacl-js
-            // For now, we'll validate format and extract address from message
-            
-            // Extract wallet address from the signed message (derive from public key in production)
-            const addressMatch = message.match(/Address:\s*([A-Za-z0-9]{32,44})/);
-            if (!addressMatch) {
-              return res.status(400).json({ message: "No valid Solana address found in message" });
+            try {
+              // Extract wallet address from the signed message
+              const addressMatch = message.match(/Address:\s*([A-Za-z0-9]{32,44})/);
+              if (!addressMatch) {
+                return res.status(400).json({ message: "No valid Solana address found in message" });
+              }
+              const claimedAddress = addressMatch[1];
+              
+              // Convert signature from array of bytes to Uint8Array
+              let signatureBytes: Uint8Array;
+              if (Array.isArray(signature)) {
+                signatureBytes = new Uint8Array(signature);
+              } else if (typeof signature === 'string') {
+                // If signature is base64 encoded
+                signatureBytes = new Uint8Array(Buffer.from(signature, 'base64'));
+              } else {
+                return res.status(400).json({ message: "Invalid signature format" });
+              }
+              
+              // Convert message to bytes (exactly as signed)
+              const messageBytes = new TextEncoder().encode(message);
+              
+              // Decode the Solana address to get the public key
+              let publicKeyBytes: Uint8Array;
+              try {
+                publicKeyBytes = bs58.decode(claimedAddress);
+              } catch (error) {
+                return res.status(400).json({ message: "Invalid Solana address format" });
+              }
+              
+              // Verify the ed25519 signature
+              const isValid = nacl.sign.detached.verify(messageBytes, signatureBytes, publicKeyBytes);
+              
+              if (!isValid) {
+                console.error("Solana signature verification failed");
+                return res.status(400).json({ message: "Invalid signature" });
+              }
+              
+              // Signature is valid, use the verified address
+              walletAddress = claimedAddress;
+              
+              console.log(`✅ Solana signature verified successfully for address: ${walletAddress}`);
+              
+            } catch (error) {
+              console.error("Solana signature verification error:", error);
+              return res.status(400).json({ message: "Signature verification failed" });
             }
-            walletAddress = addressMatch[1];
-            
-            // TODO: Add ed25519 signature verification here
-            console.log(`⚠️  WARNING: Solana signature verification not yet implemented - trusting message for address: ${walletAddress}`);
             
           } else {
-            // For Ethereum/MetaMask - verify ECDSA signature  
-            // TODO: Implement proper ECDSA verification with ethers.js
-            // For now, we'll validate format and extract address from message
-            
-            // Extract wallet address from the signed message (recover from signature in production)
-            const addressMatch = message.match(/Address:\s*(0x[a-fA-F0-9]{40})/);
-            if (!addressMatch) {
-              return res.status(400).json({ message: "No valid Ethereum address found in message" });
+            // For Ethereum/MetaMask - verify ECDSA signature using SIWE
+            try {
+              // Parse the SIWE message
+              const siweMessage = new SiweMessage(message);
+              
+              // Verify the signature and extract the address
+              const siweResponse = await siweMessage.verify({ signature });
+              
+              if (!siweResponse.success) {
+                console.error("SIWE verification failed:", siweResponse.error);
+                return res.status(400).json({ message: "Invalid signature or message format" });
+              }
+              
+              // Extract the verified address from SIWE
+              walletAddress = siweMessage.address.toLowerCase();
+              
+              // Verify the nonce in the SIWE message matches our challenge
+              if (siweMessage.nonce !== nonce) {
+                return res.status(400).json({ message: "Nonce mismatch" });
+              }
+              
+              // Verify domain/URI matches our origin
+              const expectedUri = challenge.origin || 'mystartup.ai';
+              if (siweMessage.uri !== expectedUri) {
+                console.warn(`URI mismatch: expected ${expectedUri}, got ${siweMessage.uri}`);
+                // Don't fail for URI mismatch in development, just log warning
+              }
+              
+              console.log(`✅ Ethereum signature verified successfully for address: ${walletAddress}`);
+              
+            } catch (error) {
+              console.error("SIWE parsing/verification error:", error);
+              return res.status(400).json({ message: "Invalid SIWE message format or signature" });
             }
-            walletAddress = addressMatch[1].toLowerCase(); // Normalize to lowercase for Ethereum
-            
-            // TODO: Add ECDSA signature verification and address recovery here
-            console.log(`⚠️  WARNING: Ethereum signature verification not yet implemented - trusting message for address: ${walletAddress}`);
           }
           
         } catch (error) {
