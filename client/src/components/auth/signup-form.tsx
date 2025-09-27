@@ -366,20 +366,72 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" disabled>
-            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-              <path
-                fill="currentColor"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-            </svg>
-            Google
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              // Connect to Phantom wallet
+              if (window.solana && window.solana.isPhantom) {
+                window.solana.connect()
+                  .then((response: any) => {
+                    console.log('Connected to Phantom:', response.publicKey.toString());
+                    // TODO: Handle wallet authentication
+                    toast({
+                      title: "Phantom Connected!",
+                      description: "Web3 authentication coming soon",
+                    });
+                  })
+                  .catch((error: any) => {
+                    console.error('Phantom connection failed:', error);
+                    toast({
+                      title: "Connection Failed",
+                      description: "Please install Phantom wallet",
+                      variant: "destructive",
+                    });
+                  });
+              } else {
+                window.open('https://phantom.app/', '_blank');
+              }
+            }}
+            data-testid="button-connect-phantom"
+          >
+            <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-xs text-white font-bold">P</span>
+            </div>
+            Phantom
           </Button>
-          <Button variant="outline" disabled>
-            <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+          <Button 
+            variant="outline"
+            onClick={() => {
+              // Connect to MetaMask wallet
+              if (window.ethereum) {
+                window.ethereum.request({ method: 'eth_requestAccounts' })
+                  .then((accounts: string[]) => {
+                    console.log('Connected to MetaMask:', accounts[0]);
+                    // TODO: Handle wallet authentication
+                    toast({
+                      title: "MetaMask Connected!",
+                      description: "Web3 authentication coming soon",
+                    });
+                  })
+                  .catch((error: any) => {
+                    console.error('MetaMask connection failed:', error);
+                    toast({
+                      title: "Connection Failed",
+                      description: "Please install MetaMask wallet",
+                      variant: "destructive",
+                    });
+                  });
+              } else {
+                window.open('https://metamask.io/', '_blank');
+              }
+            }}
+            data-testid="button-connect-metamask"
+          >
+            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.5 12c0 5.799-4.701 10.5-10.5 10.5S1.5 17.799 1.5 12 6.201 1.5 12 1.5s10.5 4.701 10.5 10.5z"/>
+              <path d="M12 2.25c5.385 0 9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12 6.615 2.25 12 2.25z" fill="white"/>
             </svg>
-            Twitter
+            MetaMask
           </Button>
         </div>
 
