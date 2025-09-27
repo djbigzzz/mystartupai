@@ -649,7 +649,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Generate a cryptographically secure random nonce
         const nonce = crypto.randomBytes(32).toString('hex');
         const timestamp = Date.now();
-        const origin = req.get('origin') || req.get('host') || 'mystartup.ai';
+        // Build proper URI with scheme for SIWE compliance
+        const protocol = req.protocol || 'https';
+        const host = req.get('host') || 'mystartup.ai';
+        const origin = `${protocol}://${host}`;
         
         // Store nonce in session with expiration (5 minutes)
         if (!req.session.authChallenges) {
@@ -671,31 +674,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
           used: false
         };
         
-        // Create SIWE-compliant message format for Ethereum wallets
-        // For Solana, we'll use a simpler format since SIWE is Ethereum-specific
-        const siweMessage = `MyStartup.ai wants you to sign in with your Web3 wallet.
+        // Create proper EIP-4361 SIWE-compliant message format for Ethereum wallets
+        const siweTemplate = {
+          domain: origin.replace(/^https?:\/\//, ''), // Remove protocol for domain
+          address: 'ADDRESS_PLACEHOLDER',              // Frontend will replace with actual address
+          statement: 'MyStartup.ai wants you to sign in with your Web3 wallet.',
+          uri: origin,
+          version: '1',
+          chainId: 1,
+          nonce: nonce,
+          issuedAt: new Date(timestamp).toISOString()
+        };
 
+        // Canonical EIP-4361 SIWE format
+        const siweMessage = `${siweTemplate.domain} wants you to sign in with your Ethereum account.
+
+${siweTemplate.address}
+
+${siweTemplate.statement}
+
+URI: ${siweTemplate.uri}
+Version: ${siweTemplate.version}
+Chain ID: ${siweTemplate.chainId}
+Nonce: ${siweTemplate.nonce}
+Issued At: ${siweTemplate.issuedAt}`;
+
+        // For Solana wallets, include address placeholder that frontend will replace
+        const solanaMessage = `MyStartup.ai wants you to sign in with your Web3 wallet.
+
+Address: ADDRESS_PLACEHOLDER
 URI: ${origin}
 Version: 1
-Chain ID: 1
 Nonce: ${nonce}
 Issued At: ${new Date(timestamp).toISOString()}`;
 
-        // For non-SIWE wallets (like Solana), we'll provide a simpler format
-        const simpleMessage = `MyStartup.ai wants you to sign in with your Web3 wallet.
-
-URI: ${origin}
-Version: 1
-Nonce: ${nonce}
-Issued At: ${new Date(timestamp).toISOString()}`;
-
-        console.log(`🔐 Generated auth challenge: ${nonce.substring(0, 8)}... for origin: ${origin}`);
+        console.log(`🔐 Generated auth challenge: ${nonce.substring(0, 8)}... for domain: ${siweTemplate.domain}`);
         
         res.json({ 
-          message: siweMessage,  // Default to SIWE format
-          simpleMessage,         // Alternative for Solana
+          siweMessage,     // EIP-4361 compliant for Ethereum
+          solanaMessage,   // Custom format for Solana with address field
           nonce,
-          timestamp 
+          timestamp,
+          domain: siweTemplate.domain
         });
         
       } catch (error) {
@@ -765,7 +785,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
                 // If signature is base64 encoded
                 signatureBytes = new Uint8Array(Buffer.from(signature, 'base64'));
               } else {
-                return res.status(400).json({ message: "Invalid signature format" });
+                console.error("Invalid Solana signature format:", typeof signature);
+                return res.status(400).json({ message: "Invalid signature format for Solana authentication" });
               }
               
               // Convert message to bytes (exactly as signed)
@@ -803,8 +824,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
               // Parse the SIWE message
               const siweMessage = new SiweMessage(message);
               
-              // Verify the signature and extract the address
-              const siweResponse = await siweMessage.verify({ signature });
+              // Get expected domain from our challenge
+              const expectedDomain = challenge.origin.replace(/^https?:\/\//, '');
+              const expectedUri = challenge.origin;
+              
+              // Verify the signature with domain and nonce binding
+              const siweResponse = await siweMessage.verify({ 
+                signature,
+                domain: expectedDomain,
+                nonce: nonce
+              });
               
               if (!siweResponse.success) {
                 console.error("SIWE verification failed:", siweResponse.error);
@@ -814,19 +843,29 @@ Issued At: ${new Date(timestamp).toISOString()}`;
               // Extract the verified address from SIWE
               walletAddress = siweMessage.address.toLowerCase();
               
-              // Verify the nonce in the SIWE message matches our challenge
+              // Strict verification of nonce, domain, and URI
               if (siweMessage.nonce !== nonce) {
                 return res.status(400).json({ message: "Nonce mismatch" });
               }
               
-              // Verify domain/URI matches our origin
-              const expectedUri = challenge.origin || 'mystartup.ai';
-              if (siweMessage.uri !== expectedUri) {
-                console.warn(`URI mismatch: expected ${expectedUri}, got ${siweMessage.uri}`);
-                // Don't fail for URI mismatch in development, just log warning
+              if (siweMessage.domain !== expectedDomain) {
+                console.error(`Domain mismatch: expected ${expectedDomain}, got ${siweMessage.domain}`);
+                return res.status(400).json({ message: "Domain mismatch" });
               }
               
-              console.log(`✅ Ethereum signature verified successfully for address: ${walletAddress}`);
+              if (siweMessage.uri !== expectedUri) {
+                console.error(`URI mismatch: expected ${expectedUri}, got ${siweMessage.uri}`);
+                return res.status(400).json({ message: "URI mismatch" });
+              }
+              
+              // Verify chainId - accept mainnet (1) and common testnets
+              const allowedChainIds = [1, 11155111]; // Mainnet and Sepolia
+              if (siweMessage.chainId && !allowedChainIds.includes(siweMessage.chainId)) {
+                console.error(`Unsupported chainId: ${siweMessage.chainId}`);
+                return res.status(400).json({ message: `Unsupported chain ID: ${siweMessage.chainId}` });
+              }
+              
+              console.log(`✅ Ethereum signature verified successfully for address: ${walletAddress} on domain: ${expectedDomain}`);
               
             } catch (error) {
               console.error("SIWE parsing/verification error:", error);
