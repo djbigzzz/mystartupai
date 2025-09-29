@@ -17,9 +17,9 @@ interface UserProfile {
   email: string | null;
   name: string | null;
   username: string | null;
-  walletAddress: string | null;
-  walletType: string | null;
-  chainId: number | null;
+  walletAddressEthereum: string | null;
+  walletAddressSolana: string | null;
+  authMethod: string | null;
   avatar: string | null;
   emailVerified: boolean;
   createdAt: string;
@@ -104,6 +104,117 @@ export default function Profile() {
     }
   });
 
+  // WalletConnect functionality
+  const handleWalletConnect = async () => {
+    try {
+      // Initialize WalletConnect
+      const { createWeb3Modal, defaultWagmiConfig } = await import('@web3modal/wagmi');
+      const { mainnet, arbitrum, polygon } = await import('viem/chains');
+      const { getAccount, signMessage } = await import('wagmi/actions');
+      const { http } = await import('viem');
+      
+      // Configure chains and project
+      const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+      if (!projectId) {
+        throw new Error("WalletConnect project ID not configured. Please contact support.");
+      }
+      const chains = [mainnet, arbitrum, polygon] as const;
+      
+      const config = defaultWagmiConfig({
+        chains,
+        projectId,
+        metadata: {
+          name: 'MyStartup.ai',
+          description: 'AI-Powered Startup Accelerator',
+          url: 'https://mystartup.ai',
+          icons: ['https://mystartup.ai/favicon.ico']
+        }
+      });
+      
+      // Create modal
+      const modal = createWeb3Modal({
+        wagmiConfig: config,
+        projectId,
+        enableAnalytics: false
+      });
+      
+      // Open WalletConnect modal
+      await modal.open();
+      
+      // Wait for connection
+      let connected = false;
+      let attempts = 0;
+      
+      while (!connected && attempts < 30) {
+        const account = getAccount(config);
+        if (account.isConnected && account.address) {
+          connected = true;
+          
+          // Step 1: Request challenge from server
+          const challengeResponse = await fetch("/api/auth/challenge", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+          
+          if (!challengeResponse.ok) {
+            throw new Error("Failed to get authentication challenge");
+          }
+          
+          const challenge = await challengeResponse.json();
+          
+          // Step 2: Use SIWE message and replace address placeholder
+          const messageToSign = challenge.siweMessage.replace('ADDRESS_PLACEHOLDER', account.address);
+          
+          // Step 3: Sign the message
+          const signature = await signMessage(config, {
+            message: messageToSign,
+          });
+          
+          // Step 4: Link wallet to profile  
+          const linkResponse = await apiRequest("/api/auth/wallet-signin", {
+            method: "POST",
+            body: {
+              signature: signature,
+              message: messageToSign,
+              nonce: challenge.nonce,
+              authMethod: "walletconnect",
+              linkToExisting: true
+            } as any
+          });
+          
+          if (!linkResponse) {
+            throw new Error("Wallet linking failed");
+          }
+          toast({
+            title: "Wallet Connected!",
+            description: "Your wallet has been successfully linked to your account.",
+          });
+          
+          // Refresh user data
+          queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+          
+          modal.close();
+          break;
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        attempts++;
+      }
+      
+      if (!connected) {
+        throw new Error("Connection timeout - please try again");
+      }
+      
+    } catch (error: any) {
+      console.error('WalletConnect failed:', error);
+      toast({
+        title: "Wallet Connection Failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleEditStart = () => {
     setIsEditing(true);
     setEditForm({
@@ -152,8 +263,9 @@ export default function Profile() {
   };
 
   const getAccountType = () => {
-    if (user?.walletAddress && user?.email) return "Hybrid Account";
-    if (user?.walletAddress) return "Wallet Account";
+    const hasWallet = user?.walletAddressEthereum || user?.walletAddressSolana;
+    if (hasWallet && user?.email) return "Hybrid Account";
+    if (hasWallet) return "Wallet Account";
     return "Email Account";
   };
 
@@ -457,7 +569,7 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                {user.walletAddress ? (
+                {(user.walletAddressEthereum || user.walletAddressSolana) ? (
                   <div className="space-y-4">
                     <div className="p-4 border rounded-lg">
                       <div className="flex items-center justify-between">
@@ -465,10 +577,10 @@ export default function Profile() {
                           <Wallet className="w-5 h-5" />
                           <div>
                             <p className="font-medium">
-                              {user.walletType === "phantom" ? "Phantom Wallet" : "MetaMask"}
+                              {user.walletAddressSolana ? "Solana Wallet" : "Ethereum Wallet"}
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              {user.walletAddress.slice(0, 6)}...{user.walletAddress.slice(-4)}
+                              {(user.walletAddressEthereum || user.walletAddressSolana)?.slice(0, 6)}...{(user.walletAddressEthereum || user.walletAddressSolana)?.slice(-4)}
                             </p>
                           </div>
                         </div>
@@ -479,19 +591,22 @@ export default function Profile() {
                       <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Chain ID:</span>
-                          <span className="ml-2">{user.chainId}</span>
+                          <span className="ml-2">{user.walletAddressEthereum ? "1" : "101"}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Network:</span>
                           <span className="ml-2">
-                            {user.chainId === 1 ? "Ethereum Mainnet" : 
-                             user.chainId === 101 ? "Solana Mainnet" : 
-                             `Chain ${user.chainId}`}
+                            {user.walletAddressEthereum ? "Ethereum Mainnet" : "Solana Mainnet"}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <Button variant="outline" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleWalletConnect}
+                      data-testid="button-connect-additional-wallet"
+                    >
                       <Wallet className="w-4 h-4 mr-2" />
                       Connect Additional Wallet
                     </Button>
@@ -503,7 +618,10 @@ export default function Profile() {
                     <p className="text-muted-foreground mb-4">
                       Connect a wallet to access blockchain features
                     </p>
-                    <Button>
+                    <Button 
+                      onClick={handleWalletConnect}
+                      data-testid="button-connect-wallet"
+                    >
                       <Wallet className="w-4 h-4 mr-2" />
                       Connect Wallet
                     </Button>
