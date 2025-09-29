@@ -59,7 +59,7 @@ export default function Profile() {
     mutationFn: async (data: UpdateProfileData) => {
       return apiRequest("/api/auth/profile", {
         method: "PATCH",
-        body: data
+        body: data as any
       });
     },
     onSuccess: () => {
@@ -85,7 +85,7 @@ export default function Profile() {
     mutationFn: async (data: ChangePasswordData) => {
       return apiRequest("/api/auth/change-password", {
         method: "POST",
-        body: data
+        body: data as any
       });
     },
     onSuccess: () => {
