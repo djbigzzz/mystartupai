@@ -366,113 +366,82 @@ export default function AppEntry() {
             {/* Web3 Wallet Authentication */}
             <div className="space-y-3">
               <Button 
-                className="w-full h-11 border-2 border-[#3B99FC] bg-white hover:bg-[#3B99FC] hover:text-white text-[#3B99FC] font-medium shadow-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
+                className="w-full h-11 border-2 border-[#AB9FF2] bg-white hover:bg-[#AB9FF2] hover:text-white text-[#AB9FF2] font-medium shadow-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
                 disabled={authMutation.isPending}
-                data-testid="button-signin-walletconnect"
+                data-testid="button-signin-solana"
                 onClick={async () => {
                     try {
-                      // Initialize WalletConnect
-                      const { createWeb3Modal, defaultWagmiConfig } = await import('@web3modal/wagmi');
-                      const { mainnet, arbitrum, polygon } = await import('viem/chains');
-                      const { getAccount, signMessage } = await import('wagmi/actions');
-                      const { http } = await import('viem');
+                      // Check if Solana wallet is available
+                      const { solana } = window as any;
                       
-                      // Configure chains and project
-                      const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'e02e251e99c152caa4e0e12e29bbaf2b'; // Public demo project ID
-                      const chains = [mainnet, arbitrum, polygon] as const;
-                      
-                      const config = defaultWagmiConfig({
-                        chains,
-                        projectId,
-                        metadata: {
-                          name: 'MyStartup.ai',
-                          description: 'AI-Powered Startup Accelerator',
-                          url: 'https://mystartup.ai',
-                          icons: ['https://mystartup.ai/favicon.ico']
-                        }
-                      });
-                      
-                      // Create modal
-                      const modal = createWeb3Modal({
-                        wagmiConfig: config,
-                        projectId,
-                        enableAnalytics: false
-                      });
-                      
-                      // Open WalletConnect modal
-                      await modal.open();
-                      
-                      // Wait for connection
-                      let connected = false;
-                      let attempts = 0;
-                      
-                      while (!connected && attempts < 30) {
-                        const account = getAccount(config);
-                        if (account.isConnected && account.address) {
-                          connected = true;
-                          
-                          // Step 1: Request challenge from server
-                          const challengeResponse = await fetch("/api/auth/challenge", {
-                            method: "GET",
-                            headers: { "Content-Type": "application/json" },
-                          });
-                          
-                          if (!challengeResponse.ok) {
-                            throw new Error("Failed to get authentication challenge");
-                          }
-                          
-                          const challenge = await challengeResponse.json();
-                          
-                          // Step 2: Use SIWE message and replace address placeholder
-                          const messageToSign = challenge.siweMessage.replace('ADDRESS_PLACEHOLDER', account.address);
-                          
-                          // Step 3: Sign the message
-                          const signature = await signMessage(config, {
-                            message: messageToSign,
-                          });
-                          
-                          // Step 4: Send signature to backend for verification
-                          const authResponse = await fetch(isSignUp ? "/api/auth/wallet-signup" : "/api/auth/wallet-signin", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              signature: signature,
-                              message: messageToSign,
-                              nonce: challenge.nonce,
-                              authMethod: "walletconnect"
-                            }),
-                          });
-                          
-                          if (!authResponse.ok) {
-                            const error = await authResponse.json();
-                            throw new Error(error.message || "Authentication failed");
-                          }
-                          
-                          const user = await authResponse.json();
-                          toast({
-                            title: "Wallet Connected!",
-                            description: "Redirecting to your dashboard...",
-                          });
-                          
-                          // Redirect to dashboard
-                          setTimeout(() => {
-                            window.location.href = "/dashboard";
-                          }, 1000);
-                          
-                          modal.close();
-                          break;
-                        }
-                        
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        attempts++;
+                      if (!solana) {
+                        toast({
+                          title: "No Solana Wallet Found",
+                          description: "Please install Phantom, Solflare, or another Solana wallet extension.",
+                          variant: "destructive",
+                        });
+                        return;
                       }
-                      
-                      if (!connected) {
-                        throw new Error("Connection timeout - please try again");
+
+                      // Connect to wallet
+                      const response = await solana.connect();
+                      const walletAddress = response.publicKey.toString();
+
+                      // Step 1: Get challenge from server
+                      const challengeResponse = await fetch("/api/auth/challenge", {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                      });
+
+                      if (!challengeResponse.ok) {
+                        throw new Error("Failed to get authentication challenge");
                       }
+
+                      const challenge = await challengeResponse.json();
+
+                      // Step 2: Create message to sign
+                      const messageToSign = `MyStartup.ai wants you to sign in with your Solana account:\n${walletAddress}\n\nNonce: ${challenge.nonce}\nIssued At: ${new Date().toISOString()}`;
+                      const encodedMessage = new TextEncoder().encode(messageToSign);
+
+                      // Step 3: Sign message with wallet
+                      const signedMessage = await solana.signMessage(encodedMessage, "utf8");
+                      const signature = btoa(String.fromCharCode(...signedMessage.signature));
+
+                      // Step 4: Send signature to backend for verification
+                      const authResponse = await fetch(isSignUp ? "/api/auth/wallet-signup" : "/api/auth/wallet-signin", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          signature: signature,
+                          message: messageToSign,
+                          nonce: challenge.nonce,
+                          walletAddress: walletAddress,
+                          authMethod: "phantom"
+                        }),
+                      });
+
+                      if (!authResponse.ok) {
+                        const error = await authResponse.json();
+                        throw new Error(error.message || "Authentication failed");
+                      }
+
+                      const user = await authResponse.json();
                       
+                      // Invalidate auth cache to refresh user data
+                      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+                      
+                      toast({
+                        title: "Wallet Connected!",
+                        description: "Redirecting to your dashboard...",
+                      });
+
+                      // Redirect to dashboard
+                      setTimeout(() => {
+                        window.location.href = "/dashboard";
+                      }, 1000);
+
                     } catch (error: any) {
-                      console.error('WalletConnect authentication failed:', error);
+                      console.error('Solana wallet authentication failed:', error);
                       toast({
                         title: "Authentication Failed",
                         description: error.message || "Please try again",
@@ -481,10 +450,12 @@ export default function AppEntry() {
                     }
                   }}
                 >
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 32 32" fill="currentColor">
-                    <path d="M6.5 11.5c4.5-4.4 11.8-4.4 16.3 0l.5.5c.2.2.2.6 0 .8l-1.8 1.8c-.1.1-.3.1-.4 0l-.7-.7c-3.1-3.1-8.2-3.1-11.4 0l-.7.7c-.1.1-.3.1-.4 0L6.1 12.8c-.2-.2-.2-.6 0-.8l.4-.5zm20.1 3.7l1.6 1.6c.2.2.2.6 0 .8l-7.3 7.3c-.2.2-.6.2-.8 0l-5.2-5.2c0-.1-.1-.1-.2 0l-5.2 5.2c-.2.2-.6.2-.8 0l-7.3-7.3c-.2-.2-.2-.6 0-.8l1.6-1.6c.2-.2.6-.2.8 0l5.2 5.2c0 .1.1.1.2 0l5.2-5.2c.2-.2.6-.2.8 0l5.2 5.2c0 .1.1.1.2 0l5.2-5.2c.2-.2.6-.2.8 0z"/>
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 397.7 311.7" fill="currentColor">
+                    <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z"/>
+                    <path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z"/>
+                    <path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z"/>
                   </svg>
-                  WalletConnect
+                  Solana Wallet
                 </Button>
               
               <div className="relative">
