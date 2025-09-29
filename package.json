@@ -11,6 +11,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.4",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
@@ -48,7 +49,6 @@
     "@types/nodemailer": "^7.0.1",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/pg": "^8.15.5",
-    "@web3modal/wagmi": "^5.1.11",
     "bcryptjs": "^3.0.2",
     "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
@@ -102,7 +102,6 @@
     "validator": "^13.15.15",
     "vaul": "^1.1.2",
     "viem": "^2.37.9",
-    "wagmi": "^2.17.5",
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.24.2",
