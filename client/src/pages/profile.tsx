@@ -104,109 +104,72 @@ export default function Profile() {
     }
   });
 
-  // WalletConnect functionality
+  // Solana wallet connection functionality
   const handleWalletConnect = async () => {
     try {
-      // Initialize WalletConnect
-      const { createWeb3Modal, defaultWagmiConfig } = await import('@web3modal/wagmi');
-      const { mainnet, arbitrum, polygon } = await import('viem/chains');
-      const { getAccount, signMessage } = await import('wagmi/actions');
-      const { http } = await import('viem');
+      // Check if Solana wallet is available (Phantom, Solflare, etc.)
+      const { solana } = window as any;
       
-      // Configure chains and project
-      const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-      if (!projectId) {
-        throw new Error("WalletConnect project ID not configured. Please contact support.");
+      if (!solana) {
+        toast({
+          title: "No Solana Wallet Found",
+          description: "Please install Phantom, Solflare, or another Solana wallet extension.",
+          variant: "destructive",
+        });
+        return;
       }
-      const chains = [mainnet, arbitrum, polygon] as const;
-      
-      const config = defaultWagmiConfig({
-        chains,
-        projectId,
-        metadata: {
-          name: 'MyStartup.ai',
-          description: 'AI-Powered Startup Accelerator',
-          url: 'https://mystartup.ai',
-          icons: ['https://mystartup.ai/favicon.ico']
-        }
+
+      // Connect to wallet
+      const response = await solana.connect();
+      const walletAddress = response.publicKey.toString();
+
+      // Step 1: Get challenge from server
+      const challengeResponse = await fetch("/api/auth/challenge", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
-      
-      // Create modal
-      const modal = createWeb3Modal({
-        wagmiConfig: config,
-        projectId,
-        enableAnalytics: false
+
+      if (!challengeResponse.ok) {
+        throw new Error("Failed to get authentication challenge");
+      }
+
+      const challenge = await challengeResponse.json();
+
+      // Step 2: Create message to sign
+      const messageToSign = `MyStartup.ai wants you to sign in with your Solana account:\n${walletAddress}\n\nNonce: ${challenge.nonce}\nIssued At: ${new Date().toISOString()}`;
+      const encodedMessage = new TextEncoder().encode(messageToSign);
+
+      // Step 3: Sign message with wallet
+      const signedMessage = await solana.signMessage(encodedMessage, "utf8");
+      const signature = btoa(String.fromCharCode(...signedMessage.signature));
+
+      // Step 4: Link wallet to profile
+      const linkResponse = await apiRequest("/api/auth/wallet-signin", {
+        method: "POST",
+        body: {
+          signature: signature,
+          message: messageToSign,
+          nonce: challenge.nonce,
+          walletAddress: walletAddress,
+          authMethod: "phantom",
+          linkToExisting: true
+        } as any
       });
-      
-      // Open WalletConnect modal
-      await modal.open();
-      
-      // Wait for connection
-      let connected = false;
-      let attempts = 0;
-      
-      while (!connected && attempts < 30) {
-        const account = getAccount(config);
-        if (account.isConnected && account.address) {
-          connected = true;
-          
-          // Step 1: Request challenge from server
-          const challengeResponse = await fetch("/api/auth/challenge", {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          });
-          
-          if (!challengeResponse.ok) {
-            throw new Error("Failed to get authentication challenge");
-          }
-          
-          const challenge = await challengeResponse.json();
-          
-          // Step 2: Use SIWE message and replace address placeholder
-          const messageToSign = challenge.siweMessage.replace('ADDRESS_PLACEHOLDER', account.address);
-          
-          // Step 3: Sign the message
-          const signature = await signMessage(config, {
-            message: messageToSign,
-          });
-          
-          // Step 4: Link wallet to profile  
-          const linkResponse = await apiRequest("/api/auth/wallet-signin", {
-            method: "POST",
-            body: {
-              signature: signature,
-              message: messageToSign,
-              nonce: challenge.nonce,
-              authMethod: "walletconnect",
-              linkToExisting: true
-            } as any
-          });
-          
-          if (!linkResponse) {
-            throw new Error("Wallet linking failed");
-          }
-          toast({
-            title: "Wallet Connected!",
-            description: "Your wallet has been successfully linked to your account.",
-          });
-          
-          // Refresh user data
-          queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-          
-          modal.close();
-          break;
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        attempts++;
+
+      if (!linkResponse) {
+        throw new Error("Wallet linking failed");
       }
-      
-      if (!connected) {
-        throw new Error("Connection timeout - please try again");
-      }
-      
+
+      toast({
+        title: "Wallet Connected!",
+        description: "Your Solana wallet has been successfully linked to your account.",
+      });
+
+      // Refresh user data
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+
     } catch (error: any) {
-      console.error('WalletConnect failed:', error);
+      console.error('Solana wallet connection failed:', error);
       toast({
         title: "Wallet Connection Failed",
         description: error.message || "Please try again",
@@ -565,7 +528,7 @@ export default function Profile() {
               <CardHeader>
                 <CardTitle>Wallet Connection</CardTitle>
                 <CardDescription>
-                  Manage your connected wallets and blockchain accounts.
+                  Connect and manage your Solana wallet for blockchain features.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -608,15 +571,15 @@ export default function Profile() {
                       data-testid="button-connect-additional-wallet"
                     >
                       <Wallet className="w-4 h-4 mr-2" />
-                      Connect Additional Wallet
+                      Connect Another Solana Wallet
                     </Button>
                   </div>
                 ) : (
                   <div className="text-center py-8">
                     <Wallet className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No Wallet Connected</h3>
+                    <h3 className="text-lg font-medium mb-2">No Solana Wallet Connected</h3>
                     <p className="text-muted-foreground mb-4">
-                      Connect a wallet to access blockchain features
+                      Connect your Solana wallet (Phantom, Solflare, etc.) to access blockchain features
                     </p>
                     <Button 
                       onClick={handleWalletConnect}
