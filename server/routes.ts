@@ -1321,10 +1321,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = (req.user as any).id;
       const company = await storage.getCompany(id);
       
       if (!company) {
         return res.status(404).json({ message: "Company not found" });
+      }
+      
+      // Verify ownership
+      if (company.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized to access this company" });
       }
       
       res.json(company);
