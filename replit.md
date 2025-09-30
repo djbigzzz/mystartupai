@@ -4,6 +4,12 @@
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
 ## Recent Changes
+- **CRITICAL SECURITY FIX**: Fixed IDOR vulnerabilities preventing unauthorized access to user data (Sept 30, 2025)
+  - **GET /api/companies/:id**: Added ownership verification - users can now only access their own companies
+  - **Business Plan Endpoints**: Added ownership checks to all business plan generation and retrieval endpoints
+  - **Pitch Deck Endpoints**: Added ownership checks to all pitch deck generation and retrieval endpoints
+  - **Business Plan Sections**: Secured individual section generation endpoint
+  - **Impact**: Prevents any logged-in user from accessing other users' companies, ideas, business plans, and pitch decks
 - **Solana-Only Wallet Integration**: Streamlined to Solana blockchain focus (Sept 29, 2025)
   - **Solana Wallet Support**: Direct integration with Phantom, Solflare, and other Solana wallets via browser extension API
   - **Authentication Flow**: Challenge-response system with Ed25519 signature verification for Solana wallets
