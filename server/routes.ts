@@ -1122,10 +1122,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   app.post("/api/startup-ideas/:id/business-plan", requireAuth, async (req, res) => {
     try {
       const ideaId = parseInt(req.params.id);
+      const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(ideaId);
       
       if (!idea) {
         return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      // Verify ownership
+      if (idea.email !== userEmail) {
+        return res.status(403).json({ message: "Unauthorized to access this startup idea" });
       }
 
       const analysis = idea.analysis as any;
@@ -1174,10 +1180,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(id);
       
       if (!idea) {
         return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      // Verify ownership
+      if (idea.email !== userEmail) {
+        return res.status(403).json({ message: "Unauthorized to access this startup idea" });
       }
       
       if (!idea.analysis) {
