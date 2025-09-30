@@ -1221,11 +1221,17 @@ Issued At: ${new Date(timestamp).toISOString()}`;
       const ideaId = parseInt(req.params.id);
       const sectionId = req.params.sectionId;
       const { existingContent } = req.body;
+      const userEmail = (req.user as any).email;
 
       const idea = await storage.getStartupIdea(ideaId);
       
       if (!idea) {
         return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      // Verify ownership
+      if (idea.email !== userEmail) {
+        return res.status(403).json({ message: "Unauthorized to access this startup idea" });
       }
 
       const analysis = idea.analysis as any;
@@ -1252,10 +1258,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   app.post("/api/ideas/:id/pitch-deck", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(id);
       
       if (!idea) {
         return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      // Verify ownership
+      if (idea.email !== userEmail) {
+        return res.status(403).json({ message: "Unauthorized to access this startup idea" });
       }
       
       if (!idea.businessPlan) {
@@ -1971,10 +1983,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   app.get("/api/business-plans/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(id);
       
       if (!idea) {
         return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      // Verify ownership
+      if (idea.email !== userEmail) {
+        return res.status(403).json({ message: "Unauthorized to access this business plan" });
       }
       
       if (!idea.businessPlan) {
@@ -1991,10 +2009,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   app.get("/api/pitch-decks/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(id);
       
       if (!idea) {
         return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      // Verify ownership
+      if (idea.email !== userEmail) {
+        return res.status(403).json({ message: "Unauthorized to access this pitch deck" });
       }
       
       if (!idea.pitchDeck) {
