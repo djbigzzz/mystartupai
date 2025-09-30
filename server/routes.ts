@@ -1692,10 +1692,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   app.post("/api/startup-ideas/:id/pitch-deck", requireAuth, async (req, res) => {
     try {
       const ideaId = parseInt(req.params.id);
+      const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(ideaId);
       
       if (!idea) {
         return res.status(404).json({ message: "Startup idea not found" });
+      }
+      
+      // Verify ownership
+      if (idea.email !== userEmail) {
+        return res.status(403).json({ message: "Unauthorized to access this startup idea" });
       }
 
       const businessPlan = idea.businessPlan as any;
