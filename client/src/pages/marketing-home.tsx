@@ -328,11 +328,11 @@ export default function MarketingHome() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pt-8 border-t border-white/20">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 pt-6 sm:pt-8 border-t border-white/20">
                 {stats.map((stat, index) => (
-                  <div key={index} className="text-center px-2">
-                    <div className="text-xl sm:text-2xl font-bold text-white drop-shadow-sm whitespace-nowrap">{stat.number}</div>
-                    <div className="text-xs sm:text-sm text-blue-200 whitespace-nowrap">{stat.label}</div>
+                  <div key={index} className="text-center">
+                    <div className="text-sm sm:text-lg lg:text-2xl font-bold text-white drop-shadow-sm leading-tight">{stat.number}</div>
+                    <div className="text-[10px] sm:text-xs lg:text-sm text-blue-200 mt-1">{stat.label}</div>
                   </div>
                 ))}
               </div>
