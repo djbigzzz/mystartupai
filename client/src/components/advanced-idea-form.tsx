@@ -233,7 +233,17 @@ export default function AdvancedIdeaForm() {
   });
 
   const onSubmit = (data: any) => {
-    submitIdeaMutation.mutate(data);
+    // Normalize optional fields - convert empty strings to undefined
+    const normalizedData = {
+      ...data,
+      competitiveAdvantage: data.competitiveAdvantage?.trim() || undefined,
+      revenueModel: data.revenueModel?.trim() || undefined,
+      targetMarket: data.targetMarket?.trim() || undefined,
+      problemStatement: data.problemStatement?.trim() || undefined,
+      solutionApproach: data.solutionApproach?.trim() || undefined,
+    };
+    
+    submitIdeaMutation.mutate(normalizedData);
   };
 
   const maxSteps = validationSteps.length - 1; // Derive from validation steps length
