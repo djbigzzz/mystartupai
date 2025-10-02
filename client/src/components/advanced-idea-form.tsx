@@ -182,7 +182,7 @@ export default function AdvancedIdeaForm() {
       // Update validation steps to include basic info step for non-authenticated
       setValidationSteps(createValidationSteps());
     }
-  }, [isAuthenticated, user, form, currentStep]);
+  }, [isAuthenticated, user]);
 
   // Calculate completion progress based on authentication status
   const calculateProgress = () => {
@@ -200,19 +200,21 @@ export default function AdvancedIdeaForm() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(data),
       });
       
       if (!response.ok) {
-        throw new Error("Failed to submit idea");
+        const errorData = await response.json().catch(() => ({ message: "Failed to submit idea" }));
+        throw new Error(errorData.message || `Server error: ${response.status}`);
       }
       
       return response.json();
     },
     onSuccess: (data) => {
       toast({
-        title: "Idea updated successfully!",
-        description: "Your startup idea has been updated. Redirecting to analysis...",
+        title: "Idea submitted successfully!",
+        description: "Your startup idea has been submitted. Redirecting to analysis...",
       });
       
       localStorage.setItem("currentIdeaId", data.id.toString());
