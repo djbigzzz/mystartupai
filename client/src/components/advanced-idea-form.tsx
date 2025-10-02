@@ -689,7 +689,16 @@ export default function AdvancedIdeaForm() {
       <Card className="border-0 shadow-lg">
         <CardContent className="p-4 sm:p-6 lg:p-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} onKeyDown={(e) => {
+              // Prevent form submission on Enter key
+              if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+                e.preventDefault();
+                // If not on the last step, move to next step
+                if (currentStep < maxSteps && isStepValid(currentStep)) {
+                  nextStep();
+                }
+              }
+            }} className="space-y-6 sm:space-y-8">
               {renderStepContent()}
               
               {/* Navigation Buttons */}
