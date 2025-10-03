@@ -6,9 +6,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Coins, Check, Loader2, Wallet, QrCode, CreditCard, Clock, ArrowUpRight, ArrowDownRight, DollarSign, Sparkles, Zap, TrendingUp } from 'lucide-react';
+import { Coins, Check, Loader2, Wallet, Clock, ArrowUpRight, ArrowDownRight, Sparkles, Zap, TrendingUp } from 'lucide-react';
 import { Connection, PublicKey } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
@@ -23,7 +22,6 @@ declare global {
       signMessage(message: Uint8Array): Promise<{ signature: Uint8Array }>;
       publicKey?: { toString(): string };
     };
-    paypal?: any;
   }
 }
 
@@ -58,7 +56,6 @@ export default function PurchaseCreditsPage() {
   const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
   const qrRef = useRef<HTMLDivElement>(null);
-  const paypalButtonRef = useRef<HTMLDivElement>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch current credit balance
@@ -115,44 +112,6 @@ export default function PurchaseCreditsPage() {
       toast({
         title: 'Payment Verification Failed',
         description: error.message || 'Unable to verify payment',
-        variant: 'destructive',
-      });
-      setIsProcessing(false);
-    },
-  });
-
-  // Create PayPal order
-  const createPayPalOrder = useMutation({
-    mutationFn: async (packageType: string) => {
-      return await apiRequest('/api/payments/paypal/create-order', {
-        method: 'POST',
-        body: { packageType },
-      });
-    },
-  });
-
-  // Capture PayPal payment
-  const capturePayPalPayment = useMutation({
-    mutationFn: async (data: { orderId: string; packageType: string }) => {
-      return await apiRequest('/api/payments/paypal/capture', {
-        method: 'POST',
-        body: data,
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: '🎉 Payment Successful!',
-        description: 'Your credits have been added to your account.',
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/credits/balance'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/credits/history'] });
-      setIsPaymentModalOpen(false);
-      resetPaymentState();
-    },
-    onError: (error: Error) => {
-      toast({
-        title: 'Payment Failed',
-        description: error.message || 'Unable to complete payment',
         variant: 'destructive',
       });
       setIsProcessing(false);
@@ -252,26 +211,13 @@ export default function PurchaseCreditsPage() {
     }
   };
 
-  // Handle Solana Pay tab selection
-  const handleSolanaPayTab = () => {
-    if (!selectedPackage || paymentRequest) return;
-    createSolanaPayment.mutate({
-      packageType: selectedPackage,
-      paymentMethod,
-    });
-  };
-
-  // Load PayPal SDK
+  // Auto-trigger Solana payment creation when modal opens
   useEffect(() => {
-    if (isPaymentModalOpen && selectedPackage) {
-      const script = document.createElement('script');
-      script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=USD';
-      script.async = true;
-      document.body.appendChild(script);
-
-      return () => {
-        document.body.removeChild(script);
-      };
+    if (isPaymentModalOpen && selectedPackage && !paymentRequest) {
+      createSolanaPayment.mutate({
+        packageType: selectedPackage,
+        paymentMethod,
+      });
     }
   }, [isPaymentModalOpen, selectedPackage]);
 
@@ -444,115 +390,90 @@ export default function PurchaseCreditsPage() {
         }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Complete Your Purchase</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <Wallet className="h-5 w-5 text-primary" />
+                Complete Your Purchase
+              </DialogTitle>
               <DialogDescription>
                 {selectedPackage && CREDIT_PACKAGES[selectedPackage].name} Package • {CREDIT_PACKAGES[selectedPackage].credits.toLocaleString()} credits
               </DialogDescription>
             </DialogHeader>
 
-            <Tabs defaultValue="solana" className="w-full" onValueChange={(value) => {
-              if (value === 'solana') handleSolanaPayTab();
-            }}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="solana" className="flex items-center gap-2" data-testid="tab-solana">
-                  <Wallet className="h-4 w-4" />
-                  Solana Pay
-                </TabsTrigger>
-                <TabsTrigger value="paypal" className="flex items-center gap-2" data-testid="tab-paypal">
-                  <CreditCard className="h-4 w-4" />
-                  PayPal
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="solana" className="space-y-4 mt-4">
-                {/* Payment Method Toggle */}
-                <div className="flex gap-2">
-                  <Button
-                    variant={paymentMethod === 'SOL' ? 'default' : 'outline'}
-                    className="flex-1"
-                    onClick={() => {
-                      setPaymentMethod('SOL');
-                      if (selectedPackage) {
-                        createSolanaPayment.mutate({
-                          packageType: selectedPackage,
-                          paymentMethod: 'SOL',
-                        });
-                      }
-                    }}
-                    data-testid="button-sol"
-                  >
-                    Pay with SOL
-                  </Button>
-                  <Button
-                    variant={paymentMethod === 'USDC' ? 'default' : 'outline'}
-                    className="flex-1"
-                    onClick={() => {
-                      setPaymentMethod('USDC');
-                      if (selectedPackage) {
-                        createSolanaPayment.mutate({
-                          packageType: selectedPackage,
-                          paymentMethod: 'USDC',
-                        });
-                      }
-                    }}
-                    data-testid="button-usdc"
-                  >
-                    Pay with USDC
-                  </Button>
-                </div>
-
-                {/* QR Code */}
-                {qrCodeDataUrl && (
-                  <div className="flex flex-col items-center gap-4 p-4 bg-muted rounded-lg">
-                    <div className="bg-white p-3 rounded-lg">
-                      <img 
-                        src={qrCodeDataUrl} 
-                        alt="Solana Pay QR Code" 
-                        className="w-48 h-48"
-                        data-testid="img-qr-code"
-                      />
-                    </div>
-                    <p className="text-sm text-center text-muted-foreground">
-                      Scan with your Solana wallet
-                    </p>
-                  </div>
-                )}
-
-                {/* Phantom Wallet Button */}
+            <div className="space-y-4">
+              {/* Payment Method Toggle */}
+              <div className="flex gap-2">
                 <Button
-                  onClick={handlePhantomPayment}
-                  disabled={isProcessing || !paymentRequest}
-                  className="w-full"
-                  size="lg"
-                  data-testid="button-phantom-payment"
+                  variant={paymentMethod === 'SOL' ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => {
+                    setPaymentMethod('SOL');
+                    if (selectedPackage) {
+                      createSolanaPayment.mutate({
+                        packageType: selectedPackage,
+                        paymentMethod: 'SOL',
+                      });
+                    }
+                  }}
+                  data-testid="button-sol"
                 >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Wallet className="mr-2 h-4 w-4" />
-                      Pay with Phantom Wallet
-                    </>
-                  )}
+                  Pay with SOL
                 </Button>
-              </TabsContent>
-
-              <TabsContent value="paypal" className="space-y-4 mt-4">
-                <div 
-                  ref={paypalButtonRef} 
-                  className="min-h-[150px] flex items-center justify-center bg-muted rounded-lg p-4"
-                  data-testid="container-paypal-button"
+                <Button
+                  variant={paymentMethod === 'USDC' ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => {
+                    setPaymentMethod('USDC');
+                    if (selectedPackage) {
+                      createSolanaPayment.mutate({
+                        packageType: selectedPackage,
+                        paymentMethod: 'USDC',
+                      });
+                    }
+                  }}
+                  data-testid="button-usdc"
                 >
-                  <p className="text-sm text-muted-foreground text-center">
-                    PayPal integration requires configuration.<br />
-                    Please contact support to enable PayPal payments.
+                  Pay with USDC
+                </Button>
+              </div>
+
+              {/* QR Code */}
+              {qrCodeDataUrl && (
+                <div className="flex flex-col items-center gap-4 p-4 bg-muted rounded-lg">
+                  <div className="bg-white p-3 rounded-lg">
+                    <img 
+                      src={qrCodeDataUrl} 
+                      alt="Solana Pay QR Code" 
+                      className="w-48 h-48"
+                      data-testid="img-qr-code"
+                    />
+                  </div>
+                  <p className="text-sm text-center text-muted-foreground">
+                    Scan with your Solana wallet
                   </p>
                 </div>
-              </TabsContent>
-            </Tabs>
+              )}
+
+              {/* Phantom Wallet Button */}
+              <Button
+                onClick={handlePhantomPayment}
+                disabled={isProcessing || !paymentRequest}
+                className="w-full"
+                size="lg"
+                data-testid="button-phantom-payment"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Pay with Phantom Wallet
+                  </>
+                )}
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
