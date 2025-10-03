@@ -48,7 +48,7 @@ import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { createTransfer, encodeURL, parseURL } from '@solana/pay';
 import BigNumber from 'bignumber.js';
 import { CREDIT_PACKAGES, PAYMENT_METHODS, PAYMENT_STATUS, CREDIT_COSTS } from '@shared/constants';
-const paypal = require('@paypal/checkout-server-sdk');
+import paypal from '@paypal/checkout-server-sdk';
 
 // Helper function to parse AI analysis for profile form
 function parseAIAnalysisForProfile(analysis: any) {
