@@ -44,6 +44,11 @@ import { emailService } from "./email-service";
 import { SiweMessage } from "siwe";
 import nacl from "tweetnacl";
 import bs58 from "bs58";
+import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { createTransfer, encodeURL, parseURL } from '@solana/pay';
+import BigNumber from 'bignumber.js';
+import { CREDIT_PACKAGES, PAYMENT_METHODS, PAYMENT_STATUS, CREDIT_COSTS } from '@shared/constants';
+const paypal = require('@paypal/checkout-server-sdk');
 
 // Helper function to parse AI analysis for profile form
 function parseAIAnalysisForProfile(analysis: any) {
@@ -371,6 +376,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('❌ Auth check error:', error);
       res.status(500).json({ message: "Authentication check failed" });
+    }
+  });
+
+  // Get user credit balance
+  app.get("/api/credits/balance", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const balance = await storage.getCreditBalance(userId);
+      res.json(balance);
+    } catch (error) {
+      console.error('Error fetching credit balance:', error);
+      res.status(500).json({ message: "Failed to fetch credit balance" });
     }
   });
 
@@ -1118,10 +1135,44 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   });
 
+  // Credit check middleware - checks if user has sufficient credits for a feature
+  const checkCredits = (requiredCredits: number, featureName: string) => {
+    return async (req: any, res: any, next: any) => {
+      try {
+        const userId = req.user.id;
+        const userCredits = await storage.getUserCredits(userId);
+        
+        if (userCredits < requiredCredits) {
+          return res.status(402).json({ 
+            message: `Insufficient credits. You need ${requiredCredits} credits to generate ${featureName}.`,
+            required: requiredCredits,
+            current: userCredits,
+            shortfall: requiredCredits - userCredits
+          });
+        }
+        
+        // Store required credits in request for later deduction
+        req.creditsToDeduct = {
+          amount: requiredCredits,
+          feature: featureName
+        };
+        
+        next();
+      } catch (error) {
+        console.error('Credit check error:', error);
+        res.status(500).json({ message: "Failed to check credit balance" });
+      }
+    };
+  };
+
   // Generate comprehensive business plan
-  app.post("/api/startup-ideas/:id/business-plan", requireAuth, async (req, res) => {
+  app.post("/api/startup-ideas/:id/business-plan", 
+    requireAuth, 
+    checkCredits(CREDIT_COSTS.BUSINESS_PLAN, 'Business Plan'),
+    async (req, res) => {
     try {
       const ideaId = parseInt(req.params.id);
+      const userId = (req.user as any).id;
       const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(ideaId);
       
@@ -1165,6 +1216,15 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         businessPlan
       });
 
+      // Deduct credits after successful generation
+      await storage.deductCredits(
+        userId,
+        CREDIT_COSTS.BUSINESS_PLAN,
+        'Business Plan generation',
+        'business_plan',
+        ideaId
+      );
+
       res.json(sectionsData);
     } catch (error) {
       console.error("Error generating business plan:", error);
@@ -1175,11 +1235,13 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   // Generate business plan for an idea
   app.post("/api/ideas/:id/business-plan", 
     requireAuth,
+    checkCredits(CREDIT_COSTS.BUSINESS_PLAN, 'Business Plan'),
     validateId,
     handleValidationErrors,
     async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = (req.user as any).id;
       const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(id);
       
@@ -1205,6 +1267,15 @@ Issued At: ${new Date(timestamp).toISOString()}`;
       );
       
       const updatedIdea = await storage.updateStartupIdea(id, { businessPlan });
+      
+      // Deduct credits after successful generation
+      await storage.deductCredits(
+        userId,
+        CREDIT_COSTS.BUSINESS_PLAN,
+        'Business Plan generation',
+        'business_plan',
+        id
+      );
       
       res.json(updatedIdea);
     } catch (error) {
@@ -1255,9 +1326,13 @@ Issued At: ${new Date(timestamp).toISOString()}`;
 
 
   // Generate pitch deck for an idea
-  app.post("/api/ideas/:id/pitch-deck", requireAuth, async (req, res) => {
+  app.post("/api/ideas/:id/pitch-deck", 
+    requireAuth,
+    checkCredits(CREDIT_COSTS.PITCH_DECK, 'Pitch Deck'),
+    async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = (req.user as any).id;
       const userEmail = (req.user as any).email;
       const idea = await storage.getStartupIdea(id);
       
@@ -1282,6 +1357,15 @@ Issued At: ${new Date(timestamp).toISOString()}`;
       );
       
       const updatedIdea = await storage.updateStartupIdea(id, { pitchDeck });
+      
+      // Deduct credits after successful generation
+      await storage.deductCredits(
+        userId,
+        CREDIT_COSTS.PITCH_DECK,
+        'Pitch Deck generation',
+        'pitch_deck',
+        id
+      );
       
       res.json(updatedIdea);
     } catch (error) {
@@ -3908,6 +3992,632 @@ IMPORTANT:
       res.status(500).json({ message: "Failed to fetch check-in statistics" });
     }
   });
+
+  // Credit System API Endpoints
+  
+  // GET /api/credits/balance - Get current credit balance with recent transactions
+  app.get("/api/credits/balance", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      
+      const balanceData = await storage.getCreditBalance(userId);
+      
+      res.json(balanceData);
+    } catch (error) {
+      console.error("Error fetching credit balance:", error);
+      res.status(500).json({ message: "Failed to fetch credit balance" });
+    }
+  });
+
+  // GET /api/credits/history - Get credit transaction history
+  app.get("/api/credits/history", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      // Validate limit
+      if (limit < 1 || limit > 100) {
+        return res.status(400).json({ message: "Limit must be between 1 and 100" });
+      }
+      
+      const transactions = await storage.getCreditTransactions(userId, limit);
+      
+      res.json({
+        transactions
+      });
+    } catch (error) {
+      console.error("Error fetching credit transaction history:", error);
+      res.status(500).json({ message: "Failed to fetch transaction history" });
+    }
+  });
+
+  // Solana Pay Integration Endpoints
+  
+  // Initialize Solana connection
+  const getSolanaConnection = () => {
+    const network = process.env.SOLANA_NETWORK || 'devnet';
+    const rpcUrl = network === 'mainnet-beta' 
+      ? 'https://api.mainnet-beta.solana.com'
+      : 'https://api.devnet.solana.com';
+    return new Connection(rpcUrl, 'confirmed');
+  };
+
+  // POST /api/payments/solana/create-payment
+  app.post("/api/payments/solana/create-payment",
+    requireAuth,
+    advancedRateLimit(10, 60000), // 10 requests per minute
+    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('paymentMethod').isIn(['SOL', 'USDC']).withMessage('Payment method must be SOL or USDC'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { packageType, paymentMethod } = req.body;
+
+        // Get recipient wallet from environment
+        const recipientWallet = process.env.SOLANA_RECIPIENT_WALLET;
+        if (!recipientWallet) {
+          console.error("SOLANA_RECIPIENT_WALLET not configured");
+          return res.status(500).json({ message: "Payment system not configured" });
+        }
+
+        // Get package details
+        const packageInfo = CREDIT_PACKAGES[packageType as keyof typeof CREDIT_PACKAGES];
+        if (!packageInfo) {
+          return res.status(400).json({ message: "Invalid package type" });
+        }
+
+        // Calculate amount based on payment method
+        let amount: BigNumber;
+        let splToken: PublicKey | undefined;
+
+        if (paymentMethod === 'USDC') {
+          // USDC payment (6 decimals)
+          amount = new BigNumber(packageInfo.priceUSD);
+          const network = process.env.SOLANA_NETWORK || 'devnet';
+          // USDC mint addresses
+          const usdcMint = network === 'mainnet-beta'
+            ? 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' // USDC mainnet
+            : '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'; // USDC devnet
+          splToken = new PublicKey(usdcMint);
+        } else {
+          // SOL payment
+          amount = new BigNumber(packageInfo.priceSol);
+        }
+
+        // Create reference for tracking this specific transaction
+        const reference = new PublicKey(crypto.randomBytes(32));
+
+        // Create payment request
+        const recipient = new PublicKey(recipientWallet);
+        const label = `MyStartup.AI - ${packageInfo.name} Package`;
+        const message = `Purchase ${packageInfo.credits} credits`;
+        const memo = `PACKAGE:${packageType}|USER:${userId}|REF:${reference.toBase58()}`;
+
+        // Generate Solana Pay URL
+        const url = encodeURL({
+          recipient,
+          amount,
+          splToken,
+          reference,
+          label,
+          message,
+          memo,
+        });
+
+        // Store pending transaction reference
+        const pendingTransaction = {
+          userId,
+          packageType,
+          paymentMethod,
+          amount: amount.toString(),
+          reference: reference.toBase58(),
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+        };
+
+        console.log('Created Solana Pay request:', {
+          userId,
+          packageType,
+          paymentMethod,
+          amount: amount.toString(),
+          reference: reference.toBase58(),
+        });
+
+        res.json({
+          url: url.toString(),
+          reference: reference.toBase58(),
+          amount: amount.toString(),
+          packageType,
+          paymentMethod,
+          recipient: recipientWallet,
+          label,
+          message,
+        });
+      } catch (error) {
+        console.error("Error creating Solana payment:", error);
+        res.status(500).json({ 
+          message: "Failed to create payment request",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // POST /api/payments/solana/verify
+  app.post("/api/payments/solana/verify",
+    requireAuth,
+    advancedRateLimit(20, 60000), // 20 requests per minute (for polling)
+    body('signature').isString().notEmpty().withMessage('Transaction signature is required'),
+    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('paymentMethod').isIn(['SOL', 'USDC']).withMessage('Payment method must be SOL or USDC'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { signature, packageType, paymentMethod } = req.body;
+
+        // Check if signature was already processed (prevent double-spending)
+        const existingTransaction = await storage.getCreditTransactionBySignature(signature);
+        if (existingTransaction) {
+          return res.status(400).json({ 
+            message: "Transaction already processed",
+            status: 'already_processed'
+          });
+        }
+
+        // Get recipient wallet
+        const recipientWallet = process.env.SOLANA_RECIPIENT_WALLET;
+        if (!recipientWallet) {
+          return res.status(500).json({ message: "Payment system not configured" });
+        }
+
+        // Get package details
+        const packageInfo = CREDIT_PACKAGES[packageType as keyof typeof CREDIT_PACKAGES];
+        if (!packageInfo) {
+          return res.status(400).json({ message: "Invalid package type" });
+        }
+
+        // Connect to Solana and verify transaction
+        const connection = getSolanaConnection();
+        
+        let transaction;
+        try {
+          transaction = await connection.getTransaction(signature, {
+            commitment: 'confirmed',
+            maxSupportedTransactionVersion: 0,
+          });
+        } catch (error) {
+          console.error("Error fetching transaction:", error);
+          return res.status(400).json({ 
+            message: "Transaction not found on blockchain",
+            status: 'not_found'
+          });
+        }
+
+        if (!transaction) {
+          return res.status(400).json({ 
+            message: "Transaction not found",
+            status: 'not_found'
+          });
+        }
+
+        // Verify transaction succeeded
+        if (transaction.meta?.err) {
+          return res.status(400).json({ 
+            message: "Transaction failed on blockchain",
+            status: 'failed'
+          });
+        }
+
+        // Verify recipient address
+        const recipientPubkey = new PublicKey(recipientWallet);
+        let isRecipientValid = false;
+        let actualAmount = 0;
+
+        // Check transaction accounts and amounts
+        if (paymentMethod === 'SOL') {
+          // For SOL transfers, check pre and post balances
+          const accountKeys = transaction.transaction.message.getAccountKeys();
+          const recipientIndex = accountKeys.staticAccountKeys.findIndex(
+            key => key.equals(recipientPubkey)
+          );
+
+          if (recipientIndex >= 0 && transaction.meta?.postBalances && transaction.meta?.preBalances) {
+            const preBalance = transaction.meta.preBalances[recipientIndex];
+            const postBalance = transaction.meta.postBalances[recipientIndex];
+            actualAmount = (postBalance - preBalance) / LAMPORTS_PER_SOL;
+            isRecipientValid = actualAmount > 0;
+          }
+        } else {
+          // For USDC/SPL tokens, check token balances
+          const postTokenBalances = transaction.meta?.postTokenBalances || [];
+          const preTokenBalances = transaction.meta?.preTokenBalances || [];
+          
+          for (const postBalance of postTokenBalances) {
+            if (postBalance.owner === recipientWallet) {
+              const preBalance = preTokenBalances.find(
+                pre => pre.accountIndex === postBalance.accountIndex
+              );
+              const preAmount = preBalance?.uiTokenAmount.uiAmount || 0;
+              const postAmount = postBalance.uiTokenAmount.uiAmount || 0;
+              actualAmount = postAmount - preAmount;
+              isRecipientValid = actualAmount > 0;
+              break;
+            }
+          }
+        }
+
+        if (!isRecipientValid) {
+          return res.status(400).json({ 
+            message: "Transaction does not contain valid payment to recipient",
+            status: 'invalid_recipient'
+          });
+        }
+
+        // Verify amount matches package price (with 5% tolerance for slippage/fees)
+        const expectedAmount = paymentMethod === 'SOL' 
+          ? packageInfo.priceSol 
+          : packageInfo.priceUSD;
+        const minAmount = expectedAmount * 0.95; // 5% tolerance
+
+        if (actualAmount < minAmount) {
+          return res.status(400).json({ 
+            message: `Insufficient payment amount. Expected ${expectedAmount}, received ${actualAmount}`,
+            status: 'insufficient_amount'
+          });
+        }
+
+        // All validations passed - allocate credits
+        const paymentMethodStr = paymentMethod === 'SOL' 
+          ? PAYMENT_METHODS.SOLANA_SOL 
+          : PAYMENT_METHODS.SOLANA_USDC;
+
+        await storage.addCredits(
+          userId,
+          packageInfo.credits,
+          `Purchased ${packageInfo.name} package via Solana ${paymentMethod}`,
+          {
+            transactionHash: signature,
+            paymentMethod: paymentMethodStr,
+            paymentAmount: actualAmount.toString(),
+            currency: paymentMethod === 'SOL' ? 'SOL' : 'USDC',
+            paymentStatus: PAYMENT_STATUS.COMPLETED,
+          }
+        );
+
+        console.log('Solana payment verified and credits allocated:', {
+          userId,
+          signature,
+          packageType,
+          credits: packageInfo.credits,
+          amount: actualAmount,
+        });
+
+        res.json({
+          message: "Payment verified and credits allocated successfully",
+          status: 'completed',
+          credits: packageInfo.credits,
+          signature,
+        });
+      } catch (error) {
+        console.error("Error verifying Solana payment:", error);
+        res.status(500).json({ 
+          message: "Failed to verify payment",
+          status: 'error',
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // GET /api/payments/solana/status/:signature
+  app.get("/api/payments/solana/status/:signature",
+    requireAuth,
+    advancedRateLimit(30, 60000), // 30 requests per minute (for frequent polling)
+    async (req, res) => {
+      try {
+        const { signature } = req.params;
+
+        if (!signature || signature.length < 32) {
+          return res.status(400).json({ message: "Invalid transaction signature" });
+        }
+
+        // Check if already processed in our database
+        const existingTransaction = await storage.getCreditTransactionBySignature(signature);
+        if (existingTransaction) {
+          return res.json({
+            status: 'completed',
+            processed: true,
+            credits: existingTransaction.amount,
+            timestamp: existingTransaction.createdAt,
+          });
+        }
+
+        // Check blockchain for transaction status
+        const connection = getSolanaConnection();
+        
+        try {
+          const status = await connection.getSignatureStatus(signature, {
+            searchTransactionHistory: true,
+          });
+
+          if (!status || !status.value) {
+            return res.json({
+              status: 'not_found',
+              processed: false,
+              message: 'Transaction not yet confirmed on blockchain',
+            });
+          }
+
+          if (status.value.err) {
+            return res.json({
+              status: 'failed',
+              processed: false,
+              message: 'Transaction failed on blockchain',
+              error: status.value.err,
+            });
+          }
+
+          const confirmationStatus = status.value.confirmationStatus;
+          
+          if (confirmationStatus === 'finalized' || confirmationStatus === 'confirmed') {
+            return res.json({
+              status: 'confirmed',
+              processed: false,
+              message: 'Transaction confirmed, awaiting verification',
+              confirmationStatus,
+            });
+          }
+
+          return res.json({
+            status: 'pending',
+            processed: false,
+            message: 'Transaction pending confirmation',
+            confirmationStatus,
+          });
+        } catch (error) {
+          console.error("Error checking transaction status:", error);
+          return res.json({
+            status: 'unknown',
+            processed: false,
+            message: 'Unable to check transaction status',
+          });
+        }
+      } catch (error) {
+        console.error("Error checking Solana payment status:", error);
+        res.status(500).json({ 
+          message: "Failed to check payment status",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // PayPal Integration Endpoints
+  
+  // Initialize PayPal client
+  const getPayPalClient = () => {
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+    
+    if (!clientId || !clientSecret) {
+      throw new Error('PayPal credentials not configured');
+    }
+    
+    // Use sandbox for development, live for production
+    const environment = process.env.NODE_ENV === 'production'
+      ? new paypal.core.LiveEnvironment(clientId, clientSecret)
+      : new paypal.core.SandboxEnvironment(clientId, clientSecret);
+    
+    return new paypal.core.PayPalHttpClient(environment);
+  };
+
+  // POST /api/payments/paypal/create-order
+  app.post("/api/payments/paypal/create-order",
+    requireAuth,
+    advancedRateLimit(10, 15 * 60 * 1000), // 10 requests per 15 minutes
+    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { packageType } = req.body;
+
+        // Get package details
+        const packageInfo = CREDIT_PACKAGES[packageType as keyof typeof CREDIT_PACKAGES];
+        if (!packageInfo) {
+          return res.status(400).json({ message: "Invalid package type" });
+        }
+
+        // Create PayPal order request
+        const request = new paypal.orders.OrdersCreateRequest();
+        request.prefer("return=representation");
+        request.requestBody({
+          intent: 'CAPTURE',
+          purchase_units: [{
+            description: `MyStartup.AI - ${packageInfo.name} Package (${packageInfo.credits} credits)`,
+            amount: {
+              currency_code: 'USD',
+              value: packageInfo.priceUSD.toFixed(2),
+            },
+            custom_id: `USER:${userId}|PACKAGE:${packageType}`,
+          }],
+          application_context: {
+            brand_name: 'MyStartup.AI',
+            shipping_preference: 'NO_SHIPPING',
+            user_action: 'PAY_NOW',
+          },
+        });
+
+        // Execute PayPal request
+        const client = getPayPalClient();
+        const order = await client.execute(request);
+
+        console.log('Created PayPal order:', {
+          userId,
+          packageType,
+          orderId: order.result.id,
+          amount: packageInfo.priceUSD,
+        });
+
+        res.json({
+          orderId: order.result.id,
+          packageType,
+          amount: packageInfo.priceUSD,
+          credits: packageInfo.credits,
+        });
+      } catch (error) {
+        console.error("Error creating PayPal order:", error);
+        
+        // Check if PayPal credentials are missing
+        if (error instanceof Error && error.message.includes('not configured')) {
+          return res.status(500).json({ 
+            message: "Payment system not configured",
+          });
+        }
+        
+        res.status(500).json({ 
+          message: "Failed to create PayPal order",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // POST /api/payments/paypal/capture
+  app.post("/api/payments/paypal/capture",
+    requireAuth,
+    advancedRateLimit(10, 15 * 60 * 1000), // 10 requests per 15 minutes
+    body('orderId').isString().notEmpty().withMessage('Order ID is required'),
+    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { orderId, packageType } = req.body;
+
+        // Check if order was already processed (prevent double-capture)
+        const existingTransaction = await storage.getCreditTransactionBySignature(orderId);
+        if (existingTransaction) {
+          return res.status(400).json({ 
+            message: "Order already processed",
+            status: 'already_processed'
+          });
+        }
+
+        // Get package details
+        const packageInfo = CREDIT_PACKAGES[packageType as keyof typeof CREDIT_PACKAGES];
+        if (!packageInfo) {
+          return res.status(400).json({ message: "Invalid package type" });
+        }
+
+        // Capture PayPal order
+        const request = new paypal.orders.OrdersCaptureRequest(orderId);
+        request.requestBody({});
+
+        const client = getPayPalClient();
+        const capture = await client.execute(request);
+
+        // Verify order status
+        if (capture.result.status !== 'COMPLETED') {
+          return res.status(400).json({ 
+            message: `Payment not completed. Status: ${capture.result.status}`,
+            status: 'payment_incomplete'
+          });
+        }
+
+        // Verify amount matches package price
+        const capturedAmount = parseFloat(
+          capture.result.purchase_units[0].payments.captures[0].amount.value
+        );
+        
+        if (Math.abs(capturedAmount - packageInfo.priceUSD) > 0.01) {
+          console.error('Amount mismatch:', {
+            expected: packageInfo.priceUSD,
+            received: capturedAmount,
+          });
+          return res.status(400).json({ 
+            message: "Payment amount mismatch",
+            status: 'amount_mismatch'
+          });
+        }
+
+        // Verify user ID from custom_id
+        const customId = capture.result.purchase_units[0].custom_id;
+        if (customId && !customId.includes(`USER:${userId}`)) {
+          console.error('User ID mismatch in custom_id:', {
+            expected: userId,
+            customId,
+          });
+          return res.status(400).json({ 
+            message: "Order does not belong to this user",
+            status: 'user_mismatch'
+          });
+        }
+
+        // All validations passed - allocate credits
+        await storage.addCredits(
+          userId,
+          packageInfo.credits,
+          `Purchased ${packageInfo.name} package via PayPal`,
+          {
+            transactionHash: orderId,
+            paymentMethod: PAYMENT_METHODS.PAYPAL,
+            paymentAmount: capturedAmount.toString(),
+            currency: 'USD',
+            paymentStatus: PAYMENT_STATUS.COMPLETED,
+          }
+        );
+
+        console.log('PayPal payment captured and credits allocated:', {
+          userId,
+          orderId,
+          packageType,
+          credits: packageInfo.credits,
+          amount: capturedAmount,
+        });
+
+        res.json({
+          message: "Payment captured and credits allocated successfully",
+          status: 'completed',
+          credits: packageInfo.credits,
+          orderId,
+          amount: capturedAmount,
+        });
+      } catch (error) {
+        console.error("Error capturing PayPal payment:", error);
+        
+        // Handle specific PayPal errors
+        if (error instanceof Error) {
+          if (error.message.includes('not configured')) {
+            return res.status(500).json({ 
+              message: "Payment system not configured",
+              status: 'error'
+            });
+          }
+          if (error.message.includes('RESOURCE_NOT_FOUND')) {
+            return res.status(404).json({ 
+              message: "Order not found",
+              status: 'not_found'
+            });
+          }
+          if (error.message.includes('ORDER_ALREADY_CAPTURED')) {
+            return res.status(400).json({ 
+              message: "Order already captured",
+              status: 'already_captured'
+            });
+          }
+        }
+        
+        res.status(500).json({ 
+          message: "Failed to capture PayPal payment",
+          status: 'error',
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
 
   const httpServer = createServer(app);
   return httpServer;

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   LayoutDashboard,
   User,
@@ -26,7 +27,9 @@ import {
   Presentation,
   Calculator,
   BarChart3,
-  Plus
+  Plus,
+  Coins,
+  AlertTriangle
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -67,6 +70,13 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
     retry: 1,
     staleTime: 0,
     gcTime: 0,
+  });
+
+  // Fetch credit balance
+  const { data: creditBalance, isLoading: creditsLoading } = useQuery<{ credits: number; transactions: any[] }>({
+    queryKey: ["/api/credits/balance"],
+    enabled: !!user,
+    refetchInterval: 30000,
   });
 
   // Debug logging
@@ -311,6 +321,90 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       {/* Footer - User Profile & Controls */}
       <div className={`border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 ${collapsed ? "p-2" : "p-4"} space-y-3`}>
         
+        {/* Credit Balance Display */}
+        {!collapsed && user && (
+          <Link href="/purchase-credits">
+            <div 
+              className={`p-3 rounded-lg cursor-pointer transition-all duration-200 border ${
+                creditBalance && creditBalance.credits < 100
+                  ? "bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/20"
+                  : "bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/20"
+              }`}
+              data-testid="credit-balance-display"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className={`p-2 rounded-lg ${
+                    creditBalance && creditBalance.credits < 100
+                      ? "bg-amber-100 dark:bg-amber-900/30"
+                      : "bg-blue-100 dark:bg-blue-900/30"
+                  }`}>
+                    <Coins className={`h-4 w-4 ${
+                      creditBalance && creditBalance.credits < 100
+                        ? "text-amber-700 dark:text-amber-400"
+                        : "text-blue-700 dark:text-blue-400"
+                    }`} />
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">Credits</div>
+                    {creditsLoading ? (
+                      <Skeleton className="h-5 w-16 mt-1" />
+                    ) : (
+                      <div className={`text-lg font-bold ${
+                        creditBalance && creditBalance.credits < 100
+                          ? "text-amber-700 dark:text-amber-400"
+                          : "text-blue-700 dark:text-blue-400"
+                      }`}>
+                        {creditBalance?.credits?.toLocaleString() || 0}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {creditBalance && creditBalance.credits < 100 && (
+                  <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                )}
+              </div>
+              {creditBalance && creditBalance.credits < 100 && (
+                <div className="mt-2 text-xs text-amber-700 dark:text-amber-400 font-medium flex items-center">
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  Low credits - Purchase more
+                </div>
+              )}
+            </div>
+          </Link>
+        )}
+
+        {collapsed && user && (
+          <Link href="/purchase-credits">
+            <div 
+              className={`p-2 rounded-lg cursor-pointer transition-all duration-200 border flex flex-col items-center ${
+                creditBalance && creditBalance.credits < 100
+                  ? "bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800"
+                  : "bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800"
+              }`}
+              title={`${creditBalance?.credits || 0} credits`}
+              data-testid="credit-balance-collapsed"
+            >
+              <Coins className={`h-5 w-5 ${
+                creditBalance && creditBalance.credits < 100
+                  ? "text-amber-700 dark:text-amber-400"
+                  : "text-blue-700 dark:text-blue-400"
+              }`} />
+              {creditsLoading ? (
+                <Skeleton className="h-4 w-8 mt-1" />
+              ) : (
+                <div className={`text-xs font-bold mt-1 ${
+                  creditBalance && creditBalance.credits < 100
+                    ? "text-amber-700 dark:text-amber-400"
+                    : "text-blue-700 dark:text-blue-400"
+                }`}>
+                  {creditBalance?.credits || 0}
+                </div>
+              )}
+            </div>
+          </Link>
+        )}
+
         {/* User Profile Section */}
         {!collapsed && user && (
           <div className="flex items-center space-x-3 pb-3 border-b border-gray-200 dark:border-gray-700" data-testid="profile-section">

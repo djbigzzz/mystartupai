@@ -37,6 +37,7 @@ import AIShowcase from "@/pages/ai-showcase";
 import MVPBuilder from "@/pages/mvp-builder";
 import InvestorMatching from "@/pages/investor-matching";
 import MarketResearchPage from "@/pages/market-research";
+import PurchaseCreditsPage from "@/pages/purchase-credits";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -72,6 +73,7 @@ function Router() {
       <Route path="/mvp-builder" component={MVPBuilder} />
       <Route path="/investor-matching" component={InvestorMatching} />
       <Route path="/market-research" component={MarketResearchPage} />
+      <Route path="/purchase-credits" component={PurchaseCreditsPage} />
       <Route component={NotFound} />
     </Switch>
   );

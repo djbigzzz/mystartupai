@@ -18,6 +18,7 @@ import {
   quests,
   userQuests,
   dailyCheckins,
+  creditTransactions,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -56,6 +57,8 @@ import {
   type InsertUserQuest,
   type DailyCheckin,
   type InsertDailyCheckin,
+  type CreditTransaction,
+  type InsertCreditTransaction,
 } from "@shared/schema";
 import { db, withRetryRead } from "./db";
 import { eq, and, desc, sql } from "drizzle-orm";
@@ -172,6 +175,15 @@ export interface IStorage {
   completeQuest(userId: number, questId: number): Promise<UserQuest | undefined>;
   claimQuest(userId: number, questId: number): Promise<{ xp: number; points: number }>;
   resetUserQuests(userId: number, period: string): Promise<void>;
+  
+  // Credit operations
+  getUserCredits(userId: number): Promise<number>;
+  addCredits(userId: number, amount: number, description: string, paymentDetails?: Partial<CreditTransaction>): Promise<CreditTransaction>;
+  deductCredits(userId: number, amount: number, description: string, featureUsed?: string, relatedIdeaId?: number): Promise<CreditTransaction>;
+  getCreditTransactions(userId: number, limit?: number): Promise<CreditTransaction[]>;
+  getCreditTransaction(id: number): Promise<CreditTransaction | undefined>;
+  getCreditTransactionBySignature(signature: string): Promise<CreditTransaction | undefined>;
+  getCreditBalance(userId: number): Promise<{ credits: number; transactions: CreditTransaction[] }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -978,6 +990,101 @@ export class DatabaseStorage implements IStorage {
       longestStreak,
       totalXpFromCheckins
     };
+  }
+
+  // Credit operations
+  async getUserCredits(userId: number): Promise<number> {
+    const user = await this.getUser(userId);
+    return user?.credits ?? 0;
+  }
+
+  async addCredits(userId: number, amount: number, description: string, paymentDetails?: Partial<CreditTransaction>): Promise<CreditTransaction> {
+    // Get current user credits
+    const currentCredits = await this.getUserCredits(userId);
+    const newBalance = currentCredits + amount;
+
+    // Update user credits
+    await db.update(users)
+      .set({ credits: newBalance })
+      .where(eq(users.id, userId));
+
+    // Create transaction record
+    const [transaction] = await db.insert(creditTransactions)
+      .values({
+        userId,
+        type: 'purchase',
+        amount,
+        balance: newBalance,
+        description,
+        ...paymentDetails,
+      })
+      .returning();
+
+    return transaction;
+  }
+
+  async deductCredits(userId: number, amount: number, description: string, featureUsed?: string, relatedIdeaId?: number): Promise<CreditTransaction> {
+    // Get current user credits
+    const currentCredits = await this.getUserCredits(userId);
+    
+    if (currentCredits < amount) {
+      throw new Error(`Insufficient credits. You have ${currentCredits} credits but need ${amount}.`);
+    }
+
+    const newBalance = currentCredits - amount;
+
+    // Update user credits
+    await db.update(users)
+      .set({ credits: newBalance })
+      .where(eq(users.id, userId));
+
+    // Create transaction record
+    const [transaction] = await db.insert(creditTransactions)
+      .values({
+        userId,
+        type: 'usage',
+        amount: -amount, // Negative for deductions
+        balance: newBalance,
+        description,
+        featureUsed,
+        relatedIdeaId,
+      })
+      .returning();
+
+    return transaction;
+  }
+
+  async getCreditTransactions(userId: number, limit?: number): Promise<CreditTransaction[]> {
+    const query = db.select()
+      .from(creditTransactions)
+      .where(eq(creditTransactions.userId, userId))
+      .orderBy(desc(creditTransactions.createdAt));
+
+    if (limit) {
+      return await query.limit(limit);
+    }
+
+    return await query;
+  }
+
+  async getCreditTransaction(id: number): Promise<CreditTransaction | undefined> {
+    const [transaction] = await db.select()
+      .from(creditTransactions)
+      .where(eq(creditTransactions.id, id));
+    return transaction || undefined;
+  }
+
+  async getCreditTransactionBySignature(signature: string): Promise<CreditTransaction | undefined> {
+    const [transaction] = await db.select()
+      .from(creditTransactions)
+      .where(eq(creditTransactions.transactionHash, signature));
+    return transaction || undefined;
+  }
+
+  async getCreditBalance(userId: number): Promise<{ credits: number; transactions: CreditTransaction[] }> {
+    const credits = await this.getUserCredits(userId);
+    const transactions = await this.getCreditTransactions(userId, 10); // Last 10 transactions
+    return { credits, transactions };
   }
 }
 
