@@ -7,10 +7,11 @@ export const CREDIT_PACKAGES = {
     priceUSD: 0,
     priceSol: 0,
     features: [
-      "200 credits",
+      "200 credits/month",
       "1 Business Plan OR 1 Pitch Deck",
-      "Limited AI analysis",
-      "Basic market research"
+      "Basic AI analysis",
+      "Community access (view-only)",
+      "Standard export (PDF)"
     ]
   },
   BASIC: {
@@ -20,11 +21,14 @@ export const CREDIT_PACKAGES = {
     priceUSD: 29,
     priceSol: 0.15, // ~$29 at $200/SOL (will be calculated dynamically)
     features: [
-      "2,000 credits",
-      "10 Business Plans",
-      "12 Pitch Decks",
+      "2,000 credits/month",
+      "~10 Business Plans",
+      "~12 Pitch Decks",
       "Full AI analysis",
-      "Advanced market research"
+      "Advanced market research",
+      "Community forums access",
+      "Export formats (PDF, DOCX)",
+      "Email support"
     ]
   },
   PRO: {
@@ -34,11 +38,14 @@ export const CREDIT_PACKAGES = {
     priceUSD: 79,
     priceSol: 0.40, // ~$79 at $200/SOL (will be calculated dynamically)
     features: [
-      "7,000 credits",
-      "35 Business Plans",
-      "43 Pitch Decks",
+      "7,000 credits/month",
+      "~35 Business Plans",
+      "~43 Pitch Decks",
       "Full AI analysis",
       "Premium market research",
+      "Priority email support",
+      "Early access to new features",
+      "All export formats",
       "Coming soon: MVP builder",
       "Coming soon: Investor matching"
     ]
