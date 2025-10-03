@@ -16,6 +16,11 @@ export const users = pgTable("users", {
   walletAddressEthereum: text("wallet_address_ethereum").unique(),
   authMethod: text("auth_method").default("email"), // email, google, phantom, metamask, walletconnect
 
+  // Credit and payment system
+  credits: integer("credits").default(200), // Start with 200 free credits (Freemium tier)
+  stripeCustomerId: text("stripe_customer_id"),
+  paypalCustomerId: text("paypal_customer_id"),
+
   avatar: text("avatar"),
   emailVerified: boolean("email_verified").default(false),
   onboardingCompleted: boolean("onboarding_completed").default(false),
@@ -565,5 +570,37 @@ export const insertDailyCheckinSchema = createInsertSchema(dailyCheckins).omit({
 
 export type DailyCheckin = typeof dailyCheckins.$inferSelect;
 export type InsertDailyCheckin = z.infer<typeof insertDailyCheckinSchema>;
+
+// Credit transactions table for payment and usage history
+export const creditTransactions = pgTable("credit_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  type: text("type").notNull(), // "purchase", "usage", "refund", "bonus"
+  amount: integer("amount").notNull(), // Positive for purchases, negative for usage
+  balance: integer("balance").notNull(), // Balance after transaction
+  description: text("description").notNull(),
+  
+  // Payment details (for purchases)
+  paymentMethod: text("payment_method"), // "solana", "paypal", "stripe", "bonus"
+  paymentAmount: decimal("payment_amount", { precision: 10, scale: 2 }), // USD amount paid
+  currency: text("currency").default("USD"), // USD, SOL, USDC
+  transactionHash: text("transaction_hash"), // Solana transaction signature
+  paymentStatus: text("payment_status").default("completed"), // pending, completed, failed, refunded
+  
+  // Feature usage tracking (for usage transactions)
+  featureUsed: text("feature_used"), // "business_plan", "pitch_deck", "market_research"
+  relatedIdeaId: integer("related_idea_id").references(() => startupIdeas.id),
+  
+  metadata: jsonb("metadata"), // Additional data
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCreditTransactionSchema = createInsertSchema(creditTransactions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type CreditTransaction = typeof creditTransactions.$inferSelect;
+export type InsertCreditTransaction = z.infer<typeof insertCreditTransactionSchema>;
 
 
