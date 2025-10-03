@@ -395,7 +395,7 @@ export default function PurchaseCreditsPage() {
                 Complete Your Purchase
               </DialogTitle>
               <DialogDescription>
-                {selectedPackage && CREDIT_PACKAGES[selectedPackage].name} Package • {CREDIT_PACKAGES[selectedPackage].credits.toLocaleString()} credits
+                {selectedPackage && `${CREDIT_PACKAGES[selectedPackage].name} Package • ${CREDIT_PACKAGES[selectedPackage].credits.toLocaleString()} credits`}
               </DialogDescription>
             </DialogHeader>
 
