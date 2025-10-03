@@ -24,8 +24,7 @@ export const CREDIT_PACKAGES = {
       "10 Business Plans",
       "12 Pitch Decks",
       "Full AI analysis",
-      "Advanced market research",
-      "Priority support"
+      "Advanced market research"
     ]
   },
   PRO: {
@@ -38,12 +37,10 @@ export const CREDIT_PACKAGES = {
       "7,000 credits",
       "35 Business Plans",
       "43 Pitch Decks",
-      "Unlimited AI analysis",
+      "Full AI analysis",
       "Premium market research",
-      "MVP builder access",
-      "Investor matching",
-      "Priority support",
-      "1-on-1 consultation"
+      "Coming soon: MVP builder",
+      "Coming soon: Investor matching"
     ]
   }
 } as const;
