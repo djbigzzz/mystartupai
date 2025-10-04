@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Sparkles, Mail, Chrome, ArrowRight, Eye, EyeOff, CheckCircle, XCircle, AlertCircle, Loader2, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
@@ -15,6 +17,7 @@ export default function AppEntry() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -115,7 +118,7 @@ export default function AppEntry() {
 
   // Email signup/login mutation
   const authMutation = useMutation({
-    mutationFn: async (data: { email: string; password: string; name?: string }) => {
+    mutationFn: async (data: { email: string; password: string; name?: string; rememberMe?: boolean }) => {
       const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
       return apiRequest(endpoint, {
         method: "POST",
@@ -139,20 +142,38 @@ export default function AppEntry() {
     onError: (error: any) => {
       console.error("Authentication error:", error);
       let errorMessage = error.message || "Please try again.";
+      let showForgotPasswordLink = false;
       
-      // Handle specific validation errors
+      // Handle specific validation errors with better messaging
       if (error.message && error.message.includes("Password must")) {
         errorMessage = "Please check your password meets all requirements above.";
       } else if (error.message && error.message.includes("User already exists")) {
         errorMessage = "An account with this email already exists. Try logging in instead.";
+        // Switch to login tab
+        setIsSignUp(false);
+      } else if (error.message && error.message.includes("email or password")) {
+        errorMessage = error.message;
+        showForgotPasswordLink = true;
       } else if (error.message && error.message.includes("email")) {
         errorMessage = "Please enter a valid email address.";
+      } else if (error.message && error.message.includes("Too many")) {
+        errorMessage = "Too many login attempts. Please wait a few minutes and try again.";
       }
       
       toast({
-        title: "Authentication failed",
+        title: isSignUp ? "Sign up failed" : "Login failed",
         description: errorMessage,
         variant: "destructive",
+        ...(showForgotPasswordLink && {
+          action: (
+            <button 
+              onClick={() => setShowForgotPassword(true)}
+              className="text-sm underline"
+            >
+              Reset password
+            </button>
+          )
+        })
       });
     },
   });
@@ -274,6 +295,7 @@ export default function AppEntry() {
       email,
       password,
       ...(isSignUp && { name }),
+      ...(!isSignUp && { rememberMe }),
     });
   };
 
@@ -693,12 +715,27 @@ export default function AppEntry() {
               )}
 
               {!isSignUp && (
-                <div className="text-right">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="remember-me" 
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                      data-testid="checkbox-remember-me"
+                    />
+                    <Label 
+                      htmlFor="remember-me" 
+                      className="text-sm font-normal cursor-pointer"
+                    >
+                      Remember me for 30 days
+                    </Label>
+                  </div>
                   <Button
                     type="button"
                     variant="link"
                     className="text-sm text-primary hover:underline p-0 h-auto"
                     onClick={() => setShowForgotPassword(true)}
+                    data-testid="link-forgot-password"
                   >
                     Forgot your password?
                   </Button>

@@ -320,7 +320,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         if (!user) {
           console.log('❌ Login failed:', info?.message || 'Invalid credentials');
-          return res.status(401).json({ message: info?.message || 'Invalid credentials' });
+          // Better error message for users
+          return res.status(401).json({ 
+            message: 'The email or password you entered is incorrect. Please try again or reset your password.',
+            suggestion: 'forgot_password' 
+          });
+        }
+        
+        // Remember me functionality - extend session if requested
+        const rememberMe = req.body.rememberMe === true;
+        if (rememberMe && req.session) {
+          req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
         }
         
         req.logIn(user, (err) => {
@@ -328,7 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error('❌ Session creation failed:', err);
             return next(err);
           }
-          console.log('✅ Login successful for user:', user.id, user.email);
+          console.log('✅ Login successful for user:', user.id, user.email, rememberMe ? '(remembered)' : '');
           const cleanUser = cleanUserDataForResponse(user);
           res.json({ user: cleanUser });
         });
@@ -586,20 +596,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Send password reset email
         const emailSent = await emailService.sendPasswordResetEmail(sanitizedEmail, resetToken);
         
-        if (emailSent) {
-          res.json({ 
-            message: "Password reset email sent! Check your inbox for the reset link.",
-            emailSent: true
-          });
-        } else {
-          // If email service isn't configured, provide the reset link directly
-          res.json({ 
-            message: "Email service not configured. Use this link to reset your password:",
-            resetLink: `https://mystartup.ai/app?reset=${resetToken}`,
-            resetToken: resetToken,
-            emailSent: false
-          });
-        }
+        // SECURITY: Always return the same response regardless of email service status
+        // Never expose the actual reset token in the API response
+        res.json({ 
+          message: "If an account with that email exists, we've sent a password reset link.",
+          emailSent: emailSent
+        });
 
       } catch (error) {
         console.error("Forgot password error:", error);
