@@ -1144,10 +1144,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         
         if (userCredits < requiredCredits) {
           return res.status(402).json({ 
-            message: `Insufficient credits. You need ${requiredCredits} credits to generate ${featureName}.`,
-            required: requiredCredits,
-            current: userCredits,
-            shortfall: requiredCredits - userCredits
+            message: `You don't have enough credits to generate ${featureName}. Please purchase more credits to continue.`,
+            current: userCredits
           });
         }
         
