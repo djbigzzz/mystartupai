@@ -98,6 +98,7 @@
     "react-icons": "^5.4.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
+    "resend": "^6.1.2",
     "siwe": "^3.0.0",
     "stripe": "^19.1.0",
     "tailwind-merge": "^2.6.0",
