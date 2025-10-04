@@ -34,10 +34,36 @@ export async function apiRequest(
     console.log(`API Request to ${url}:`, { method: fetchOptions.method || 'GET' });
   }
 
-  const res = await fetch(url, fetchOptions);
+  try {
+    const res = await fetch(url, fetchOptions);
 
-  await throwIfResNotOk(res);
-  return await res.json();
+    // Check content type before parsing
+    const contentType = res.headers.get('content-type');
+    
+    // Throw error if response is not ok
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`${res.status}: ${text}`);
+    }
+    
+    // Check if response is JSON before parsing
+    if (contentType && contentType.includes('application/json')) {
+      return await res.json();
+    } else {
+      // If not JSON, read as text and throw error
+      const text = await res.text();
+      console.error('Unexpected response type:', contentType, 'URL:', url, 'Body preview:', text.substring(0, 200));
+      throw new Error(`Expected JSON response but got ${contentType || 'unknown'}. The API endpoint may not exist or is misconfigured.`);
+    }
+  } catch (error) {
+    // If it's already our custom error, rethrow it
+    if (error instanceof Error && error.message.includes('Expected JSON')) {
+      throw error;
+    }
+    // Otherwise wrap it
+    console.error('API Request failed:', error);
+    throw error;
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

@@ -120,10 +120,18 @@ export default function AppEntry() {
   const authMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; name?: string; rememberMe?: boolean }) => {
       const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
-      return apiRequest(endpoint, {
-        method: "POST",
-        body: data
-      } as RequestInit & { body?: any });
+      console.log('Auth mutation starting:', { endpoint, isSignUp, method: 'POST' });
+      try {
+        const result = await apiRequest(endpoint, {
+          method: "POST",
+          body: data
+        } as RequestInit & { body?: any });
+        console.log('Auth mutation succeeded');
+        return result;
+      } catch (error) {
+        console.error('Auth mutation failed:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       // Invalidate auth queries to refresh user data
