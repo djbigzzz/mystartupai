@@ -18,6 +18,7 @@ export const users = pgTable("users", {
 
   // Credit and payment system
   credits: integer("credits").default(200), // Start with 200 free credits (Freemium tier)
+  currentPlan: text("current_plan").default("FREEMIUM"), // FREEMIUM, BASIC, PRO
   stripeCustomerId: text("stripe_customer_id"),
   paypalCustomerId: text("paypal_customer_id"),
 

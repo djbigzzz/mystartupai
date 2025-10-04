@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft } from "lucide-react";
+import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft, Coins, CreditCard, TrendingUp } from "lucide-react";
+import { CREDIT_PACKAGES } from "@shared/constants";
 
 interface UserProfile {
   id: number;
@@ -22,6 +23,8 @@ interface UserProfile {
   authMethod: string | null;
   avatar: string | null;
   emailVerified: boolean;
+  credits: number;
+  currentPlan: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -52,6 +55,12 @@ export default function Profile() {
   const { data: user, isLoading } = useQuery<UserProfile>({
     queryKey: ["/api/auth/me"],
     retry: false,
+  });
+
+  // Fetch credit balance and transactions
+  const { data: creditData } = useQuery<{ credits: number; transactions: any[] }>({
+    queryKey: ["/api/credits/balance"],
+    enabled: !!user,
   });
 
   // Update profile mutation
@@ -290,6 +299,12 @@ export default function Profile() {
                   <p className="text-muted-foreground">@{user.username || `user${user.id}`}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <Badge variant="secondary">{getAccountType()}</Badge>
+                    <Badge variant="default" className="bg-gradient-to-r from-blue-600 to-purple-600">
+                      <CreditCard className="w-3 h-3 mr-1" />
+                      {user.currentPlan === 'FREEMIUM' && 'Free Plan'}
+                      {user.currentPlan === 'BASIC' && 'Basic Plan'}
+                      {user.currentPlan === 'PRO' && 'Pro Plan'}
+                    </Badge>
                     {user.emailVerified && (
                       <Badge variant="outline" className="text-green-600">
                         <Shield className="w-3 h-3 mr-1" />
@@ -330,10 +345,11 @@ export default function Profile() {
 
         {/* Profile Management Tabs */}
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="wallet">Wallet</TabsTrigger>
+            <TabsTrigger value="usage">Usage</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
           </TabsList>
 
@@ -590,6 +606,123 @@ export default function Profile() {
                     </Button>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Usage Tab - Manus Style */}
+          <TabsContent value="usage">
+            <Card>
+              <CardHeader>
+                <CardTitle>Usage & Credits</CardTitle>
+                <CardDescription>
+                  Track your credit usage and view transaction history
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Current Plan Section */}
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold">
+                        {user.currentPlan === 'FREEMIUM' && 'Free'}
+                        {user.currentPlan === 'BASIC' && 'Basic'}
+                        {user.currentPlan === 'PRO' && 'Pro'}
+                      </h3>
+                      <Badge variant="secondary" className="text-xs">Current Plan</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {user.currentPlan === 'FREEMIUM' && '200 credits/month'}
+                      {user.currentPlan === 'BASIC' && '2,000 credits/month'}
+                      {user.currentPlan === 'PRO' && '7,000 credits/month'}
+                    </p>
+                  </div>
+                  {user.currentPlan !== 'PRO' && (
+                    <Button 
+                      size="sm"
+                      onClick={() => window.location.href = '/purchase-credits'}
+                      data-testid="button-upgrade"
+                    >
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Upgrade
+                    </Button>
+                  )}
+                </div>
+
+                {/* Credits Section */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <Coins className="w-5 h-5" />
+                    Credits
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
+                        <Coins className="w-4 h-4" />
+                        Available Credits
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {creditData?.credits?.toLocaleString() || user.credits?.toLocaleString() || 0}
+                      </div>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <div className="text-sm text-muted-foreground mb-1">Daily Refresh Credits</div>
+                      <div className="text-2xl font-bold">0</div>
+                      <p className="text-xs text-muted-foreground mt-1">Monthly refresh on 1st</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Transaction History */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Transaction History</h3>
+                  {creditData?.transactions && creditData.transactions.length > 0 ? (
+                    <div className="border rounded-lg overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-muted">
+                            <tr>
+                              <th className="text-left p-3 font-medium">Description</th>
+                              <th className="text-left p-3 font-medium">Date</th>
+                              <th className="text-right p-3 font-medium">Credits</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {creditData.transactions.slice(0, 10).map((transaction: any, idx: number) => (
+                              <tr key={idx} className="border-t hover:bg-muted/50">
+                                <td className="p-3">{transaction.description || transaction.featureType}</td>
+                                <td className="p-3 text-muted-foreground">
+                                  {new Date(transaction.createdAt).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </td>
+                                <td className={`p-3 text-right font-medium ${
+                                  transaction.amount > 0 ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  {transaction.amount > 0 ? '+' : ''}{transaction.amount}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 border rounded-lg bg-muted/30">
+                      <Coins className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-50" />
+                      <p className="text-muted-foreground">No transaction history yet</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Your credit usage will appear here
+                      </p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
