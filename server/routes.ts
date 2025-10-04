@@ -1632,40 +1632,6 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   });
 
-  // Legacy authentication routes (will be replaced by Passport routes)
-  app.post("/api/auth/signup", async (req, res) => {
-    try {
-      const { name, email, password } = req.body;
-      
-      if (!name || !email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
-      }
-
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-
-      // Hash password with bcrypt
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const user = await storage.createUser({
-        email,
-        name,
-        password: hashedPassword,
-        emailVerified: false
-      });
-
-      // Set session
-      (req.session as any).userId = user.id;
-
-      res.json({ id: user.id, email: user.email, name: user.name });
-    } catch (error) {
-      console.error("Signup error:", error);
-      res.status(500).json({ message: "Failed to create account" });
-    }
-  });
 
   app.post("/api/auth/login-legacy", async (req, res) => {
     try {
