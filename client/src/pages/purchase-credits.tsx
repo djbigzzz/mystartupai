@@ -18,7 +18,6 @@ declare global {
       isPhantom?: boolean;
       connect(): Promise<{ publicKey: { toString(): string } }>;
       disconnect(): Promise<void>;
-      signTransaction(transaction: any): Promise<any>;
       signMessage(message: Uint8Array): Promise<{ signature: Uint8Array }>;
       publicKey?: { toString(): string };
     };
@@ -74,7 +73,7 @@ export default function PurchaseCreditsPage() {
       return await apiRequest('/api/payments/solana/create-payment', {
         method: 'POST',
         body: data,
-      });
+      } as RequestInit & { body?: any });
     },
     onSuccess: (data) => {
       setPaymentRequest(data);
@@ -96,7 +95,7 @@ export default function PurchaseCreditsPage() {
       return await apiRequest('/api/payments/solana/verify', {
         method: 'POST',
         body: data,
-      });
+      } as RequestInit & { body?: any });
     },
     onSuccess: () => {
       toast({
@@ -230,8 +229,8 @@ export default function PurchaseCreditsPage() {
     };
   }, []);
 
-  const currentBalance = balanceData?.balance || 0;
-  const transactions = (historyData?.transactions || []) as CreditTransaction[];
+  const currentBalance = (balanceData as any)?.balance || 0;
+  const transactions = ((historyData as any)?.transactions || []) as CreditTransaction[];
 
   const packageIcons = {
     FREEMIUM: Sparkles,
@@ -285,8 +284,8 @@ export default function PurchaseCreditsPage() {
                   <CardTitle className="text-2xl">{pkg.name}</CardTitle>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold">${pkg.priceUSD}</span>
-                    {!isFreemium && pkg.solPrice && (
-                      <span className="text-sm text-muted-foreground">≈{pkg.solPrice} SOL</span>
+                    {!isFreemium && pkg.priceSol > 0 && (
+                      <span className="text-sm text-muted-foreground">≈{pkg.priceSol} SOL</span>
                     )}
                   </div>
                   <CardDescription className="text-lg font-semibold text-foreground">
