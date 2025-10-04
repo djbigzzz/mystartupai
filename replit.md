@@ -4,6 +4,13 @@
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
 ## Recent Changes
+- **Resend Email Service Integration** (Oct 4, 2025): Professional transactional email service now active
+  - **Password Reset Emails**: Secure reset links sent via Resend instead of console logs
+  - **Security Enhancement**: Reset tokens no longer exposed in API responses - only sent via email
+  - **Welcome Emails**: New users receive branded welcome emails with platform overview
+  - **Remember Me Feature**: Users can opt for 30-day sessions on trusted devices via checkbox
+  - **Better Error Messages**: Login failures show helpful messages without revealing account existence
+  - **Email Service**: Using Resend API with re_* key for reliable email delivery
 - **Solana Pay Exclusive Focus** (Oct 3, 2025): Paused PayPal integration to focus solely on Solana Pay testing
   - **Removed PayPal UI**: Eliminated tabs and PayPal payment options from Purchase Credits page
   - **Streamlined Modal**: Payment modal now shows only Solana Pay options (SOL/USDC)
