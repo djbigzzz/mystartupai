@@ -414,7 +414,7 @@ export default function AppEntry() {
                       const challenge = await challengeResponse.json();
 
                       // Step 2: Create message to sign
-                      const messageToSign = `MyStartup.ai wants you to sign in with your Solana account:\n${walletAddress}\n\nNonce: ${challenge.nonce}\nIssued At: ${new Date().toISOString()}`;
+                      const messageToSign = `MyStartup.ai wants you to sign in with your Solana account:\nAddress: ${walletAddress}\n\nNonce: ${challenge.nonce}\nIssued At: ${new Date().toISOString()}`;
                       const encodedMessage = new TextEncoder().encode(messageToSign);
 
                       // Step 3: Sign message with wallet
