@@ -422,7 +422,7 @@ export default function AppEntry() {
                       const signature = btoa(String.fromCharCode(...signedMessage.signature));
 
                       // Step 4: Send signature to backend for verification
-                      const authResponse = await fetch(isSignUp ? "/api/auth/wallet-signup" : "/api/auth/wallet-signin", {
+                      const authResponse = await fetch("/api/auth/wallet-signin", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
