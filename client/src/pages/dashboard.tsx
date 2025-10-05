@@ -14,7 +14,10 @@ import {
   CheckCircle,
   Download,
   Clock,
-  Bell
+  Bell,
+  CreditCard,
+  Crown,
+  Zap
 } from "lucide-react";
 import { Link } from "wouter";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
@@ -31,6 +34,8 @@ interface User {
   avatar: string | null;
   emailVerified: boolean;
   onboardingCompleted: boolean;
+  credits: number;
+  currentPlan: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -158,12 +163,28 @@ export default function Dashboard() {
   }
 
 
+  const getPlanBadge = (plan: string) => {
+    const planColors = {
+      FREEMIUM: { bg: 'bg-gray-100', text: 'text-gray-800', border: 'border-gray-300', icon: Zap },
+      BASIC: { bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-300', icon: CreditCard },
+      PRO: { bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-300', icon: Crown }
+    };
+    const config = planColors[plan as keyof typeof planColors] || planColors.FREEMIUM;
+    const IconComponent = config.icon;
+    return (
+      <div className={`inline-flex items-center px-3 py-1 rounded-full border ${config.bg} ${config.text} ${config.border}`}>
+        <IconComponent className="w-4 h-4 mr-1" />
+        <span className="font-semibold text-sm">{plan}</span>
+      </div>
+    );
+  };
+
   const renderDashboardOverview = () => (
     <div className="space-y-6">
-      {/* Welcome Header */}
+      {/* Welcome Header with Subscription Info */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-4 text-white">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold" data-testid="text-welcome-user">
               Welcome back, {user?.name || 'Entrepreneur'}!
             </h1>
@@ -171,14 +192,61 @@ export default function Dashboard() {
               {ideaData ? `Working on: ${(ideaData as any).ideaTitle}` : 'Ready to build your startup?'}
             </p>
           </div>
-          <Link href="/export">
-            <Button variant="outline" className="text-blue-600 border-white hover:bg-white/10" size="sm" data-testid="button-export">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            {/* Credits Display */}
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30">
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5" />
+                <div>
+                  <p className="text-xs text-blue-100">Credits</p>
+                  <p className="text-lg font-bold" data-testid="text-credits-balance">{user?.credits || 0}</p>
+                </div>
+              </div>
+            </div>
+            {/* Plan Display */}
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30">
+              <div className="flex items-center gap-2">
+                {user?.currentPlan === 'PRO' ? <Crown className="w-5 h-5" /> : <CreditCard className="w-5 h-5" />}
+                <div>
+                  <p className="text-xs text-blue-100">Plan</p>
+                  <p className="text-sm font-bold" data-testid="text-current-plan">{user?.currentPlan || 'FREEMIUM'}</p>
+                </div>
+              </div>
+            </div>
+            <Link href="/purchase-credits">
+              <Button variant="outline" className="bg-white text-blue-600 border-white hover:bg-blue-50" size="sm" data-testid="button-upgrade">
+                <Crown className="w-4 h-4 mr-2" />
+                Upgrade
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
+
+      {/* Subscription Info Card (if on freemium) */}
+      {user?.currentPlan === 'FREEMIUM' && (
+        <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-purple-100 rounded-full p-3">
+                  <Crown className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Unlock Premium Features</h3>
+                  <p className="text-sm text-gray-600">Upgrade to Basic or Pro for more credits and advanced tools</p>
+                </div>
+              </div>
+              <Link href="/purchase-credits">
+                <Button className="bg-purple-600 hover:bg-purple-700" data-testid="button-view-plans">
+                  View Plans
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Simple Step Indicators Only - No detailed analysis content */}
       <Card data-testid="card-workflow-steps">
