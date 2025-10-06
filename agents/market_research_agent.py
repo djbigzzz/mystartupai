@@ -147,7 +147,36 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
         elif isinstance(item, TextContent):
             ctx.logger.info(f"💬 Text message from {sender}: {item.text}")
             
-            # Check if this is a market research request
+            # Check if this is an agent-to-agent request
+            if item.text.startswith("AGENT_REQUEST:"):
+                ctx.logger.info(f"🤝 Received agent-to-agent request from {sender}")
+                parts = item.text.split(":", 2)
+                if len(parts) >= 3:
+                    request_id = parts[1]
+                    startup_idea = parts[2]
+                    
+                    ctx.logger.info(f"📊 Processing agent request {request_id} for: {startup_idea[:100]}")
+                    
+                    # Perform market research
+                    result = await perform_market_research(startup_idea)
+                    
+                    if result.get("success"):
+                        data = result.get("data", {})
+                        analysis = data.get('analysis', 'Analysis completed')
+                        response_msg = create_text_chat(
+                            f"AGENT_RESPONSE:{request_id}:SUCCESS:{analysis}"
+                        )
+                    else:
+                        error_msg = result.get("message", "Analysis failed")
+                        response_msg = create_text_chat(
+                            f"AGENT_RESPONSE:{request_id}:ERROR:{error_msg}"
+                        )
+                    
+                    ctx.logger.info(f"✅ Sending agent-to-agent response for request {request_id}")
+                    await ctx.send(sender, response_msg)
+                    continue
+            
+            # Regular user request
             startup_idea = item.text
             
             # Send processing message
