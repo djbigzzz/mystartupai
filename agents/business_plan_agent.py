@@ -151,7 +151,72 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
     # Process message content
     for item in msg.content:
         if isinstance(item, TextContent):
-            user_input = item.text.strip()
+            text_content = item.text.strip()
+            
+            # Check if this is an agent response (by format, not just sender)
+            # The sender might be a session-specific address, not the base agent address
+            if text_content.startswith("AGENT_RESPONSE:"):
+                ctx.logger.info(f"📬 Received agent-to-agent response from {sender}")
+                
+                # Parse the response to extract request_id and market research data
+                parts = text_content.split(":", 3)
+                if len(parts) >= 4:
+                    request_id = parts[1]
+                    status = parts[2]
+                    data = parts[3] if len(parts) > 3 else ""
+                    
+                    ctx.logger.info(f"📊 Processing market research response for request {request_id}")
+                    
+                    # Find the pending request
+                    if request_id in pending_requests:
+                        request_data = pending_requests[request_id]
+                        user_address = request_data["user_address"]
+                        startup_idea = request_data["startup_idea"]
+                        
+                        if status == "SUCCESS":
+                            # Compile business plan using backend
+                            ctx.logger.info(f"✅ Market research successful, generating business plan...")
+                            
+                            # Now call backend to compile full business plan
+                            result = await generate_business_plan(startup_idea)
+                            
+                            if result.get("success"):
+                                plan_data = result.get("data", {})
+                                response_msg = create_text_chat(
+                                    f"📋 **Business Plan Generated Successfully!**\n\n"
+                                    f"**Startup Idea:** {startup_idea}\n\n"
+                                    f"**Market Research (from Market Research Agent):**\n"
+                                    f"{data[:500]}...\n\n"
+                                    f"**Business Plan:**\n"
+                                    f"{plan_data.get('business_plan', 'Plan generation in progress...')}\n\n"
+                                    f"_Generated via Multi-Agent Collaboration:_\n"
+                                    f"_1. Market Research Agent → Market Analysis_\n"
+                                    f"_2. Business Plan Agent → Complete Business Plan_"
+                                )
+                            else:
+                                response_msg = create_text_chat(
+                                    f"⚠️ Market research completed, but business plan generation failed:\n\n"
+                                    f"{result.get('message', 'Unknown error')}"
+                                )
+                            
+                            await ctx.send(user_address, response_msg)
+                            
+                        else:
+                            # Market research failed
+                            error_msg = create_text_chat(
+                                f"❌ Market Research Agent returned an error:\n\n{data}"
+                            )
+                            await ctx.send(user_address, error_msg)
+                        
+                        # Clean up pending request
+                        del pending_requests[request_id]
+                        ctx.logger.info(f"🧹 Cleaned up pending request {request_id}")
+                    else:
+                        ctx.logger.warning(f"⚠️ Received response for unknown request {request_id}")
+                continue
+            
+            # Handle user messages
+            user_input = text_content
             ctx.logger.info(f"💬 User says: {user_input}")
             
             # Check for help/greeting
@@ -237,69 +302,8 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
             
             await ctx.send(MARKET_RESEARCH_AGENT_ADDRESS, research_request)
             
-            # Note: Response will be handled in a separate message handler
+            # Note: Response will be handled by the agent response handler above
             ctx.logger.info(f"✅ Request sent to Market Research Agent (request_id: {request_id})")
-        
-        # Check if this is a response from Market Research Agent
-        elif isinstance(item, TextContent) and sender == MARKET_RESEARCH_AGENT_ADDRESS:
-            response_text = item.text
-            ctx.logger.info(f"📬 Received response from Market Research Agent")
-            
-            # Parse the response to extract request_id and market research data
-            if response_text.startswith("AGENT_RESPONSE:"):
-                parts = response_text.split(":", 3)
-                if len(parts) >= 4:
-                    request_id = parts[1]
-                    status = parts[2]
-                    data = parts[3] if len(parts) > 3 else ""
-                    
-                    ctx.logger.info(f"📊 Processing market research response for request {request_id}")
-                    
-                    # Find the pending request
-                    if request_id in pending_requests:
-                        request_data = pending_requests[request_id]
-                        user_address = request_data["user_address"]
-                        startup_idea = request_data["startup_idea"]
-                        
-                        if status == "SUCCESS":
-                            # Compile business plan using backend
-                            ctx.logger.info(f"✅ Market research successful, generating business plan...")
-                            
-                            # Now call backend to compile full business plan
-                            result = await generate_business_plan(startup_idea)
-                            
-                            if result.get("success"):
-                                data = result.get("data", {})
-                                response_msg = create_text_chat(
-                                    f"📋 **Business Plan Generated Successfully!**\n\n"
-                                    f"**Startup Idea:** {startup_idea}\n\n"
-                                    f"**Market Research (from Market Research Agent):**\n"
-                                    f"{data.get('market_analysis', 'Analysis in progress...')}\n\n"
-                                    f"**Business Plan:**\n"
-                                    f"{data.get('business_plan', 'Plan generation in progress...')}\n\n"
-                                    f"_Generated via Multi-Agent Collaboration:_\n"
-                                    f"_1. Market Research Agent → Market Analysis_\n"
-                                    f"_2. Business Plan Agent → Complete Business Plan_"
-                                )
-                            else:
-                                response_msg = create_text_chat(
-                                    f"⚠️ Market research completed, but business plan generation failed:\n\n"
-                                    f"{result.get('message', 'Unknown error')}"
-                                )
-                            
-                            await ctx.send(user_address, response_msg)
-                            
-                        else:
-                            # Market research failed
-                            error_msg = create_text_chat(
-                                f"❌ Market Research Agent returned an error:\n\n{data}"
-                            )
-                            await ctx.send(user_address, error_msg)
-                        
-                        # Clean up pending request
-                        del pending_requests[request_id]
-                        ctx.logger.info(f"🧹 Cleaned up pending request {request_id}")
-            
         
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"👋 Session ended with {sender}")

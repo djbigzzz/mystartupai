@@ -47,12 +47,22 @@ Both agents are **ASI:One Compatible** ✅
 - Supports conversational interactions
 - Provides structured market research outputs
 
-## How It Works
+## How It Works - Multi-Agent Collaboration
 
-1. **User Input**: Receives startup idea via chat
-2. **Analysis**: Performs market research using OpenAI GPT-4
-3. **Output**: Returns structured market insights
-4. **Collaboration**: Can share data with other agents (Business Plan, Pitch Deck, etc.)
+### User → Business Plan Agent Flow:
+1. **User sends startup idea** to Business Plan Agent via ASI:One Chat
+2. **Business Plan Agent** receives the idea and validates it
+3. **Agent-to-Agent Communication**: Business Plan Agent sends `AGENT_REQUEST` to Market Research Agent
+4. **Market Research Agent** performs AI analysis and responds with `AGENT_RESPONSE`
+5. **Business Plan Agent** compiles the market research into a complete business plan
+6. **User receives** comprehensive business plan with integrated market analysis
+
+### Direct User → Market Research Agent Flow:
+1. **User sends startup idea** to Market Research Agent via ASI:One Chat
+2. **Market Research Agent** performs AI-powered market analysis
+3. **User receives** detailed market research insights
+
+This demonstrates **true autonomous agent orchestration** where agents communicate directly with each other, not just through a shared backend.
 
 ## Setup & Installation
 
@@ -112,6 +122,27 @@ These agents are part of the **MyStartup.ai** ecosystem, a Solana-native AI star
 - Multi-agent orchestration ✅
 - Chat Protocol integration ✅
 - Autonomous agent collaboration ✅
+
+## Agent-to-Agent Communication Protocol
+
+The multi-agent system uses a simple message-based protocol:
+
+**Request Format (Business Plan → Market Research):**
+```
+AGENT_REQUEST:<request_id>:<startup_idea>
+```
+
+**Response Format (Market Research → Business Plan):**
+```
+AGENT_RESPONSE:<request_id>:SUCCESS:<analysis_data>
+AGENT_RESPONSE:<request_id>:ERROR:<error_message>
+```
+
+This protocol enables:
+- ✅ Asynchronous agent coordination
+- ✅ Request/response correlation via unique IDs
+- ✅ Error handling across agent boundaries
+- ✅ Scalable multi-agent workflows
 
 ## Demo
 
