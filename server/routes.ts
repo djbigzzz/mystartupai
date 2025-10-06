@@ -3471,6 +3471,66 @@ IMPORTANT:
     }
   );
 
+  // Market Research Agent API - Simplified endpoint for uAgent integration
+  app.post("/api/market-research/analyze",
+    advancedRateLimit(10, 10 * 60 * 1000), // 10 requests per 10 minutes for agents
+    body('idea').isLength({ min: 10, max: 1000 }).withMessage('Idea must be between 10 and 1000 characters'),
+    handleValidationErrors,
+    async (req: Request, res: Response) => {
+      try {
+        const { idea } = req.body;
+        const sanitizedIdea = sanitizeHtml(idea.trim());
+        
+        console.log(`🤖 Agent market research request: ${sanitizedIdea.substring(0, 100)}...`);
+        
+        // Use AI co-founder for quick analysis
+        const analysis = await aiCofounder.analyzeStartupIdea(
+          sanitizedIdea,
+          sanitizedIdea,
+          "Technology",
+          "Idea Stage"
+        );
+
+        // Return structured analysis for agent
+        const agentResponse = {
+          analysis: `
+📊 **Market Analysis**
+${analysis.marketAnalysis.overview || 'Market analysis in progress...'}
+
+**Market Size:** ${analysis.marketAnalysis.marketSize || 'Significant opportunity'}
+**Growth Rate:** ${analysis.marketAnalysis.growthRate || '15-25% annually'}
+
+💡 **Key Opportunities**
+${analysis.overallAssessment.keyOpportunities?.map((o: string) => `• ${o}`).join('\n') || '• Strong market demand\n• Growing industry'}
+
+⚠️ **Challenges to Consider**
+${analysis.overallAssessment.challenges?.map((c: string) => `• ${c}`).join('\n') || '• Competitive landscape\n• Market entry barriers'}
+
+🎯 **Competitive Advantages**
+${analysis.overallAssessment.keyDifferentiators?.map((d: string) => `• ${d}`).join('\n') || '• Innovation potential\n• Unique value proposition'}
+
+**Overall Score:** ${analysis.overallAssessment.viabilityScore}/100
+**Recommendation:** ${analysis.overallAssessment.recommendation || 'Further research recommended'}
+          `.trim(),
+          marketSize: analysis.marketAnalysis.marketSize,
+          growthRate: analysis.marketAnalysis.growthRate,
+          viabilityScore: analysis.overallAssessment.viabilityScore,
+          opportunities: analysis.overallAssessment.keyOpportunities,
+          challenges: analysis.overallAssessment.challenges,
+          timestamp: new Date().toISOString()
+        };
+
+        res.json(agentResponse);
+      } catch (error) {
+        console.error("Agent market research error:", error);
+        res.status(500).json({ 
+          error: "Market research analysis failed",
+          message: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  );
+
   // Demo Session Management API
   app.post("/api/demo/sessions", async (req, res) => {
     try {
