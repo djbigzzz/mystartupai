@@ -4,6 +4,14 @@
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
 ## Recent Changes
+- **ASI Alliance Agent Integration** (Oct 6, 2025): Dual-track hackathon strategy with autonomous AI agents
+  - **Market Research Agent**: Built with Fetch.ai uAgents framework for ASI Alliance hackathon
+  - **Chat Protocol**: Full ASI:One compatibility for agent discovery and interaction
+  - **Agent Architecture**: Python-based autonomous agent communicates with Express backend
+  - **Backend API**: New `/api/market-research/analyze` endpoint for agent integration
+  - **Multi-Agent Ready**: Architecture supports future Business Plan, Pitch Deck, and Investor Matching agents
+  - **Innovation Lab**: Properly categorized and documented for ASI Alliance compliance
+  - **Dual Strategy**: Pursuing both Colosseum (Solana) and ASI Alliance hackathons with same platform
 - **Resend Email Service Integration** (Oct 4, 2025): Professional transactional email service now active
   - **Password Reset Emails**: Secure reset links sent via Resend instead of console logs
   - **Security Enhancement**: Reset tokens no longer exposed in API responses - only sent via email

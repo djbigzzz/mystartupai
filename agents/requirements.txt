@@ -1,5 +1,4 @@
 uagents==0.22.9
 uagents-core==0.3.9
-requests==2.32.5
-aiohttp==3.12.15
+httpx==0.28.1
 pydantic==2.11.10

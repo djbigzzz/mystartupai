@@ -9,7 +9,7 @@ It integrates with the MyStartup.ai platform and is discoverable via ASI:One.
 from datetime import datetime
 from uuid import uuid4
 import os
-import requests
+import httpx
 from uagents import Agent, Context, Protocol
 from uagents_core.contrib.protocols.chat import (
     ChatAcknowledgement,
@@ -38,7 +38,10 @@ chat_proto = Protocol(spec=chat_protocol_spec)
 
 def create_text_chat(text: str, end_session: bool = False) -> ChatMessage:
     """Create a ChatMessage with text content"""
-    content = [TextContent(type="text", text=text)]
+    from typing import cast, List
+    from uagents_core.contrib.protocols.chat import AgentContent
+    
+    content: List[AgentContent] = cast(List[AgentContent], [TextContent(type="text", text=text)])
     return ChatMessage(
         timestamp=datetime.utcnow(),
         msg_id=uuid4(),
@@ -50,30 +53,70 @@ async def perform_market_research(idea: str) -> dict:
     """
     Perform market research analysis using OpenAI API
     This connects to the existing MyStartup.ai backend logic
+    Uses async HTTP client for non-blocking operation
     """
-    try:
-        # Call the MyStartup.ai backend API for market research
-        response = requests.post(
-            f"{BACKEND_URL}/api/market-research/analyze",
-            json={"idea": idea},
-            headers={"Content-Type": "application/json"},
-            timeout=30
-        )
-        
-        if response.status_code == 200:
-            return response.json()
-        else:
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            # Call the MyStartup.ai backend API for market research
+            response = await client.post(
+                f"{BACKEND_URL}/api/market-research/analyze",
+                json={"idea": idea},
+                headers={"Content-Type": "application/json"},
+            )
+            
+            if response.status_code == 200:
+                return {
+                    "success": True,
+                    "data": response.json()
+                }
+            elif response.status_code == 429:
+                # Rate limit error
+                return {
+                    "success": False,
+                    "error_type": "rate_limit",
+                    "message": "Too many requests. Please wait a moment and try again."
+                }
+            elif response.status_code == 400:
+                # Validation error
+                error_data = response.json()
+                return {
+                    "success": False,
+                    "error_type": "validation",
+                    "message": f"Invalid input: {error_data.get('message', 'Please check your startup idea')}"
+                }
+            elif response.status_code >= 500:
+                # Server error
+                return {
+                    "success": False,
+                    "error_type": "server",
+                    "message": "Analysis service is temporarily unavailable. Please try again in a moment."
+                }
+            else:
+                # Other errors
+                return {
+                    "success": False,
+                    "error_type": "unknown",
+                    "message": f"Unexpected error (code: {response.status_code}). Please try again."
+                }
+                
+        except httpx.TimeoutException:
             return {
-                "error": f"Backend API error: {response.status_code}",
-                "fallback": True
+                "success": False,
+                "error_type": "timeout",
+                "message": "Analysis is taking longer than expected. Your idea may be too complex - try simplifying it."
             }
-    except Exception as e:
-        # Fallback: Direct OpenAI call if backend is unavailable
-        return {
-            "error": str(e),
-            "message": "Market research analysis requires backend connection",
-            "fallback": True
-        }
+        except httpx.ConnectError:
+            return {
+                "success": False,
+                "error_type": "connection",
+                "message": "Cannot connect to analysis service. The backend may be offline."
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error_type": "unexpected",
+                "message": f"An unexpected error occurred: {str(e)}"
+            }
 
 
 @chat_proto.on_message(ChatMessage)
@@ -116,19 +159,41 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
             # Perform market research
             result = await perform_market_research(startup_idea)
             
-            if result.get("fallback"):
-                response_text = (
-                    "⚠️ I'm having trouble connecting to the main analysis engine. "
-                    "Please try again or contact support."
-                )
+            if not result.get("success"):
+                # Handle different error types with specific messages
+                error_type = result.get("error_type", "unknown")
+                error_msg = result.get("message", "An error occurred")
+                
+                error_icons = {
+                    "rate_limit": "⏱️",
+                    "validation": "⚠️",
+                    "server": "🔧",
+                    "timeout": "⏰",
+                    "connection": "🔌",
+                    "unexpected": "❌"
+                }
+                
+                icon = error_icons.get(error_type, "⚠️")
+                response_text = f"{icon} **Error:** {error_msg}"
+                
+                # Add helpful tips based on error type
+                if error_type == "rate_limit":
+                    response_text += "\n\n💡 **Tip:** Try again in a few minutes."
+                elif error_type == "validation":
+                    response_text += "\n\n💡 **Tip:** Make sure your startup idea is clear and detailed (10-1000 characters)."
+                elif error_type == "timeout":
+                    response_text += "\n\n💡 **Tip:** Break your idea into smaller parts or make it more concise."
+                elif error_type == "connection":
+                    response_text += "\n\n💡 **Tip:** The MyStartup.ai backend may be offline. Contact support if this persists."
             else:
-                # Format the market research results
+                # Success: Format the market research results
+                data = result.get("data", {})
                 response_text = (
-                    f"📊 Market Research Analysis Complete!\n\n"
+                    f"📊 **Market Research Analysis Complete!**\n\n"
                     f"**Startup Idea:** {startup_idea}\n\n"
                     f"**Analysis Results:**\n"
-                    f"{result.get('analysis', 'Analysis in progress...')}\n\n"
-                    f"Generated by MyStartup.ai Market Research Agent"
+                    f"{data.get('analysis', 'Analysis in progress...')}\n\n"
+                    f"_Generated by MyStartup.ai Market Research Agent_"
                 )
             
             # Send results
