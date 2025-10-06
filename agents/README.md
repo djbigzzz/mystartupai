@@ -1,31 +1,46 @@
-# MyStartup.ai Market Research Agent
+# MyStartup.ai Multi-Agent System
 
 ![tag:innovationlab](https://img.shields.io/badge/innovationlab-3D8BD3)
 ![tag:hackathon](https://img.shields.io/badge/hackathon-5F43F1)
+![tag:multi-agent](https://img.shields.io/badge/multi--agent-FF6B6B)
 
 ## Overview
 
-The **Market Research Agent** is an autonomous AI agent that performs intelligent market analysis for startup ideas. Built for the ASI Alliance hackathon, it leverages the Fetch.ai uAgents framework and integrates with the MyStartup.ai platform.
+The **MyStartup.ai Multi-Agent System** demonstrates autonomous agent orchestration for startup development. Built for the ASI Alliance hackathon, it showcases **two specialized agents** working together to help entrepreneurs build better businesses.
 
-## Agent Details
+## Agents
 
+### 1. Market Research Agent
 - **Name**: `market_research_agent`
-- **Address**: _(Will be generated after Agentverse deployment)_
-- **Port**: 8001
+- **Port**: 8000
+- **Function**: Analyzes startup ideas, provides market insights
 - **Chat Protocol**: Enabled ✅
-- **ASI:One Compatible**: Yes ✅
+
+### 2. Business Plan Agent
+- **Name**: `business_plan_agent`
+- **Port**: 8001
+- **Function**: Generates comprehensive business plans
+- **Chat Protocol**: Enabled ✅
+- **Coordinates with**: Market Research Agent
+
+Both agents are **ASI:One Compatible** ✅
 
 ## Features
+
+🤝 **Multi-Agent Orchestration**
+- Business Plan Agent coordinates with Market Research Agent
+- Demonstrates autonomous agent collaboration
+- Shared backend for unified AI analysis
 
 🔍 **Intelligent Market Analysis**
 - Analyzes startup ideas using AI-powered insights
 - Provides competitive landscape analysis
 - Identifies market opportunities and challenges
 
-🤝 **Multi-Agent Communication**
-- Communicates with other MyStartup.ai agents
-- Shares insights across the agent ecosystem
-- Supports agent-to-agent collaboration
+📋 **Comprehensive Business Plans**
+- Generates executive summaries
+- Creates financial projections
+- Develops go-to-market strategies
 
 💬 **Natural Language Interface**
 - Accessible via ASI:One Chat Protocol
@@ -51,22 +66,30 @@ The **Market Research Agent** is an autonomous AI agent that performs intelligen
 ### Install Dependencies
 
 ```bash
-pip install uagents requests
+pip install -r requirements.txt
 ```
 
 ### Environment Variables
 
-Create a `.env` file:
+Create a `.env` file (see `.env.example`):
 
 ```env
-OPENAI_API_KEY=your_openai_key_here
 BACKEND_URL=http://localhost:5000
+AGENTVERSE_MAILBOX_KEY=your_mailbox_key_here
+MARKET_RESEARCH_AGENT_SEED=mystartup_market_research_secret
+BUSINESS_PLAN_AGENT_SEED=mystartup_business_plan_secret
 ```
 
-### Run the Agent
+### Run the Agents
 
+**Terminal 1 - Market Research Agent:**
 ```bash
 python agents/market_research_agent.py
+```
+
+**Terminal 2 - Business Plan Agent:**
+```bash
+python agents/business_plan_agent.py
 ```
 
 ## Agentverse Deployment
@@ -78,12 +101,17 @@ python agents/market_research_agent.py
 
 ## Integration with MyStartup.ai
 
-This agent is part of the **MyStartup.ai** ecosystem, a Solana-native AI startup accelerator. It works alongside:
+These agents are part of the **MyStartup.ai** ecosystem, a Solana-native AI startup accelerator competing in **two hackathons simultaneously**:
 
-- Business Plan Agent
-- Pitch Deck Agent  
-- Financial Modeling Agent
-- Investor Matching Agent
+### Colosseum Hackathon (Solana)
+- Solana wallet authentication
+- Credit-based subscriptions
+- Solana Pay integration
+
+### ASI Alliance Hackathon  
+- Multi-agent orchestration ✅
+- Chat Protocol integration ✅
+- Autonomous agent collaboration ✅
 
 ## Demo
 
@@ -101,7 +129,8 @@ _(Video demo link will be added after recording)_
 
 ```
 agents/
-├── market_research_agent.py    # Main agent code
+├── market_research_agent.py    # Market Research Agent
+├── business_plan_agent.py       # Business Plan Agent
 ├── README.md                    # This file
 └── requirements.txt             # Python dependencies
 ```
