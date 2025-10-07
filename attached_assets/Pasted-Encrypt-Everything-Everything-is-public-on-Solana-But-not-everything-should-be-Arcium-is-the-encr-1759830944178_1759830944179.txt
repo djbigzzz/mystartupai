@@ -1,0 +1,93 @@
+Encrypt Everything
+Everything is public on Solana. But not everything should be. Arcium is the encrypted supercomputer, bringing encrypted compute to any application or use case at Solana speed and scale. Arcium opens a completely new design space for onchain apps, where privacy can be integrated in the most versatile and performant way. We're excited to see what you build with Arcium for the Cypherpunk hackathon and <encrypted> Side Track!
+
+Mission
+Integrate Arcium's encrypted compute into a new or existing Solana project. 
+
+Hackathon Track Scope
+
+We're looking for innovative applications that leverage Arcium's capabilities. Here are some product ideas that could be particularly interesting:
+
+Dark Pools / Private Trading: Create a trading venue where orders remain hidden until execution, preventing front-running and MEV.
+
+Permissionless, Fair Prediction & Opinion Markets: Develop markets where information remains private, ensuring fair play and preventing manipulation.
+
+Private Perpetuals: Implement perpetual contracts with encrypted parameters to enhance privacy for traders.
+
+Private Lending & Borrowing: Build lending and borrowing protocols where sensitive user data or transaction details are kept confidential.
+
+Hidden-Information Games: Create games like Dark Forest, Blackjack, Poker, or even concepts from games like Fortnite, CS:GO, Diablo, or Zelda, where certain information needs to be hidden from players or observers to ensure fair gameplay. This could include hidden states, player positions, or other game-critical data.
+
+Apps with MPC-generated randomness: Cards, slots, and other use cases need randomness to ensure fairness.
+
+We just launched Phase 2 of our Testnet with the biggest suite of encrypted apps on Solana. Join the growing ecosystem now! Explore here: https://www.arcium.com/testnet
+
+Reward Structure
+1st Place: 8000 USDC
+
+2nd Place: 5000 USDC
+
+3rd Place: 3500 USDC
+
+4th Place: 2000 USDC
+
+5th Place: 1500 USDC
+
+
+Winners will also have the chance to receive hands-on engineering and GTM marekt support directly from the Arcium team to launch their app on Mainnet Alpha. 
+
+Timeline
+
+Build: Colosseum Hackathon duration (until October 30)
+
+Create your Arcium-powered application.
+
+Submit: By October 30
+
+Submit your project through Superteam Earn
+
+Prizes: November
+
+Winners will be announced after review and judging, with prizes paid out after.
+
+Submission Requirements
+A functional Solana project integrated with Arcium.
+
+A clear explanation of how Arcium is used and the privacy benefits it provides.
+
+The project must be submitted through Superteam's platform.
+
+The Github repo can be open or closed source. For closed source submissions, please share access with arihant@arcium.com.
+
+Submission must be in English.
+
+Judging Criteria
+Innovation: How new or unique is the application of encrypted compute?
+
+Technical Implementation: Quality of code, effective integration of Arcium, and overall functionality.
+
+Impact: The potential real-world impact or utility of the project.
+
+Clarity: How well the project's purpose and Arcium's role are explained.
+
+Resources
+Arcium is the encrypted supercomputer, enabling encrypted compute at the speed of light, bringing privacy to every use case that needs it — with zero trust. Now, public blockchains like Solana can access encrypted computing, enabling programs to define specific functions to be executed in a fully encrypted way. This redefines blockchain capability, providing a new fabric for onchain applications to process sensitive data while opening the door for privacy-sensitive institutions and offchain use cases. 
+
+Key material:
+Website
+
+Blog
+
+Documentation
+
+Arcium Purple Paper
+
+Deep Dive
+
+Privacy 2.0 (Co-written with Helius)
+
+Public Arcium Research Papers
+
+Crypto's New Whitespace: WTF is MPC, FHE, and TEE?
+
+Do All Roads Lead To MPC?
