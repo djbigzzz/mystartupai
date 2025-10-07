@@ -30,7 +30,10 @@ import {
   Plus,
   Coins,
   AlertTriangle,
-  Lock
+  Lock,
+  Crown,
+  CreditCard,
+  Zap
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -52,6 +55,7 @@ interface User {
   username: string | null;
   avatar: string | null;
   emailVerified: boolean;
+  currentPlan: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -362,8 +366,17 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
               <div className="text-sm font-semibold text-gray-900 dark:text-white truncate" data-testid="text-user-name">
                 {user.name || 'User'}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-email">
-                {user.email || 'No email'}
+              <div className="flex items-center gap-1 mt-0.5">
+                {user.currentPlan === 'PRO' ? (
+                  <Crown className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                ) : user.currentPlan === 'BASIC' ? (
+                  <CreditCard className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                ) : (
+                  <Zap className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                )}
+                <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-plan">
+                  {user.currentPlan || 'FREEMIUM'} Plan
+                </div>
               </div>
             </div>
             <Button

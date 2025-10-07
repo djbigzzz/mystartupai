@@ -4,6 +4,13 @@
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
 ## Recent Changes
+- **UI Information Architecture Cleanup** (Oct 7, 2025): Streamlined dashboard to reduce redundancy and improve user experience
+  - **Removed Credits from Banner**: Credits now only displayed in Purchase Credits and usage pages - cleaner top banner
+  - **Consolidated Plan Info**: Plan display moved from top-right header to sidebar profile section with plan-specific icons
+  - **Removed Top-Right Profile**: Eliminated redundant user profile section from header - all info now in sidebar footer
+  - **Sidebar Profile Enhancement**: Shows avatar, name, and plan (with Crown/CreditCard/Zap icons) with logout button
+  - **Cleaner Navigation**: Simplified top header to show only Dashboard/Profile tabs and notification button
+  - **Information Hierarchy**: Critical user information centralized in single, consistent location
 - **Sanctum Gateway Integration Complete** (Oct 7, 2025): Full integration with Sanctum Gateway for $10K bounty
   - **Gateway Service** (`server/gateway-service.ts`): Complete API wrapper with optimizeTransaction, sendTransaction, and status checking
   - **API Endpoints**: Three production-ready endpoints at `/api/gateway/*` (status, transaction lookup, history)

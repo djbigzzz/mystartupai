@@ -192,34 +192,12 @@ export default function Dashboard() {
               {ideaData ? `Working on: ${(ideaData as any).ideaTitle}` : 'Ready to build your startup?'}
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Credits Display */}
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30">
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5" />
-                <div>
-                  <p className="text-xs text-blue-100">Credits</p>
-                  <p className="text-lg font-bold" data-testid="text-credits-balance">{user?.credits || 0}</p>
-                </div>
-              </div>
-            </div>
-            {/* Plan Display */}
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/30">
-              <div className="flex items-center gap-2">
-                {user?.currentPlan === 'PRO' ? <Crown className="w-5 h-5" /> : <CreditCard className="w-5 h-5" />}
-                <div>
-                  <p className="text-xs text-blue-100">Plan</p>
-                  <p className="text-sm font-bold" data-testid="text-current-plan">{user?.currentPlan || 'FREEMIUM'}</p>
-                </div>
-              </div>
-            </div>
-            <Link href="/purchase-credits">
-              <Button variant="outline" className="bg-white text-blue-600 border-white hover:bg-blue-50" size="sm" data-testid="button-upgrade">
-                <Crown className="w-4 h-4 mr-2" />
-                Upgrade
-              </Button>
-            </Link>
-          </div>
+          <Link href="/purchase-credits">
+            <Button variant="outline" className="bg-white text-blue-600 border-white hover:bg-blue-50" size="sm" data-testid="button-upgrade">
+              <Crown className="w-4 h-4 mr-2" />
+              Upgrade
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -416,22 +394,6 @@ export default function Dashboard() {
                 <Button variant="ghost" size="sm" data-testid="button-notifications-header">
                   <Bell className="h-4 w-4" />
                 </Button>
-                <div className="flex items-center space-x-2 sm:space-x-3 pl-2 sm:pl-3 border-l border-gray-200 dark:border-gray-700">
-                  <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
-                    <AvatarImage src={user?.avatar || undefined} />
-                    <AvatarFallback className="text-sm font-semibold">
-                      {user?.name?.split(' ').map((n: string) => n[0]).join('') || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-sm min-w-0 hidden lg:block">
-                    <p className="font-semibold text-gray-900 dark:text-white truncate" data-testid="text-header-user-name">
-                      {user?.name || 'User'}
-                    </p>
-                    <p className="text-gray-500 dark:text-gray-400 text-xs" data-testid="text-header-plan">
-                      Pro Plan
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
