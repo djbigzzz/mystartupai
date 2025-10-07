@@ -81,25 +81,52 @@ pip install -r requirements.txt
 
 ### Environment Variables
 
-Create a `.env` file (see `.env.example`):
+**Required:**
+- `AGENTVERSE_MAILBOX_KEY` - Your Agentverse mailbox key (already configured in Replit secrets)
+- `MARKET_RESEARCH_AGENT_ADDRESS` - Address of Market Research Agent (auto-set by start_agents.sh)
 
-```env
-BACKEND_URL=http://localhost:5000
-AGENTVERSE_MAILBOX_KEY=your_mailbox_key_here
-MARKET_RESEARCH_AGENT_SEED=mystartup_market_research_secret
-BUSINESS_PLAN_AGENT_SEED=mystartup_business_plan_secret
-```
+**Optional:**
+- `BACKEND_URL` - MyStartup.ai backend URL (default: http://localhost:5000)
+- `MARKET_RESEARCH_AGENT_SEED` - Seed for Market Research Agent (default: mystartup_market_research_secret)
+- `BUSINESS_PLAN_AGENT_SEED` - Seed for Business Plan Agent (default: mystartup_business_plan_secret)
+
+**Note:** When using `start_agents.sh`, all configuration is handled automatically.
 
 ### Run the Agents
 
+**Quick Start (Recommended):**
+```bash
+./agents/start_agents.sh
+```
+
+This script automatically:
+- Sets the Market Research Agent address for Business Plan Agent
+- Starts both agents with proper configuration
+- Handles graceful shutdown with Ctrl+C
+
+**Manual Start (Alternative):**
+
+If you need to start agents individually, first compute the Market Research Agent address:
+
+```bash
+cd agents
+# Get the Market Research Agent address
+python -c "from uagents import Agent; agent = Agent(name='market_research_agent', seed='mystartup_market_research_seed_phrase', port=8001); print(agent.address)"
+```
+
+Then start the agents:
+
 **Terminal 1 - Market Research Agent:**
 ```bash
-python agents/market_research_agent.py
+cd agents
+python market_research_agent.py
 ```
 
 **Terminal 2 - Business Plan Agent:**
 ```bash
-python agents/business_plan_agent.py
+cd agents
+export MARKET_RESEARCH_AGENT_ADDRESS="<address_from_above>"
+python business_plan_agent.py
 ```
 
 ## Agentverse Deployment

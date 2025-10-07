@@ -43,7 +43,6 @@ pending_requests = {}
 
 # Initialize the chat protocol
 chat_proto = Protocol(spec=chat_protocol_spec)
-agent.include(chat_proto)
 
 @agent.on_event("startup")
 async def startup(ctx: Context):
@@ -317,6 +316,16 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
                 "Come back anytime for more insights!"
             )
             await ctx.send(sender, goodbye_msg)
+
+
+@chat_proto.on_message(ChatAcknowledgement)
+async def handle_acknowledgement(ctx: Context, sender: str, msg: ChatAcknowledgement):
+    """Handle acknowledgements for sent messages"""
+    ctx.logger.info(f"✅ Message acknowledged by {sender}: {msg.acknowledged_msg_id}")
+
+
+# Include the chat protocol and publish manifest to Agentverse
+agent.include(chat_proto, publish_manifest=True)
 
 
 if __name__ == "__main__":
