@@ -49,6 +49,7 @@ import { createTransfer, encodeURL, parseURL } from '@solana/pay';
 import BigNumber from 'bignumber.js';
 import { CREDIT_PACKAGES, PAYMENT_METHODS, PAYMENT_STATUS, CREDIT_COSTS } from '@shared/constants';
 import paypal from '@paypal/checkout-server-sdk';
+import { gatewayService } from "./gateway-service";
 
 // Helper function to parse AI analysis for profile form
 function parseAIAnalysisForProfile(analysis: any) {
@@ -4730,6 +4731,130 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
       }
     }
   );
+
+  // Sanctum Gateway Integration Endpoints
+  
+  // GET /api/gateway/status - Check Gateway configuration
+  app.get("/api/gateway/status", requireAuth, async (req, res) => {
+    try {
+      const isConfigured = gatewayService.isConfigured();
+      const network = process.env.SOLANA_NETWORK || 'devnet';
+      const metrics = gatewayService.getMetrics();
+      
+      res.json({
+        configured: isConfigured,
+        network,
+        message: isConfigured 
+          ? 'Gateway is configured and ready' 
+          : 'Gateway API key not configured',
+        metrics: {
+          optimize: {
+            attempts: metrics.optimizeAttempts,
+            successes: metrics.optimizeSuccesses,
+            failures: metrics.optimizeFailures,
+            successRate: metrics.optimizeAttempts > 0 
+              ? ((metrics.optimizeSuccesses / metrics.optimizeAttempts) * 100).toFixed(1) + '%'
+              : 'N/A'
+          },
+          send: {
+            attempts: metrics.sendAttempts,
+            successes: metrics.sendSuccesses,
+            failures: metrics.sendFailures,
+            successRate: metrics.sendAttempts > 0 
+              ? ((metrics.sendSuccesses / metrics.sendAttempts) * 100).toFixed(1) + '%'
+              : 'N/A'
+          },
+          performance: {
+            averageLatencyMs: metrics.averageLatencyMs
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error checking Gateway status:", error);
+      // Sanitized error response
+      res.status(500).json({ 
+        message: "Unable to retrieve Gateway status",
+        code: 'STATUS_CHECK_FAILED'
+      });
+    }
+  });
+
+  // GET /api/gateway/transaction/:signature - Get transaction status via Gateway
+  app.get("/api/gateway/transaction/:signature",
+    requireAuth,
+    advancedRateLimit(30, 60000), // 30 requests per minute
+    async (req, res) => {
+      try {
+        const { signature } = req.params;
+
+        if (!signature || signature.length < 32) {
+          return res.status(400).json({ 
+            message: "Invalid transaction signature",
+            code: 'INVALID_SIGNATURE'
+          });
+        }
+
+        if (!gatewayService.isConfigured()) {
+          return res.status(503).json({ 
+            message: "Gateway not configured",
+            code: 'GATEWAY_NOT_CONFIGURED'
+          });
+        }
+
+        const status = await gatewayService.getTransactionStatus(signature);
+        
+        res.json({
+          signature,
+          status,
+          via: 'gateway'
+        });
+      } catch (error) {
+        console.error("Error fetching transaction via Gateway:", error);
+        // Sanitize error - don't expose Gateway internals
+        res.status(500).json({ 
+          message: "Unable to fetch transaction status",
+          code: 'TRANSACTION_LOOKUP_FAILED'
+        });
+      }
+    }
+  );
+
+  // GET /api/gateway/transactions - Get recent Gateway transactions (from credit history)
+  app.get("/api/gateway/transactions", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 20, 1), 100);
+      
+      // Get recent credit transactions with payment details
+      const transactions = await storage.getCreditTransactions(userId, limit);
+      
+      // Filter and format transactions with Solana payment data
+      const gatewayTransactions = transactions
+        .filter(tx => tx.transactionHash && (tx.paymentMethod === 'SOLANA_SOL' || tx.paymentMethod === 'SOLANA_USDC'))
+        .map(tx => ({
+          signature: tx.transactionHash,
+          amount: tx.amount,
+          currency: tx.currency,
+          paymentMethod: tx.paymentMethod,
+          status: tx.paymentStatus,
+          timestamp: tx.createdAt,
+          description: tx.description
+        }));
+      
+      res.json({
+        transactions: gatewayTransactions,
+        total: gatewayTransactions.length,
+        gatewayConfigured: gatewayService.isConfigured()
+      });
+    } catch (error) {
+      console.error("Error fetching Gateway transactions:", error);
+      // Sanitized error response
+      res.status(500).json({ 
+        message: "Unable to retrieve transaction history",
+        code: 'TRANSACTION_FETCH_FAILED'
+      });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
