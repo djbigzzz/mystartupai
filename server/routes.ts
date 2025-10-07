@@ -44,6 +44,8 @@ import { emailService } from "./email-service";
 import { SiweMessage } from "siwe";
 import nacl from "tweetnacl";
 import bs58 from "bs58";
+import speakeasy from "speakeasy";
+import QRCode from "qrcode";
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { createTransfer, encodeURL, parseURL } from '@solana/pay';
 import BigNumber from 'bignumber.js';
@@ -346,6 +348,128 @@ export async function registerRoutes(app: Express): Promise<Server> {
       })(req, res, next);
     }
   );
+
+  // 2FA Setup - Generate secret and QR code
+  app.post("/api/auth/2fa/setup", requireAuth, async (req, res) => {
+    try {
+      const user = req.user as any;
+      
+      // Generate a secret for the user
+      const secret = speakeasy.generateSecret({
+        name: `MyStartup.ai (${user.email || user.walletAddressSolana || user.walletAddressEthereum})`,
+        length: 32
+      });
+      
+      // Generate QR code data URL
+      const qrCodeDataUrl = await QRCode.toDataURL(secret.otpauth_url || '');
+      
+      // Store the secret temporarily (not enabled yet)
+      await storage.updateUser(user.id, { 
+        twoFactorSecret: secret.base32
+      });
+      
+      res.json({
+        secret: secret.base32,
+        qrCode: qrCodeDataUrl
+      });
+    } catch (error) {
+      console.error('2FA setup error:', error);
+      res.status(500).json({ message: "Failed to setup 2FA" });
+    }
+  });
+
+  // 2FA Verify and Enable
+  app.post("/api/auth/2fa/verify", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { token } = req.body;
+      
+      // Re-fetch user to get latest data including the secret
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      if (!user.twoFactorSecret) {
+        return res.status(400).json({ message: "2FA not set up. Please set up 2FA first." });
+      }
+      
+      // Verify the token
+      const verified = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: 'base32',
+        token: token,
+        window: 2 // Allow 2 time steps of tolerance
+      });
+      
+      if (!verified) {
+        return res.status(401).json({ message: "Invalid 2FA code" });
+      }
+      
+      // Enable 2FA for the user
+      await storage.updateUser(user.id, { 
+        twoFactorEnabled: true
+      });
+      
+      res.json({ 
+        message: "2FA enabled successfully",
+        twoFactorEnabled: true
+      });
+    } catch (error) {
+      console.error('2FA verify error:', error);
+      res.status(500).json({ message: "Failed to verify 2FA code" });
+    }
+  });
+
+  // 2FA Disable
+  app.post("/api/auth/2fa/disable", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { password, token } = req.body;
+      
+      // Re-fetch user to get latest data
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Verify password for security
+      if (user.password) {
+        const isValidPassword = await verifyPassword(password, user.password);
+        if (!isValidPassword) {
+          return res.status(401).json({ message: "Invalid password" });
+        }
+      }
+      
+      // Verify 2FA token
+      if (user.twoFactorSecret && user.twoFactorEnabled) {
+        const verified = speakeasy.totp.verify({
+          secret: user.twoFactorSecret,
+          encoding: 'base32',
+          token: token,
+          window: 2
+        });
+        
+        if (!verified) {
+          return res.status(401).json({ message: "Invalid 2FA code" });
+        }
+      }
+      
+      // Disable 2FA
+      await storage.updateUser(user.id, { 
+        twoFactorEnabled: false,
+        twoFactorSecret: null
+      });
+      
+      res.json({ 
+        message: "2FA disabled successfully",
+        twoFactorEnabled: false
+      });
+    } catch (error) {
+      console.error('2FA disable error:', error);
+      res.status(500).json({ message: "Failed to disable 2FA" });
+    }
+  });
 
   app.post("/api/auth/logout", (req: any, res) => {
     req.logout((err: any) => {

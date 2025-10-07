@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft, Coins, CreditCard, TrendingUp } from "lucide-react";
 import { CREDIT_PACKAGES } from "@shared/constants";
+import TwoFactorAuth from "@/components/profile/two-factor-auth";
 
 interface UserProfile {
   id: number;
@@ -27,6 +28,7 @@ interface UserProfile {
   currentPlan: string;
   createdAt: string;
   updatedAt: string;
+  twoFactorEnabled?: boolean;
 }
 
 interface UpdateProfileData {
@@ -50,6 +52,7 @@ export default function Profile() {
     newPassword: "",
     confirmPassword: ""
   });
+  const [show2FADialog, setShow2FADialog] = useState(false);
 
   // Fetch user profile
   const { data: user, isLoading } = useQuery<UserProfile>({
@@ -217,10 +220,10 @@ export default function Profile() {
       return;
     }
 
-    if (passwordForm.newPassword.length < 6) {
+    if (passwordForm.newPassword.length < 8) {
       toast({
         title: "Password too short",
-        description: "Password must be at least 6 characters long",
+        description: "Password must be at least 8 characters long",
         variant: "destructive",
       });
       return;
@@ -526,10 +529,15 @@ export default function Profile() {
                         <span className="font-medium">Two-Factor Auth</span>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Add an extra layer of security
+                        {user.twoFactorEnabled ? "2FA is enabled" : "Add an extra layer of security"}
                       </p>
-                      <Button variant="outline" size="sm">
-                        Setup 2FA
+                      <Button 
+                        variant={user.twoFactorEnabled ? "destructive" : "outline"} 
+                        size="sm"
+                        onClick={() => setShow2FADialog(true)}
+                        data-testid="button-manage-2fa"
+                      >
+                        {user.twoFactorEnabled ? "Disable 2FA" : "Setup 2FA"}
                       </Button>
                     </div>
                   </div>
@@ -782,6 +790,14 @@ export default function Profile() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* 2FA Dialog */}
+        {show2FADialog && (
+          <TwoFactorAuth 
+            isEnabled={user.twoFactorEnabled || false}
+            onClose={() => setShow2FADialog(false)}
+          />
+        )}
       </div>
     </div>
   );
