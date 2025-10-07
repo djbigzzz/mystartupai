@@ -649,7 +649,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     requireAuth,
     authRateLimiter,
     body('currentPassword').notEmpty().withMessage('Current password is required'),
-    validatePassword.withMessage('New password must meet security requirements'),
+    body('newPassword')
+      .isLength({ min: 8, max: 128 })
+      .withMessage('Password must be 8-128 characters')
+      .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/)
+      .withMessage('New password must meet security requirements'),
     handleValidationErrors,
     async (req, res) => {
       try {

@@ -48,13 +48,21 @@ export default function AppEntry() {
     return "";
   };
 
-  const validatePassword = (password: string): string => {
+  const validatePassword = (password: string, isStrict: boolean = false): string => {
     if (!password) return "Password is required";
-    if (password.length < 8 || password.length > 128) return "Password must be 8-128 characters";
-    // Use simplified regex matching backend
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
-      return "Password must contain uppercase, lowercase, and number";
+    
+    if (isStrict) {
+      // Strict validation for signup
+      if (password.length < 8 || password.length > 128) return "Password must be 8-128 characters";
+      // Use simplified regex matching backend
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+        return "Password must contain uppercase, lowercase, and number";
+      }
+    } else {
+      // Lenient validation for login (backward compatibility)
+      if (password.length < 6 || password.length > 128) return "Password must be at least 6 characters";
     }
+    
     return "";
   };
 
@@ -94,7 +102,7 @@ export default function AppEntry() {
     }
     
     if (formTouched.password) {
-      const passwordError = validatePassword(password);
+      const passwordError = validatePassword(password, isSignUp);
       if (passwordError) errors.password = passwordError;
     }
     
