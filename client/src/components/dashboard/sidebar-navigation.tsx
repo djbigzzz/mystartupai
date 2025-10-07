@@ -157,27 +157,28 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       name: "Find Investors",
       href: "/investor-matching",
       icon: Users,
-      badge: "New",
+      badge: "Coming Soon",
     },
     {
       id: "mvp-builder",
       name: "MVP Builder",
       href: "/mvp-builder",
       icon: Rocket,
-      badge: "New",
+      badge: "Coming Soon",
     },
     {
       id: "ai-showcase",
       name: "AI Tools",
       href: "/ai-showcase",
       icon: Brain,
-      badge: "Hot",
+      badge: "Coming Soon",
     },
     {
       id: "export",
       name: "Export Center",
       href: "/export",
       icon: Download,
+      badge: "Coming Soon",
     },
   ];
 
@@ -214,6 +215,8 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
                       ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400"
                       : item.badge === "Hot"
                       ? "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400"
+                      : item.badge === "Coming Soon"
+                      ? "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                       : "bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400"
                   }`}
                 >
