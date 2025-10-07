@@ -118,22 +118,39 @@ export default function IntelligentAnalysisPage() {
         <MobileNavigation />
         
         {/* Main Content */}
-        <div className="flex-1 lg:ml-0">
-          <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-red-600">Error Loading Idea</CardTitle>
-                <CardDescription>
-                  Failed to load your startup idea. Please try again.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={() => setLocation("/dashboard")} variant="outline">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Dashboard
-                </Button>
-              </CardContent>
-            </Card>
+        <div className="flex-1 lg:ml-0 flex items-center justify-center p-4">
+          <div className="max-w-md w-full text-center">
+            <div className="mb-6">
+              <div className="mx-auto w-20 h-20 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4">
+                <Lightbulb className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                No Idea to Analyze Yet
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Start by submitting your startup idea. Our AI will analyze it, ask clarifying questions, and provide valuable insights to help you build a successful business.
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                onClick={() => setLocation("/submit-idea")} 
+                className="w-full sm:w-auto"
+                data-testid="button-submit-idea"
+              >
+                <Lightbulb className="w-4 h-4 mr-2" />
+                Submit Your Idea
+              </Button>
+              <Button 
+                onClick={() => setLocation("/dashboard")} 
+                variant="outline"
+                className="w-full sm:w-auto"
+                data-testid="button-back-dashboard"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </div>
           </div>
         </div>
       </div>
