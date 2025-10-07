@@ -29,7 +29,8 @@ import {
   BarChart3,
   Plus,
   Coins,
-  AlertTriangle
+  AlertTriangle,
+  Lock
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -41,6 +42,7 @@ interface NavigationItem {
   icon: React.ComponentType<any>;
   badge?: string;
   count?: number;
+  locked?: boolean;
 }
 
 interface User {
@@ -158,6 +160,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       href: "/investor-matching",
       icon: Users,
       badge: "Coming Soon",
+      locked: true,
     },
     {
       id: "mvp-builder",
@@ -165,6 +168,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       href: "/mvp-builder",
       icon: Rocket,
       badge: "Coming Soon",
+      locked: true,
     },
     {
       id: "ai-showcase",
@@ -172,6 +176,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       href: "/ai-showcase",
       icon: Brain,
       badge: "Coming Soon",
+      locked: true,
     },
     {
       id: "export",
@@ -179,6 +184,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       href: "/export",
       icon: Download,
       badge: "Coming Soon",
+      locked: true,
     },
   ];
 
@@ -193,20 +199,29 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
   const NavItem = ({ item }: { item: NavigationItem }) => {
     const isActive = location === item.href;
     const IconComponent = item.icon;
+    const isLocked = item.locked;
 
-    return (
-      <Link href={item.href}>
-        <Button
-          variant={isActive ? "secondary" : "ghost"}
-          className={`w-full justify-start h-11 px-4 mb-1 ${
-            collapsed ? "px-3" : ""
-          } ${isActive ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"}`}
-          data-testid={`nav-${item.id}`}
-        >
-          <IconComponent className={`h-5 w-5 ${collapsed ? "" : "mr-3"} flex-shrink-0`} />
-          {!collapsed && (
-            <div className="flex items-center justify-between w-full">
-              <span className="font-medium">{item.name}</span>
+    const buttonContent = (
+      <Button
+        variant={isActive ? "secondary" : "ghost"}
+        disabled={isLocked}
+        className={`w-full justify-start h-11 px-4 mb-1 ${
+          collapsed ? "px-3" : ""
+        } ${
+          isLocked 
+            ? "opacity-50 cursor-not-allowed text-gray-400 dark:text-gray-600" 
+            : isActive 
+            ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" 
+            : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+        }`}
+        data-testid={`nav-${item.id}`}
+      >
+        <IconComponent className={`h-5 w-5 ${collapsed ? "" : "mr-3"} flex-shrink-0`} />
+        {!collapsed && (
+          <div className="flex items-center justify-between w-full">
+            <span className="font-medium">{item.name}</span>
+            <div className="flex items-center gap-2">
+              {isLocked && <Lock className="h-3 w-3" />}
               {item.badge && (
                 <Badge 
                   variant="secondary"
@@ -229,8 +244,18 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
                 </Badge>
               )}
             </div>
-          )}
-        </Button>
+          </div>
+        )}
+      </Button>
+    );
+
+    if (isLocked) {
+      return buttonContent;
+    }
+
+    return (
+      <Link href={item.href}>
+        {buttonContent}
       </Link>
     );
   };
