@@ -146,7 +146,7 @@ export default function PurchaseCreditsPage() {
     }
   };
 
-  // Handle Phantom wallet payment
+  // Handle Phantom wallet payment  
   const handlePhantomPayment = async () => {
     if (!paymentRequest || !selectedPackage) return;
 
@@ -163,41 +163,68 @@ export default function PurchaseCreditsPage() {
         return;
       }
 
-      await window.solana.connect();
-      const publicKey = window.solana.publicKey?.toString();
+      // Connect to Phantom
+      const resp = await window.solana.connect();
+      const publicKey = resp.publicKey.toString();
 
       if (!publicKey) {
         throw new Error('Failed to get wallet public key');
       }
 
-      // Poll for payment confirmation
-      pollingIntervalRef.current = setInterval(async () => {
-        try {
-          const statusResponse = await apiRequest(
-            `/api/payments/solana/status/${paymentRequest.reference}`,
-            { method: 'GET' }
-          );
+      toast({
+        title: 'Wallet Connected',
+        description: 'Please approve the transaction in Phantom...',
+      });
 
-          if (statusResponse.status === 'confirmed') {
-            if (pollingIntervalRef.current) {
-              clearInterval(pollingIntervalRef.current);
-              pollingIntervalRef.current = null;
-            }
+      // Request backend to create a transaction for this wallet
+      const txResponse = await apiRequest('/api/payments/solana/create-transaction', {
+        method: 'POST',
+        body: {
+          fromPubkey: publicKey,
+          reference: paymentRequest.reference,
+          packageType: selectedPackage,
+          paymentMethod,
+        },
+      } as RequestInit & { body?: any });
 
-            verifySolanaPayment.mutate({
-              signature: statusResponse.signature,
-              packageType: selectedPackage,
-              paymentMethod,
-            });
-          }
-        } catch (error) {
-          console.error('Error checking payment status:', error);
-        }
-      }, 3000);
+      if (!txResponse.serializedTransaction) {
+        throw new Error('Failed to create transaction');
+      }
+
+      // Decode the serialized transaction from base64
+      const txBuffer = Uint8Array.from(atob(txResponse.serializedTransaction), c => c.charCodeAt(0));
+      
+      // Send to Phantom - use request method for compatibility
+      let signature;
+      try {
+        // Try modern API first
+        const result = await (window.solana as any).signAndSendTransaction(txBuffer);
+        signature = typeof result === 'string' ? result : result?.signature;
+      } catch (err) {
+        // Fallback to request method
+        const result = await (window.solana as any).request({
+          method: 'signAndSendTransaction',
+          params: {
+            message: Array.from(txBuffer),
+          },
+        });
+        signature = result?.signature || result;
+      }
+
+      if (!signature) {
+        throw new Error('Transaction was not signed or sent');
+      }
 
       toast({
-        title: 'Awaiting Payment',
-        description: 'Please complete the transaction in your Phantom wallet.',
+        title: 'Transaction Sent!',
+        description: 'Verifying payment...',
+      });
+
+      // Verify the payment
+      verifySolanaPayment.mutate({
+        signature,
+        packageType: selectedPackage,
+        paymentMethod,
       });
     } catch (error) {
       console.error('Phantom payment error:', error);

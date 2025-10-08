@@ -4385,6 +4385,78 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
     }
   );
 
+  // POST /api/payments/solana/create-transaction - Create transaction for Phantom wallet
+  app.post("/api/payments/solana/create-transaction",
+    requireAuth,
+    advancedRateLimit(10, 60000),
+    body('fromPubkey').isString().notEmpty().withMessage('From public key is required'),
+    body('reference').isString().notEmpty().withMessage('Reference is required'),
+    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('paymentMethod').isIn(['SOL', 'USDC']).withMessage('Payment method must be SOL or USDC'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const { fromPubkey, reference, packageType, paymentMethod } = req.body;
+
+        // Get recipient wallet
+        const recipientWallet = process.env.SOLANA_RECIPIENT_WALLET;
+        if (!recipientWallet) {
+          return res.status(500).json({ message: "Payment system not configured" });
+        }
+
+        // Get package details
+        const packageInfo = CREDIT_PACKAGES[packageType as keyof typeof CREDIT_PACKAGES];
+        if (!packageInfo) {
+          return res.status(400).json({ message: "Invalid package type" });
+        }
+
+        // Calculate amount based on payment method
+        let amount: BigNumber;
+        let splToken: PublicKey | undefined;
+
+        if (paymentMethod === 'USDC') {
+          amount = new BigNumber(packageInfo.priceUSD);
+          splToken = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'); // USDC mainnet
+        } else {
+          amount = new BigNumber(packageInfo.priceSol);
+        }
+
+        // Create connection
+        const connection = getSolanaConnection();
+
+        // Create transfer instruction using Solana Pay
+        const fromPublicKey = new PublicKey(fromPubkey);
+        const toPublicKey = new PublicKey(recipientWallet);
+        const referencePublicKey = new PublicKey(reference);
+
+        const transfer = await createTransfer(connection, fromPublicKey, {
+          recipient: toPublicKey,
+          amount,
+          splToken,
+          reference: referencePublicKey,
+          memo: `MyStartup.AI ${packageType}`,
+        });
+
+        // Serialize transaction
+        const serializedTransaction = transfer.serialize({
+          requireAllSignatures: false,
+          verifySignatures: false,
+        }).toString('base64');
+
+        res.json({
+          serializedTransaction,
+          reference,
+        });
+      } catch (error) {
+        console.error("Error creating transaction:", error);
+        res.status(500).json({ 
+          message: "Failed to create transaction",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
   // POST /api/payments/solana/verify
   app.post("/api/payments/solana/verify",
     requireAuth,
