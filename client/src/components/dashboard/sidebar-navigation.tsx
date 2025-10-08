@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/logo";
 
 interface NavigationItem {
   id: string;
@@ -273,14 +274,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       <div className={`p-4 border-b border-gray-200 dark:border-gray-700 ${collapsed ? "p-3" : ""}`}>
         <div className="flex items-center justify-between">
           {!collapsed && (
-            <div className="flex items-center">
-              <div className="w-9 h-9 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                <LayoutDashboard className="w-5 h-5 text-white" />
-              </div>
-              <div className="ml-3">
-                <span className="text-xl font-bold text-gray-900 dark:text-white">MyStartup.ai</span>
-              </div>
-            </div>
+            <Logo size="sm" showText={true} />
           )}
           <Button
             variant="ghost"

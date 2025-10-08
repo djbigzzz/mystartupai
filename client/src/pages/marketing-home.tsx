@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import InteractiveDemo from "@/components/interactive-demo";
-import Logo from "@/components/logo";
+import { Logo } from "@/components/logo";
 import { 
   Rocket, 
   Sparkles, 
