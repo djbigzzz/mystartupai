@@ -5,7 +5,7 @@ MyStartup.ai is an AI-powered platform designed to guide startup founders from i
 
 ## Recent Changes
 - **Subscription System Complete** (Oct 8, 2025): Full usage-based billing with monthly subscriptions and overage tracking
-  - **Monthly Credit Allocation**: CORE (5,000/month), PRO (20,000/month), FREEMIUM (200 total) with automatic renewal at billing cycle
+  - **Monthly Credit Allocation**: CORE (2,000/month at $29), PRO (7,000/month at $79), FREEMIUM (200 total) with automatic renewal at billing cycle
   - **Overage Tracking**: Precise overage calculation when credits depleted - bills at $0.002/credit for additional usage
   - **Usage Alerts**: Users set spending thresholds, API returns alerts when exceeded for frontend notification display
   - **Subscription Management**: Profile tab for viewing status, cancelling subscription, setting usage alerts
