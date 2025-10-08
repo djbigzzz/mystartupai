@@ -213,6 +213,7 @@ export default function PurchaseCreditsPage() {
   // Auto-trigger Solana payment creation when modal opens
   useEffect(() => {
     if (isPaymentModalOpen && selectedPackage && !paymentRequest) {
+      setIsProcessing(false); // Reset processing state when creating new payment
       createSolanaPayment.mutate({
         packageType: selectedPackage,
         paymentMethod,
@@ -406,6 +407,7 @@ export default function PurchaseCreditsPage() {
                   className="flex-1"
                   onClick={() => {
                     setPaymentMethod('SOL');
+                    setIsProcessing(false); // Reset processing state
                     if (selectedPackage) {
                       createSolanaPayment.mutate({
                         packageType: selectedPackage,
@@ -422,6 +424,7 @@ export default function PurchaseCreditsPage() {
                   className="flex-1"
                   onClick={() => {
                     setPaymentMethod('USDC');
+                    setIsProcessing(false); // Reset processing state
                     if (selectedPackage) {
                       createSolanaPayment.mutate({
                         packageType: selectedPackage,
