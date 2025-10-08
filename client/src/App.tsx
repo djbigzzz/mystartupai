@@ -40,6 +40,7 @@ import InvestorMatching from "@/pages/investor-matching";
 import MarketResearchPage from "@/pages/market-research";
 import PurchaseCreditsPage from "@/pages/purchase-credits";
 import GatewayMonitor from "@/pages/gateway-monitor";
+import PitchDemoLive from "@/pages/pitch-demo-live";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -77,6 +78,7 @@ function Router() {
       <Route path="/market-research" component={MarketResearchPage} />
       <Route path="/purchase-credits" component={PurchaseCreditsPage} />
       <Route path="/gateway-monitor" component={GatewayMonitor} />
+      <Route path="/pitch-demo-live" component={PitchDemoLive} />
       <Route component={NotFound} />
     </Switch>
   );
