@@ -366,18 +366,20 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
               <div className="text-sm font-semibold text-gray-900 dark:text-white truncate" data-testid="text-user-name">
                 {user.name || 'User'}
               </div>
-              <div className="flex items-center gap-1 mt-0.5">
-                {user.currentPlan === 'PRO' ? (
-                  <Crown className="w-3 h-3 text-purple-600 dark:text-purple-400" />
-                ) : user.currentPlan === 'BASIC' ? (
-                  <CreditCard className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                ) : (
-                  <Zap className="w-3 h-3 text-gray-600 dark:text-gray-400" />
-                )}
-                <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-plan">
-                  {user.currentPlan || 'FREEMIUM'} Plan
+              <Link href="/purchase-credits">
+                <div className="flex items-center gap-1 mt-0.5 cursor-pointer hover:opacity-80 transition-opacity">
+                  {user.currentPlan === 'PRO' ? (
+                    <Crown className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                  ) : user.currentPlan === 'CORE' ? (
+                    <CreditCard className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                  ) : (
+                    <Zap className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                  )}
+                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-plan">
+                    {user.currentPlan || 'FREEMIUM'} Plan
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
             <Button
               size="sm"

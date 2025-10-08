@@ -326,7 +326,7 @@ export default function PurchaseCreditsPage() {
                   <div className="flex items-center justify-between mb-2">
                     <Icon className={`h-8 w-8 ${isPro ? 'text-primary' : 'text-muted-foreground'}`} />
                     {isCurrentPlan && (
-                      <Badge variant="secondary" className="text-xs">Current Plan</Badge>
+                      <Badge variant="secondary" className="text-xs">Current</Badge>
                     )}
                   </div>
                   <CardTitle className="text-2xl">{pkg.name}</CardTitle>
