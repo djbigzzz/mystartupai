@@ -1342,7 +1342,7 @@ Issued At: ${new Date(timestamp).toISOString()}`;
             currentPlan: 'FREEMIUM',
             credits: CREDIT_PACKAGES.FREEMIUM.credits,
             subscriptionStatus: 'expired',
-            creditsResetDate: nextResetDate.toISOString(),
+            creditsResetDate: nextResetDate,
             monthlyCreditsUsed: 0,
           });
           console.log(`Subscription expired for user ${userId}, downgraded to FREEMIUM`);
@@ -1352,8 +1352,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         // Reset credits for active subscriptions
         await storage.updateUser(userId, {
           credits: packageInfo.credits,
-          creditsResetDate: nextResetDate.toISOString(),
-          nextBillingDate: nextBillingDate.toISOString(),
+          creditsResetDate: nextResetDate,
+          nextBillingDate: nextBillingDate,
           monthlyCreditsUsed: 0, // Reset overage tracking
         });
 
@@ -4749,9 +4749,9 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
           await storage.updateUser(userId, {
             currentPlan: packageType,
             subscriptionStatus: 'active',
-            subscriptionStartDate: now.toISOString(),
-            nextBillingDate: nextBillingDate.toISOString(),
-            creditsResetDate: creditsResetDate.toISOString(),
+            subscriptionStartDate: now,
+            nextBillingDate: nextBillingDate,
+            creditsResetDate: creditsResetDate,
             monthlyCreditsUsed: 0, // Reset overage tracking
           });
         }

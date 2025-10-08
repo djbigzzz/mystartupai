@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Coins, Check, Loader2, Wallet, Clock, ArrowUpRight, ArrowDownRight, Sparkles, Zap, TrendingUp, CreditCard, Crown, Building, Rocket } from 'lucide-react';
+import { Coins, Check, Loader2, Wallet, Clock, ArrowUpRight, ArrowDownRight, Sparkles, Zap, TrendingUp, CreditCard, Crown, Building, Rocket, ArrowLeft } from 'lucide-react';
+import { Link } from 'wouter';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
@@ -293,6 +294,16 @@ export default function PurchaseCreditsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="container max-w-7xl mx-auto py-8 px-4">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Button variant="ghost" className="gap-2" data-testid="button-back-to-dashboard" asChild>
+            <Link href="/dashboard">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Link>
+          </Button>
+        </div>
+        
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
