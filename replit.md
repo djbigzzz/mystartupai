@@ -4,6 +4,15 @@
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
 ## Recent Changes
+- **Subscription System Complete** (Oct 8, 2025): Full usage-based billing with monthly subscriptions and overage tracking
+  - **Monthly Credit Allocation**: CORE (5,000/month), PRO (20,000/month), FREEMIUM (200 total) with automatic renewal at billing cycle
+  - **Overage Tracking**: Precise overage calculation when credits depleted - bills at $0.002/credit for additional usage
+  - **Usage Alerts**: Users set spending thresholds, API returns alerts when exceeded for frontend notification display
+  - **Subscription Management**: Profile tab for viewing status, cancelling subscription, setting usage alerts
+  - **Auto Credit Reset**: Backend automatically renews credits at billing cycle end, clears monthly overage counter
+  - **Purchase Credits UI**: Shows "/month" for subscriptions, displays next billing date and overage for active subscribers
+  - **Bug Fixes**: Fixed negative balance overage math, proper state hydration for usage alerts with useEffect
+  - **Production Ready**: Architect-approved implementation with comprehensive subscription lifecycle management
 - **UI Information Architecture Cleanup** (Oct 7, 2025): Streamlined dashboard to reduce redundancy and improve user experience
   - **Removed Credits from Banner**: Credits now only displayed in Purchase Credits and usage pages - cleaner top banner
   - **Consolidated Plan Info**: Plan display moved from top-right header to sidebar profile section with plan-specific icons
