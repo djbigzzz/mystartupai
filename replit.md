@@ -10,6 +10,10 @@ MyStartup.ai is an AI-powered platform designed to guide startup founders from i
   - **Timing Display**: Each message shows elapsed time (+0.80s, +2.00s format) from generation start
   - **Dynamic Stats**: Total generation time updates live (not hardcoded) showing actual agent coordination speed
   - **Multi-Agent Flow**: User → Business Plan Agent → Market Research Agent → Financial Modeling Agent → synthesized plan
+  - **Dashboard Theme**: Uses MyStartup.ai's dark blue color scheme instead of purple gradient for brand consistency
+  - **Next Steps Section**: After plan generation, shows "Find Investors", "Build Pitch Deck", and "Build MVP" action buttons
+  - **Slower Effects**: 1.5-2s delays between steps so users can track agent coordination in real-time
+  - **Compact Layout**: Optimized to fit entire demo on single screen with 400px max height scrollable cards
   - **Architect Approved**: Proper state persistence and data flow demonstration for hackathon pitch
   - **No Navigation Links**: Accessible only via direct URL for controlled demo presentation
 - **Subscription System Complete** (Oct 8, 2025): Full usage-based billing with monthly subscriptions and overage tracking

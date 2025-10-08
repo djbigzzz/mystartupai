@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, Bot, Sparkles, Database, CheckCircle2, Clock, Zap } from "lucide-react";
+import { ArrowRight, Bot, Sparkles, Database, CheckCircle2, Clock, Zap, Users, Presentation } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 
 interface AgentMessage {
@@ -235,20 +235,20 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 overflow-hidden">
+    <div className="min-h-screen bg-background dark p-4 overflow-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Compact Header */}
         <div className="text-center mb-4">
-          <h1 className="text-3xl font-bold text-white mb-1">
+          <h1 className="text-3xl font-bold text-foreground mb-1">
             Agentic AI Co-Founder
           </h1>
-          <p className="text-sm text-purple-200">
+          <p className="text-sm text-muted-foreground">
             Live Multi-Agent Coordination Demo
           </p>
         </div>
 
         {/* Agent Status Bar */}
-        <Card className="mb-3 bg-slate-800/50 border-purple-500/50">
+        <Card className="mb-3 bg-card border-border">
           <CardContent className="pt-4 pb-3">
             <div className="flex items-center justify-between gap-4 mb-3">
               {agentStatuses.map((agent, idx) => {
@@ -263,11 +263,11 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                       <Icon className={`h-4 w-4 text-white ${agent.status === 'working' ? 'animate-spin' : ''}`} />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-white">{agent.name}</p>
-                      <p className="text-xs text-purple-300 capitalize">{agent.status}</p>
+                      <p className="text-xs font-medium text-foreground">{agent.name}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{agent.status}</p>
                     </div>
                     {idx < agentStatuses.length - 1 && (
-                      <ArrowRight className="h-4 w-4 text-purple-400 ml-2" />
+                      <ArrowRight className="h-4 w-4 text-muted-foreground ml-2" />
                     )}
                   </div>
                 );
@@ -278,19 +278,19 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
         </Card>
 
         {/* Input Section - Compact */}
-        <Card className="mb-3 bg-slate-800/50 border-purple-500/50">
+        <Card className="mb-3 bg-card border-border">
           <CardContent className="pt-4 space-y-3">
             <Textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              className="min-h-16 bg-slate-900 text-white border-purple-500/50 text-sm"
+              className="min-h-16 bg-input text-foreground border-border text-sm"
               placeholder="e.g., A DeFi lending protocol for emerging markets"
               data-testid="input-startup-idea"
             />
             <Button
               onClick={handleGenerate}
               disabled={generatePlanMutation.isPending}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
               data-testid="button-generate-plan"
             >
               {generatePlanMutation.isPending ? (
@@ -310,16 +310,16 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
 
         <div className="grid md:grid-cols-2 gap-3">
           {/* Agent Communication Flow */}
-          <Card className="bg-slate-800/50 border-purple-500/50">
+          <Card className="bg-card border-border">
             <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-white flex items-center gap-2 text-lg">
+              <CardTitle className="text-foreground flex items-center gap-2 text-lg">
                 <Bot className="h-5 w-5" />
                 Agent Messages
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 max-h-[400px] overflow-y-auto">
               {messages.length === 0 && (
-                <p className="text-center text-purple-300 py-4 text-sm">
+                <p className="text-center text-muted-foreground py-4 text-sm">
                   Click "Start" to see agents communicate
                 </p>
               )}
@@ -334,22 +334,22 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="text-xs font-semibold text-white">{msg.from}</span>
-                          <ArrowRight className="h-2.5 w-2.5 text-purple-400" />
-                          <span className="text-xs text-purple-300">{msg.to}</span>
+                          <span className="text-xs font-semibold text-foreground">{msg.from}</span>
+                          <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">{msg.to}</span>
                           {msg.elapsedMs !== undefined && (
-                            <span className="ml-auto text-xs text-purple-400 font-mono">
+                            <span className="ml-auto text-xs text-primary font-mono">
                               +{(msg.elapsedMs / 1000).toFixed(2)}s
                             </span>
                           )}
                         </div>
-                        <Badge variant="outline" className="mb-1.5 text-xs border-purple-500/50 text-purple-200">
+                        <Badge variant="outline" className="mb-1.5 text-xs">
                           {msg.type}
                         </Badge>
-                        <div className="bg-slate-900 rounded-lg p-2 text-xs text-purple-100 font-mono">
+                        <div className="bg-muted rounded-lg p-2 text-xs text-foreground font-mono">
                           {msg.content.length > 150 ? (
                             <details>
-                              <summary className="cursor-pointer text-purple-400 hover:text-purple-300">
+                              <summary className="cursor-pointer text-primary hover:text-primary/80">
                                 View ({msg.content.length} chars)
                               </summary>
                               <pre className="mt-2 text-xs overflow-x-auto whitespace-pre-wrap">{msg.content}</pre>
@@ -361,14 +361,14 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                       </div>
                     </div>
                     {idx < messages.length - 1 && (
-                      <div className="ml-4 my-1.5 border-l-2 border-purple-500/30 h-3" />
+                      <div className="ml-4 my-1.5 border-l-2 border-border h-3" />
                     )}
                   </div>
                 );
               })}
               
               {generatePlanMutation.isPending && (
-                <div className="flex items-center gap-2 text-purple-400 animate-pulse">
+                <div className="flex items-center gap-2 text-primary animate-pulse">
                   <Bot className="h-4 w-4 animate-spin" />
                   <span className="text-sm">Coordinating...</span>
                 </div>
@@ -377,22 +377,22 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
           </Card>
 
           {/* Generated Business Plan */}
-          <Card className="bg-slate-800/50 border-purple-500/50">
+          <Card className="bg-card border-border">
             <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-white flex items-center gap-2 text-lg">
+              <CardTitle className="text-foreground flex items-center gap-2 text-lg">
                 <CheckCircle2 className="h-5 w-5" />
                 Business Plan
               </CardTitle>
             </CardHeader>
             <CardContent className="max-h-[400px] overflow-y-auto">
               {!finalPlan && (
-                <p className="text-center text-purple-300 py-4 text-sm">
+                <p className="text-center text-muted-foreground py-4 text-sm">
                   Business plan will appear here
                 </p>
               )}
               {finalPlan && (
                 <div className="prose prose-sm prose-invert max-w-none">
-                  <pre className="whitespace-pre-wrap text-xs text-purple-100 bg-slate-900 p-3 rounded-lg">
+                  <pre className="whitespace-pre-wrap text-xs text-foreground bg-muted p-3 rounded-lg">
                     {finalPlan}
                   </pre>
                 </div>
@@ -401,26 +401,86 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
           </Card>
         </div>
 
+        {/* Next Steps - Appears after plan is ready */}
+        {finalPlan && (
+          <Card className="mt-3 bg-card border-border animate-in fade-in slide-in-from-bottom duration-700">
+            <CardHeader className="pb-3 pt-4">
+              <CardTitle className="text-foreground flex items-center gap-2 text-lg">
+                <Sparkles className="h-5 w-5" />
+                What's Next?
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Continue building your startup with AI-powered tools
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start h-auto py-3 px-4"
+                  data-testid="button-find-investors"
+                >
+                  <div className="flex flex-col items-start gap-1 w-full">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      <span className="font-semibold">Find Investors</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">AI-matched VCs & angels</span>
+                  </div>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start h-auto py-3 px-4"
+                  data-testid="button-build-pitch-deck"
+                >
+                  <div className="flex flex-col items-start gap-1 w-full">
+                    <div className="flex items-center gap-2">
+                      <Presentation className="h-4 w-4" />
+                      <span className="font-semibold">Build Pitch Deck</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">YC-standard slides</span>
+                  </div>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start h-auto py-3 px-4"
+                  data-testid="button-build-mvp"
+                >
+                  <div className="flex flex-col items-start gap-1 w-full">
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-4 w-4" />
+                      <span className="font-semibold">Build MVP</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">AI code generation</span>
+                  </div>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Row - Compact */}
         <div className="grid grid-cols-3 gap-3 mt-3">
-          <Card className="bg-slate-800/50 border-purple-500/50">
+          <Card className="bg-card border-border">
             <CardContent className="pt-4 pb-3 text-center">
-              <p className="text-2xl font-bold text-purple-400">{agentStatuses.length}</p>
-              <p className="text-xs text-purple-200">Agents</p>
+              <p className="text-2xl font-bold text-primary">{agentStatuses.length}</p>
+              <p className="text-xs text-muted-foreground">Agents</p>
             </CardContent>
           </Card>
-          <Card className="bg-slate-800/50 border-purple-500/50">
+          <Card className="bg-card border-border">
             <CardContent className="pt-4 pb-3 text-center">
-              <p className="text-2xl font-bold text-purple-400 font-mono">
+              <p className="text-2xl font-bold text-primary font-mono">
                 {totalTime > 0 ? `${totalTime.toFixed(1)}s` : '~10s'}
               </p>
-              <p className="text-xs text-purple-200">Generation Time</p>
+              <p className="text-xs text-muted-foreground">Generation Time</p>
             </CardContent>
           </Card>
-          <Card className="bg-slate-800/50 border-purple-500/50">
+          <Card className="bg-card border-border">
             <CardContent className="pt-4 pb-3 text-center">
-              <p className="text-2xl font-bold text-purple-400">400ms</p>
-              <p className="text-xs text-purple-200">Solana Finality</p>
+              <p className="text-2xl font-bold text-primary">400ms</p>
+              <p className="text-xs text-muted-foreground">Solana Finality</p>
             </CardContent>
           </Card>
         </div>
