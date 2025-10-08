@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,12 @@ interface UserProfile {
   createdAt: string;
   updatedAt: string;
   twoFactorEnabled?: boolean;
+  subscriptionStatus?: string | null;
+  subscriptionStartDate?: string | null;
+  nextBillingDate?: string | null;
+  creditsResetDate?: string | null;
+  usageAlert?: number | null;
+  monthlyCreditsUsed?: number | null;
 }
 
 interface UpdateProfileData {
@@ -111,6 +117,62 @@ export default function Profile() {
       toast({
         title: "Password change failed",
         description: error.message || "Failed to change password",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Cancel subscription mutation
+  const cancelSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("/api/subscriptions/cancel", {
+        method: "POST",
+      });
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Subscription Cancelled",
+        description: data.message || "Your subscription will be cancelled at the end of the billing period.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Cancellation Failed",
+        description: error.message || "Failed to cancel subscription",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Update usage alert mutation
+  const [usageAlertAmount, setUsageAlertAmount] = useState<number>(0);
+  
+  // Hydrate usage alert from user data when it loads
+  useEffect(() => {
+    if (user?.usageAlert !== undefined && user?.usageAlert !== null) {
+      setUsageAlertAmount(user.usageAlert);
+    }
+  }, [user?.usageAlert]);
+
+  const updateUsageAlertMutation = useMutation({
+    mutationFn: async (alertAmount: number) => {
+      return apiRequest("/api/subscriptions/update-alert", {
+        method: "POST",
+        body: { alertAmount } as any
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Usage Alert Updated",
+        description: "Your usage alert has been set successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update usage alert",
         variant: "destructive",
       });
     }
@@ -348,10 +410,11 @@ export default function Profile() {
 
         {/* Profile Management Tabs */}
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
             <TabsTrigger value="wallet">Wallet</TabsTrigger>
+            <TabsTrigger value="subscription">Subscription</TabsTrigger>
             <TabsTrigger value="usage">Usage</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
           </TabsList>
@@ -731,6 +794,132 @@ export default function Profile() {
                     </div>
                   )}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Subscription Management */}
+          <TabsContent value="subscription">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Subscription Management
+                </CardTitle>
+                <CardDescription>
+                  Manage your subscription plan, billing, and usage alerts.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Current Plan Status */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-lg border bg-card">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Current Plan</p>
+                      <p className="text-2xl font-bold">{user?.currentPlan || 'FREEMIUM'}</p>
+                    </div>
+                    <Badge variant={user?.currentPlan === 'PRO' ? 'default' : 'secondary'}>
+                      {user?.currentPlan === 'FREEMIUM' ? 'Free' : 
+                       user?.currentPlan === 'CORE' ? 'Starter' : 'Pro'}
+                    </Badge>
+                  </div>
+
+                  {/* Subscription Status */}
+                  {user?.subscriptionStatus && user.subscriptionStatus !== 'expired' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                        <span className="text-sm text-muted-foreground">Status</span>
+                        <Badge variant={
+                          user.subscriptionStatus === 'active' ? 'default' : 
+                          user.subscriptionStatus === 'cancel_at_period_end' ? 'destructive' : 
+                          'secondary'
+                        }>
+                          {user.subscriptionStatus === 'active' ? 'Active' :
+                           user.subscriptionStatus === 'cancel_at_period_end' ? 'Cancelling' :
+                           user.subscriptionStatus}
+                        </Badge>
+                      </div>
+
+                      {user.nextBillingDate && (
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                          <span className="text-sm text-muted-foreground">
+                            {user.subscriptionStatus === 'cancel_at_period_end' ? 'Access Until' : 'Next Billing'}
+                          </span>
+                          <span className="text-sm font-medium">
+                            {new Date(user.nextBillingDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                      )}
+
+                      {user.monthlyCreditsUsed && user.monthlyCreditsUsed > 0 && (
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                          <div>
+                            <span className="text-sm font-medium text-orange-700 dark:text-orange-400">Monthly Overage Usage</span>
+                            <p className="text-xs text-muted-foreground mt-0.5">Credits used beyond monthly allocation</p>
+                          </div>
+                          <span className="text-lg font-bold text-orange-700 dark:text-orange-400">
+                            {user.monthlyCreditsUsed?.toLocaleString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Usage Alert Settings */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Usage Alert</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Get notified when your monthly overage usage reaches a specific threshold.
+                  </p>
+                  <div className="flex gap-3">
+                    <Input
+                      type="number"
+                      placeholder="Alert threshold (credits)"
+                      value={usageAlertAmount || user?.usageAlert || 0}
+                      onChange={(e) => setUsageAlertAmount(parseInt(e.target.value) || 0)}
+                      className="max-w-xs"
+                    />
+                    <Button 
+                      onClick={() => updateUsageAlertMutation.mutate(usageAlertAmount)}
+                      disabled={updateUsageAlertMutation.isPending}
+                    >
+                      {updateUsageAlertMutation.isPending ? 'Saving...' : 'Set Alert'}
+                    </Button>
+                  </div>
+                  {user?.usageAlert && (
+                    <p className="text-sm text-muted-foreground">
+                      Current alert: {user.usageAlert.toLocaleString()} credits
+                    </p>
+                  )}
+                </div>
+
+                {/* Cancel Subscription */}
+                {user?.subscriptionStatus === 'active' && (
+                  <>
+                    <Separator />
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-destructive">Cancel Subscription</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Your subscription will remain active until the end of the current billing period.
+                        You'll keep your credits and can continue using overage billing.
+                      </p>
+                      <Button 
+                        variant="destructive"
+                        onClick={() => cancelSubscriptionMutation.mutate()}
+                        disabled={cancelSubscriptionMutation.isPending}
+                      >
+                        {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Cancel Subscription'}
+                      </Button>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
