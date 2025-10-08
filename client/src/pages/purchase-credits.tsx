@@ -279,6 +279,10 @@ export default function PurchaseCreditsPage() {
   const currentBalance = (balanceData as any)?.balance || 0;
   const transactions = ((historyData as any)?.transactions || []) as CreditTransaction[];
   const currentPlan = (userData as any)?.currentPlan || 'FREEMIUM';
+  const subscriptionStatus = (userData as any)?.subscriptionStatus || null;
+  const nextBillingDate = (userData as any)?.nextBillingDate || null;
+  const creditsResetDate = (userData as any)?.creditsResetDate || null;
+  const monthlyCreditsUsed = (userData as any)?.monthlyCreditsUsed || 0;
 
   const packageIcons = {
     FREEMIUM: Sparkles,
@@ -291,14 +295,26 @@ export default function PurchaseCreditsPage() {
       <div className="container max-w-7xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 text-primary">
-            <Coins className="h-5 w-5" />
-            <span className="text-sm font-medium">Current Balance: {currentBalance.toLocaleString()} credits</span>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
+              <Coins className="h-5 w-5" />
+              <span className="text-sm font-medium">Balance: {currentBalance.toLocaleString()} credits</span>
+            </div>
+            {subscriptionStatus === 'active' && monthlyCreditsUsed > 0 && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 text-orange-500">
+                <Zap className="h-5 w-5" />
+                <span className="text-sm font-medium">Overage: {monthlyCreditsUsed.toLocaleString()} credits</span>
+              </div>
+            )}
           </div>
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Purchase Credits
+            {subscriptionStatus === 'active' || subscriptionStatus === 'cancel_at_period_end' ? 'Manage Subscription' : 'Choose Your Plan'}
           </h1>
-          <p className="text-muted-foreground">Choose a plan and supercharge your startup journey</p>
+          <p className="text-muted-foreground">
+            {subscriptionStatus === 'active' && nextBillingDate 
+              ? `Next billing: ${format(new Date(nextBillingDate), 'MMM dd, yyyy')}` 
+              : 'Choose a plan and supercharge your startup journey'}
+          </p>
         </div>
 
         {/* Pricing Cards */}
@@ -332,13 +348,18 @@ export default function PurchaseCreditsPage() {
                   <CardTitle className="text-2xl">{pkg.name}</CardTitle>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold">${pkg.priceUSD}</span>
-                    {!isCurrentPlan && key !== 'FREEMIUM' && pkg.priceSol > 0 && (
-                      <span className="text-sm text-muted-foreground">≈{pkg.priceSol} SOL</span>
+                    {key !== 'FREEMIUM' && (
+                      <span className="text-sm text-muted-foreground">/month</span>
                     )}
                   </div>
                   <CardDescription className="text-lg font-semibold text-foreground">
-                    {pkg.credits.toLocaleString()} Credits
+                    {pkg.credits.toLocaleString()} {key !== 'FREEMIUM' ? 'Credits/month' : 'Credits'}
                   </CardDescription>
+                  {key !== 'FREEMIUM' && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      + unlimited overage usage tracked monthly
+                    </p>
+                  )}
                 </CardHeader>
 
                 <CardContent className="pb-4">
@@ -360,7 +381,7 @@ export default function PurchaseCreditsPage() {
                       disabled
                       data-testid="button-current-plan"
                     >
-                      Current Plan
+                      {subscriptionStatus === 'cancel_at_period_end' ? 'Cancelled' : 'Current Plan'}
                     </Button>
                   ) : (
                     <Button
@@ -369,7 +390,7 @@ export default function PurchaseCreditsPage() {
                       data-testid={`button-select-${key.toLowerCase()}`}
                       disabled={key === 'FREEMIUM'}
                     >
-                      Select Plan
+                      {key === 'FREEMIUM' ? 'Free Plan' : 'Subscribe Now'}
                     </Button>
                   )}
                 </CardFooter>

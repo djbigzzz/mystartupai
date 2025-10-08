@@ -1283,9 +1283,20 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     if (overageAmount > 0) {
       const user = await storage.getUser(userId);
       const currentOverage = user?.monthlyCreditsUsed || 0;
+      const newOverage = currentOverage + overageAmount;
+      
       await storage.updateUser(userId, {
-        monthlyCreditsUsed: currentOverage + overageAmount
+        monthlyCreditsUsed: newOverage
       });
+
+      // Check usage alert threshold
+      if (user?.usageAlert && newOverage >= user.usageAlert && currentOverage < user.usageAlert) {
+        // First time crossing threshold - set alert flag in request for response
+        req.usageAlertTriggered = {
+          threshold: user.usageAlert,
+          current: newOverage
+        };
+      }
     }
   }
 
@@ -1462,7 +1473,17 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         ideaId
       );
 
-      res.json(sectionsData);
+      // Include usage alert if triggered
+      const response: any = sectionsData;
+      if ((req as any).usageAlertTriggered) {
+        response._alert = {
+          message: `You've exceeded your usage alert threshold of ${(req as any).usageAlertTriggered.threshold} credits. Current overage: ${(req as any).usageAlertTriggered.current} credits.`,
+          threshold: (req as any).usageAlertTriggered.threshold,
+          current: (req as any).usageAlertTriggered.current
+        };
+      }
+
+      res.json(response);
     } catch (error) {
       console.error("Error generating business plan:", error);
       res.status(500).json({ message: "Failed to generate business plan" });
