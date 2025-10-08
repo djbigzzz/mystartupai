@@ -191,9 +191,15 @@ export default function PurchaseCreditsPage() {
         throw new Error('Failed to create transaction');
       }
 
-      // Deserialize the transaction from base64 to a Transaction object
-      const txBuffer = Buffer.from(txResponse.serializedTransaction, 'base64');
-      const transaction = Transaction.from(txBuffer);
+      // Deserialize the transaction from base64 (browser-compatible)
+      const binaryString = atob(txResponse.serializedTransaction);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      // Create Transaction object from bytes
+      const transaction = Transaction.from(bytes);
       
       // Send the Transaction object to Phantom
       const { signature } = await (window.solana as any).signAndSendTransaction(transaction);
