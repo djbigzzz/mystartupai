@@ -15,6 +15,7 @@ import {
 } from "./security";
 import { monitorDatabaseConnections } from "./database-security";
 import { setBrowserSecurityHeaders, sanitizeFrontendInputs, validateFrontendInputs, generateCSRFToken } from "./frontend-security";
+import { seedTestUsers } from "./seed-test-users";
 
 // Validate environment variables first
 validateEnvironment();
@@ -113,6 +114,11 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Seed test users in development
+  if (app.get("env") === "development") {
+    await seedTestUsers();
+  }
 
   // Secure error handling
   app.use(secureErrorHandler);

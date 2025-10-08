@@ -6,6 +6,27 @@ MyStartup.ai is an AI-powered platform designed to guide startup founders from i
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Updates (October 2025)
+
+### UI/UX Enhancements
+- **3-Theme Mode System**: Light, Dark, and Web3 (futuristic galaxy) themes with cycling toggle and localStorage persistence
+  - Web3 theme features animated galaxy background, neon cyan/purple/magenta colors, starfield effects, and glowing UI elements
+  - Theme toggle button in header cycles through all three modes
+- **Credits Display Fix**: Corrected API field accessor from `balance` to `credits` to properly display user credit balance
+- **Profile Page Navigation**: Added consistent sidebar navigation matching dashboard layout with responsive mobile/desktop support
+- **Logo Branding**: MyStartup.ai logo added to all pages for consistent branding
+- **Purchase Credits Page Redesign**: 
+  - Enhanced multi-layer gradient backgrounds for all themes
+  - Improved header with gradient text and better typography
+  - Upgraded pricing cards with hover scale effects, enhanced shadows/borders
+  - Special styling for PRO plan with primary borders and glows
+  - Current plan ring indicator for active subscriptions
+
+### Development Infrastructure
+- **Test User Seeding**: Automatic seeding of test users in development environment
+  - Test account: web3user@test.com / password123 (CORE plan, 6,200 credits)
+  - Seeds on server startup for consistent testing environment
+
 ## System Architecture
 
 ### General Architecture
