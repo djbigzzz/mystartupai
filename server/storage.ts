@@ -87,6 +87,7 @@ export interface IStorage {
   getStartupIdea(id: number): Promise<StartupIdea | undefined>;
   updateStartupIdea(id: number, updates: Partial<StartupIdea>): Promise<StartupIdea | undefined>;
   getStartupIdeasByEmail(email: string): Promise<StartupIdea[]>;
+  getStartupIdeasByUserId(userId: number): Promise<StartupIdea[]>;
   
   // Company operations
   createCompany(company: InsertCompany & { userId: number }): Promise<Company>;
@@ -278,6 +279,10 @@ export class DatabaseStorage implements IStorage {
 
   async getStartupIdeasByEmail(email: string): Promise<StartupIdea[]> {
     return await db.select().from(startupIdeas).where(eq(startupIdeas.email, email));
+  }
+
+  async getStartupIdeasByUserId(userId: number): Promise<StartupIdea[]> {
+    return await db.select().from(startupIdeas).where(eq(startupIdeas.userId, userId));
   }
 
   // Company operations

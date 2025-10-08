@@ -54,8 +54,9 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
 
 export const startupIdeas = pgTable("startup_ideas", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
   name: text("name").notNull(),
-  email: text("email").notNull(),
+  email: text("email"),
   ideaTitle: text("idea_title").notNull(),
   description: text("description").notNull(),
   industry: text("industry").notNull(),

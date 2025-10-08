@@ -1257,8 +1257,16 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     try {
       const user = req.user as any;
       
-      // Use authenticated user's email - never trust client-provided email
-      const ideas = await storage.getStartupIdeasByEmail(user.email);
+      // Support both email-based users and Web3 wallet users
+      let ideas;
+      if (user.email) {
+        ideas = await storage.getStartupIdeasByEmail(user.email);
+      } else if (user.id) {
+        ideas = await storage.getStartupIdeasByUserId(user.id);
+      } else {
+        return res.status(400).json({ message: "User identification failed" });
+      }
+      
       res.json(ideas);
     } catch (error) {
       console.error("Error fetching ideas:", error);

@@ -76,6 +76,71 @@ export default function Dashboard() {
     refetchInterval: 30000,
   });
 
+  // Fetch user's ideas to determine actual progress
+  const { data: userIdeas } = useQuery<any[]>({
+    queryKey: ["/api/ideas"],
+    enabled: !!user,
+  });
+
+  // Calculate the user's actual current step based on their progress
+  const getCurrentStep = () => {
+    if (!userIdeas || userIdeas.length === 0) {
+      return {
+        step: 1,
+        title: "Submit Your Startup Idea",
+        description: "Start by submitting your startup idea to get AI-powered insights",
+        link: "/submit-idea",
+        progress: 0
+      };
+    }
+    
+    const latestIdea = userIdeas[0];
+    
+    // Check if analysis is complete
+    if (!latestIdea.analysis || latestIdea.analysisStatus === "pending") {
+      return {
+        step: 2,
+        title: "Intelligent Idea Analysis",
+        description: "AI asks clarifying questions and provides realistic, contextual market insights",
+        link: "/intelligent-analysis",
+        progress: 10
+      };
+    }
+    
+    // Check if business plan exists
+    if (!latestIdea.businessPlan) {
+      return {
+        step: 3,
+        title: "Business Plan Generation",
+        description: "Create a comprehensive Y Combinator-standard business plan",
+        link: "/business-plan",
+        progress: 30
+      };
+    }
+    
+    // Check if pitch deck exists
+    if (!latestIdea.pitchDeck) {
+      return {
+        step: 4,
+        title: "Pitch Deck Creation",
+        description: "Generate a professional investor-ready pitch deck",
+        link: "/pitch-deck",
+        progress: 50
+      };
+    }
+    
+    // All done, ready for investors
+    return {
+      step: 5,
+      title: "Investor Ready",
+      description: "Find and connect with the perfect investors for your startup",
+      link: "/investor-matching",
+      progress: 80
+    };
+  };
+
+  const currentStep = getCurrentStep();
+
 
 
 
@@ -248,9 +313,9 @@ export default function Dashboard() {
           <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-4 text-white">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-lg mb-2">2. Intelligent Idea Analysis</h3>
+                <h3 className="font-semibold text-lg mb-2">{currentStep.step}. {currentStep.title}</h3>
                 <p className="text-purple-100 text-sm mb-3">
-                  AI asks clarifying questions and provides realistic, contextual market insights - FIRST step after idea submission
+                  {currentStep.description}
                 </p>
                 <div className="flex items-center space-x-4 text-sm">
                   <div className="flex items-center space-x-1">
@@ -259,13 +324,13 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center space-x-1">
                     <TrendingUp className="w-4 h-4" />
-                    <span>Progress: +20%</span>
+                    <span>Progress: +{currentStep.step === 1 ? 10 : 20}%</span>
                   </div>
                 </div>
               </div>
-              <Link href="/intelligent-analysis">
-                <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30" data-testid="button-start-analysis">
-                  Start Now
+              <Link href={currentStep.link}>
+                <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30" data-testid="button-start-next-step">
+                  {currentStep.step === 1 ? 'Get Started' : 'Start Now'}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -276,52 +341,117 @@ export default function Dashboard() {
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Startup Development Progress</span>
-              <span className="text-sm text-gray-500">Step 2 of 10</span>
+              <span className="text-sm text-gray-500">Step {currentStep.step} of 10</span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{width: '20%'}}></div>
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{width: `${currentStep.progress}%`}}></div>
             </div>
             
             {/* Simple Step List */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-4">
-              <div className="flex flex-col items-center p-2 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mb-1">
-                  <CheckCircle className="w-4 h-4 text-white" />
+              {/* Step 1: Submit Idea */}
+              <div className={`flex flex-col items-center p-2 rounded-lg border ${
+                currentStep.step > 1 
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                  : currentStep.step === 1 
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-transparent'
+              }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-1 ${
+                  currentStep.step > 1 ? 'bg-green-500' : currentStep.step === 1 ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  {currentStep.step > 1 ? <CheckCircle className="w-4 h-4 text-white" /> : <FileText className="w-4 h-4 text-white dark:text-gray-400" />}
                 </div>
-                <span className="text-xs text-green-700 dark:text-green-300 text-center font-medium">Submit Idea</span>
-                <span className="text-xs text-green-600 dark:text-green-400">completed</span>
+                <span className={`text-xs text-center font-medium ${
+                  currentStep.step > 1 ? 'text-green-700 dark:text-green-300' : currentStep.step === 1 ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}>Submit Idea</span>
+                <span className={`text-xs ${
+                  currentStep.step > 1 ? 'text-green-600 dark:text-green-400' : currentStep.step === 1 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'
+                }`}>{currentStep.step > 1 ? 'completed' : currentStep.step === 1 ? 'start here' : 'pending'}</span>
               </div>
               
-              <div className="flex flex-col items-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mb-1">
-                  <Brain className="w-4 h-4 text-white" />
+              {/* Step 2: Intelligent Analysis */}
+              <div className={`flex flex-col items-center p-2 rounded-lg border ${
+                currentStep.step > 2 
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                  : currentStep.step === 2 
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-transparent'
+              }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-1 ${
+                  currentStep.step > 2 ? 'bg-green-500' : currentStep.step === 2 ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  {currentStep.step > 2 ? <CheckCircle className="w-4 h-4 text-white" /> : <Brain className="w-4 h-4 text-white dark:text-gray-400" />}
                 </div>
-                <span className="text-xs text-blue-700 dark:text-blue-300 text-center font-medium">Intelligent Analysis</span>
-                <span className="text-xs text-blue-600 dark:text-blue-400">available</span>
+                <span className={`text-xs text-center font-medium ${
+                  currentStep.step > 2 ? 'text-green-700 dark:text-green-300' : currentStep.step === 2 ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}>Intelligent Analysis</span>
+                <span className={`text-xs ${
+                  currentStep.step > 2 ? 'text-green-600 dark:text-green-400' : currentStep.step === 2 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'
+                }`}>{currentStep.step > 2 ? 'completed' : currentStep.step === 2 ? 'available' : 'locked'}</span>
               </div>
               
-              <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-1">
-                  <FileText className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              {/* Step 3: Business Plan */}
+              <div className={`flex flex-col items-center p-2 rounded-lg border ${
+                currentStep.step > 3 
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                  : currentStep.step === 3 
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-transparent'
+              }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-1 ${
+                  currentStep.step > 3 ? 'bg-green-500' : currentStep.step === 3 ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  {currentStep.step > 3 ? <CheckCircle className="w-4 h-4 text-white" /> : <FileText className="w-4 h-4 text-white dark:text-gray-400" />}
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 text-center">Business Plan</span>
-                <span className="text-xs text-gray-500">locked</span>
+                <span className={`text-xs text-center font-medium ${
+                  currentStep.step > 3 ? 'text-green-700 dark:text-green-300' : currentStep.step === 3 ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}>Business Plan</span>
+                <span className={`text-xs ${
+                  currentStep.step > 3 ? 'text-green-600 dark:text-green-400' : currentStep.step === 3 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'
+                }`}>{currentStep.step > 3 ? 'completed' : currentStep.step === 3 ? 'available' : 'locked'}</span>
               </div>
               
-              <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-1">
-                  <Presentation className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              {/* Step 4: Pitch Deck */}
+              <div className={`flex flex-col items-center p-2 rounded-lg border ${
+                currentStep.step > 4 
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                  : currentStep.step === 4 
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-transparent'
+              }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-1 ${
+                  currentStep.step > 4 ? 'bg-green-500' : currentStep.step === 4 ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  {currentStep.step > 4 ? <CheckCircle className="w-4 h-4 text-white" /> : <Presentation className="w-4 h-4 text-white dark:text-gray-400" />}
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 text-center">Pitch Deck</span>
-                <span className="text-xs text-gray-500">locked</span>
+                <span className={`text-xs text-center font-medium ${
+                  currentStep.step > 4 ? 'text-green-700 dark:text-green-300' : currentStep.step === 4 ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}>Pitch Deck</span>
+                <span className={`text-xs ${
+                  currentStep.step > 4 ? 'text-green-600 dark:text-green-400' : currentStep.step === 4 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'
+                }`}>{currentStep.step > 4 ? 'completed' : currentStep.step === 4 ? 'available' : 'locked'}</span>
               </div>
               
-              <div className="flex flex-col items-center p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center mb-1">
-                  <Users className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              {/* Step 5: Investor Ready */}
+              <div className={`flex flex-col items-center p-2 rounded-lg border ${
+                currentStep.step > 5 
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                  : currentStep.step === 5 
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-transparent'
+              }`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center mb-1 ${
+                  currentStep.step > 5 ? 'bg-green-500' : currentStep.step === 5 ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}>
+                  {currentStep.step > 5 ? <CheckCircle className="w-4 h-4 text-white" /> : <Users className="w-4 h-4 text-white dark:text-gray-400" />}
                 </div>
-                <span className="text-xs text-gray-600 dark:text-gray-400 text-center">Investor Ready</span>
-                <span className="text-xs text-gray-500">locked</span>
+                <span className={`text-xs text-center font-medium ${
+                  currentStep.step > 5 ? 'text-green-700 dark:text-green-300' : currentStep.step === 5 ? 'text-blue-700 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400'
+                }`}>Investor Ready</span>
+                <span className={`text-xs ${
+                  currentStep.step > 5 ? 'text-green-600 dark:text-green-400' : currentStep.step === 5 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500'
+                }`}>{currentStep.step > 5 ? 'completed' : currentStep.step === 5 ? 'available' : 'locked'}</span>
               </div>
             </div>
           </div>
