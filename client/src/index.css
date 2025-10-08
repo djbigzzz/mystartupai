@@ -832,9 +832,9 @@ html {
     hsl(280, 25%, 6%) 50%, 
     hsl(260, 30%, 8%) 75%, 
     hsl(240, 20%, 5%) 100%
-  );
-  background-size: 400% 400%;
-  animation: galaxyShift 20s ease infinite;
+  ) !important;
+  background-size: 400% 400% !important;
+  animation: galaxyShift 20s ease infinite !important;
 }
 
 .web3 body > * {
