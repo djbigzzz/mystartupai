@@ -14,34 +14,8 @@ export const CREDIT_PACKAGES = {
       "Standard export (PDF)"
     ]
   },
-  QUICK_500: {
-    name: "Quick 500",
-    credits: 500,
-    price: 5,
-    priceUSD: 5,
-    priceSol: 0.025,
-    features: [
-      "500 credits instantly",
-      "~2-3 Business Plans",
-      "~3 Pitch Decks",
-      "Perfect for quick top-ups"
-    ]
-  },
-  QUICK_1000: {
-    name: "Quick 1,000",
-    credits: 1000,
-    price: 10,
-    priceUSD: 10,
-    priceSol: 0.05,
-    features: [
-      "1,000 credits instantly",
-      "~5 Business Plans",
-      "~6 Pitch Decks",
-      "Great for regular users"
-    ]
-  },
-  BASIC: {
-    name: "Basic",
+  CORE: {
+    name: "Core",
     credits: 2000,
     price: 29,
     priceUSD: 29,
@@ -74,36 +48,6 @@ export const CREDIT_PACKAGES = {
       "All export formats",
       "Coming soon: MVP builder",
       "Coming soon: Investor matching"
-    ]
-  },
-  ENTERPRISE_10K: {
-    name: "Enterprise 10K",
-    credits: 10000,
-    price: 99,
-    priceUSD: 99,
-    priceSol: 0.50,
-    features: [
-      "10,000 credits",
-      "~50 Business Plans",
-      "~62 Pitch Decks",
-      "Everything in Pro",
-      "Best value per credit",
-      "Ideal for agencies & teams"
-    ]
-  },
-  ENTERPRISE_25K: {
-    name: "Enterprise 25K",
-    credits: 25000,
-    price: 199,
-    priceUSD: 199,
-    priceSol: 1.00,
-    features: [
-      "25,000 credits",
-      "~125 Business Plans",
-      "~156 Pitch Decks",
-      "Everything in Pro",
-      "Maximum value",
-      "Perfect for power users"
     ]
   }
 } as const;
@@ -182,7 +126,7 @@ export function getCreditsPerDollar(packageType: keyof typeof CREDIT_PACKAGES): 
 
 // Helper to get package by credits purchased
 export function getPackageByCredits(credits: number): keyof typeof CREDIT_PACKAGES | null {
-  if (credits === CREDIT_PACKAGES.BASIC.credits) return 'BASIC';
+  if (credits === CREDIT_PACKAGES.CORE.credits) return 'CORE';
   if (credits === CREDIT_PACKAGES.PRO.credits) return 'PRO';
   return null;
 }

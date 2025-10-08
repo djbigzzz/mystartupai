@@ -282,12 +282,8 @@ export default function PurchaseCreditsPage() {
 
   const packageIcons = {
     FREEMIUM: Sparkles,
-    QUICK_500: Zap,
-    QUICK_1000: Zap,
-    BASIC: CreditCard,
+    CORE: CreditCard,
     PRO: Crown,
-    ENTERPRISE_10K: Building,
-    ENTERPRISE_25K: Rocket,
   };
 
   return (
@@ -373,7 +369,7 @@ export default function PurchaseCreditsPage() {
                       data-testid={`button-select-${key.toLowerCase()}`}
                       disabled={key === 'FREEMIUM'}
                     >
-                      {key.startsWith('QUICK_') || key.startsWith('ENTERPRISE_') ? 'Buy Now' : 'Select Plan'}
+                      Select Plan
                     </Button>
                   )}
                 </CardFooter>

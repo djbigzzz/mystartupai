@@ -4287,7 +4287,7 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
   app.post("/api/payments/solana/create-payment",
     requireAuth,
     advancedRateLimit(10, 60000), // 10 requests per minute
-    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('packageType').isIn(['CORE', 'PRO']).withMessage('Package type must be CORE or PRO'),
     body('paymentMethod').isIn(['SOL', 'USDC']).withMessage('Payment method must be SOL or USDC'),
     handleValidationErrors,
     async (req, res) => {
@@ -4391,7 +4391,7 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
     advancedRateLimit(10, 60000),
     body('fromPubkey').isString().notEmpty().withMessage('From public key is required'),
     body('reference').isString().notEmpty().withMessage('Reference is required'),
-    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('packageType').isIn(['CORE', 'PRO']).withMessage('Package type must be CORE or PRO'),
     body('paymentMethod').isIn(['SOL', 'USDC']).withMessage('Payment method must be SOL or USDC'),
     handleValidationErrors,
     async (req, res) => {
@@ -4462,7 +4462,7 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
     requireAuth,
     advancedRateLimit(20, 60000), // 20 requests per minute (for polling)
     body('signature').isString().notEmpty().withMessage('Transaction signature is required'),
-    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('packageType').isIn(['CORE', 'PRO']).withMessage('Package type must be CORE or PRO'),
     body('paymentMethod').isIn(['SOL', 'USDC']).withMessage('Payment method must be SOL or USDC'),
     handleValidationErrors,
     async (req, res) => {
@@ -4599,8 +4599,8 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
           }
         );
 
-        // Update user's plan if purchasing BASIC or PRO
-        if (packageType === 'BASIC' || packageType === 'PRO') {
+        // Update user's plan if purchasing CORE or PRO
+        if (packageType === 'CORE' || packageType === 'PRO') {
           await storage.updateUser(userId, {
             currentPlan: packageType,
           });
@@ -4737,7 +4737,7 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
   app.post("/api/payments/paypal/create-order",
     requireAuth,
     advancedRateLimit(10, 15 * 60 * 1000), // 10 requests per 15 minutes
-    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('packageType').isIn(['CORE', 'PRO']).withMessage('Package type must be CORE or PRO'),
     handleValidationErrors,
     async (req, res) => {
       try {
@@ -4810,7 +4810,7 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
     requireAuth,
     advancedRateLimit(10, 15 * 60 * 1000), // 10 requests per 15 minutes
     body('orderId').isString().notEmpty().withMessage('Order ID is required'),
-    body('packageType').isIn(['BASIC', 'PRO']).withMessage('Package type must be BASIC or PRO'),
+    body('packageType').isIn(['CORE', 'PRO']).withMessage('Package type must be CORE or PRO'),
     handleValidationErrors,
     async (req, res) => {
       try {

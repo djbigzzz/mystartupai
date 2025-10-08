@@ -37,14 +37,10 @@ export function InsufficientCreditsModal({
 
   const shortfall = requiredCredits - currentCredits;
 
-  // Quick top-up packages that cover the shortfall
+  // Available packages that cover the shortfall
   const allPackages = [
-    { key: 'QUICK_500', ...CREDIT_PACKAGES.QUICK_500 },
-    { key: 'QUICK_1000', ...CREDIT_PACKAGES.QUICK_1000 },
-    { key: 'BASIC', ...CREDIT_PACKAGES.BASIC },
+    { key: 'CORE', ...CREDIT_PACKAGES.CORE },
     { key: 'PRO', ...CREDIT_PACKAGES.PRO },
-    { key: 'ENTERPRISE_10K', ...CREDIT_PACKAGES.ENTERPRISE_10K },
-    { key: 'ENTERPRISE_25K', ...CREDIT_PACKAGES.ENTERPRISE_25K },
   ];
   
   const matchingPackages = allPackages.filter(pkg => pkg.credits >= shortfall);
