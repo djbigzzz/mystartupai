@@ -1266,27 +1266,105 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   });
 
+  // Helper function to check and reset monthly credits for subscription users
+  async function checkAndResetMonthlyCredits(userId: number) {
+    try {
+      const user = await storage.getUser(userId);
+      if (!user) return;
+
+      // Only process for active subscriptions or cancel_at_period_end
+      if (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'cancel_at_period_end') {
+        return;
+      }
+
+      const now = new Date();
+      const creditsResetDate = user.creditsResetDate ? new Date(user.creditsResetDate) : null;
+      
+      // Check if we need to reset credits
+      if (creditsResetDate && now >= creditsResetDate) {
+        const currentPlan = user.currentPlan || 'FREEMIUM';
+        const packageInfo = CREDIT_PACKAGES[currentPlan as keyof typeof CREDIT_PACKAGES];
+        
+        if (!packageInfo) return;
+
+        // Calculate next reset date (1 month from now)
+        const nextResetDate = new Date(now);
+        nextResetDate.setMonth(nextResetDate.getMonth() + 1);
+        
+        const nextBillingDate = new Date(nextResetDate);
+
+        // Handle cancelled subscriptions
+        if (user.subscriptionStatus === 'cancel_at_period_end') {
+          // Downgrade to FREEMIUM at period end
+          await storage.updateUser(userId, {
+            currentPlan: 'FREEMIUM',
+            credits: CREDIT_PACKAGES.FREEMIUM.credits,
+            subscriptionStatus: 'expired',
+            creditsResetDate: nextResetDate.toISOString(),
+            monthlyCreditsUsed: 0,
+          });
+          console.log(`Subscription expired for user ${userId}, downgraded to FREEMIUM`);
+          return;
+        }
+
+        // Reset credits for active subscriptions
+        await storage.updateUser(userId, {
+          credits: packageInfo.credits,
+          creditsResetDate: nextResetDate.toISOString(),
+          nextBillingDate: nextBillingDate.toISOString(),
+          monthlyCreditsUsed: 0, // Reset overage tracking
+        });
+
+        console.log(`Credits reset for user ${userId}: ${packageInfo.credits} credits`);
+      }
+    } catch (error) {
+      console.error('Error checking/resetting monthly credits:', error);
+    }
+  }
+
   // Credit check middleware - checks if user has sufficient credits for a feature
   const checkCredits = (requiredCredits: number, featureName: string) => {
     return async (req: any, res: any, next: any) => {
       try {
         const userId = req.user.id;
+        
+        // Check and reset monthly credits if needed
+        await checkAndResetMonthlyCredits(userId);
+        
+        const user = await storage.getUser(userId);
         const userCredits = await storage.getUserCredits(userId);
         
-        if (userCredits < requiredCredits) {
-          return res.status(402).json({ 
-            message: `You don't have enough credits to generate ${featureName}. Please purchase more credits to continue.`,
-            current: userCredits
-          });
+        // If user has enough credits, proceed normally
+        if (userCredits >= requiredCredits) {
+          req.creditsToDeduct = {
+            amount: requiredCredits,
+            feature: featureName,
+            fromAllocation: true
+          };
+          next();
+          return;
+        }
+
+        // Check if user has active subscription (usage-based billing)
+        if (user && (user.subscriptionStatus === 'active' || user.subscriptionStatus === 'cancel_at_period_end')) {
+          // Allow usage and track overage
+          req.creditsToDeduct = {
+            amount: requiredCredits,
+            feature: featureName,
+            fromAllocation: false, // This is overage usage
+            currentCredits: userCredits
+          };
+          next();
+          return;
         }
         
-        // Store required credits in request for later deduction
-        req.creditsToDeduct = {
-          amount: requiredCredits,
-          feature: featureName
-        };
-        
-        next();
+        // No subscription and not enough credits - deny access
+        return res.status(402).json({ 
+          message: `You don't have enough credits to generate ${featureName}. Please purchase more credits or subscribe to a plan.`,
+          current: userCredits,
+          required: requiredCredits,
+          shortfall: requiredCredits - userCredits
+        });
       } catch (error) {
         console.error('Credit check error:', error);
         res.status(500).json({ message: "Failed to check credit balance" });
@@ -4599,10 +4677,21 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
           }
         );
 
-        // Update user's plan if purchasing CORE or PRO
+        // Activate subscription if purchasing CORE or PRO
         if (packageType === 'CORE' || packageType === 'PRO') {
+          const now = new Date();
+          const nextBillingDate = new Date(now);
+          nextBillingDate.setMonth(nextBillingDate.getMonth() + 1); // Billing 30 days from now
+          
+          const creditsResetDate = new Date(nextBillingDate);
+
           await storage.updateUser(userId, {
             currentPlan: packageType,
+            subscriptionStatus: 'active',
+            subscriptionStartDate: now.toISOString(),
+            nextBillingDate: nextBillingDate.toISOString(),
+            creditsResetDate: creditsResetDate.toISOString(),
+            monthlyCreditsUsed: 0, // Reset overage tracking
           });
         }
 
@@ -4935,6 +5024,92 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
           status: 'error',
           error: error instanceof Error ? error.message : "Unknown error"
         });
+      }
+    }
+  );
+
+  // Subscription Management Endpoints
+
+  // POST /api/subscriptions/cancel - Cancel subscription
+  app.post("/api/subscriptions/cancel",
+    requireAuth,
+    advancedRateLimit(5, 60000),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const user = await storage.getUser(userId);
+
+        if (!user || user.subscriptionStatus !== 'active') {
+          return res.status(400).json({ message: "No active subscription to cancel" });
+        }
+
+        // Mark as cancelled but keep active until period ends
+        await storage.updateUser(userId, {
+          subscriptionStatus: 'cancel_at_period_end',
+        });
+
+        res.json({
+          message: "Subscription will be cancelled at the end of the billing period.",
+          cancelDate: user.nextBillingDate,
+        });
+      } catch (error) {
+        console.error("Error cancelling subscription:", error);
+        res.status(500).json({ message: "Failed to cancel subscription" });
+      }
+    }
+  );
+
+  // POST /api/subscriptions/update-alert - Update usage alert
+  app.post("/api/subscriptions/update-alert",
+    requireAuth,
+    advancedRateLimit(10, 60000),
+    body('alertAmount').isInt({ min: 0 }).withMessage('Alert amount must be a positive integer'),
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { alertAmount } = req.body;
+
+        await storage.updateUser(userId, {
+          usageAlert: alertAmount,
+        });
+
+        res.json({
+          message: "Usage alert updated successfully",
+          alertAmount,
+        });
+      } catch (error) {
+        console.error("Error updating usage alert:", error);
+        res.status(500).json({ message: "Failed to update usage alert" });
+      }
+    }
+  );
+
+  // GET /api/subscriptions/info - Get subscription information
+  app.get("/api/subscriptions/info",
+    requireAuth,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const user = await storage.getUser(userId);
+
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+          currentPlan: user.currentPlan || 'FREEMIUM',
+          subscriptionStatus: user.subscriptionStatus || 'none',
+          credits: user.credits || 0,
+          monthlyCreditsUsed: user.monthlyCreditsUsed || 0,
+          subscriptionStartDate: user.subscriptionStartDate,
+          nextBillingDate: user.nextBillingDate,
+          creditsResetDate: user.creditsResetDate,
+          usageAlert: user.usageAlert,
+        });
+      } catch (error) {
+        console.error("Error fetching subscription info:", error);
+        res.status(500).json({ message: "Failed to fetch subscription info" });
       }
     }
   );
