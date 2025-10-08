@@ -58,6 +58,7 @@ export default function PitchDemoLive() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showInvestors, setShowInvestors] = useState(false);
   const [investorMatches, setInvestorMatches] = useState<any[]>([]);
+  const [investorFilter, setInvestorFilter] = useState<'all' | 'vc' | 'angel' | 'grant' | 'hackathon'>('all');
   
   const updateAgentStatus = (agentName: string, status: AgentStatus['status']) => {
     setAgentStatuses(prev => prev.map(agent => 
@@ -220,27 +221,27 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
       const slides: string[] = [];
       
       setPitchProgress(20);
-      await new Promise(r => setTimeout(r, 1500));
+      await new Promise(r => setTimeout(r, 2500));
       slides.push("🎯 Problem: 1.7B unbanked people in emerging markets lack access to credit");
       setPitchDeck([...slides]);
       
       setPitchProgress(40);
-      await new Promise(r => setTimeout(r, 1800));
+      await new Promise(r => setTimeout(r, 2500));
       slides.push("💡 Solution: Solana-powered DeFi lending with $0.00025 transaction fees");
       setPitchDeck([...slides]);
       
       setPitchProgress(60);
-      await new Promise(r => setTimeout(r, 1600));
+      await new Promise(r => setTimeout(r, 2500));
       slides.push("📈 Market: $127B TAM, 23% CAGR in Africa digital lending");
       setPitchDeck([...slides]);
       
       setPitchProgress(80);
-      await new Promise(r => setTimeout(r, 1500));
+      await new Promise(r => setTimeout(r, 2500));
       slides.push("💰 Traction: Y1 $2.4M → Y3 $24.5M revenue projection");
       setPitchDeck([...slides]);
       
       setPitchProgress(100);
-      await new Promise(r => setTimeout(r, 1200));
+      await new Promise(r => setTimeout(r, 2500));
       slides.push("🚀 Ask: $2M seed to scale across Nigeria, Kenya, Ghana");
       setPitchDeck([...slides]);
       
@@ -253,60 +254,92 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
       setShowInvestors(true);
       const matches: any[] = [];
       
-      await new Promise(r => setTimeout(r, 800));
-      matches.push({
-        type: 'vc',
-        name: 'a16z Crypto',
-        focus: 'Web3 Infrastructure',
-        match: 95,
-        description: 'Leading crypto VC, invested in Uniswap, Compound, OpenSea',
-        ticket: '$5-50M Series A/B'
-      });
-      setInvestorMatches([...matches]);
+      // 10 VCs
+      const vcs = [
+        { name: 'a16z Crypto', focus: 'Web3 Infrastructure', match: 95, description: 'Leading crypto VC, invested in Uniswap, Compound, OpenSea', ticket: '$5-50M Series A/B' },
+        { name: 'Paradigm', focus: 'DeFi Protocols', match: 92, description: 'Deep DeFi expertise, backed MakerDAO, dYdX, Coinbase', ticket: '$10-100M' },
+        { name: 'Multicoin Capital', focus: 'Web3 & DeFi', match: 90, description: 'Thesis-driven crypto fund, portfolio: Solana, Helium, Arweave', ticket: '$2-20M' },
+        { name: 'Pantera Capital', focus: 'Blockchain Infrastructure', match: 88, description: 'First US crypto fund, 100+ investments including Polkadot, 1inch', ticket: '$5-30M' },
+        { name: 'Jump Crypto', focus: 'DeFi & Payments', match: 87, description: 'Crypto arm of Jump Trading, deep liquidity expertise', ticket: '$10-50M' },
+        { name: 'Electric Capital', focus: 'Crypto Infrastructure', match: 85, description: 'Developer-focused, backed Aave, Dune, Worldcoin', ticket: '$1-15M' },
+        { name: 'Dragonfly Capital', focus: 'Global Crypto', match: 84, description: 'Cross-border crypto fund, Asia-US bridge, backed Compound, dYdX', ticket: '$3-25M' },
+        { name: 'Coinbase Ventures', focus: 'Crypto Ecosystem', match: 82, description: '400+ portfolio companies, strategic value beyond capital', ticket: '$500K-10M' },
+        { name: 'Framework Ventures', focus: 'DeFi Innovation', match: 80, description: 'Active in DeFi governance, backed Chainlink, Synthetix, NEAR', ticket: '$1-20M' },
+        { name: 'Polychain Capital', focus: 'Protocol Investments', match: 78, description: 'Focus on crypto protocols, early Coinbase, Filecoin investor', ticket: '$5-40M' }
+      ];
       
-      await new Promise(r => setTimeout(r, 800));
-      matches.push({
-        type: 'vc',
-        name: 'Paradigm',
-        focus: 'DeFi Protocols',
-        match: 92,
-        description: 'Deep DeFi expertise, backed MakerDAO, dYdX, Coinbase',
-        ticket: '$10-100M'
-      });
-      setInvestorMatches([...matches]);
+      // 10 Angels
+      const angels = [
+        { name: 'Balaji Srinivasan', focus: 'Crypto/Emerging Markets', match: 88, description: 'Ex-Coinbase CTO, prolific angel investor, Network State author', ticket: '$100K-1M' },
+        { name: 'Naval Ravikant', focus: 'Crypto & Startups', match: 86, description: 'AngelList founder, early Bitcoin advocate, 200+ angel investments', ticket: '$50K-500K' },
+        { name: 'Sandeep Nailwal', focus: 'Web3 Infrastructure', match: 84, description: 'Polygon co-founder, active DeFi angel investor', ticket: '$100K-750K' },
+        { name: 'Stani Kulechov', focus: 'DeFi Protocols', match: 82, description: 'Aave founder, DeFi innovation expert', ticket: '$50K-500K' },
+        { name: 'Do Kwon', focus: 'Algorithmic Finance', match: 80, description: 'Terra ecosystem builder, emerging markets focus', ticket: '$100K-1M' },
+        { name: 'Kain Warwick', focus: 'Synthetic Assets', match: 78, description: 'Synthetix founder, derivatives expert', ticket: '$50K-400K' },
+        { name: 'Rune Christensen', focus: 'Stablecoins', match: 76, description: 'MakerDAO founder, decentralized finance pioneer', ticket: '$100K-750K' },
+        { name: 'Ryan Sean Adams', focus: 'Crypto Investing', match: 74, description: 'Bankless co-founder, DeFi educator & investor', ticket: '$25K-250K' },
+        { name: 'Haseeb Qureshi', focus: 'DeFi & L1s', match: 72, description: 'Dragonfly partner, former 21.co, deep crypto thesis', ticket: '$50K-500K' },
+        { name: 'Linda Xie', focus: 'Early-Stage Crypto', match: 70, description: 'Scalar Capital co-founder, ex-Coinbase, NFT expert', ticket: '$25K-200K' }
+      ];
       
-      await new Promise(r => setTimeout(r, 800));
-      matches.push({
-        type: 'angel',
-        name: 'Balaji Srinivasan',
-        focus: 'Crypto/Emerging Markets',
-        match: 88,
-        description: 'Ex-Coinbase CTO, prolific angel investor',
-        ticket: '$100K-1M'
-      });
-      setInvestorMatches([...matches]);
+      // 6 Hackathons
+      const hackathons = [
+        { name: 'Colosseum Accelerator', focus: 'Solana Startups', match: 94, description: '$250K prize + $500K investment for winners', ticket: '$750K total' },
+        { name: 'ETHGlobal', focus: 'Ethereum Ecosystem', match: 90, description: 'Leading Ethereum hackathon series, $500K+ in prizes', ticket: '$100-250K' },
+        { name: 'HackMoney (DeFi)', focus: 'DeFi Innovation', match: 88, description: 'MetaCartel-backed DeFi hackathon, VC intros', ticket: '$50-150K' },
+        { name: 'Solana Hyperdrive', focus: 'Solana DeFi', match: 86, description: 'Focused on payments & lending, $300K prize pool', ticket: '$100-200K' },
+        { name: 'Encode Club', focus: 'Web3 Education', match: 84, description: '8-week bootcamp + hackathon, hiring partners', ticket: '$50-100K' },
+        { name: 'Chainlink Spring', focus: 'Oracle Applications', match: 82, description: 'Build with Chainlink oracles, $150K prizes', ticket: '$25-75K' }
+      ];
       
-      await new Promise(r => setTimeout(r, 800));
-      matches.push({
-        type: 'grant',
-        name: 'Solana Foundation',
-        focus: 'DeFi on Solana',
-        match: 90,
-        description: 'Up to $500K non-dilutive grants for Solana builders',
-        ticket: '$50-500K'
-      });
-      setInvestorMatches([...matches]);
+      // 20 Grants
+      const grants = [
+        { name: 'Solana Foundation', focus: 'DeFi on Solana', match: 90, description: 'Up to $500K non-dilutive grants for Solana builders', ticket: '$50-500K' },
+        { name: 'Ethereum Foundation', focus: 'Ethereum Infrastructure', match: 88, description: 'EF grants for public goods & core development', ticket: '$100-1M' },
+        { name: 'Uniswap Grants', focus: 'DeFi Tooling', match: 86, description: 'Support Uniswap ecosystem development', ticket: '$25-250K' },
+        { name: 'Aave Grants DAO', focus: 'Aave Ecosystem', match: 84, description: 'Community-governed grants for Aave integrations', ticket: '$10-150K' },
+        { name: 'Compound Grants', focus: 'Money Markets', match: 82, description: 'Build on Compound protocol', ticket: '$25-200K' },
+        { name: 'The Graph Foundation', focus: 'Data Infrastructure', match: 80, description: 'Subgraph development & Web3 data tools', ticket: '$5-100K' },
+        { name: 'Polygon Village', focus: 'Polygon Ecosystem', match: 78, description: 'Grants + incubation for Polygon builders', ticket: '$10-250K' },
+        { name: 'Filecoin Foundation', focus: 'Decentralized Storage', match: 76, description: 'Storage infrastructure & applications', ticket: '$50-500K' },
+        { name: 'Protocol Labs', focus: 'Web3 Infrastructure', match: 74, description: 'IPFS, libp2p, & decentralized tech', ticket: '$25-300K' },
+        { name: 'Optimism RetroPGF', focus: 'Public Goods', match: 72, description: 'Retroactive funding for Optimism impact', ticket: '$10-500K' },
+        { name: 'Arbitrum DAO', focus: 'L2 Applications', match: 70, description: 'Build on Arbitrum rollup', ticket: '$20-200K' },
+        { name: 'Avalanche Rush', focus: 'Avalanche DeFi', match: 68, description: 'Liquidity mining & DeFi incentives', ticket: '$100K-2M' },
+        { name: 'NEAR Foundation', focus: 'NEAR Ecosystem', match: 66, description: 'Grants for NEAR protocol builders', ticket: '$10-150K' },
+        { name: 'Cosmos Hub', focus: 'Inter-Blockchain', match: 64, description: 'IBC & cross-chain applications', ticket: '$25-250K' },
+        { name: 'Tezos Foundation', focus: 'Tezos Development', match: 62, description: 'Smart contracts & dApps on Tezos', ticket: '$10-200K' },
+        { name: 'Gitcoin Grants', focus: 'Public Goods', match: 60, description: 'Quadratic funding for open source', ticket: '$5-100K' },
+        { name: 'MakerDAO', focus: 'DAI Ecosystem', match: 58, description: 'MakerDAO protocol integrations', ticket: '$10-150K' },
+        { name: 'Gnosis Chain', focus: 'Payments & DAOs', match: 56, description: 'Build on Gnosis Chain', ticket: '$10-100K' },
+        { name: 'Web3 Foundation', focus: 'Polkadot Ecosystem', match: 54, description: 'Substrate & parachain development', ticket: '$30-500K' },
+        { name: 'Zcash Foundation', focus: 'Privacy Tech', match: 52, description: 'Zero-knowledge & privacy applications', ticket: '$25-200K' }
+      ];
       
-      await new Promise(r => setTimeout(r, 800));
-      matches.push({
-        type: 'hackathon',
-        name: 'Colosseum Accelerator',
-        focus: 'Solana Startups',
-        match: 94,
-        description: '$250K prize + $500K investment for winners',
-        ticket: '$750K total'
-      });
-      setInvestorMatches([...matches]);
+      // Simulate progressive loading
+      for (const vc of vcs) {
+        await new Promise(r => setTimeout(r, 400));
+        matches.push({ type: 'vc', ...vc });
+        setInvestorMatches([...matches]);
+      }
+      
+      for (const angel of angels) {
+        await new Promise(r => setTimeout(r, 400));
+        matches.push({ type: 'angel', ...angel });
+        setInvestorMatches([...matches]);
+      }
+      
+      for (const hackathon of hackathons) {
+        await new Promise(r => setTimeout(r, 400));
+        matches.push({ type: 'hackathon', ...hackathon });
+        setInvestorMatches([...matches]);
+      }
+      
+      for (const grant of grants) {
+        await new Promise(r => setTimeout(r, 400));
+        matches.push({ type: 'grant', ...grant });
+        setInvestorMatches([...matches]);
+      }
       
       return matches;
     }
@@ -366,9 +399,35 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-blue-900 to-purple-950 p-4 overflow-hidden relative">
-      {/* Animated gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 via-blue-500/10 to-purple-500/10 animate-pulse pointer-events-none" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 p-4 overflow-hidden relative">
+      {/* Multi-layer animated background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-purple-600/20 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-500/10 via-transparent to-transparent animate-pulse pointer-events-none" />
+      
+      {/* Animated mesh gradient overlay */}
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
+        <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob" />
+        <div className="absolute top-0 -right-4 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000" />
+      </div>
+      
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-blue-400/30 rounded-full animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${15 + Math.random() * 10}s`
+            }}
+          />
+        ))}
+      </div>
+      
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Compact Header */}
         <div className="text-center mb-4">
@@ -579,27 +638,62 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
               
               {/* Professional Slide Display */}
               {pitchDeck.length > currentSlide && (
-                <div className={`min-h-[400px] bg-gradient-to-br ${getSlideGradient(currentSlide)} p-12 flex flex-col justify-center items-center text-center relative`}>
+                <div className={`min-h-[500px] bg-gradient-to-br ${getSlideGradient(currentSlide)} p-16 flex flex-col justify-center relative overflow-hidden`}>
+                  {/* Decorative background elements */}
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+                  
                   {/* Slide Number */}
-                  <div className="absolute top-6 right-6 text-white/40 text-sm font-mono">
-                    {currentSlide + 1} / {pitchDeck.length}
+                  <div className="absolute top-8 right-8 flex items-center gap-3">
+                    <div className="text-white/40 text-sm font-mono tracking-wider">
+                      {currentSlide + 1} / {pitchDeck.length}
+                    </div>
                   </div>
                   
-                  {/* Slide Icon */}
-                  {(() => {
-                    const SlideIcon = getSlideIcon(currentSlide);
-                    return <SlideIcon className="h-16 w-16 text-white/80 mb-6" />;
-                  })()}
+                  {/* Logo placeholder (top left) */}
+                  <div className="absolute top-8 left-8">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg" />
+                      <span className="text-white/80 font-semibold text-sm">MyStartup.ai</span>
+                    </div>
+                  </div>
                   
-                  {/* Slide Title */}
-                  <h2 className="text-3xl font-bold text-white mb-6">
-                    {getSlideTitle(currentSlide)}
-                  </h2>
-                  
-                  {/* Slide Content */}
-                  <p className="text-xl text-white/90 max-w-3xl leading-relaxed">
-                    {pitchDeck[currentSlide].replace(/^[🎯💡📈💰🚀]\s*/, '')}
-                  </p>
+                  <div className="relative z-10 max-w-5xl mx-auto w-full">
+                    {/* Slide Icon with modern design */}
+                    <div className="flex items-center gap-4 mb-8">
+                      {(() => {
+                        const SlideIcon = getSlideIcon(currentSlide);
+                        return (
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-white/20 rounded-2xl blur-xl" />
+                            <div className="relative bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/20">
+                              <SlideIcon className="h-12 w-12 text-white" />
+                            </div>
+                          </div>
+                        );
+                      })()}
+                      <div className="h-px flex-1 bg-gradient-to-r from-white/40 to-transparent" />
+                    </div>
+                    
+                    {/* Slide Title with superior typography */}
+                    <h2 className="text-5xl md:text-6xl font-black text-white mb-8 leading-tight tracking-tight">
+                      {getSlideTitle(currentSlide)}
+                    </h2>
+                    
+                    {/* Slide Content with better hierarchy */}
+                    <div className="space-y-6">
+                      <p className="text-2xl md:text-3xl text-white/95 leading-relaxed font-light max-w-4xl">
+                        {pitchDeck[currentSlide].replace(/^[🎯💡📈💰🚀]\s*/, '')}
+                      </p>
+                      
+                      {/* Visual accent line */}
+                      <div className="flex gap-2 pt-4">
+                        <div className="h-1 w-20 bg-white/60 rounded-full" />
+                        <div className="h-1 w-12 bg-white/40 rounded-full" />
+                        <div className="h-1 w-8 bg-white/20 rounded-full" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
               
@@ -688,16 +782,66 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
         {showInvestors && (
           <Card className="mt-3 bg-slate-950/90 backdrop-blur border-green-500/30 animate-in fade-in slide-in-from-bottom duration-700">
             <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-white flex items-center gap-2 text-lg">
-                <Users className="h-5 w-5 text-green-400" />
-                Top Investor Matches
-              </CardTitle>
-              <CardDescription className="text-green-200">
-                {investorMatches.length} AI-matched opportunities for your startup
-              </CardDescription>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <CardTitle className="text-white flex items-center gap-2 text-lg">
+                    <Users className="h-5 w-5 text-green-400" />
+                    Top Investor Matches
+                  </CardTitle>
+                  <CardDescription className="text-green-200">
+                    {investorMatches.filter(inv => investorFilter === 'all' || inv.type === investorFilter).length} AI-matched opportunities
+                  </CardDescription>
+                </div>
+                
+                {/* Filter Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={investorFilter === 'all' ? 'default' : 'outline'}
+                    onClick={() => setInvestorFilter('all')}
+                    className={investorFilter === 'all' ? 'bg-green-600 hover:bg-green-700' : 'border-green-500/30 text-white hover:bg-green-500/20'}
+                  >
+                    All ({investorMatches.length})
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={investorFilter === 'vc' ? 'default' : 'outline'}
+                    onClick={() => setInvestorFilter('vc')}
+                    className={investorFilter === 'vc' ? 'bg-blue-600 hover:bg-blue-700' : 'border-blue-500/30 text-white hover:bg-blue-500/20'}
+                  >
+                    VCs ({investorMatches.filter(i => i.type === 'vc').length})
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={investorFilter === 'angel' ? 'default' : 'outline'}
+                    onClick={() => setInvestorFilter('angel')}
+                    className={investorFilter === 'angel' ? 'bg-purple-600 hover:bg-purple-700' : 'border-purple-500/30 text-white hover:bg-purple-500/20'}
+                  >
+                    Angels ({investorMatches.filter(i => i.type === 'angel').length})
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={investorFilter === 'grant' ? 'default' : 'outline'}
+                    onClick={() => setInvestorFilter('grant')}
+                    className={investorFilter === 'grant' ? 'bg-green-600 hover:bg-green-700' : 'border-green-500/30 text-white hover:bg-green-500/20'}
+                  >
+                    Grants ({investorMatches.filter(i => i.type === 'grant').length})
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={investorFilter === 'hackathon' ? 'default' : 'outline'}
+                    onClick={() => setInvestorFilter('hackathon')}
+                    className={investorFilter === 'hackathon' ? 'bg-yellow-600 hover:bg-yellow-700' : 'border-yellow-500/30 text-white hover:bg-yellow-500/20'}
+                  >
+                    Hackathons ({investorMatches.filter(i => i.type === 'hackathon').length})
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3 max-h-[500px] overflow-y-auto">
-              {investorMatches.map((investor, idx) => {
+              {investorMatches
+                .filter(investor => investorFilter === 'all' || investor.type === investorFilter)
+                .map((investor, idx) => {
                 const getTypeIcon = () => {
                   if (investor.type === 'vc') return Building2;
                   if (investor.type === 'angel') return Users;
@@ -717,34 +861,59 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                 return (
                   <div
                     key={idx}
-                    className={`bg-gradient-to-r ${getTypeColor()} border border-white/10 rounded-lg p-4 animate-in fade-in slide-in-from-left duration-500`}
-                    style={{ animationDelay: `${idx * 100}ms` }}
+                    className={`relative group bg-gradient-to-br ${getTypeColor()} border border-white/10 rounded-xl p-5 animate-in fade-in slide-in-from-left duration-500 hover:border-white/30 transition-all overflow-hidden`}
+                    style={{ animationDelay: `${idx * 50}ms` }}
                     data-testid={`investor-${idx}`}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-white/10 p-2 rounded-lg">
-                          <TypeIcon className="h-5 w-5 text-white" />
+                    {/* Hover effect overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3 flex-1">
+                          {/* Icon with glow effect */}
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-white/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20">
+                              <TypeIcon className="h-6 w-6 text-white" />
+                            </div>
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl font-bold text-white mb-1 truncate">{investor.name}</h3>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="border-white/30 text-white/80 text-xs capitalize">
+                                {investor.type}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-white">{investor.name}</h3>
-                          <p className="text-sm text-white/60 capitalize">{investor.type}</p>
+                        
+                        {/* Match score */}
+                        <div className="flex flex-col items-end">
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-green-400/20 rounded-full blur-xl" />
+                            <div className="relative text-3xl font-black text-green-400">{investor.match}%</div>
+                          </div>
+                          <p className="text-xs text-white/50 font-medium mt-1">Match Score</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-green-400">{investor.match}%</div>
-                        <p className="text-xs text-white/60">Match</p>
+                      
+                      {/* Focus area with icon */}
+                      <div className="flex items-center gap-2 mb-3 p-3 bg-white/5 rounded-lg border border-white/10">
+                        <Target className="h-4 w-4 text-cyan-400 flex-shrink-0" />
+                        <p className="text-sm text-white/90">
+                          <span className="font-semibold text-white">Focus:</span> {investor.focus}
+                        </p>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Target className="h-4 w-4 text-cyan-400" />
-                        <p className="text-sm text-white/80"><span className="font-semibold">Focus:</span> {investor.focus}</p>
-                      </div>
-                      <p className="text-sm text-white/70">{investor.description}</p>
-                      <div className="flex items-center gap-2 pt-2 border-t border-white/10">
-                        <DollarSign className="h-4 w-4 text-green-400" />
-                        <p className="text-sm font-semibold text-white">{investor.ticket}</p>
+                      
+                      {/* Description */}
+                      <p className="text-sm text-white/75 leading-relaxed mb-4">{investor.description}</p>
+                      
+                      {/* Ticket size */}
+                      <div className="flex items-center gap-2 pt-3 border-t border-white/10">
+                        <DollarSign className="h-5 w-5 text-green-400" />
+                        <p className="text-base font-bold text-white">{investor.ticket}</p>
                       </div>
                     </div>
                   </div>
