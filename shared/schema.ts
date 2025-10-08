@@ -17,8 +17,17 @@ export const users = pgTable("users", {
   authMethod: text("auth_method").default("email"), // email, google, phantom, metamask, walletconnect
 
   // Credit and payment system
-  credits: integer("credits").default(200), // Start with 200 free credits (Freemium tier)
+  credits: integer("credits").default(200), // Current available credits
   currentPlan: text("current_plan").default("FREEMIUM"), // FREEMIUM, CORE, PRO
+  
+  // Subscription management
+  subscriptionStatus: text("subscription_status").default("none"), // active, cancelled, expired, none
+  subscriptionStartDate: timestamp("subscription_start_date"),
+  nextBillingDate: timestamp("next_billing_date"),
+  creditsResetDate: timestamp("credits_reset_date"),
+  monthlyCreditsUsed: integer("monthly_credits_used").default(0), // Overage credits used this billing cycle
+  usageAlert: integer("usage_alert"), // Spending alert threshold in dollars
+  
   stripeCustomerId: text("stripe_customer_id"),
   paypalCustomerId: text("paypal_customer_id"),
 
