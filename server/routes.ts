@@ -5120,6 +5120,35 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
     }
   );
 
+  // POST /api/subscriptions/reactivate - Reactivate cancelled subscription
+  app.post("/api/subscriptions/reactivate",
+    requireAuth,
+    advancedRateLimit(5, 60000),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const user = await storage.getUser(userId);
+
+        if (!user || user.subscriptionStatus !== 'cancel_at_period_end') {
+          return res.status(400).json({ message: "No cancelled subscription to reactivate" });
+        }
+
+        // Reactivate the subscription
+        await storage.updateUser(userId, {
+          subscriptionStatus: 'active',
+        });
+
+        res.json({
+          message: "Subscription reactivated successfully! Your subscription will continue as normal.",
+          nextBillingDate: user.nextBillingDate,
+        });
+      } catch (error) {
+        console.error("Error reactivating subscription:", error);
+        res.status(500).json({ message: "Failed to reactivate subscription" });
+      }
+    }
+  );
+
   // POST /api/subscriptions/update-alert - Update usage alert
   app.post("/api/subscriptions/update-alert",
     requireAuth,

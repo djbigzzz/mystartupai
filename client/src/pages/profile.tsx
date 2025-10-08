@@ -8,9 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft, Coins, CreditCard, TrendingUp } from "lucide-react";
+import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft, Coins, CreditCard, TrendingUp, AlertTriangle, Heart, Sparkles } from "lucide-react";
 import { CREDIT_PACKAGES } from "@shared/constants";
 import TwoFactorAuth from "@/components/profile/two-factor-auth";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
@@ -124,6 +125,9 @@ export default function Profile() {
     }
   });
 
+  // Cancel confirmation dialog state
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+
   // Cancel subscription mutation
   const cancelSubscriptionMutation = useMutation({
     mutationFn: async () => {
@@ -137,11 +141,35 @@ export default function Profile() {
         description: data.message || "Your subscription will be cancelled at the end of the billing period.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      setShowCancelDialog(false);
     },
     onError: (error: any) => {
       toast({
         title: "Cancellation Failed",
         description: error.message || "Failed to cancel subscription",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Reactivate subscription mutation
+  const reactivateSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("/api/subscriptions/reactivate", {
+        method: "POST",
+      });
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Subscription Reactivated! 🎉",
+        description: data.message || "Your subscription has been reactivated and will continue as normal.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Reactivation Failed",
+        description: error.message || "Failed to reactivate subscription",
         variant: "destructive",
       });
     }
@@ -915,10 +943,32 @@ export default function Profile() {
                       </p>
                       <Button 
                         variant="destructive"
-                        onClick={() => cancelSubscriptionMutation.mutate()}
+                        onClick={() => setShowCancelDialog(true)}
                         disabled={cancelSubscriptionMutation.isPending}
                       >
-                        {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Cancel Subscription'}
+                        Cancel Subscription
+                      </Button>
+                    </div>
+                  </>
+                )}
+
+                {/* Reactivate Subscription */}
+                {user?.subscriptionStatus === 'cancel_at_period_end' && (
+                  <>
+                    <Separator />
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium text-green-600 dark:text-green-500">Reactivate Subscription</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Your subscription is scheduled to cancel at the end of the billing period. 
+                        You can reactivate it anytime before then to continue enjoying all features.
+                      </p>
+                      <Button 
+                        variant="default"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => reactivateSubscriptionMutation.mutate()}
+                        disabled={reactivateSubscriptionMutation.isPending}
+                      >
+                        {reactivateSubscriptionMutation.isPending ? 'Reactivating...' : 'Reactivate Subscription'}
                       </Button>
                     </div>
                   </>
@@ -990,6 +1040,62 @@ export default function Profile() {
             onClose={() => setShow2FADialog(false)}
           />
         )}
+
+        {/* Cancel Subscription Confirmation Dialog */}
+        <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                  <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-500" />
+                </div>
+                <DialogTitle className="text-xl">Wait! Before you go...</DialogTitle>
+              </div>
+              <DialogDescription className="text-base space-y-3 pt-2">
+                <p className="font-medium text-foreground">
+                  We'd hate to see you leave! Here's what you'll miss:
+                </p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <span>AI-powered business plans and pitch decks</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <span>Advanced market research and financial modeling</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <span>Priority support and early access to new features</span>
+                  </li>
+                </ul>
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800 mt-4">
+                  <p className="text-sm text-blue-900 dark:text-blue-300 flex items-start gap-2">
+                    <Heart className="h-4 w-4 shrink-0 mt-0.5" />
+                    <span>Your subscription will remain active until {user?.nextBillingDate ? new Date(user.nextBillingDate).toLocaleDateString() : 'the end of your billing period'}. You can reactivate anytime before then!</span>
+                  </p>
+                </div>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+              <Button
+                variant="outline"
+                onClick={() => setShowCancelDialog(false)}
+                className="w-full sm:w-auto order-2 sm:order-1"
+              >
+                Keep My Subscription
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => cancelSubscriptionMutation.mutate()}
+                disabled={cancelSubscriptionMutation.isPending}
+                className="w-full sm:w-auto order-1 sm:order-2"
+              >
+                {cancelSubscriptionMutation.isPending ? 'Cancelling...' : 'Yes, Cancel Subscription'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
           </div>
         </div>
       </div>

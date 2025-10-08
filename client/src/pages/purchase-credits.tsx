@@ -125,6 +125,30 @@ export default function PurchaseCreditsPage() {
     },
   });
 
+  // Reactivate subscription mutation
+  const reactivateSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/subscriptions/reactivate', {
+        method: 'POST',
+      });
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: 'Subscription Reactivated! 🎉',
+        description: data.message || 'Your subscription has been reactivated and will continue as normal.',
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/credits/balance'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Reactivation Failed',
+        description: error.message || 'Failed to reactivate subscription',
+        variant: 'destructive',
+      });
+    },
+  });
+
   // Generate QR code for Solana Pay using a QR code API
   const generateQRCode = async (url: string) => {
     try {
@@ -392,14 +416,26 @@ export default function PurchaseCreditsPage() {
 
                 <CardFooter>
                   {isCurrentPlan ? (
-                    <Button 
-                      variant="outline" 
-                      className="w-full" 
-                      disabled
-                      data-testid="button-current-plan"
-                    >
-                      {subscriptionStatus === 'cancel_at_period_end' ? 'Cancelled' : 'Current Plan'}
-                    </Button>
+                    subscriptionStatus === 'cancel_at_period_end' ? (
+                      <Button 
+                        variant="default"
+                        className="w-full bg-green-600 hover:bg-green-700"
+                        onClick={() => reactivateSubscriptionMutation.mutate()}
+                        disabled={reactivateSubscriptionMutation.isPending}
+                        data-testid="button-reactivate-plan"
+                      >
+                        {reactivateSubscriptionMutation.isPending ? 'Reactivating...' : 'Reactivate Subscription'}
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        className="w-full" 
+                        disabled
+                        data-testid="button-current-plan"
+                      >
+                        Current Plan
+                      </Button>
+                    )
                   ) : (
                     <Button
                       onClick={() => handleSelectPackage(key)}
