@@ -302,9 +302,9 @@ export default function PurchaseCreditsPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {Object.entries(CREDIT_PACKAGES).map(([key, pkg]) => {
-            const Icon = packageIcons[key as keyof typeof packageIcons];
+            const Icon = packageIcons[key as keyof typeof packageIcons] || Coins;
             const isCurrentPlan = key === currentPlan;
             const isPro = key === 'PRO';
             
