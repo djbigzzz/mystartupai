@@ -12,6 +12,12 @@ Preferred communication style: Simple, everyday language.
 - **3-Theme Mode System**: Light, Dark, and Web3 (futuristic galaxy) themes with cycling toggle and localStorage persistence
   - Web3 theme features animated galaxy background, neon cyan/purple/magenta colors, starfield effects, and glowing UI elements
   - Theme toggle button in header cycles through all three modes
+- **Brand Gradient Styling**: Consistent gradient branding across platform using `from-blue-600 via-purple-600 to-blue-700`
+  - Marketing home page: 6 major section headings use gradient text (bg-clip-text text-transparent)
+  - Dashboard welcome header: Full gradient background with theme compatibility
+  - Dashboard CardTitle: Gradient text for "Your Next Step" section
+  - Logo sizing: Increased dashboard sidebar logo by 1.4x (sm→md, 40px→56px) for enhanced visibility
+  - All gradients tested and verified across Light, Dark, and Web3 themes
 - **Credits Display Fix**: Corrected API field accessor from `balance` to `credits` to properly display user credit balance
 - **Profile Page Navigation**: Added consistent sidebar navigation matching dashboard layout with responsive mobile/desktop support
 - **Logo Branding**: MyStartup.ai logo added to all pages for consistent branding
