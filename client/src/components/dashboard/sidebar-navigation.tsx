@@ -410,9 +410,6 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
               </Button>
             </Link>
             <ThemeToggle />
-            <Button variant="outline" size="sm" className="px-3" title="Help" data-testid="button-help">
-              <HelpCircle className="h-4 w-4" />
-            </Button>
           </div>
         )}
 
@@ -426,9 +423,6 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
             <div className="w-10 h-10 flex justify-center items-center">
               <ThemeToggle />
             </div>
-            <Button variant="ghost" size="sm" className="w-10 h-10 p-0" title="Help" data-testid="button-help-collapsed">
-              <HelpCircle className="h-4 w-4" />
-            </Button>
           </div>
         )}
       </div>
