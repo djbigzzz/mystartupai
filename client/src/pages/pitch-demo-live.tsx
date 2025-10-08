@@ -52,6 +52,9 @@ export default function PitchDemoLive() {
     { name: "Market Research", status: 'idle', icon: Database, color: 'green' },
     { name: "Financial Model", status: 'idle', icon: Zap, color: 'orange' },
   ]);
+  const [pitchDeck, setPitchDeck] = useState<string[]>([]);
+  const [showPitchGen, setShowPitchGen] = useState(false);
+  const [pitchProgress, setPitchProgress] = useState(0);
   
   const updateAgentStatus = (agentName: string, status: AgentStatus['status']) => {
     setAgentStatuses(prev => prev.map(agent => 
@@ -208,6 +211,40 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
     }
   }, [marketData, financialData, totalTime, idea]);
 
+  const generatePitchDeckMutation = useMutation({
+    mutationFn: async () => {
+      setShowPitchGen(true);
+      const slides: string[] = [];
+      
+      setPitchProgress(20);
+      await new Promise(r => setTimeout(r, 1500));
+      slides.push("🎯 Problem: 1.7B unbanked people in emerging markets lack access to credit");
+      setPitchDeck([...slides]);
+      
+      setPitchProgress(40);
+      await new Promise(r => setTimeout(r, 1800));
+      slides.push("💡 Solution: Solana-powered DeFi lending with $0.00025 transaction fees");
+      setPitchDeck([...slides]);
+      
+      setPitchProgress(60);
+      await new Promise(r => setTimeout(r, 1600));
+      slides.push("📈 Market: $127B TAM, 23% CAGR in Africa digital lending");
+      setPitchDeck([...slides]);
+      
+      setPitchProgress(80);
+      await new Promise(r => setTimeout(r, 1500));
+      slides.push("💰 Traction: Y1 $2.4M → Y3 $24.5M revenue projection");
+      setPitchDeck([...slides]);
+      
+      setPitchProgress(100);
+      await new Promise(r => setTimeout(r, 1200));
+      slides.push("🚀 Ask: $2M seed to scale across Nigeria, Kenya, Ghana");
+      setPitchDeck([...slides]);
+      
+      return slides;
+    }
+  });
+
   const handleGenerate = () => {
     setMessages([]);
     setFinalPlan("");
@@ -215,6 +252,9 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
     setProgress(0);
     setMarketData(null);
     setFinancialData(null);
+    setPitchDeck([]);
+    setShowPitchGen(false);
+    setPitchProgress(0);
     setAgentStatuses(prev => prev.map(a => ({ ...a, status: 'idle' as const })));
     generatePlanMutation.mutate(idea);
   };
@@ -235,20 +275,22 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
   };
 
   return (
-    <div className="min-h-screen bg-background dark p-4 overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-blue-900 to-purple-950 p-4 overflow-hidden relative">
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 via-blue-500/10 to-purple-500/10 animate-pulse pointer-events-none" />
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Compact Header */}
         <div className="text-center mb-4">
-          <h1 className="text-3xl font-bold text-foreground mb-1">
+          <h1 className="text-3xl font-bold text-white mb-1">
             Agentic AI Co-Founder
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-blue-200">
             Live Multi-Agent Coordination Demo
           </p>
         </div>
 
         {/* Agent Status Bar */}
-        <Card className="mb-3 bg-card border-border">
+        <Card className="mb-3 bg-slate-900/70 backdrop-blur border-blue-500/20">
           <CardContent className="pt-4 pb-3">
             <div className="flex items-center justify-between gap-4 mb-3">
               {agentStatuses.map((agent, idx) => {
@@ -263,11 +305,11 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                       <Icon className={`h-4 w-4 text-white ${agent.status === 'working' ? 'animate-spin' : ''}`} />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-foreground">{agent.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{agent.status}</p>
+                      <p className="text-xs font-medium text-white">{agent.name}</p>
+                      <p className="text-xs text-blue-200 capitalize">{agent.status}</p>
                     </div>
                     {idx < agentStatuses.length - 1 && (
-                      <ArrowRight className="h-4 w-4 text-muted-foreground ml-2" />
+                      <ArrowRight className="h-4 w-4 text-blue-400 ml-2" />
                     )}
                   </div>
                 );
@@ -278,19 +320,19 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
         </Card>
 
         {/* Input Section - Compact */}
-        <Card className="mb-3 bg-card border-border">
+        <Card className="mb-3 bg-slate-900/70 backdrop-blur border-blue-500/20">
           <CardContent className="pt-4 space-y-3">
             <Textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
-              className="min-h-16 bg-input text-foreground border-border text-sm"
+              className="min-h-16 bg-slate-950/50 text-white border-blue-500/30 placeholder:text-blue-300/50 text-sm"
               placeholder="e.g., A DeFi lending protocol for emerging markets"
               data-testid="input-startup-idea"
             />
             <Button
               onClick={handleGenerate}
               disabled={generatePlanMutation.isPending}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
               data-testid="button-generate-plan"
             >
               {generatePlanMutation.isPending ? (
@@ -310,16 +352,16 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
 
         <div className="grid md:grid-cols-2 gap-3">
           {/* Agent Communication Flow */}
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-900/70 backdrop-blur border-purple-500/20">
             <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-foreground flex items-center gap-2 text-lg">
+              <CardTitle className="text-white flex items-center gap-2 text-lg">
                 <Bot className="h-5 w-5" />
                 Agent Messages
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 max-h-[400px] overflow-y-auto">
               {messages.length === 0 && (
-                <p className="text-center text-muted-foreground py-4 text-sm">
+                <p className="text-center text-blue-200 py-4 text-sm">
                   Click "Start" to see agents communicate
                 </p>
               )}
@@ -334,22 +376,22 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="text-xs font-semibold text-foreground">{msg.from}</span>
-                          <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">{msg.to}</span>
+                          <span className="text-xs font-semibold text-white">{msg.from}</span>
+                          <ArrowRight className="h-2.5 w-2.5 text-blue-400" />
+                          <span className="text-xs text-blue-200">{msg.to}</span>
                           {msg.elapsedMs !== undefined && (
-                            <span className="ml-auto text-xs text-primary font-mono">
+                            <span className="ml-auto text-xs text-cyan-400 font-mono">
                               +{(msg.elapsedMs / 1000).toFixed(2)}s
                             </span>
                           )}
                         </div>
-                        <Badge variant="outline" className="mb-1.5 text-xs">
+                        <Badge variant="outline" className="mb-1.5 text-xs border-purple-500/50 text-purple-200">
                           {msg.type}
                         </Badge>
-                        <div className="bg-muted rounded-lg p-2 text-xs text-foreground font-mono">
+                        <div className="bg-slate-950/50 rounded-lg p-2 text-xs text-blue-100 font-mono">
                           {msg.content.length > 150 ? (
                             <details>
-                              <summary className="cursor-pointer text-primary hover:text-primary/80">
+                              <summary className="cursor-pointer text-cyan-400 hover:text-cyan-300">
                                 View ({msg.content.length} chars)
                               </summary>
                               <pre className="mt-2 text-xs overflow-x-auto whitespace-pre-wrap">{msg.content}</pre>
@@ -361,14 +403,14 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                       </div>
                     </div>
                     {idx < messages.length - 1 && (
-                      <div className="ml-4 my-1.5 border-l-2 border-border h-3" />
+                      <div className="ml-4 my-1.5 border-l-2 border-purple-500/30 h-3" />
                     )}
                   </div>
                 );
               })}
               
               {generatePlanMutation.isPending && (
-                <div className="flex items-center gap-2 text-primary animate-pulse">
+                <div className="flex items-center gap-2 text-cyan-400 animate-pulse">
                   <Bot className="h-4 w-4 animate-spin" />
                   <span className="text-sm">Coordinating...</span>
                 </div>
@@ -377,22 +419,22 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
           </Card>
 
           {/* Generated Business Plan */}
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-900/70 backdrop-blur border-green-500/20">
             <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-foreground flex items-center gap-2 text-lg">
+              <CardTitle className="text-white flex items-center gap-2 text-lg">
                 <CheckCircle2 className="h-5 w-5" />
                 Business Plan
               </CardTitle>
             </CardHeader>
             <CardContent className="max-h-[400px] overflow-y-auto">
               {!finalPlan && (
-                <p className="text-center text-muted-foreground py-4 text-sm">
+                <p className="text-center text-blue-200 py-4 text-sm">
                   Business plan will appear here
                 </p>
               )}
               {finalPlan && (
                 <div className="prose prose-sm prose-invert max-w-none">
-                  <pre className="whitespace-pre-wrap text-xs text-foreground bg-muted p-3 rounded-lg">
+                  <pre className="whitespace-pre-wrap text-xs text-blue-100 bg-slate-950/50 p-3 rounded-lg">
                     {finalPlan}
                   </pre>
                 </div>
@@ -401,86 +443,107 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
           </Card>
         </div>
 
-        {/* Next Steps - Appears after plan is ready */}
-        {finalPlan && (
-          <Card className="mt-3 bg-card border-border animate-in fade-in slide-in-from-bottom duration-700">
+        {/* Next Steps - Sequential Flow */}
+        {finalPlan && !showPitchGen && pitchDeck.length === 0 && (
+          <Card className="mt-3 bg-card/80 backdrop-blur border-blue-500/30 animate-in fade-in slide-in-from-bottom duration-700">
             <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-foreground flex items-center gap-2 text-lg">
-                <Sparkles className="h-5 w-5" />
-                What's Next?
+              <CardTitle className="text-white flex items-center gap-2 text-lg">
+                <Presentation className="h-5 w-5 text-blue-400" />
+                Step 2: Build Your Pitch Deck
               </CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Continue building your startup with AI-powered tools
+              <CardDescription className="text-blue-200">
+                Generate an investor-ready pitch deck with one click
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-3 gap-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start h-auto py-3 px-4"
-                  data-testid="button-find-investors"
-                >
-                  <div className="flex flex-col items-start gap-1 w-full">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      <span className="font-semibold">Find Investors</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">AI-matched VCs & angels</span>
+              <Button 
+                onClick={() => generatePitchDeckMutation.mutate()}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                data-testid="button-build-pitch-deck"
+              >
+                <Sparkles className="mr-2 h-4 w-4" />
+                Generate Pitch Deck Now
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pitch Deck Generation in Progress */}
+        {showPitchGen && (
+          <Card className="mt-3 bg-card/80 backdrop-blur border-purple-500/30 animate-in fade-in slide-in-from-bottom duration-700">
+            <CardHeader className="pb-3 pt-4">
+              <CardTitle className="text-white flex items-center gap-2 text-lg">
+                <Presentation className="h-5 w-5 text-purple-400 animate-pulse" />
+                Generating Pitch Deck...
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Progress value={pitchProgress} className="h-2" />
+              <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                {pitchDeck.map((slide, idx) => (
+                  <div 
+                    key={idx} 
+                    className="bg-gradient-to-r from-blue-950/50 to-purple-950/50 border border-blue-500/20 rounded-lg p-3 animate-in fade-in slide-in-from-left duration-500"
+                  >
+                    <p className="text-sm text-white font-medium">Slide {idx + 1}</p>
+                    <p className="text-xs text-blue-200 mt-1">{slide}</p>
                   </div>
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start h-auto py-3 px-4"
-                  data-testid="button-build-pitch-deck"
-                >
-                  <div className="flex flex-col items-start gap-1 w-full">
-                    <div className="flex items-center gap-2">
-                      <Presentation className="h-4 w-4" />
-                      <span className="font-semibold">Build Pitch Deck</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">YC-standard slides</span>
-                  </div>
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start h-auto py-3 px-4"
-                  data-testid="button-build-mvp"
-                >
-                  <div className="flex flex-col items-start gap-1 w-full">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4" />
-                      <span className="font-semibold">Build MVP</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">AI code generation</span>
-                  </div>
-                </Button>
+                ))}
               </div>
+              {generatePitchDeckMutation.isPending && (
+                <div className="flex items-center gap-2 text-purple-400 animate-pulse">
+                  <Bot className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Creating slides...</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Find Investors - Only shows after pitch deck is complete */}
+        {pitchDeck.length === 5 && (
+          <Card className="mt-3 bg-card/80 backdrop-blur border-green-500/30 animate-in fade-in slide-in-from-bottom duration-700">
+            <CardHeader className="pb-3 pt-4">
+              <CardTitle className="text-white flex items-center gap-2 text-lg">
+                <Users className="h-5 w-5 text-green-400" />
+                Step 3: Find Investors
+              </CardTitle>
+              <CardDescription className="text-green-200">
+                AI-matched VCs and angels for your startup
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                data-testid="button-find-investors"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Match With Investors
+              </Button>
             </CardContent>
           </Card>
         )}
 
         {/* Stats Row - Compact */}
         <div className="grid grid-cols-3 gap-3 mt-3">
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-900/70 backdrop-blur border-cyan-500/20">
             <CardContent className="pt-4 pb-3 text-center">
-              <p className="text-2xl font-bold text-primary">{agentStatuses.length}</p>
-              <p className="text-xs text-muted-foreground">Agents</p>
+              <p className="text-2xl font-bold text-cyan-400">{agentStatuses.length}</p>
+              <p className="text-xs text-blue-200">Agents</p>
             </CardContent>
           </Card>
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-900/70 backdrop-blur border-cyan-500/20">
             <CardContent className="pt-4 pb-3 text-center">
-              <p className="text-2xl font-bold text-primary font-mono">
+              <p className="text-2xl font-bold text-cyan-400 font-mono">
                 {totalTime > 0 ? `${totalTime.toFixed(1)}s` : '~10s'}
               </p>
-              <p className="text-xs text-muted-foreground">Generation Time</p>
+              <p className="text-xs text-blue-200">Generation Time</p>
             </CardContent>
           </Card>
-          <Card className="bg-card border-border">
+          <Card className="bg-slate-900/70 backdrop-blur border-cyan-500/20">
             <CardContent className="pt-4 pb-3 text-center">
-              <p className="text-2xl font-bold text-primary">400ms</p>
-              <p className="text-xs text-muted-foreground">Solana Finality</p>
+              <p className="text-2xl font-bold text-cyan-400">400ms</p>
+              <p className="text-xs text-blue-200">Solana Finality</p>
             </CardContent>
           </Card>
         </div>
