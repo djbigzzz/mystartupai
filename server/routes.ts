@@ -1266,6 +1266,29 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   });
 
+  // Helper function to deduct credits and track overage usage
+  async function deductCreditsWithTracking(
+    req: any,
+    userId: number,
+    amount: number,
+    description: string,
+    feature: string,
+    relatedId?: number
+  ) {
+    // Deduct the credits
+    await storage.deductCredits(userId, amount, description, feature, relatedId);
+
+    // Track only the precise overage amount (not the full feature cost)
+    const overageAmount = req.creditsToDeduct?.overageAmount || 0;
+    if (overageAmount > 0) {
+      const user = await storage.getUser(userId);
+      const currentOverage = user?.monthlyCreditsUsed || 0;
+      await storage.updateUser(userId, {
+        monthlyCreditsUsed: currentOverage + overageAmount
+      });
+    }
+  }
+
   // Helper function to check and reset monthly credits for subscription users
   async function checkAndResetMonthlyCredits(userId: number) {
     try {
@@ -1339,7 +1362,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
           req.creditsToDeduct = {
             amount: requiredCredits,
             feature: featureName,
-            fromAllocation: true
+            fromAllocation: true,
+            overageAmount: 0
           };
           next();
           return;
@@ -1347,12 +1371,17 @@ Issued At: ${new Date(timestamp).toISOString()}`;
 
         // Check if user has active subscription (usage-based billing)
         if (user && (user.subscriptionStatus === 'active' || user.subscriptionStatus === 'cancel_at_period_end')) {
-          // Allow usage and track overage
+          // Clamp balance to 0 minimum to handle negative balances from prior overage
+          const availableCredits = Math.max(userCredits, 0);
+          
+          // Calculate precise overage amount (cannot exceed feature cost)
+          const overageAmount = Math.min(requiredCredits, Math.max(0, requiredCredits - availableCredits));
+          
           req.creditsToDeduct = {
             amount: requiredCredits,
             feature: featureName,
-            fromAllocation: false, // This is overage usage
-            currentCredits: userCredits
+            fromAllocation: availableCredits >= requiredCredits,
+            overageAmount: overageAmount
           };
           next();
           return;
@@ -1423,8 +1452,9 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         businessPlan
       });
 
-      // Deduct credits after successful generation
-      await storage.deductCredits(
+      // Deduct credits and track overage
+      await deductCreditsWithTracking(
+        req,
         userId,
         CREDIT_COSTS.BUSINESS_PLAN,
         'Business Plan generation',
@@ -1475,8 +1505,9 @@ Issued At: ${new Date(timestamp).toISOString()}`;
       
       const updatedIdea = await storage.updateStartupIdea(id, { businessPlan });
       
-      // Deduct credits after successful generation
-      await storage.deductCredits(
+      // Deduct credits and track overage
+      await deductCreditsWithTracking(
+        req,
         userId,
         CREDIT_COSTS.BUSINESS_PLAN,
         'Business Plan generation',
@@ -1565,8 +1596,9 @@ Issued At: ${new Date(timestamp).toISOString()}`;
       
       const updatedIdea = await storage.updateStartupIdea(id, { pitchDeck });
       
-      // Deduct credits after successful generation
-      await storage.deductCredits(
+      // Deduct credits and track overage
+      await deductCreditsWithTracking(
+        req,
         userId,
         CREDIT_COSTS.PITCH_DECK,
         'Pitch Deck generation',
