@@ -16,9 +16,16 @@ export function CreditProvider({ children }: { children: ReactNode }) {
   const [requiredCredits, setRequiredCredits] = useState(0);
   const [featureName, setFeatureName] = useState('');
 
-  // Fetch credit balance
+  // Check if user is authenticated
+  const { data: user } = useQuery<any>({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
+
+  // Fetch credit balance only if authenticated
   const { data: creditBalance } = useQuery<{ credits: number; transactions: any[] }>({
     queryKey: ["/api/credits/balance"],
+    enabled: !!user,
     refetchInterval: 30000,
   });
 
@@ -38,8 +45,8 @@ export function CreditProvider({ children }: { children: ReactNode }) {
 
   return (
     <CreditContext.Provider value={{ currentCredits, showInsufficientCreditsModal, closeInsufficientCreditsModal }}>
-      {/* Site-wide low credits banner */}
-      <LowCreditsBanner currentCredits={currentCredits} threshold={100} />
+      {/* Site-wide low credits banner - only show for authenticated users */}
+      {user && <LowCreditsBanner currentCredits={currentCredits} threshold={100} />}
       
       {children}
       
