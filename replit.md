@@ -4,6 +4,14 @@
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
 ## Recent Changes
+- **Pitch Demo Page Built** (Oct 8, 2025): Hidden live demo at `/pitch-demo-live` for Superteam Ireland Pitchathon
+  - **State-Based Data Flow**: Business plan generated via useEffect from marketData and financialData state - proves agent coordination
+  - **Real-Time Messaging**: Agent-to-agent communication with AGENT_REQUEST/RESPONSE protocol visible in UI
+  - **Timing Display**: Each message shows elapsed time (+0.80s, +2.00s format) from generation start
+  - **Dynamic Stats**: Total generation time updates live (not hardcoded) showing actual agent coordination speed
+  - **Multi-Agent Flow**: User → Business Plan Agent → Market Research Agent → Financial Modeling Agent → synthesized plan
+  - **Architect Approved**: Proper state persistence and data flow demonstration for hackathon pitch
+  - **No Navigation Links**: Accessible only via direct URL for controlled demo presentation
 - **Subscription System Complete** (Oct 8, 2025): Full usage-based billing with monthly subscriptions and overage tracking
   - **Monthly Credit Allocation**: CORE (2,000/month at $29), PRO (7,000/month at $79), FREEMIUM (200 total) with automatic renewal at billing cycle
   - **Overage Tracking**: Precise overage calculation when credits depleted - bills at $0.002/credit for additional usage
