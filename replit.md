@@ -22,6 +22,18 @@ Preferred communication style: Simple, everyday language.
   - Special styling for PRO plan with primary borders and glows
   - Current plan ring indicator for active subscriptions
 
+### Subscription Management
+- **Cancellation Flow**: Comprehensive cancellation experience with retention strategy
+  - Confirmation dialog with emotional messaging and benefits reminder before cancellation
+  - Shows scheduled cancellation date with heart icon for emotional connection
+  - "Keep My Subscription" as primary action to reduce churn
+  - Rate-limited cancellation endpoint with proper authorization
+- **Reactivation Feature**: One-click subscription reactivation for cancelled plans
+  - Green "Reactivate Subscription" button appears in both profile and purchase-credits pages
+  - Instant UI updates with toast notifications
+  - Reverses cancel_at_period_end status back to active
+  - Dual integration ensures users can reactivate from multiple touchpoints
+
 ### Development Infrastructure
 - **Test User Seeding**: Automatic seeding of test users in development environment
   - Test account: web3user@test.com / password123 (CORE plan, 6,200 credits)
