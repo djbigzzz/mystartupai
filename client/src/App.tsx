@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/auth-context";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { DemoSessionProvider } from "@/contexts/demo-session-context";
+import { CreditProvider } from "@/contexts/credit-context";
 import Home from "@/pages/marketing-home";
 import Dashboard from "@/pages/dashboard";
 import SubmitIdea from "@/pages/submit-idea";
@@ -86,12 +87,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <DemoSessionProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
-          </DemoSessionProvider>
+          <CreditProvider>
+            <DemoSessionProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </DemoSessionProvider>
+          </CreditProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

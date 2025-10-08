@@ -69,6 +69,13 @@ export default function Dashboard() {
     gcTime: 0,
   });
 
+  // Fetch credit balance
+  const { data: creditBalance } = useQuery<{ credits: number; transactions: any[] }>({
+    queryKey: ["/api/credits/balance"],
+    enabled: !!user,
+    refetchInterval: 30000,
+  });
+
 
 
 

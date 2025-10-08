@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Coins, Check, Loader2, Wallet, Clock, ArrowUpRight, ArrowDownRight, Sparkles, Zap, TrendingUp } from 'lucide-react';
+import { Coins, Check, Loader2, Wallet, Clock, ArrowUpRight, ArrowDownRight, Sparkles, Zap, TrendingUp, CreditCard, Crown, Building, Rocket } from 'lucide-react';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
@@ -48,7 +48,7 @@ interface PaymentRequest {
 
 export default function PurchaseCreditsPage() {
   const { toast } = useToast();
-  const [selectedPackage, setSelectedPackage] = useState<'BASIC' | 'PRO' | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'SOL' | 'USDC'>('SOL');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -134,7 +134,7 @@ export default function PurchaseCreditsPage() {
   };
 
   // Handle package selection
-  const handleSelectPackage = (packageType: 'BASIC' | 'PRO') => {
+  const handleSelectPackage = (packageType: string) => {
     setSelectedPackage(packageType);
     setIsPaymentModalOpen(true);
   };
@@ -282,13 +282,17 @@ export default function PurchaseCreditsPage() {
 
   const packageIcons = {
     FREEMIUM: Sparkles,
-    BASIC: Zap,
-    PRO: TrendingUp,
+    QUICK_500: Zap,
+    QUICK_1000: Zap,
+    BASIC: CreditCard,
+    PRO: Crown,
+    ENTERPRISE_10K: Building,
+    ENTERPRISE_25K: Rocket,
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="container max-w-6xl mx-auto py-8 px-4">
+      <div className="container max-w-7xl mx-auto py-8 px-4">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-primary/10 text-primary">
@@ -302,7 +306,7 @@ export default function PurchaseCreditsPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
           {Object.entries(CREDIT_PACKAGES).map(([key, pkg]) => {
             const Icon = packageIcons[key as keyof typeof packageIcons];
             const isCurrentPlan = key === currentPlan;
@@ -364,12 +368,12 @@ export default function PurchaseCreditsPage() {
                     </Button>
                   ) : (
                     <Button
-                      onClick={() => handleSelectPackage(key as 'BASIC' | 'PRO')}
+                      onClick={() => handleSelectPackage(key)}
                       className={`w-full ${isPro ? 'bg-primary' : ''}`}
                       data-testid={`button-select-${key.toLowerCase()}`}
                       disabled={key === 'FREEMIUM'}
                     >
-                      Select Plan
+                      {key.startsWith('QUICK_') || key.startsWith('ENTERPRISE_') ? 'Buy Now' : 'Select Plan'}
                     </Button>
                   )}
                 </CardFooter>
@@ -443,7 +447,7 @@ export default function PurchaseCreditsPage() {
                 Complete Your Purchase
               </DialogTitle>
               <DialogDescription>
-                {selectedPackage && `${CREDIT_PACKAGES[selectedPackage].name} Package • ${CREDIT_PACKAGES[selectedPackage].credits.toLocaleString()} credits`}
+                {selectedPackage && `${(CREDIT_PACKAGES as any)[selectedPackage].name} Package • ${(CREDIT_PACKAGES as any)[selectedPackage].credits.toLocaleString()} credits`}
               </DialogDescription>
             </DialogHeader>
 
