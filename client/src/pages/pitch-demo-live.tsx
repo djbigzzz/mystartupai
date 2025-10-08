@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, Bot, Sparkles, Database, CheckCircle2, Clock, Zap, Users, Presentation } from "lucide-react";
+import { ArrowRight, Bot, Sparkles, Database, CheckCircle2, Clock, Zap, Users, Presentation, ChevronLeft, ChevronRight, Target, Lightbulb, TrendingUp, Rocket, DollarSign, Building2, Award, Trophy } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 
 interface AgentMessage {
@@ -55,6 +55,9 @@ export default function PitchDemoLive() {
   const [pitchDeck, setPitchDeck] = useState<string[]>([]);
   const [showPitchGen, setShowPitchGen] = useState(false);
   const [pitchProgress, setPitchProgress] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showInvestors, setShowInvestors] = useState(false);
+  const [investorMatches, setInvestorMatches] = useState<any[]>([]);
   
   const updateAgentStatus = (agentName: string, status: AgentStatus['status']) => {
     setAgentStatuses(prev => prev.map(agent => 
@@ -245,6 +248,70 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
     }
   });
 
+  const findInvestorsMutation = useMutation({
+    mutationFn: async () => {
+      setShowInvestors(true);
+      const matches: any[] = [];
+      
+      await new Promise(r => setTimeout(r, 800));
+      matches.push({
+        type: 'vc',
+        name: 'a16z Crypto',
+        focus: 'Web3 Infrastructure',
+        match: 95,
+        description: 'Leading crypto VC, invested in Uniswap, Compound, OpenSea',
+        ticket: '$5-50M Series A/B'
+      });
+      setInvestorMatches([...matches]);
+      
+      await new Promise(r => setTimeout(r, 800));
+      matches.push({
+        type: 'vc',
+        name: 'Paradigm',
+        focus: 'DeFi Protocols',
+        match: 92,
+        description: 'Deep DeFi expertise, backed MakerDAO, dYdX, Coinbase',
+        ticket: '$10-100M'
+      });
+      setInvestorMatches([...matches]);
+      
+      await new Promise(r => setTimeout(r, 800));
+      matches.push({
+        type: 'angel',
+        name: 'Balaji Srinivasan',
+        focus: 'Crypto/Emerging Markets',
+        match: 88,
+        description: 'Ex-Coinbase CTO, prolific angel investor',
+        ticket: '$100K-1M'
+      });
+      setInvestorMatches([...matches]);
+      
+      await new Promise(r => setTimeout(r, 800));
+      matches.push({
+        type: 'grant',
+        name: 'Solana Foundation',
+        focus: 'DeFi on Solana',
+        match: 90,
+        description: 'Up to $500K non-dilutive grants for Solana builders',
+        ticket: '$50-500K'
+      });
+      setInvestorMatches([...matches]);
+      
+      await new Promise(r => setTimeout(r, 800));
+      matches.push({
+        type: 'hackathon',
+        name: 'Colosseum Accelerator',
+        focus: 'Solana Startups',
+        match: 94,
+        description: '$250K prize + $500K investment for winners',
+        ticket: '$750K total'
+      });
+      setInvestorMatches([...matches]);
+      
+      return matches;
+    }
+  });
+
   const handleGenerate = () => {
     setMessages([]);
     setFinalPlan("");
@@ -255,8 +322,32 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
     setPitchDeck([]);
     setShowPitchGen(false);
     setPitchProgress(0);
+    setCurrentSlide(0);
+    setShowInvestors(false);
+    setInvestorMatches([]);
     setAgentStatuses(prev => prev.map(a => ({ ...a, status: 'idle' as const })));
     generatePlanMutation.mutate(idea);
+  };
+
+  const getSlideIcon = (idx: number) => {
+    const icons = [Target, Lightbulb, TrendingUp, Rocket, DollarSign];
+    return icons[idx] || Target;
+  };
+
+  const getSlideTitle = (idx: number) => {
+    const titles = ["The Problem", "Our Solution", "Market Opportunity", "Traction & Growth", "The Ask"];
+    return titles[idx] || "Slide";
+  };
+
+  const getSlideGradient = (idx: number) => {
+    const gradients = [
+      "from-red-500/20 to-orange-500/20",
+      "from-blue-500/20 to-cyan-500/20",
+      "from-green-500/20 to-emerald-500/20",
+      "from-purple-500/20 to-pink-500/20",
+      "from-yellow-500/20 to-amber-500/20"
+    ];
+    return gradients[idx] || gradients[0];
   };
 
   const getAgentColor = (agent: string) => {
@@ -468,40 +559,98 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
           </Card>
         )}
 
-        {/* Pitch Deck Generation in Progress */}
-        {showPitchGen && (
-          <Card className="mt-3 bg-card/80 backdrop-blur border-purple-500/30 animate-in fade-in slide-in-from-bottom duration-700">
-            <CardHeader className="pb-3 pt-4">
-              <CardTitle className="text-white flex items-center gap-2 text-lg">
-                <Presentation className="h-5 w-5 text-purple-400 animate-pulse" />
-                Generating Pitch Deck...
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Progress value={pitchProgress} className="h-2" />
-              <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                {pitchDeck.map((slide, idx) => (
-                  <div 
-                    key={idx} 
-                    className="bg-gradient-to-r from-blue-950/50 to-purple-950/50 border border-blue-500/20 rounded-lg p-3 animate-in fade-in slide-in-from-left duration-500"
-                  >
-                    <p className="text-sm text-white font-medium">Slide {idx + 1}</p>
-                    <p className="text-xs text-blue-200 mt-1">{slide}</p>
-                  </div>
-                ))}
-              </div>
+        {/* Professional Pitch Deck View */}
+        {showPitchGen && pitchDeck.length > 0 && (
+          <Card className="mt-3 bg-slate-950/90 backdrop-blur border-purple-500/30 animate-in fade-in slide-in-from-bottom duration-700">
+            <CardContent className="p-0">
+              {/* Progress Bar */}
               {generatePitchDeckMutation.isPending && (
-                <div className="flex items-center gap-2 text-purple-400 animate-pulse">
-                  <Bot className="h-4 w-4 animate-spin" />
-                  <span className="text-sm">Creating slides...</span>
+                <div className="p-4 border-b border-purple-500/20">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2 text-purple-400 animate-pulse">
+                      <Bot className="h-4 w-4 animate-spin" />
+                      <span className="text-sm">Creating slides...</span>
+                    </div>
+                    <span className="text-sm text-purple-300">{pitchProgress}%</span>
+                  </div>
+                  <Progress value={pitchProgress} className="h-2" />
                 </div>
               )}
+              
+              {/* Professional Slide Display */}
+              {pitchDeck.length > currentSlide && (
+                <div className={`min-h-[400px] bg-gradient-to-br ${getSlideGradient(currentSlide)} p-12 flex flex-col justify-center items-center text-center relative`}>
+                  {/* Slide Number */}
+                  <div className="absolute top-6 right-6 text-white/40 text-sm font-mono">
+                    {currentSlide + 1} / {pitchDeck.length}
+                  </div>
+                  
+                  {/* Slide Icon */}
+                  {(() => {
+                    const SlideIcon = getSlideIcon(currentSlide);
+                    return <SlideIcon className="h-16 w-16 text-white/80 mb-6" />;
+                  })()}
+                  
+                  {/* Slide Title */}
+                  <h2 className="text-3xl font-bold text-white mb-6">
+                    {getSlideTitle(currentSlide)}
+                  </h2>
+                  
+                  {/* Slide Content */}
+                  <p className="text-xl text-white/90 max-w-3xl leading-relaxed">
+                    {pitchDeck[currentSlide].replace(/^[🎯💡📈💰🚀]\s*/, '')}
+                  </p>
+                </div>
+              )}
+              
+              {/* Navigation Controls */}
+              <div className="p-4 bg-slate-900/50 border-t border-purple-500/20 flex items-center justify-between">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
+                  disabled={currentSlide === 0}
+                  className="border-purple-500/30 text-white hover:bg-purple-500/20"
+                  data-testid="button-prev-slide"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                
+                {/* Slide Indicators */}
+                <div className="flex gap-2">
+                  {pitchDeck.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentSlide(idx)}
+                      className={`h-2 rounded-full transition-all ${
+                        idx === currentSlide 
+                          ? 'w-8 bg-purple-500' 
+                          : 'w-2 bg-purple-500/30 hover:bg-purple-500/50'
+                      }`}
+                      data-testid={`button-slide-${idx}`}
+                    />
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentSlide(Math.min(pitchDeck.length - 1, currentSlide + 1))}
+                  disabled={currentSlide === pitchDeck.length - 1}
+                  className="border-purple-500/30 text-white hover:bg-purple-500/20"
+                  data-testid="button-next-slide"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
 
         {/* Find Investors - Only shows after pitch deck is complete */}
-        {pitchDeck.length === 5 && (
+        {pitchDeck.length === 5 && !showInvestors && (
           <Card className="mt-3 bg-card/80 backdrop-blur border-green-500/30 animate-in fade-in slide-in-from-bottom duration-700">
             <CardHeader className="pb-3 pt-4">
               <CardTitle className="text-white flex items-center gap-2 text-lg">
@@ -509,17 +658,105 @@ ${marketData.trends.map((t, i) => `${i + 1}. ${t}`).join('\n')}
                 Step 3: Find Investors
               </CardTitle>
               <CardDescription className="text-green-200">
-                AI-matched VCs and angels for your startup
+                AI-matched VCs, angels, grants, and hackathons
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button 
+                onClick={() => findInvestorsMutation.mutate()}
+                disabled={findInvestorsMutation.isPending}
                 className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
                 data-testid="button-find-investors"
               >
-                <Users className="mr-2 h-4 w-4" />
-                Match With Investors
+                {findInvestorsMutation.isPending ? (
+                  <>
+                    <Bot className="mr-2 h-4 w-4 animate-spin" />
+                    Matching...
+                  </>
+                ) : (
+                  <>
+                    <Users className="mr-2 h-4 w-4" />
+                    Match With Investors
+                  </>
+                )}
               </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Investor Matches Display */}
+        {showInvestors && (
+          <Card className="mt-3 bg-slate-950/90 backdrop-blur border-green-500/30 animate-in fade-in slide-in-from-bottom duration-700">
+            <CardHeader className="pb-3 pt-4">
+              <CardTitle className="text-white flex items-center gap-2 text-lg">
+                <Users className="h-5 w-5 text-green-400" />
+                Top Investor Matches
+              </CardTitle>
+              <CardDescription className="text-green-200">
+                {investorMatches.length} AI-matched opportunities for your startup
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 max-h-[500px] overflow-y-auto">
+              {investorMatches.map((investor, idx) => {
+                const getTypeIcon = () => {
+                  if (investor.type === 'vc') return Building2;
+                  if (investor.type === 'angel') return Users;
+                  if (investor.type === 'grant') return Award;
+                  if (investor.type === 'hackathon') return Trophy;
+                  return Building2;
+                };
+                const getTypeColor = () => {
+                  if (investor.type === 'vc') return 'from-blue-500/20 to-cyan-500/20';
+                  if (investor.type === 'angel') return 'from-purple-500/20 to-pink-500/20';
+                  if (investor.type === 'grant') return 'from-green-500/20 to-emerald-500/20';
+                  if (investor.type === 'hackathon') return 'from-yellow-500/20 to-orange-500/20';
+                  return 'from-gray-500/20 to-slate-500/20';
+                };
+                const TypeIcon = getTypeIcon();
+                
+                return (
+                  <div
+                    key={idx}
+                    className={`bg-gradient-to-r ${getTypeColor()} border border-white/10 rounded-lg p-4 animate-in fade-in slide-in-from-left duration-500`}
+                    style={{ animationDelay: `${idx * 100}ms` }}
+                    data-testid={`investor-${idx}`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-white/10 p-2 rounded-lg">
+                          <TypeIcon className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-white">{investor.name}</h3>
+                          <p className="text-sm text-white/60 capitalize">{investor.type}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-green-400">{investor.match}%</div>
+                        <p className="text-xs text-white/60">Match</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Target className="h-4 w-4 text-cyan-400" />
+                        <p className="text-sm text-white/80"><span className="font-semibold">Focus:</span> {investor.focus}</p>
+                      </div>
+                      <p className="text-sm text-white/70">{investor.description}</p>
+                      <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                        <DollarSign className="h-4 w-4 text-green-400" />
+                        <p className="text-sm font-semibold text-white">{investor.ticket}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              
+              {findInvestorsMutation.isPending && (
+                <div className="flex items-center justify-center gap-2 text-green-400 animate-pulse py-4">
+                  <Bot className="h-4 w-4 animate-spin" />
+                  <span className="text-sm">Finding perfect matches...</span>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
