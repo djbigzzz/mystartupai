@@ -274,7 +274,7 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       <div className={`p-4 border-b border-gray-200 dark:border-gray-700 ${collapsed ? "p-3" : ""}`}>
         <div className="flex items-center justify-between">
           {!collapsed && (
-            <Logo size="sm" showText={true} />
+            <Logo size="md" showText={true} />
           )}
           <Button
             variant="ghost"

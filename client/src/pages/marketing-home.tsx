@@ -357,8 +357,10 @@ export default function MarketingHome() {
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6 transform hover:scale-105 transition-transform duration-300">
-              Common Startup Challenges (And How AI Can Help You Avoid Them)
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6 transform hover:scale-105 transition-transform duration-300">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                Common Startup Challenges (And How AI Can Help You Avoid Them)
+              </span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="text-center p-6">
@@ -387,8 +389,10 @@ export default function MarketingHome() {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <Logo size="lg" showText={false} className="mr-4" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                AI Startup Tools & Business Plan Generator
+              <h2 className="text-3xl lg:text-4xl font-bold">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                  AI Startup Tools & Business Plan Generator
+                </span>
               </h2>
             </div>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
@@ -433,8 +437,10 @@ export default function MarketingHome() {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <Logo size="md" showText={false} className="mr-3" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                How to Build Investor-Ready Materials More Efficiently
+              <h2 className="text-3xl lg:text-4xl font-bold">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                  How to Build Investor-Ready Materials More Efficiently
+                </span>
               </h2>
             </div>
           </div>
@@ -477,8 +483,10 @@ export default function MarketingHome() {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
               <Logo size="md" showText={false} className="mr-3" />
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                Best AI Startup Tools for Entrepreneurs & Business Founders
+              <h2 className="text-3xl lg:text-4xl font-bold">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                  Best AI Startup Tools for Entrepreneurs & Business Founders
+                </span>
               </h2>
             </div>
           </div>
@@ -516,8 +524,10 @@ export default function MarketingHome() {
       <section className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              What Makes Us Different
+            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                What Makes Us Different
+              </span>
             </h2>
           </div>
           
@@ -562,8 +572,10 @@ export default function MarketingHome() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center mb-6">
             <Logo size="lg" showText={false} className="mr-4" />
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
-              Ready to Build Smarter?
+            <h2 className="text-3xl lg:text-4xl font-bold">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                Ready to Build Smarter?
+              </span>
             </h2>
           </div>
           <p className="text-xl text-gray-600 mb-8">
