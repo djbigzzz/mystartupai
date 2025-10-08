@@ -825,6 +825,7 @@ html {
 
 /* Web3 Galaxy Theme Effects */
 .web3 body {
+  position: relative;
   background: linear-gradient(135deg, 
     hsl(240, 20%, 5%) 0%, 
     hsl(260, 30%, 8%) 25%, 
@@ -836,6 +837,11 @@ html {
   animation: galaxyShift 20s ease infinite;
 }
 
+.web3 body > * {
+  position: relative;
+  z-index: 1;
+}
+
 @keyframes galaxyShift {
   0%, 100% {
     background-position: 0% 50%;
@@ -845,7 +851,7 @@ html {
   }
 }
 
-.web3::before {
+.web3 body::before {
   content: '';
   position: fixed;
   top: 0;
