@@ -4599,6 +4599,13 @@ _Multi-Agent Orchestration: Market Research + Business Planning_
           }
         );
 
+        // Update user's plan if purchasing BASIC or PRO
+        if (packageType === 'BASIC' || packageType === 'PRO') {
+          await storage.updateUser(userId, {
+            currentPlan: packageType,
+          });
+        }
+
         console.log('Solana payment verified and credits allocated:', {
           userId,
           signature,

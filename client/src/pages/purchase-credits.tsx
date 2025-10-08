@@ -57,6 +57,11 @@ export default function PurchaseCreditsPage() {
   const qrRef = useRef<HTMLDivElement>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Fetch user data to get current plan
+  const { data: userData } = useQuery({
+    queryKey: ['/api/auth/me'],
+  });
+
   // Fetch current credit balance
   const { data: balanceData, isLoading: isLoadingBalance } = useQuery({
     queryKey: ['/api/credits/balance'],
@@ -104,6 +109,7 @@ export default function PurchaseCreditsPage() {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/credits/balance'] });
       queryClient.invalidateQueries({ queryKey: ['/api/credits/history'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
       setIsPaymentModalOpen(false);
       resetPaymentState();
     },
@@ -272,6 +278,7 @@ export default function PurchaseCreditsPage() {
 
   const currentBalance = (balanceData as any)?.balance || 0;
   const transactions = ((historyData as any)?.transactions || []) as CreditTransaction[];
+  const currentPlan = (userData as any)?.currentPlan || 'FREEMIUM';
 
   const packageIcons = {
     FREEMIUM: Sparkles,
@@ -298,7 +305,7 @@ export default function PurchaseCreditsPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           {Object.entries(CREDIT_PACKAGES).map(([key, pkg]) => {
             const Icon = packageIcons[key as keyof typeof packageIcons];
-            const isFreemium = key === 'FREEMIUM';
+            const isCurrentPlan = key === currentPlan;
             const isPro = key === 'PRO';
             
             return (
@@ -318,14 +325,14 @@ export default function PurchaseCreditsPage() {
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between mb-2">
                     <Icon className={`h-8 w-8 ${isPro ? 'text-primary' : 'text-muted-foreground'}`} />
-                    {isFreemium && (
+                    {isCurrentPlan && (
                       <Badge variant="secondary" className="text-xs">Current Plan</Badge>
                     )}
                   </div>
                   <CardTitle className="text-2xl">{pkg.name}</CardTitle>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold">${pkg.priceUSD}</span>
-                    {!isFreemium && pkg.priceSol > 0 && (
+                    {!isCurrentPlan && key !== 'FREEMIUM' && pkg.priceSol > 0 && (
                       <span className="text-sm text-muted-foreground">≈{pkg.priceSol} SOL</span>
                     )}
                   </div>
@@ -346,7 +353,7 @@ export default function PurchaseCreditsPage() {
                 </CardContent>
 
                 <CardFooter>
-                  {isFreemium ? (
+                  {isCurrentPlan ? (
                     <Button 
                       variant="outline" 
                       className="w-full" 
@@ -360,6 +367,7 @@ export default function PurchaseCreditsPage() {
                       onClick={() => handleSelectPackage(key as 'BASIC' | 'PRO')}
                       className={`w-full ${isPro ? 'bg-primary' : ''}`}
                       data-testid={`button-select-${key.toLowerCase()}`}
+                      disabled={key === 'FREEMIUM'}
                     >
                       Select Plan
                     </Button>
