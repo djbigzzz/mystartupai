@@ -210,10 +210,30 @@ export default function PurchaseCreditsPage() {
 
       toast({
         title: 'Transaction Sent!',
+        description: 'Waiting for confirmation...',
+      });
+
+      // Wait for transaction confirmation on Solana blockchain
+      const network = import.meta.env.VITE_SOLANA_NETWORK || 'devnet';
+      const rpcUrl = network === 'mainnet-beta' 
+        ? 'https://api.mainnet-beta.solana.com'
+        : 'https://api.devnet.solana.com';
+      
+      const connection = new Connection(rpcUrl, 'confirmed');
+      
+      // Wait for confirmation (with timeout)
+      const confirmation = await connection.confirmTransaction(signature, 'confirmed');
+      
+      if (confirmation.value.err) {
+        throw new Error('Transaction failed on blockchain');
+      }
+
+      toast({
+        title: 'Transaction Confirmed!',
         description: 'Verifying payment...',
       });
 
-      // Verify the payment
+      // Now verify the payment with backend
       verifySolanaPayment.mutate({
         signature,
         packageType: selectedPackage,
