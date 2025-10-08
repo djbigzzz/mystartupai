@@ -520,15 +520,6 @@ export default function Dashboard() {
                 >
                   Dashboard
                 </Button>
-                <Button
-                  variant={activeSection === "profile" ? "default" : "outline"}
-                  onClick={() => setActiveSection("profile")}
-                  size="sm"
-                  className="hidden sm:inline-flex"
-                  data-testid="button-profile-tab"
-                >
-                  Profile
-                </Button>
                 <ThemeToggle />
                 <Button variant="ghost" size="sm" data-testid="button-notifications-header">
                   <Bell className="h-4 w-4" />

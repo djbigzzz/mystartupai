@@ -347,9 +347,9 @@ export default function Profile() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64 overflow-auto">
-        <div className="container mx-auto py-8 px-4">
-          <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex-1 overflow-auto">
+        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto space-y-6">
         
         {/* Profile Header */}
         <Card>

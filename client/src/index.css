@@ -824,7 +824,7 @@ html {
 }
 
 /* Web3 Galaxy Theme Effects */
-.web3 body {
+.web3 {
   position: relative;
   background: linear-gradient(135deg, 
     hsl(240, 20%, 5%) 0%, 
@@ -837,7 +837,7 @@ html {
   animation: galaxyShift 20s ease infinite !important;
 }
 
-.web3 body > * {
+.web3 > * {
   position: relative;
   z-index: 1;
 }
@@ -851,7 +851,7 @@ html {
   }
 }
 
-.web3 body::before {
+.web3::before {
   content: '';
   position: fixed;
   top: 0;
@@ -906,4 +906,28 @@ html {
   border: 1px solid hsla(280, 50%, 50%, 0.3);
   box-shadow: 0 4px 20px hsla(280, 100%, 70%, 0.1);
   backdrop-filter: blur(10px);
+}
+
+/* Web3 Text Colors */
+.web3 {
+  color: hsl(200, 100%, 95%);
+}
+
+.web3 h1, .web3 h2, .web3 h3, .web3 h4, .web3 h5, .web3 h6 {
+  color: hsl(280, 100%, 90%);
+}
+
+/* Web3 Backgrounds */
+.web3 .bg-gray-50,
+.web3 .dark\:bg-gray-900,
+.web3 .bg-white,
+.web3 .dark\:bg-gray-800 {
+  background: rgba(20, 20, 40, 0.7) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Web3 Borders */
+.web3 .border-gray-200,
+.web3 .dark\:border-gray-700 {
+  border-color: hsla(280, 50%, 50%, 0.3) !important;
 }
