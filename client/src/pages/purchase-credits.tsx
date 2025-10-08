@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Coins, Check, Loader2, Wallet, Clock, ArrowUpRight, ArrowDownRight, Sparkles, Zap, TrendingUp } from 'lucide-react';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
 
@@ -191,25 +191,12 @@ export default function PurchaseCreditsPage() {
         throw new Error('Failed to create transaction');
       }
 
-      // Decode the serialized transaction from base64
-      const txBuffer = Uint8Array.from(atob(txResponse.serializedTransaction), c => c.charCodeAt(0));
+      // Deserialize the transaction from base64 to a Transaction object
+      const txBuffer = Buffer.from(txResponse.serializedTransaction, 'base64');
+      const transaction = Transaction.from(txBuffer);
       
-      // Send to Phantom - use request method for compatibility
-      let signature;
-      try {
-        // Try modern API first
-        const result = await (window.solana as any).signAndSendTransaction(txBuffer);
-        signature = typeof result === 'string' ? result : result?.signature;
-      } catch (err) {
-        // Fallback to request method
-        const result = await (window.solana as any).request({
-          method: 'signAndSendTransaction',
-          params: {
-            message: Array.from(txBuffer),
-          },
-        });
-        signature = result?.signature || result;
-      }
+      // Send the Transaction object to Phantom
+      const { signature } = await (window.solana as any).signAndSendTransaction(transaction);
 
       if (!signature) {
         throw new Error('Transaction was not signed or sent');
