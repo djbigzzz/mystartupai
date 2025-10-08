@@ -57,6 +57,33 @@
     --chart-4: 280 87% 65%;
     --chart-5: 340 82% 52%;
   }
+
+  .web3 {
+    --background: 240 20% 5%;
+    --foreground: 180 100% 90%;
+    --card: 240 25% 8%;
+    --card-foreground: 180 100% 95%;
+    --popover: 240 25% 8%;
+    --popover-foreground: 180 100% 95%;
+    --primary: 280 100% 70%;
+    --primary-foreground: 240 20% 5%;
+    --secondary: 200 100% 50%;
+    --secondary-foreground: 240 20% 5%;
+    --muted: 240 20% 12%;
+    --muted-foreground: 180 50% 70%;
+    --accent: 280 100% 60%;
+    --accent-foreground: 240 20% 5%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 180 100% 95%;
+    --border: 280 50% 30%;
+    --input: 240 25% 15%;
+    --ring: 280 100% 70%;
+    --chart-1: 280 100% 70%;
+    --chart-2: 180 100% 60%;
+    --chart-3: 200 100% 60%;
+    --chart-4: 260 100% 70%;
+    --chart-5: 320 100% 60%;
+  }
 }
 
 
@@ -794,4 +821,83 @@ html {
 
 .animate-float {
   animation: float 20s ease-in-out infinite;
+}
+
+/* Web3 Galaxy Theme Effects */
+.web3 body {
+  background: linear-gradient(135deg, 
+    hsl(240, 20%, 5%) 0%, 
+    hsl(260, 30%, 8%) 25%, 
+    hsl(280, 25%, 6%) 50%, 
+    hsl(260, 30%, 8%) 75%, 
+    hsl(240, 20%, 5%) 100%
+  );
+  background-size: 400% 400%;
+  animation: galaxyShift 20s ease infinite;
+}
+
+@keyframes galaxyShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.web3::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(180, 100, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(100, 200, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 90% 60%, rgba(200, 150, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 33% 85%, rgba(100, 200, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 75% 25%, rgba(255, 255, 255, 0.6), transparent);
+  background-size: 200% 200%;
+  background-position: 50% 50%;
+  animation: stars 30s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes stars {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+}
+
+/* Web3 Glow Effects */
+.web3 .bg-primary,
+.web3 [class*="bg-primary"] {
+  box-shadow: 0 0 20px hsla(280, 100%, 70%, 0.5);
+}
+
+.web3 .border-primary,
+.web3 [class*="border-primary"] {
+  box-shadow: 0 0 10px hsla(280, 100%, 70%, 0.3);
+}
+
+/* Web3 Button Glows */
+.web3 button:hover {
+  box-shadow: 0 0 15px hsla(280, 100%, 70%, 0.4);
+  transition: all 0.3s ease;
+}
+
+/* Web3 Card Glow */
+.web3 [class*="card"] {
+  border: 1px solid hsla(280, 50%, 50%, 0.3);
+  box-shadow: 0 4px 20px hsla(280, 100%, 70%, 0.1);
+  backdrop-filter: blur(10px);
 }

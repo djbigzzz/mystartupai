@@ -13,6 +13,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft, Coins, CreditCard, TrendingUp } from "lucide-react";
 import { CREDIT_PACKAGES } from "@shared/constants";
 import TwoFactorAuth from "@/components/profile/two-factor-auth";
+import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
+import MobileNavigation from "@/components/mobile-navigation";
 
 interface UserProfile {
   id: number;
@@ -333,20 +335,21 @@ export default function Profile() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Back Navigation */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.history.back()}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      {/* Mobile Navigation */}
+      <div className="lg:hidden">
+        <MobileNavigation />
+      </div>
+      
+      {/* Sidebar Navigation - Desktop Only */}
+      <div className="hidden lg:block">
+        <SidebarNavigation />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 lg:ml-64 overflow-auto">
+        <div className="container mx-auto py-8 px-4">
+          <div className="max-w-4xl mx-auto space-y-6">
         
         {/* Profile Header */}
         <Card>
@@ -987,6 +990,8 @@ export default function Profile() {
             onClose={() => setShow2FADialog(false)}
           />
         )}
+          </div>
+        </div>
       </div>
     </div>
   );

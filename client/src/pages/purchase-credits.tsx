@@ -12,6 +12,7 @@ import { Link } from 'wouter';
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
+import { Logo } from '@/components/logo';
 
 declare global {
   interface Window {
@@ -277,7 +278,7 @@ export default function PurchaseCreditsPage() {
     };
   }, []);
 
-  const currentBalance = (balanceData as any)?.balance || 0;
+  const currentBalance = (balanceData as any)?.credits || 0;
   const transactions = ((historyData as any)?.transactions || []) as CreditTransaction[];
   const currentPlan = (userData as any)?.currentPlan || 'FREEMIUM';
   const subscriptionStatus = (userData as any)?.subscriptionStatus || null;
@@ -292,10 +293,13 @@ export default function PurchaseCreditsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 dark:from-background dark:via-primary/10 dark:to-secondary/5 web3:from-background web3:via-primary/20 web3:to-secondary/10">
       <div className="container max-w-7xl mx-auto py-8 px-4">
-        {/* Back Button */}
-        <div className="mb-6">
+        {/* Logo and Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/dashboard">
+            <Logo size="md" showText={true} className="cursor-pointer" />
+          </Link>
           <Button variant="ghost" className="gap-2" data-testid="button-back-to-dashboard" asChild>
             <Link href="/dashboard">
               <ArrowLeft className="w-4 h-4" />
@@ -305,26 +309,26 @@ export default function PurchaseCreditsPage() {
         </div>
         
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
+        <div className="text-center mb-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 backdrop-blur-sm border border-primary/30 text-primary dark:text-primary-foreground web3:border-primary/50 web3:shadow-lg web3:shadow-primary/20">
               <Coins className="h-5 w-5" />
-              <span className="text-sm font-medium">Balance: {currentBalance.toLocaleString()} credits</span>
+              <span className="text-sm font-semibold">Balance: {currentBalance.toLocaleString()} credits</span>
             </div>
             {subscriptionStatus === 'active' && monthlyCreditsUsed > 0 && (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 text-orange-500">
+              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-sm border border-orange-500/30 text-orange-500">
                 <Zap className="h-5 w-5" />
-                <span className="text-sm font-medium">Overage: {monthlyCreditsUsed.toLocaleString()} credits</span>
+                <span className="text-sm font-semibold">Overage: {monthlyCreditsUsed.toLocaleString()} credits</span>
               </div>
             )}
           </div>
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-extrabold mb-3 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent dark:from-primary dark:via-accent dark:to-primary web3:from-primary web3:via-secondary web3:to-accent web3:animate-pulse">
             {subscriptionStatus === 'active' || subscriptionStatus === 'cancel_at_period_end' ? 'Manage Subscription' : 'Choose Your Plan'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-lg text-muted-foreground font-medium">
             {subscriptionStatus === 'active' && nextBillingDate 
               ? `Next billing: ${format(new Date(nextBillingDate), 'MMM dd, yyyy')}` 
-              : 'Choose a plan and supercharge your startup journey'}
+              : 'Supercharge your startup journey with AI-powered tools'}
           </p>
         </div>
 
@@ -338,13 +342,15 @@ export default function PurchaseCreditsPage() {
             return (
               <Card 
                 key={key}
-                className={`relative overflow-hidden transition-all hover:shadow-lg ${
-                  isPro ? 'border-primary shadow-primary/20' : ''
+                className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl backdrop-blur-sm ${
+                  isPro ? 'border-2 border-primary shadow-xl shadow-primary/30 dark:shadow-primary/20 web3:border-primary/70 web3:shadow-2xl web3:shadow-primary/40' : 'border border-border/50 hover:border-primary/50'
+                } ${
+                  isCurrentPlan ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-background' : ''
                 }`}
                 data-testid={`card-${key.toLowerCase()}`}
               >
                 {isPro && (
-                  <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-primary to-secondary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-bl-xl shadow-lg">
                     POPULAR
                   </div>
                 )}
