@@ -25,6 +25,7 @@ import MobileNavigation from "@/components/mobile-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
 import GuidedOnboarding from "@/components/onboarding/guided-onboarding";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface User {
   id: number;
@@ -528,6 +529,7 @@ export default function Dashboard() {
                 >
                   Profile
                 </Button>
+                <ThemeToggle />
                 <Button variant="ghost" size="sm" data-testid="button-notifications-header">
                   <Bell className="h-4 w-4" />
                 </Button>
