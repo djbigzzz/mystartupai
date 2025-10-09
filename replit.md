@@ -12,6 +12,14 @@ Preferred communication style: Simple, everyday language.
 - **3-Theme Mode System**: Light, Dark, and Web3 (futuristic galaxy) themes with cycling toggle and localStorage persistence
   - Web3 theme features animated galaxy background, neon cyan/purple/magenta colors, starfield effects, and glowing UI elements
   - Theme toggle button in header cycles through all three modes
+- **Web3 Visual Effects System**: Canvas-based animation system for Web3 theme
+  - Particle system with 50 cyan/purple glowing particles with mouse attraction physics
+  - Mouse trail effect with purple/magenta glow following cursor
+  - Click ripple effects with dual expanding rings (cyan + magenta) and particle bursts
+  - Floating crypto coins (SOL, BTC, ETH) with rotation animation and upward float
+  - Performance-optimized using refs and requestAnimationFrame (60fps target)
+  - Proper cleanup on theme change, no React re-renders during animation
+  - Full-screen canvas with pointer-events: none for click-through, mix-blend-mode: screen for glow effect
 - **Brand Gradient Styling**: Consistent gradient branding across platform using `from-blue-600 via-purple-600 to-blue-700`
   - Marketing home page: 6 major section headings use gradient text (bg-clip-text text-transparent)
   - Dashboard welcome header: Full gradient background with theme compatibility
