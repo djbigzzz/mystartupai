@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/auth-context";
 import { 
   Menu, 
   Home, 
@@ -22,7 +22,8 @@ import {
   Settings,
   Sparkles,
   Lock,
-  Crown
+  Crown,
+  Loader2
 } from "lucide-react";
 
 interface NavigationItem {
@@ -83,11 +84,8 @@ export default function MobileNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [, setLocation] = useLocation();
 
-  // Fetch user data to check current plan
-  const { data: user } = useQuery<any>({
-    queryKey: ["/api/auth/me"],
-    retry: false,
-  });
+  // Use AuthContext for reliable user data
+  const { user, isLoading } = useAuth();
 
   const userTier = user?.currentPlan || "FREEMIUM";
   const userTierLevel = TIER_HIERARCHY[userTier] || 1;
@@ -99,6 +97,12 @@ export default function MobileNavigation() {
   };
 
   const handleNavClick = (item: NavigationItem, e: React.MouseEvent) => {
+    // Block navigation while auth is loading to prevent race condition
+    if (isLoading) {
+      e.preventDefault();
+      return;
+    }
+    
     if (isLocked(item)) {
       e.preventDefault();
       setLocation("/purchase-credits");
@@ -143,49 +147,55 @@ export default function MobileNavigation() {
           </div>
           
           <div className="flex-1 overflow-y-auto p-4">
-            <nav className="space-y-6">
-              {navigationSections.map((section) => (
-                <div key={section.title}>
-                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
-                    {section.title}
-                  </h3>
-                  <div className="space-y-1">
-                    {section.items.map((item) => {
-                      const Icon = item.icon;
-                      const locked = isLocked(item);
-                      
-                      return (
-                        <Link key={item.href} href={locked ? "#" : item.href}>
-                          <Button
-                            variant="ghost"
-                            className={`w-full justify-between gap-3 h-12 px-3 text-sm transition-all duration-200 ${
-                              locked 
-                                ? "opacity-60 cursor-pointer hover:bg-muted/50" 
-                                : "hover:bg-blue-50 dark:hover:bg-blue-900/20 active:scale-95"
-                            }`}
-                            onClick={(e) => handleNavClick(item, e)}
-                            data-testid={`mobile-nav-${item.href.replace('/', '')}`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <Icon className="h-5 w-5" />
-                              <span>{item.label}</span>
-                            </div>
-                            {locked && (
-                              <Lock className="h-4 w-4 text-muted-foreground" />
-                            )}
-                            {item.comingSoon && (
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5">
-                                Soon
-                              </Badge>
-                            )}
-                          </Button>
-                        </Link>
-                      );
-                    })}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <nav className="space-y-6">
+                {navigationSections.map((section) => (
+                  <div key={section.title}>
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
+                      {section.title}
+                    </h3>
+                    <div className="space-y-1">
+                      {section.items.map((item) => {
+                        const Icon = item.icon;
+                        const locked = isLocked(item);
+                        
+                        return (
+                          <Link key={item.href} href={locked ? "#" : item.href}>
+                            <Button
+                              variant="ghost"
+                              className={`w-full justify-between gap-3 h-12 px-3 text-sm transition-all duration-200 ${
+                                locked 
+                                  ? "opacity-60 cursor-pointer hover:bg-muted/50" 
+                                  : "hover:bg-blue-50 dark:hover:bg-blue-900/20 active:scale-95"
+                              }`}
+                              onClick={(e) => handleNavClick(item, e)}
+                              data-testid={`mobile-nav-${item.href.replace('/', '')}`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <Icon className="h-5 w-5" />
+                                <span>{item.label}</span>
+                              </div>
+                              {locked && (
+                                <Lock className="h-4 w-4 text-muted-foreground" />
+                              )}
+                              {item.comingSoon && (
+                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5">
+                                  Soon
+                                </Badge>
+                              )}
+                            </Button>
+                          </Link>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </nav>
+                ))}
+              </nav>
+            )}
           </div>
           
           <div className="p-4 border-t border-border bg-gray-50 dark:bg-gray-800/50">
