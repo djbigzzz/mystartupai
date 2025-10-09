@@ -62,6 +62,15 @@ Preferred communication style: Simple, everyday language.
   - Dashboard pages (business-plan, pitch-deck, submit-idea): Sidebar hidden on mobile (`hidden lg:block`), MobileNavigation component with Sheet drawer provides access to all navigation links
   - Marketing home page: Hamburger menu (Sheet component) with full navigation and CTA buttons accessible on mobile devices
   - All navigation states covered: loading, empty/no-data, and main content states
+- **Tier-Based Module Locking**: Subscription-based access control in mobile navigation
+  - Three-tier hierarchy: FREEMIUM (1), CORE (2), PRO (3)
+  - Locked modules display lock icon and reduced opacity (60%)
+  - Current plan badge with Crown icon shows user's active tier
+  - Access rules: FREEMIUM gets basic features; CORE adds Financial Model, Market Research, Analytics, Funding Tools; PRO adds MVP Builder and Investor Matching (coming soon)
+  - Clicking locked modules redirects to /purchase-credits page for upgrade
+  - Uses AuthContext for reliable tier detection, preventing race conditions where PRO users temporarily appear as FREEMIUM during load
+  - Loading spinner displays while auth resolves, blocking premature interactions
+  - "Soon" badges mark upcoming features (MVP Builder, Find Investors)
 - **Form Validation Enhancement**: Fixed AI suggestion form validation issue
   - Validation functions now properly check trimmed string values to handle AI-populated fields
   - Submit button correctly enables when all required fields contain non-empty content
