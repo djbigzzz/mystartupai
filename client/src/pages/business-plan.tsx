@@ -25,6 +25,7 @@ import { Link } from "wouter";
 import BusinessPlanGenerator from "@/components/business-plan-generator";
 import IdeaAnalysisDashboard from "@/components/idea-analysis-dashboard";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
+import MobileNavigation from "@/components/mobile-navigation";
 
 export default function BusinessPlan() {
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
@@ -75,7 +76,10 @@ export default function BusinessPlan() {
   if (isLoadingIdea) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-        <SidebarNavigation />
+        <div className="hidden lg:block">
+          <SidebarNavigation />
+        </div>
+        <MobileNavigation />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Brain className="w-12 h-12 text-blue-600 animate-pulse mx-auto mb-4" />
@@ -89,7 +93,10 @@ export default function BusinessPlan() {
   if (!currentIdeaId || !ideaData) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-        <SidebarNavigation />
+        <div className="hidden lg:block">
+          <SidebarNavigation />
+        </div>
+        <MobileNavigation />
         <div className="flex-1 flex flex-col">
           {/* Header */}
           <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
@@ -203,7 +210,10 @@ export default function BusinessPlan() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      <SidebarNavigation />
+      <div className="hidden lg:block">
+        <SidebarNavigation />
+      </div>
+      <MobileNavigation />
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">

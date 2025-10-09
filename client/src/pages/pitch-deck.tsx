@@ -26,6 +26,7 @@ import { Link } from "wouter";
 import PitchDeckGenerator from "@/components/pitch-deck-generator";
 import IdeaAnalysisDashboard from "@/components/idea-analysis-dashboard";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
+import MobileNavigation from "@/components/mobile-navigation";
 
 export default function PitchDeck() {
   const [currentIdeaId, setCurrentIdeaId] = useState<number | null>(null);
@@ -76,7 +77,10 @@ export default function PitchDeck() {
   if (isLoadingIdea) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-        <SidebarNavigation />
+        <div className="hidden lg:block">
+          <SidebarNavigation />
+        </div>
+        <MobileNavigation />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Presentation className="w-12 h-12 text-purple-600 animate-pulse mx-auto mb-4" />
@@ -90,7 +94,10 @@ export default function PitchDeck() {
   if (!currentIdeaId || !ideaData) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-        <SidebarNavigation />
+        <div className="hidden lg:block">
+          <SidebarNavigation />
+        </div>
+        <MobileNavigation />
         <div className="flex-1 flex flex-col">
           {/* Header */}
           <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
@@ -205,7 +212,10 @@ export default function PitchDeck() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Sidebar Navigation */}
-      <SidebarNavigation />
+      <div className="hidden lg:block">
+        <SidebarNavigation />
+      </div>
+      <MobileNavigation />
       
       {/* Main Content */}
       <div className="flex-1">
