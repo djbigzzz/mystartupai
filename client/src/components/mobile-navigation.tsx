@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Menu, 
   Home, 
@@ -18,10 +20,25 @@ import {
   Rocket,
   User,
   Settings,
-  Sparkles
+  Sparkles,
+  Lock,
+  Crown
 } from "lucide-react";
 
-const navigationSections = [
+interface NavigationItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  minTier?: "FREEMIUM" | "CORE" | "PRO";
+  comingSoon?: boolean;
+}
+
+interface NavigationSection {
+  title: string;
+  items: NavigationItem[];
+}
+
+const navigationSections: NavigationSection[] = [
   {
     title: "Getting Started",
     items: [
@@ -34,17 +51,17 @@ const navigationSections = [
     items: [
       { href: "/business-plan", label: "Business Plan", icon: FileText },
       { href: "/pitch-deck", label: "Pitch Deck", icon: Presentation },
-      { href: "/financial-modeling", label: "Financial Model", icon: Calculator },
-      { href: "/market-research", label: "Market Research", icon: Search },
+      { href: "/financial-modeling", label: "Financial Model", icon: Calculator, minTier: "CORE" },
+      { href: "/market-research", label: "Market Research", icon: Search, minTier: "CORE" },
     ]
   },
   {
     title: "Building & Growth",
     items: [
-      { href: "/mvp-builder", label: "MVP Builder", icon: Building },
-      { href: "/investor-matching", label: "Find Investors", icon: Users },
-      { href: "/analytics", label: "Analytics", icon: BarChart3 },
-      { href: "/funding", label: "Funding Tools", icon: Briefcase },
+      { href: "/mvp-builder", label: "MVP Builder", icon: Building, minTier: "PRO", comingSoon: true },
+      { href: "/investor-matching", label: "Find Investors", icon: Users, minTier: "PRO", comingSoon: true },
+      { href: "/analytics", label: "Analytics", icon: BarChart3, minTier: "CORE" },
+      { href: "/funding", label: "Funding Tools", icon: Briefcase, minTier: "CORE" },
     ]
   },
   {
@@ -56,8 +73,40 @@ const navigationSections = [
   }
 ];
 
+const TIER_HIERARCHY: Record<string, number> = {
+  "FREEMIUM": 1,
+  "CORE": 2,
+  "PRO": 3,
+};
+
 export default function MobileNavigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [, setLocation] = useLocation();
+
+  // Fetch user data to check current plan
+  const { data: user } = useQuery<any>({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
+
+  const userTier = user?.currentPlan || "FREEMIUM";
+  const userTierLevel = TIER_HIERARCHY[userTier] || 1;
+
+  const isLocked = (item: NavigationItem) => {
+    if (!item.minTier) return false;
+    const requiredLevel = TIER_HIERARCHY[item.minTier] || 1;
+    return userTierLevel < requiredLevel;
+  };
+
+  const handleNavClick = (item: NavigationItem, e: React.MouseEvent) => {
+    if (isLocked(item)) {
+      e.preventDefault();
+      setLocation("/purchase-credits");
+      setIsOpen(false);
+    } else {
+      setIsOpen(false);
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -83,6 +132,14 @@ export default function MobileNavigation() {
                 <p className="text-sm text-muted-foreground">Your AI Co-Founder</p>
               </div>
             </div>
+            {user && (
+              <div className="mt-3 flex items-center justify-between">
+                <Badge variant="outline" className="text-xs">
+                  <Crown className="h-3 w-3 mr-1" />
+                  {userTier}
+                </Badge>
+              </div>
+            )}
           </div>
           
           <div className="flex-1 overflow-y-auto p-4">
@@ -95,16 +152,32 @@ export default function MobileNavigation() {
                   <div className="space-y-1">
                     {section.items.map((item) => {
                       const Icon = item.icon;
+                      const locked = isLocked(item);
+                      
                       return (
-                        <Link key={item.href} href={item.href}>
+                        <Link key={item.href} href={locked ? "#" : item.href}>
                           <Button
                             variant="ghost"
-                            className="w-full justify-start gap-3 h-12 px-3 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 active:scale-95 transition-all duration-200"
-                            onClick={() => setIsOpen(false)}
+                            className={`w-full justify-between gap-3 h-12 px-3 text-sm transition-all duration-200 ${
+                              locked 
+                                ? "opacity-60 cursor-pointer hover:bg-muted/50" 
+                                : "hover:bg-blue-50 dark:hover:bg-blue-900/20 active:scale-95"
+                            }`}
+                            onClick={(e) => handleNavClick(item, e)}
                             data-testid={`mobile-nav-${item.href.replace('/', '')}`}
                           >
-                            <Icon className="h-5 w-5" />
-                            <span>{item.label}</span>
+                            <div className="flex items-center gap-3">
+                              <Icon className="h-5 w-5" />
+                              <span>{item.label}</span>
+                            </div>
+                            {locked && (
+                              <Lock className="h-4 w-4 text-muted-foreground" />
+                            )}
+                            {item.comingSoon && (
+                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5">
+                                Soon
+                              </Badge>
+                            )}
                           </Button>
                         </Link>
                       );
