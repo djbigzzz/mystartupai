@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/theme-context";
 import { DemoSessionProvider } from "@/contexts/demo-session-context";
 import { CreditProvider } from "@/contexts/credit-context";
 import { Web3Effects } from "@/components/web3-effects";
+import ThemeBackgroundEffects from "@/components/theme-background-effects";
 import Home from "@/pages/marketing-home";
 import Dashboard from "@/pages/dashboard";
 import SubmitIdea from "@/pages/submit-idea";
@@ -95,6 +96,7 @@ function App() {
               <TooltipProvider>
                 <Toaster />
                 <Web3Effects />
+                <ThemeBackgroundEffects />
                 <Router />
               </TooltipProvider>
             </DemoSessionProvider>

@@ -931,3 +931,299 @@ html {
 .web3 .dark\:border-gray-700 {
   border-color: hsla(280, 50%, 50%, 0.3) !important;
 }
+
+/* ===== LUXURY 3D BUTTON STYLES ===== */
+/* Primary buttons with 3D luxury effect - scoped to avoid conflicts */
+.btn-3d-primary,
+button.bg-primary {
+  position: relative;
+  background: linear-gradient(135deg, hsl(217, 91%, 65%) 0%, hsl(242, 91%, 70%) 100%);
+  box-shadow: 
+    0 4px 15px -3px hsla(217, 91%, 65%, 0.4),
+    0 10px 20px -5px hsla(217, 91%, 65%, 0.3),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.2);
+  transform: translateY(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-3d-primary:hover,
+button.bg-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px -5px hsla(217, 91%, 65%, 0.5),
+    0 15px 35px -10px hsla(217, 91%, 65%, 0.4),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.3);
+}
+
+.btn-3d-primary:active,
+button.bg-primary:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 10px -2px hsla(217, 91%, 65%, 0.4),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.1);
+}
+
+/* Gradient buttons for CTAs */
+.btn-gradient-luxury {
+  position: relative;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background-size: 200% 200%;
+  box-shadow: 
+    0 4px 15px -3px rgba(102, 126, 234, 0.5),
+    0 10px 25px -5px rgba(118, 75, 162, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: gradientShiftSubtle 8s ease infinite;
+}
+
+.btn-gradient-luxury:hover {
+  background-position: 100% 50%;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 10px 30px -5px rgba(102, 126, 234, 0.6),
+    0 20px 40px -10px rgba(118, 75, 162, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.btn-gradient-luxury:active {
+  transform: translateY(-1px) scale(1);
+}
+
+@keyframes gradientShiftSubtle {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Outline buttons with 3D effect - using specific class combinations */
+.btn-3d-outline,
+button.border.border-input {
+  position: relative;
+  box-shadow: 
+    0 2px 8px -2px hsla(0, 0%, 0%, 0.15),
+    inset 0 0 0 1px hsla(0, 0%, 100%, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-3d-outline:hover,
+button.border.border-input:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 15px -3px hsla(0, 0%, 0%, 0.2),
+    0 8px 20px -5px hsla(0, 0%, 0%, 0.15),
+    inset 0 0 0 1px hsla(0, 0%, 100%, 0.15);
+}
+
+/* Ghost buttons with subtle 3D - using utility class */
+.btn-3d-ghost {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-3d-ghost:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 10px -2px hsla(0, 0%, 0%, 0.1);
+}
+
+/* Destructive buttons with 3D warning effect */
+.btn-3d-destructive,
+button.bg-destructive {
+  position: relative;
+  background: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(0, 90%, 65%) 100%) !important;
+  box-shadow: 
+    0 4px 15px -3px hsla(0, 84%, 60%, 0.4),
+    0 10px 20px -5px hsla(0, 84%, 60%, 0.3),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-3d-destructive:hover,
+button.bg-destructive:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px -5px hsla(0, 84%, 60%, 0.5),
+    0 15px 35px -10px hsla(0, 84%, 60%, 0.4);
+}
+
+/* ===== BACKGROUND EFFECTS FOR ALL THEMES ===== */
+
+/* Light Theme Background Effects - scoped to light theme only */
+html.light body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+  animation: subtleGlow 20s ease-in-out infinite;
+}
+
+/* Dark Theme Background Effects - scoped to dark theme only */
+html.dark body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 60% 60%, rgba(217, 70, 239, 0.1) 0%, transparent 35%);
+  pointer-events: none;
+  z-index: 0;
+  animation: subtleGlow 20s ease-in-out infinite;
+}
+
+/* Disable background effects for web3 theme */
+html.web3 body::before {
+  content: none;
+}
+
+@keyframes subtleGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Disable background animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html.light body::before,
+  html.dark body::before {
+    animation: none;
+  }
+}
+
+/* Ensure content is above background effects */
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Floating orbs for light theme */
+.light-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatOrb 25s ease-in-out infinite;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .light-orb {
+    animation: none;
+    filter: blur(40px); /* Reduce blur for better performance */
+  }
+}
+
+.light-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(147, 51, 234, 0.4));
+  top: -100px;
+  right: -100px;
+  animation-delay: 0s;
+}
+
+.light-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(217, 70, 239, 0.3));
+  bottom: -50px;
+  left: -50px;
+  animation-delay: 8s;
+}
+
+/* Floating orbs for dark theme */
+.dark-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatOrb 30s ease-in-out infinite;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .dark-orb {
+    animation: none;
+    filter: blur(50px); /* Reduce blur for better performance */
+  }
+}
+
+.dark-orb-1 {
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5));
+  top: -150px;
+  right: -150px;
+  animation-delay: 0s;
+}
+
+.dark-orb-2 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.4), rgba(217, 70, 239, 0.4));
+  bottom: -100px;
+  left: -100px;
+  animation-delay: 10s;
+}
+
+.dark-orb-3 {
+  width: 350px;
+  height: 350px;
+  background: linear-gradient(135deg, rgba(217, 70, 239, 0.3), rgba(236, 72, 153, 0.3));
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 20s;
+}
+
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
+}
+
+/* Enhanced card effects across all themes */
+.luxury-card {
+  position: relative;
+  background: hsla(var(--card) / 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsla(var(--border) / 0.5);
+  box-shadow: 
+    0 4px 20px -4px hsla(0, 0%, 0%, 0.1),
+    0 10px 40px -10px hsla(217, 91%, 65%, 0.15),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.luxury-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 10px 40px -10px hsla(0, 0%, 0%, 0.15),
+    0 20px 60px -15px hsla(217, 91%, 65%, 0.25),
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.15);
+}
