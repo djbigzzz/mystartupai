@@ -239,7 +239,10 @@ export default function AdvancedIdeaForm() {
       const data = await response.json();
       
       // Set the AI suggestion to the form field
-      form.setValue(fieldName as any, data.suggestion);
+      form.setValue(fieldName as any, data.suggestion, { 
+        shouldDirty: true, 
+        shouldValidate: true 
+      });
 
       toast({
         title: "AI Suggestion Applied",
