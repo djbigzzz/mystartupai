@@ -90,6 +90,7 @@ export default function AdvancedIdeaForm() {
   
   // Start from step 0 for both authenticated and non-authenticated users
   const [currentStep, setCurrentStep] = useState(0);
+  const [aiSuggestionLoading, setAiSuggestionLoading] = useState<string | null>(null);
   // Create validation steps based on authentication status
   const createValidationSteps = () => {
     const baseSteps = [
@@ -191,6 +192,68 @@ export default function AdvancedIdeaForm() {
       : ['name', 'email', 'ideaTitle', 'description', 'industry', 'stage'];
     const completedFields = requiredFields.filter(field => watchedFields[field as keyof typeof watchedFields]?.toString()?.trim());
     return (completedFields.length / requiredFields.length) * 100;
+  };
+
+  // Handle AI suggestion generation
+  const handleAISuggestion = async (fieldName: string, question: string) => {
+    if (!watchedFields.ideaTitle || !watchedFields.description) {
+      toast({
+        title: "Missing Information",
+        description: "Please complete the idea title and description first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setAiSuggestionLoading(fieldName);
+
+    try {
+      const response = await fetch("/api/ai-suggestions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          questionId: fieldName,
+          question,
+          ideaTitle: watchedFields.ideaTitle,
+          description: watchedFields.description,
+          industry: watchedFields.industry,
+          businessType: watchedFields.targetMarket,
+          ideaContext: {
+            existingAnswers: {
+              problemStatement: watchedFields.problemStatement,
+              solutionApproach: watchedFields.solutionApproach,
+              competitiveAdvantage: watchedFields.competitiveAdvantage,
+              revenueModel: watchedFields.revenueModel,
+            }
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate suggestion");
+      }
+
+      const data = await response.json();
+      
+      // Set the AI suggestion to the form field
+      form.setValue(fieldName as any, data.suggestion);
+
+      toast({
+        title: "AI Suggestion Applied",
+        description: "You can edit the suggestion or generate a new one",
+      });
+    } catch (error) {
+      toast({
+        title: "Error generating suggestion",
+        description: error instanceof Error ? error.message : "Please try again",
+        variant: "destructive"
+      });
+    } finally {
+      setAiSuggestionLoading(null);
+    }
   };
 
   const submitIdeaMutation = useMutation({
@@ -525,9 +588,27 @@ export default function AdvancedIdeaForm() {
               name="problemStatement"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center text-sm font-medium text-gray-700">
-                    <AlertCircle className="w-4 h-4 mr-2 text-red-600" />
-                    Problem Statement
+                  <FormLabel className="flex items-center justify-between text-sm font-medium text-gray-700">
+                    <div className="flex items-center">
+                      <AlertCircle className="w-4 h-4 mr-2 text-red-600" />
+                      Problem Statement
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAISuggestion('problemStatement', 'What specific problem does this startup solve?')}
+                      disabled={!watchedFields.ideaTitle || !watchedFields.description || aiSuggestionLoading === 'problemStatement'}
+                      className="ml-auto"
+                      data-testid="ai-suggest-problem"
+                    >
+                      {aiSuggestionLoading === 'problemStatement' ? (
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-3 h-3 mr-1" />
+                      )}
+                      {aiSuggestionLoading === 'problemStatement' ? 'Generating...' : 'AI Suggest'}
+                    </Button>
                   </FormLabel>
                   <FormControl>
                     <Textarea 
@@ -550,9 +631,27 @@ export default function AdvancedIdeaForm() {
               name="solutionApproach"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center text-sm font-medium text-gray-700">
-                    <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
-                    Solution Approach
+                  <FormLabel className="flex items-center justify-between text-sm font-medium text-gray-700">
+                    <div className="flex items-center">
+                      <CheckCircle className="w-4 h-4 mr-2 text-green-600" />
+                      Solution Approach
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAISuggestion('solutionApproach', 'How does this startup solve the problem? What makes the approach unique?')}
+                      disabled={!watchedFields.ideaTitle || !watchedFields.description || aiSuggestionLoading === 'solutionApproach'}
+                      className="ml-auto"
+                      data-testid="ai-suggest-solution"
+                    >
+                      {aiSuggestionLoading === 'solutionApproach' ? (
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-3 h-3 mr-1" />
+                      )}
+                      {aiSuggestionLoading === 'solutionApproach' ? 'Generating...' : 'AI Suggest'}
+                    </Button>
                   </FormLabel>
                   <FormControl>
                     <Textarea 
@@ -582,9 +681,27 @@ export default function AdvancedIdeaForm() {
                 name="competitiveAdvantage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center text-sm font-medium text-gray-700">
-                      <Zap className="w-4 h-4 mr-2 text-yellow-600" />
-                      Competitive Advantage
+                    <FormLabel className="flex items-center justify-between text-sm font-medium text-gray-700">
+                      <div className="flex items-center">
+                        <Zap className="w-4 h-4 mr-2 text-yellow-600" />
+                        Competitive Advantage
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleAISuggestion('competitiveAdvantage', 'What gives this startup an edge over competitors?')}
+                        disabled={!watchedFields.ideaTitle || !watchedFields.description || aiSuggestionLoading === 'competitiveAdvantage'}
+                        className="ml-auto"
+                        data-testid="ai-suggest-advantage"
+                      >
+                        {aiSuggestionLoading === 'competitiveAdvantage' ? (
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-3 h-3 mr-1" />
+                        )}
+                        {aiSuggestionLoading === 'competitiveAdvantage' ? 'Generating...' : 'AI Suggest'}
+                      </Button>
                     </FormLabel>
                     <FormControl>
                       <Textarea 
@@ -605,9 +722,27 @@ export default function AdvancedIdeaForm() {
                 name="revenueModel"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="flex items-center text-sm font-medium text-gray-700">
-                      <DollarSign className="w-4 h-4 mr-2 text-green-600" />
-                      Revenue Model
+                    <FormLabel className="flex items-center justify-between text-sm font-medium text-gray-700">
+                      <div className="flex items-center">
+                        <DollarSign className="w-4 h-4 mr-2 text-green-600" />
+                        Revenue Model
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleAISuggestion('revenueModel', 'How will this startup make money?')}
+                        disabled={!watchedFields.ideaTitle || !watchedFields.description || aiSuggestionLoading === 'revenueModel'}
+                        className="ml-auto"
+                        data-testid="ai-suggest-revenue"
+                      >
+                        {aiSuggestionLoading === 'revenueModel' ? (
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-3 h-3 mr-1" />
+                        )}
+                        {aiSuggestionLoading === 'revenueModel' ? 'Generating...' : 'AI Suggest'}
+                      </Button>
                     </FormLabel>
                     <FormControl>
                       <Textarea 
