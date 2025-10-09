@@ -31,8 +31,14 @@ import {
   BarChart3,
   PieChart,
   Briefcase,
-  Building
+  Building,
+  Menu
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function MarketingHome() {
   const [showVideo, setShowVideo] = useState(false);
@@ -198,6 +204,7 @@ export default function MarketingHome() {
           <div className="flex justify-between items-center py-4">
             <Logo size="lg" showText={true} />
             
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" data-testid="nav-link-features">
                 AI Tools
@@ -215,6 +222,36 @@ export default function MarketingHome() {
                 <Button size="sm" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300" data-testid="button-nav-primary">Start Free Now</Button>
               </Link>
             </div>
+
+            {/* Mobile Navigation */}
+            <Sheet>
+              <SheetTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="sm" data-testid="button-mobile-menu">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                <nav className="flex flex-col gap-4 mt-8">
+                  <a href="#features" className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2" data-testid="mobile-nav-link-features">
+                    AI Tools
+                  </a>
+                  <a href="#how-it-works" className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2" data-testid="mobile-nav-link-process">
+                    Business Plans
+                  </a>
+                  <a href="#who-its-for" className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2" data-testid="mobile-nav-link-audience">
+                    For Entrepreneurs
+                  </a>
+                  <div className="flex flex-col gap-3 mt-4">
+                    <Link href="/app">
+                      <Button variant="outline" className="w-full" data-testid="mobile-button-nav-signin">Sign In</Button>
+                    </Link>
+                    <Link href="/app">
+                      <Button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 font-bold" data-testid="mobile-button-nav-primary">Start Free Now</Button>
+                    </Link>
+                  </div>
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </nav>
