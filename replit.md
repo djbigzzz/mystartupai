@@ -57,6 +57,21 @@ Preferred communication style: Simple, everyday language.
   - Rate-limited endpoint (20 requests per 5 minutes) with proper authentication
   - Tested and verified with all fields generating contextually relevant content
 
+### Mobile Responsiveness
+- **Comprehensive Mobile Navigation**: Full mobile support across all dashboard and marketing pages
+  - Dashboard pages (business-plan, pitch-deck, submit-idea): Sidebar hidden on mobile (`hidden lg:block`), MobileNavigation component with Sheet drawer provides access to all navigation links
+  - Marketing home page: Hamburger menu (Sheet component) with full navigation and CTA buttons accessible on mobile devices
+  - All navigation states covered: loading, empty/no-data, and main content states
+- **Form Validation Enhancement**: Fixed AI suggestion form validation issue
+  - Validation functions now properly check trimmed string values to handle AI-populated fields
+  - Submit button correctly enables when all required fields contain non-empty content
+  - Fixed LSP type error with email field null handling
+  - Tested and verified with Playwright end-to-end tests
+- **Responsive Grid Layouts**: All card grids use mobile-first breakpoints
+  - Pattern: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4` ensures single column on mobile, proper stacking
+  - Overflow handling with `overflow-auto` on scrollable content areas
+  - Touch-friendly button sizing with `flex-1 sm:flex-none` for full-width buttons on mobile
+
 ### Development Infrastructure
 - **Test User Seeding**: Automatic seeding of test users in development environment
   - Test account: web3user@test.com / password123 (CORE plan, 6,200 credits)
