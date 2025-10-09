@@ -34,6 +34,22 @@ Preferred communication style: Simple, everyday language.
   - Upgraded pricing cards with hover scale effects, enhanced shadows/borders
   - Special styling for PRO plan with primary borders and glows
   - Current plan ring indicator for active subscriptions
+- **3D Luxury Button Styling**: Platform-wide button enhancements with depth and polish
+  - Primary buttons: Gradient backgrounds (blue-600→purple-600) with layered shadows and transforms
+  - Outline buttons: Subtle depth with inset highlights and hover elevation
+  - Destructive buttons: Red gradient with enhanced warning shadows
+  - Ghost buttons: Minimal hover effects with subtle shadows
+  - All effects properly scoped to specific button variants using CVA-generated classes
+- **Theme-Aware Background Effects**: Dynamic floating orbs and gradients for light/dark themes
+  - Light theme: Radial gradient overlay with 3 floating blue/purple orbs (400px, blur 80px)
+  - Dark theme: Enhanced gradient with 3 floating cyan/purple/magenta orbs (500-600px, blur 100px)
+  - Web3 theme: Isolated from background effects, relies solely on Web3Effects component
+  - All effects use `pointer-events: none` with z-index layering for proper interactivity
+- **Accessibility Support**: prefers-reduced-motion implementation across all animations
+  - Disables orb animations for motion-sensitive users
+  - Reduces blur intensity (80px→40px light, 100px→50px dark) for better performance
+  - Prevents background gradient animations when reduced motion is preferred
+  - Ensures inclusive experience without sacrificing visual appeal for standard users
 
 ### Subscription Management
 - **Cancellation Flow**: Comprehensive cancellation experience with retention strategy
