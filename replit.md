@@ -16,7 +16,6 @@ Preferred communication style: Simple, everyday language.
   - Particle system with 50 cyan/purple glowing particles with mouse attraction physics
   - Mouse trail effect with purple/magenta glow following cursor
   - Click ripple effects with dual expanding rings (cyan + magenta) and particle bursts
-  - Floating crypto coins (SOL, BTC, ETH) with rotation animation and upward float
   - Performance-optimized using refs and requestAnimationFrame (60fps target)
   - Proper cleanup on theme change, no React re-renders during animation
   - Full-screen canvas with pointer-events: none for click-through, mix-blend-mode: screen for glow effect

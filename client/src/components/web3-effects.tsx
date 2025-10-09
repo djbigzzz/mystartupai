@@ -22,14 +22,6 @@ interface ClickEffect {
   timestamp: number;
 }
 
-interface FloatingCoin {
-  x: number;
-  y: number;
-  rotation: number;
-  speed: number;
-  type: 'sol' | 'btc' | 'eth';
-}
-
 export function Web3Effects() {
   const { theme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,7 +29,6 @@ export function Web3Effects() {
   const particlesRef = useRef<Particle[]>([]);
   const mouseTrailRef = useRef<MouseTrail[]>([]);
   const clickEffectsRef = useRef<ClickEffect[]>([]);
-  const floatingCoinsRef = useRef<FloatingCoin[]>([]);
   const animationFrameId = useRef<number>();
 
   useEffect(() => {
@@ -86,23 +77,6 @@ export function Web3Effects() {
     };
     initParticles();
 
-    // Initialize floating coins
-    const initCoins = () => {
-      floatingCoinsRef.current = [];
-      const types: ('sol' | 'btc' | 'eth')[] = ['sol', 'btc', 'eth'];
-      for (let i = 0; i < 8; i++) {
-        floatingCoinsRef.current.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          rotation: Math.random() * 360,
-          speed: Math.random() * 0.3 + 0.1,
-          type: types[Math.floor(Math.random() * types.length)],
-        });
-      }
-      console.log(`Web3Effects: Initialized ${floatingCoinsRef.current.length} coins`);
-    };
-    initCoins();
-
     // Mouse move handler
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
@@ -142,7 +116,6 @@ export function Web3Effects() {
       const particles = particlesRef.current;
       const mouseTrail = mouseTrailRef.current;
       const clickEffects = clickEffectsRef.current;
-      const floatingCoins = floatingCoinsRef.current;
 
       // Draw particles
       particles.forEach(particle => {
@@ -251,57 +224,6 @@ export function Web3Effects() {
 
       // Clean up old click effects
       clickEffectsRef.current = clickEffects.filter(e => now - e.timestamp < 800);
-
-      // Draw floating coins
-      floatingCoins.forEach(coin => {
-        coin.y -= coin.speed;
-        coin.rotation += 2;
-
-        // Reset when off screen
-        if (coin.y < -50) {
-          coin.y = canvas.height + 50;
-          coin.x = Math.random() * canvas.width;
-        }
-
-        ctx.save();
-        ctx.translate(coin.x, coin.y);
-        ctx.rotate((coin.rotation * Math.PI) / 180);
-
-        // Draw coin based on type
-        const coinSize = 30;
-        ctx.beginPath();
-        ctx.arc(0, 0, coinSize, 0, Math.PI * 2);
-        
-        let gradient;
-        if (coin.type === 'sol') {
-          gradient = ctx.createLinearGradient(-coinSize, -coinSize, coinSize, coinSize);
-          gradient.addColorStop(0, 'rgba(220, 31, 255, 0.6)');
-          gradient.addColorStop(1, 'rgba(1, 242, 227, 0.6)');
-        } else if (coin.type === 'btc') {
-          gradient = ctx.createLinearGradient(-coinSize, -coinSize, coinSize, coinSize);
-          gradient.addColorStop(0, 'rgba(247, 147, 26, 0.6)');
-          gradient.addColorStop(1, 'rgba(255, 215, 0, 0.6)');
-        } else {
-          gradient = ctx.createLinearGradient(-coinSize, -coinSize, coinSize, coinSize);
-          gradient.addColorStop(0, 'rgba(98, 126, 234, 0.6)');
-          gradient.addColorStop(1, 'rgba(99, 179, 237, 0.6)');
-        }
-        
-        ctx.fillStyle = gradient;
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Draw coin symbol
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.font = 'bold 16px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(coin.type.toUpperCase(), 0, 0);
-
-        ctx.restore();
-      });
       
       animationFrameId.current = requestAnimationFrame(animate);
     };
