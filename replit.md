@@ -40,6 +40,16 @@ Preferred communication style: Simple, everyday language.
   - Reverses cancel_at_period_end status back to active
   - Dual integration ensures users can reactivate from multiple touchpoints
 
+### AI-Powered Form Assistance
+- **AI Suggestion Buttons**: Intelligent form field assistance in startup idea submission
+  - Four AI-powered suggestion buttons for Problem Statement, Solution Approach, Competitive Advantage, and Revenue Model fields
+  - Context-aware GPT-4 integration generates relevant suggestions based on idea title, description, and industry
+  - Field-level loading states with spinner animations during generation
+  - Real-time form validation and dirty-state tracking using React Hook Form
+  - Toast notifications for success/error feedback
+  - Rate-limited endpoint (20 requests per 5 minutes) with proper authentication
+  - Tested and verified with all fields generating contextually relevant content
+
 ### Development Infrastructure
 - **Test User Seeding**: Automatic seeding of test users in development environment
   - Test account: web3user@test.com / password123 (CORE plan, 6,200 credits)
