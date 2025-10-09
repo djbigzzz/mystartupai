@@ -332,14 +332,14 @@ export default function AdvancedIdeaForm() {
     const stepId = validationSteps[step].id;
     switch (stepId) {
       case "basic-info":
-        return watchedFields.name && watchedFields.email;
+        return !!(watchedFields.name?.trim()) && !!(watchedFields.email?.trim());
       case "idea-concept":
-        return watchedFields.ideaTitle && watchedFields.description;
+        return !!(watchedFields.ideaTitle?.trim()) && !!(watchedFields.description?.trim());
       case "market-details":
-        return watchedFields.industry && watchedFields.stage && watchedFields.targetMarket;
+        return !!(watchedFields.industry?.trim()) && !!(watchedFields.stage?.trim()) && !!(watchedFields.targetMarket?.trim());
       case "problem-solution":
         // Only require core fields, competitive advantage and revenue model are optional
-        return watchedFields.problemStatement && watchedFields.solutionApproach;
+        return !!(watchedFields.problemStatement?.trim()) && !!(watchedFields.solutionApproach?.trim());
       default:
         return false;
     }
@@ -405,7 +405,8 @@ export default function AdvancedIdeaForm() {
                       <Input 
                         type="email"
                         placeholder="your@email.com" 
-                        {...field} 
+                        {...field}
+                        value={field.value || undefined}
                         className="border-gray-300 focus:border-blue-500"
                       />
                     </FormControl>
