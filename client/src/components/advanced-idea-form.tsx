@@ -618,7 +618,8 @@ export default function AdvancedIdeaForm() {
                     <Textarea 
                       rows={4}
                       placeholder="What specific problem does your startup solve? Who experiences this problem?" 
-                      {...field} 
+                      {...field}
+                      value={field.value || ""}
                       className="border-gray-300 focus:border-blue-500"
                     />
                   </FormControl>
@@ -661,12 +662,8 @@ export default function AdvancedIdeaForm() {
                     <Textarea 
                       rows={4}
                       placeholder="How does your startup solve this problem? What makes your approach unique?" 
+                      {...field}
                       value={field.value || ""}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
                       className="border-gray-300 focus:border-blue-500"
                       data-testid="solution-approach-textarea"
                     />
@@ -711,7 +708,8 @@ export default function AdvancedIdeaForm() {
                       <Textarea 
                         rows={3}
                         placeholder="What gives you an edge over competitors?" 
-                        {...field} 
+                        {...field}
+                        value={field.value || ""}
                         className="border-gray-300 focus:border-blue-500"
                       />
                     </FormControl>
@@ -752,7 +750,8 @@ export default function AdvancedIdeaForm() {
                       <Textarea 
                         rows={3}
                         placeholder="How will you make money?" 
-                        {...field} 
+                        {...field}
+                        value={field.value || ""}
                         className="border-gray-300 focus:border-blue-500"
                       />
                     </FormControl>
