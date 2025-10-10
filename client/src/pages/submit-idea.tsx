@@ -27,8 +27,10 @@ import {
   Edit
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { insertStartupIdeaSchema } from "@shared/schema";
+import { insertStartupIdeaSchema, startupIdeas } from "@shared/schema";
 import type { InsertStartupIdea } from "@shared/schema";
+
+type StartupIdea = typeof startupIdeas.$inferSelect;
 import { useAuth } from "@/contexts/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -81,11 +83,11 @@ export default function SubmitIdea() {
   const [aiSuggestionLoading, setAiSuggestionLoading] = useState<string | null>(null);
 
   // Fetch user's current idea
-  const { data: ideasData = [], isLoading: ideasLoading } = useQuery({
+  const { data: ideasData = [], isLoading: ideasLoading } = useQuery<StartupIdea[]>({
     queryKey: ['/api/ideas'],
   });
 
-  const currentIdea = ideasData.length > 0 ? ideasData[0] : null;
+  const currentIdea: StartupIdea | null = ideasData.length > 0 ? ideasData[0] : null;
 
   const form = useForm<InsertStartupIdea & {
     targetMarket: string;
@@ -209,10 +211,21 @@ export default function SubmitIdea() {
 
   const submitIdeaMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest("/api/ideas", {
+      const response = await fetch("/api/ideas", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Failed to save idea" }));
+        throw new Error(errorData.message || `Server error: ${response.status}`);
+      }
+      
+      return response.json();
     },
     onSuccess: (data) => {
       toast({
