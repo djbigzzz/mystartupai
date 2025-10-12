@@ -50,6 +50,7 @@ import { Connection, PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { createTransfer, encodeURL, parseURL } from '@solana/pay';
 import BigNumber from 'bignumber.js';
 import { CREDIT_PACKAGES, PAYMENT_METHODS, PAYMENT_STATUS, CREDIT_COSTS } from '@shared/constants';
+// @ts-expect-error - PayPal SDK doesn't have official TypeScript types
 import paypal from '@paypal/checkout-server-sdk';
 import { gatewayService } from "./gateway-service";
 
