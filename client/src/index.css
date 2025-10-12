@@ -90,39 +90,42 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
-  /* UNIVERSAL BRIGHT GREEN TEXT - Maximum specificity to override Tailwind */
-  .cypherpunk,
-  .cypherpunk *,
-  .cypherpunk h1,
-  .cypherpunk h2,
-  .cypherpunk h3,
-  .cypherpunk h4,
-  .cypherpunk h5,
-  .cypherpunk h6,
-  .cypherpunk p,
-  .cypherpunk span,
-  .cypherpunk div,
-  .cypherpunk a,
-  .cypherpunk label,
-  .cypherpunk [class*="text-"] {
+  /* EXCLUDE landing page from Cypherpunk theme */
+  .cypherpunk [data-page="landing"],
+  .cypherpunk [data-page="landing"] *,
+  .cypherpunk [data-page="landing"] h1,
+  .cypherpunk [data-page="landing"] h2,
+  .cypherpunk [data-page="landing"] h3,
+  .cypherpunk [data-page="landing"] p,
+  .cypherpunk [data-page="landing"] span,
+  .cypherpunk [data-page="landing"] a,
+  .cypherpunk [data-page="landing"] button,
+  .cypherpunk [data-page="landing"] input {
+    color: revert !important;
+    background: revert !important;
+    text-shadow: none !important;
+    border: revert !important;
+    box-shadow: revert !important;
+    font-family: revert !important;
+  }
+
+  /* BRIGHT GREEN TEXT for dashboard */
+  .cypherpunk [data-page="dashboard"],
+  .cypherpunk [data-page="dashboard"] *,
+  .cypherpunk [data-page="dashboard"] h1,
+  .cypherpunk [data-page="dashboard"] h2,
+  .cypherpunk [data-page="dashboard"] h3,
+  .cypherpunk [data-page="dashboard"] h4,
+  .cypherpunk [data-page="dashboard"] h5,
+  .cypherpunk [data-page="dashboard"] h6,
+  .cypherpunk [data-page="dashboard"] p,
+  .cypherpunk [data-page="dashboard"] span,
+  .cypherpunk [data-page="dashboard"] div,
+  .cypherpunk [data-page="dashboard"] a,
+  .cypherpunk [data-page="dashboard"] label,
+  .cypherpunk [data-page="dashboard"] [class*="text-"] {
     color: hsl(120 100% 90%) !important;
     text-shadow: 0 0 8px rgba(0, 255, 65, 0.6) !important;
-  }
-  
-  /* EXCEPTIONS: Light backgrounds get normal dark text */
-  .cypherpunk [class*="bg-white"],
-  .cypherpunk [class*="bg-gray-50"],
-  .cypherpunk [class*="bg-gray-100"],
-  .cypherpunk nav.bg-white {
-    text-shadow: none !important;
-  }
-  
-  .cypherpunk [class*="bg-white"] *,
-  .cypherpunk [class*="bg-gray-50"] *,
-  .cypherpunk [class*="bg-gray-100"] *,
-  .cypherpunk nav.bg-white * {
-    color: inherit !important;
-    text-shadow: none !important;
   }
   
   /* Comprehensive visibility for ALL containers */
