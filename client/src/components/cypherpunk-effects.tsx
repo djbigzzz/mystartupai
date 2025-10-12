@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useTheme } from "@/contexts/theme-context";
+import { useLocation } from "wouter";
 
 interface MatrixChar {
   x: number;
@@ -17,14 +18,15 @@ interface ClickEffect {
 
 export function CypherpunkEffects() {
   const { theme } = useTheme();
+  const [location] = useLocation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const matrixCharsRef = useRef<MatrixChar[]>([]);
   const clickEffectsRef = useRef<ClickEffect[]>([]);
   const animationFrameId = useRef<number>();
 
   useEffect(() => {
-    // Only run effects in cypherpunk theme
-    if (theme !== "cypherpunk") {
+    // Only run effects in cypherpunk theme AND not on landing page
+    if (theme !== "cypherpunk" || location === "/") {
       return;
     }
 
@@ -177,10 +179,10 @@ export function CypherpunkEffects() {
         cancelAnimationFrame(animationFrameId.current);
       }
     };
-  }, [theme]);
+  }, [theme, location]);
 
-  // Only render canvas in cypherpunk theme
-  if (theme !== "cypherpunk") {
+  // Only render canvas in cypherpunk theme and not on landing page
+  if (theme !== "cypherpunk" || location === "/") {
     return null;
   }
 
