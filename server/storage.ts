@@ -86,6 +86,7 @@ export interface IStorage {
   createStartupIdea(idea: InsertStartupIdea): Promise<StartupIdea>;
   getStartupIdea(id: number): Promise<StartupIdea | undefined>;
   updateStartupIdea(id: number, updates: Partial<StartupIdea>): Promise<StartupIdea | undefined>;
+  deleteStartupIdea(id: number): Promise<boolean>;
   getStartupIdeasByEmail(email: string): Promise<StartupIdea[]>;
   getStartupIdeasByUserId(userId: number): Promise<StartupIdea[]>;
   
@@ -283,6 +284,11 @@ export class DatabaseStorage implements IStorage {
 
   async getStartupIdeasByUserId(userId: number): Promise<StartupIdea[]> {
     return await db.select().from(startupIdeas).where(eq(startupIdeas.userId, userId));
+  }
+
+  async deleteStartupIdea(id: number): Promise<boolean> {
+    const result = await db.delete(startupIdeas).where(eq(startupIdeas.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   // Company operations

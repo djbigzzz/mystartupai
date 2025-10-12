@@ -1246,15 +1246,15 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     async (req, res) => {
       try {
         const id = parseInt(req.params.id);
-        const user = req.user as any;
+        const userId = (req.user as any).id;
         const idea = await storage.getStartupIdea(id);
         
         if (!idea) {
           return res.status(404).json({ message: "Startup idea not found" });
         }
         
-        // Security check: Ensure the user owns this idea
-        if (idea.email !== user.email) {
+        // Security check: Ensure the user owns this idea (use userId, not email for Web3 compatibility)
+        if (idea.userId !== userId) {
           return res.status(403).json({ message: "Access denied: You don't have permission to view this startup idea" });
         }
         
@@ -1287,6 +1287,111 @@ Issued At: ${new Date(timestamp).toISOString()}`;
       res.status(500).json({ message: "Failed to fetch ideas" });
     }
   });
+
+  // Delete startup idea (allows user to start fresh)
+  app.delete("/api/ideas/:id",
+    requireAuth,
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const id = parseInt(req.params.id);
+        const userId = (req.user as any).id;
+        const idea = await storage.getStartupIdea(id);
+        
+        if (!idea) {
+          return res.status(404).json({ message: "Startup idea not found" });
+        }
+        
+        // Security check: Ensure the user owns this idea
+        if (idea.userId !== userId) {
+          return res.status(403).json({ message: "Access denied: You don't have permission to delete this idea" });
+        }
+        
+        const deleted = await storage.deleteStartupIdea(id);
+        
+        if (deleted) {
+          res.json({ message: "Idea deleted successfully. You can now create a new one!" });
+        } else {
+          res.status(500).json({ message: "Failed to delete idea" });
+        }
+      } catch (error) {
+        console.error("Error deleting idea:", error);
+        res.status(500).json({ message: "Failed to delete idea" });
+      }
+    }
+  );
+
+  // Regenerate AI analysis for existing idea
+  app.post("/api/ideas/:id/regenerate",
+    requireAuth,
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const id = parseInt(req.params.id);
+        const userId = (req.user as any).id;
+        const idea = await storage.getStartupIdea(id);
+        
+        if (!idea) {
+          return res.status(404).json({ message: "Startup idea not found" });
+        }
+        
+        // Security check: Ensure the user owns this idea
+        if (idea.userId !== userId) {
+          return res.status(403).json({ message: "Access denied: You don't have permission to regenerate analysis for this idea" });
+        }
+        
+        // Regenerate AI analysis
+        let analysis;
+        try {
+          console.log(`🔄 Regenerating AI analysis for: ${idea.ideaTitle}`);
+          const enhancedAnalysis = await aiCofounder.analyzeStartupIdea(
+            idea.ideaTitle,
+            idea.description,
+            idea.industry,
+            idea.stage
+          );
+
+          // Convert to compatible format
+          analysis = {
+            score: enhancedAnalysis.overallAssessment.viabilityScore,
+            strengths: enhancedAnalysis.overallAssessment.strengths,
+            weaknesses: enhancedAnalysis.overallAssessment.challenges,
+            marketOpportunity: `${enhancedAnalysis.marketAnalysis.marketSize} market with ${enhancedAnalysis.marketAnalysis.growthRate} growth`,
+            competitiveAdvantage: enhancedAnalysis.overallAssessment.keyDifferentiators?.join(", ") || "Unique positioning identified",
+            recommendations: enhancedAnalysis.overallAssessment.recommendations,
+            feasibilityScore: Math.min(95, enhancedAnalysis.overallAssessment.viabilityScore + 10),
+            marketSizeEstimate: enhancedAnalysis.marketAnalysis.marketSize,
+            webResearchEnabled: true,
+            marketAnalysis: enhancedAnalysis.marketAnalysis
+          };
+          console.log(`✅ Analysis regenerated successfully`);
+        } catch (enhancedError) {
+          console.warn(`⚠️ Enhanced AI failed, using basic analysis:`, enhancedError instanceof Error ? enhancedError.message : 'Unknown error');
+          analysis = await analyzeStartupIdea(
+            idea.ideaTitle,
+            idea.description,
+            idea.industry,
+            idea.stage
+          );
+          analysis.webResearchEnabled = false;
+          analysis.searchDisclaimer = "Using basic AI analysis - web research temporarily unavailable";
+        }
+        
+        // Update the idea with new analysis
+        const updatedIdea = await storage.updateStartupIdea(id, { analysis });
+        
+        res.json({
+          message: "AI analysis regenerated successfully!",
+          idea: updatedIdea
+        });
+      } catch (error) {
+        console.error("Error regenerating analysis:", error);
+        res.status(500).json({ message: "Failed to regenerate analysis" });
+      }
+    }
+  );
 
   // Helper function to deduct credits and track overage usage
   async function deductCreditsWithTracking(
