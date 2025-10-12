@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { DemoSessionProvider } from "@/contexts/demo-session-context";
 import { CreditProvider } from "@/contexts/credit-context";
-import { Web3Effects } from "@/components/web3-effects";
+import { CypherpunkEffects } from "@/components/cypherpunk-effects";
 import ThemeBackgroundEffects from "@/components/theme-background-effects";
 import Home from "@/pages/marketing-home";
 import Dashboard from "@/pages/dashboard";
@@ -99,7 +99,7 @@ function App() {
             <DemoSessionProvider>
               <TooltipProvider>
                 <Toaster />
-                <Web3Effects />
+                <CypherpunkEffects />
                 <ThemeBackgroundEffects />
                 <Router />
               </TooltipProvider>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light" | "dark" | "web3";
+type Theme = "light" | "dark" | "cypherpunk";
 
 interface ThemeContextType {
   theme: Theme;
@@ -16,7 +16,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check for saved theme preference or default based on system preference
     const savedTheme = localStorage.getItem("theme") as Theme;
-    if (savedTheme && (savedTheme === "light" || savedTheme === "dark" || savedTheme === "web3")) {
+    // Support legacy "web3" theme name
+    if (savedTheme === "web3") {
+      setTheme("cypherpunk");
+      localStorage.setItem("theme", "cypherpunk");
+    } else if (savedTheme && (savedTheme === "light" || savedTheme === "dark" || savedTheme === "cypherpunk")) {
       setTheme(savedTheme);
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       setTheme("dark");
@@ -28,7 +32,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Apply theme to document
     const root = document.documentElement;
-    root.classList.remove("light", "dark", "web3");
+    root.classList.remove("light", "dark", "web3", "cypherpunk");
     root.classList.add(theme);
     
     // Save to localStorage
@@ -38,7 +42,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     setTheme(prev => {
       if (prev === "light") return "dark";
-      if (prev === "dark") return "web3";
+      if (prev === "dark") return "cypherpunk";
       return "light";
     });
   };

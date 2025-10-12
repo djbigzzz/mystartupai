@@ -58,31 +58,52 @@
     --chart-5: 340 82% 52%;
   }
 
-  .web3 {
-    --background: 240 20% 5%;
-    --foreground: 180 100% 90%;
-    --card: 240 25% 8%;
-    --card-foreground: 180 100% 95%;
-    --popover: 240 25% 8%;
-    --popover-foreground: 180 100% 95%;
-    --primary: 280 100% 70%;
-    --primary-foreground: 240 20% 5%;
-    --secondary: 200 100% 50%;
-    --secondary-foreground: 240 20% 5%;
-    --muted: 240 20% 12%;
-    --muted-foreground: 180 50% 70%;
-    --accent: 280 100% 60%;
-    --accent-foreground: 240 20% 5%;
-    --destructive: 0 100% 60%;
-    --destructive-foreground: 180 100% 95%;
-    --border: 280 50% 30%;
-    --input: 240 25% 15%;
-    --ring: 280 100% 70%;
-    --chart-1: 280 100% 70%;
-    --chart-2: 180 100% 60%;
-    --chart-3: 200 100% 60%;
-    --chart-4: 260 100% 70%;
-    --chart-5: 320 100% 60%;
+  .cypherpunk {
+    --background: 0 0% 0%;
+    --foreground: 120 100% 50%;
+    --card: 0 0% 5%;
+    --card-foreground: 120 100% 80%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 120 100% 80%;
+    --primary: 120 100% 40%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 120 100% 20%;
+    --secondary-foreground: 120 100% 90%;
+    --muted: 120 50% 10%;
+    --muted-foreground: 120 50% 60%;
+    --accent: 120 100% 35%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 120 100% 20%;
+    --input: 0 0% 10%;
+    --ring: 120 100% 50%;
+    --chart-1: 120 100% 50%;
+    --chart-2: 140 100% 45%;
+    --chart-3: 100 100% 50%;
+    --chart-4: 160 100% 45%;
+    --chart-5: 80 100% 50%;
+  }
+  
+  /* Cypherpunk-specific terminal styles */
+  .cypherpunk {
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .cypherpunk * {
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+  }
+  
+  .cypherpunk button,
+  .cypherpunk input,
+  .cypherpunk textarea,
+  .cypherpunk select {
+    border-color: #00ff41;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+  }
+  
+  .cypherpunk button:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
   }
 }
 
