@@ -60,23 +60,23 @@
 
   .cypherpunk {
     --background: 0 0% 5%;
-    --foreground: 120 100% 80%;
-    --card: 120 25% 22%;
-    --card-foreground: 120 100% 92%;
-    --popover: 120 25% 22%;
-    --popover-foreground: 120 100% 92%;
+    --foreground: 120 100% 90%;
+    --card: 120 25% 18%;
+    --card-foreground: 120 100% 95%;
+    --popover: 120 25% 12%;
+    --popover-foreground: 120 100% 95%;
     --primary: 120 100% 50%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 120 35% 24%;
-    --secondary-foreground: 120 100% 88%;
-    --muted: 120 25% 25%;
-    --muted-foreground: 120 70% 75%;
+    --secondary: 120 35% 20%;
+    --secondary-foreground: 120 100% 90%;
+    --muted: 120 25% 20%;
+    --muted-foreground: 120 80% 80%;
     --accent: 120 100% 45%;
-    --accent-foreground: 120 100% 95%;
+    --accent-foreground: 120 100% 98%;
     --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 120 100% 40%;
-    --input: 120 20% 20%;
+    --border: 120 100% 45%;
+    --input: 120 20% 12%;
     --ring: 120 100% 50%;
     --chart-1: 120 100% 50%;
     --chart-2: 140 100% 45%;
@@ -91,13 +91,13 @@
   }
   
   .cypherpunk * {
-    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
   }
   
-  /* Force all text to be bright green - NO black text allowed */
+  /* Force all text to be EXTRA bright green - NO dark text allowed */
   .cypherpunk,
   .cypherpunk * {
-    color: hsl(120 100% 80%) !important;
+    color: hsl(120 100% 90%) !important;
   }
   
   /* Comprehensive visibility for ALL containers */
@@ -107,21 +107,49 @@
     box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
   }
   
-  /* Input and form elements */
+  /* Input and form elements - DARK backgrounds for high contrast */
   .cypherpunk input,
   .cypherpunk textarea,
   .cypherpunk select {
     border: 1px solid #00ff41 !important;
     box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-    color: hsl(120 100% 85%) !important;
-    background: hsl(120 20% 18%) !important;
+    color: hsl(120 100% 95%) !important;
+    background: hsl(120 25% 10%) !important;
   }
   
-  /* Placeholder text */
+  /* Placeholder text - brighter and more visible */
   .cypherpunk input::placeholder,
   .cypherpunk textarea::placeholder {
-    color: hsl(120 60% 60%) !important;
-    opacity: 0.8;
+    color: hsl(120 70% 70%) !important;
+    opacity: 0.9;
+  }
+  
+  /* Select dropdowns and their content - FORCE dark backgrounds */
+  .cypherpunk select,
+  .cypherpunk [role="listbox"],
+  .cypherpunk [role="option"],
+  .cypherpunk [data-radix-select-content],
+  .cypherpunk [data-radix-popper-content-wrapper] {
+    background: hsl(120 25% 10%) !important;
+    color: hsl(120 100% 95%) !important;
+  }
+  
+  /* Dropdown items on hover */
+  .cypherpunk [role="option"]:hover,
+  .cypherpunk [data-radix-select-item]:hover {
+    background: hsl(120 30% 15%) !important;
+    color: hsl(120 100% 98%) !important;
+  }
+  
+  /* Popover and dropdown containers */
+  .cypherpunk [class*="popover"],
+  .cypherpunk [class*="Popover"],
+  .cypherpunk [class*="dropdown"],
+  .cypherpunk [class*="Dropdown"],
+  .cypherpunk [data-radix-popover-content] {
+    background: hsl(120 25% 12%) !important;
+    border: 2px solid hsl(120 100% 45%) !important;
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.3) !important;
   }
   
   /* Buttons */
@@ -176,53 +204,64 @@
     border-right: 2px solid hsl(120 100% 40%) !important;
   }
   
-  /* Headings - EXTRA bright with strong glow */
+  /* Headings - ULTRA bright with maximum glow */
   .cypherpunk h1,
   .cypherpunk h2,
   .cypherpunk h3,
   .cypherpunk h4,
   .cypherpunk h5,
   .cypherpunk h6 {
-    color: hsl(120 100% 85%) !important;
-    text-shadow: 0 0 15px rgba(0, 255, 65, 0.7);
+    color: hsl(120 100% 95%) !important;
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.9);
     font-weight: 700;
   }
   
-  /* H1 and H2 get even more glow */
+  /* H1 and H2 get MAXIMUM glow */
   .cypherpunk h1,
   .cypherpunk h2 {
-    text-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
+    text-shadow: 0 0 25px rgba(0, 255, 65, 1);
   }
   
-  /* Links */
+  /* Links - bright and glowing */
   .cypherpunk a {
-    color: hsl(120 100% 70%) !important;
+    color: hsl(120 100% 85%) !important;
   }
   
   .cypherpunk a:hover {
-    color: hsl(120 100% 80%) !important;
-    text-shadow: 0 0 12px rgba(0, 255, 65, 0.7);
+    color: hsl(120 100% 95%) !important;
+    text-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
   }
   
-  /* Labels and small text */
+  /* Labels and small text - extra bright */
   .cypherpunk label,
   .cypherpunk [class*="label"] {
-    color: hsl(120 100% 75%) !important;
+    color: hsl(120 100% 88%) !important;
     font-weight: 600;
   }
   
-  /* Muted/secondary text */
+  /* Muted/secondary text - still bright enough to read */
   .cypherpunk [class*="muted"],
   .cypherpunk [class*="text-muted"] {
-    color: hsl(120 70% 65%) !important;
+    color: hsl(120 80% 75%) !important;
   }
   
-  /* Badges and pills */
+  /* Badges and pills - dark bg with bright text */
   .cypherpunk [class*="badge"],
   .cypherpunk [class*="pill"] {
     border: 1px solid #00ff41 !important;
-    background: hsl(120 30% 25%) !important;
-    color: hsl(120 100% 85%) !important;
+    background: hsl(120 30% 15%) !important;
+    color: hsl(120 100% 95%) !important;
+  }
+  
+  /* Dialogs and modals - dark green backgrounds */
+  .cypherpunk [role="dialog"],
+  .cypherpunk [class*="dialog"],
+  .cypherpunk [class*="Dialog"],
+  .cypherpunk [class*="modal"],
+  .cypherpunk [class*="Modal"] {
+    background: hsl(120 25% 10%) !important;
+    border: 2px solid hsl(120 100% 45%) !important;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.4) !important;
   }
 }
 
