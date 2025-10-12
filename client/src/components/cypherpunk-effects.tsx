@@ -25,8 +25,8 @@ export function CypherpunkEffects() {
   const animationFrameId = useRef<number>();
 
   useEffect(() => {
-    // Only run effects in cypherpunk theme AND not on landing page
-    if (theme !== "cypherpunk" || location === "/") {
+    // Only run effects in cypherpunk theme AND not on landing or auth pages
+    if (theme !== "cypherpunk" || location === "/" || location === "/app") {
       return;
     }
 
@@ -181,8 +181,8 @@ export function CypherpunkEffects() {
     };
   }, [theme, location]);
 
-  // Only render canvas in cypherpunk theme and not on landing page
-  if (theme !== "cypherpunk" || location === "/") {
+  // Only render canvas in cypherpunk theme and not on landing or auth pages
+  if (theme !== "cypherpunk" || location === "/" || location === "/app") {
     return null;
   }
 
