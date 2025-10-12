@@ -90,11 +90,23 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
-  /* UNIVERSAL BRIGHT GREEN TEXT - Apply to everything by default */
+  /* UNIVERSAL BRIGHT GREEN TEXT - Maximum specificity to override Tailwind */
   .cypherpunk,
-  .cypherpunk * {
+  .cypherpunk *,
+  .cypherpunk h1,
+  .cypherpunk h2,
+  .cypherpunk h3,
+  .cypherpunk h4,
+  .cypherpunk h5,
+  .cypherpunk h6,
+  .cypherpunk p,
+  .cypherpunk span,
+  .cypherpunk div,
+  .cypherpunk a,
+  .cypherpunk label,
+  .cypherpunk [class*="text-"] {
     color: hsl(120 100% 90%) !important;
-    text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.6) !important;
   }
   
   /* EXCEPTIONS: Light backgrounds get normal dark text */
@@ -102,7 +114,7 @@
   .cypherpunk [class*="bg-gray-50"],
   .cypherpunk [class*="bg-gray-100"],
   .cypherpunk nav.bg-white {
-    text-shadow: none;
+    text-shadow: none !important;
   }
   
   .cypherpunk [class*="bg-white"] *,
