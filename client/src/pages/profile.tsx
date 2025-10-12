@@ -75,6 +75,12 @@ export default function Profile() {
     enabled: !!user,
   });
 
+  // Fetch user's ideas
+  const { data: userIdeas } = useQuery<any[]>({
+    queryKey: ["/api/ideas"],
+    enabled: !!user,
+  });
+
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: UpdateProfileData) => {
@@ -536,6 +542,127 @@ export default function Profile() {
                     </div>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Authentication & Linked Data */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Authentication & Linked Data</CardTitle>
+                <CardDescription>
+                  Your connected wallets, email, and startup ideas
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Wallet Addresses */}
+                {(user.walletAddressSolana || user.walletAddressEthereum) && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                      <Wallet className="w-4 h-4 text-blue-600" />
+                      Connected Wallets
+                    </h3>
+                    <div className="space-y-3">
+                      {user.walletAddressSolana && (
+                        <div className="bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <Label className="text-xs font-medium text-purple-700 dark:text-purple-300">Solana Wallet</Label>
+                              <p className="text-xs font-mono mt-1 text-gray-700 dark:text-gray-300 break-all">
+                                {user.walletAddressSolana}
+                              </p>
+                            </div>
+                            <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                              {user.authMethod === 'phantom' ? 'Phantom' : 'Solana'}
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+                      {user.walletAddressEthereum && (
+                        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <Label className="text-xs font-medium text-blue-700 dark:text-blue-300">Ethereum Wallet</Label>
+                              <p className="text-xs font-mono mt-1 text-gray-700 dark:text-gray-300 break-all">
+                                {user.walletAddressEthereum}
+                              </p>
+                            </div>
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                              MetaMask
+                            </Badge>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Email Authentication */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                    <Mail className="w-4 h-4 text-green-600" />
+                    Email Authentication
+                  </h3>
+                  <div className="bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label className="text-xs font-medium text-green-700 dark:text-green-300">Email Address</Label>
+                        <p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
+                          {user.email || 'Not connected'}
+                        </p>
+                      </div>
+                      {user.emailVerified && (
+                        <Badge variant="secondary" className="bg-green-100 text-green-800">
+                          <Shield className="w-3 h-3 mr-1" />
+                          Verified
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Linked Startup Ideas */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+                    <Sparkles className="w-4 h-4 text-yellow-600" />
+                    Your Startup Idea
+                  </h3>
+                  {userIdeas && userIdeas.length > 0 ? (
+                    <div className="bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 dark:text-gray-100">
+                            {userIdeas[0].ideaTitle}
+                          </h4>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                            {userIdeas[0].description}
+                          </p>
+                          <div className="flex items-center gap-2 mt-3">
+                            <Badge variant="outline">{userIdeas[0].industry}</Badge>
+                            <Badge variant="outline">{userIdeas[0].stage}</Badge>
+                          </div>
+                        </div>
+                        <Link href="/submit-idea">
+                          <Button variant="ghost" size="sm">
+                            <Edit className="w-3 h-3 mr-1" />
+                            Edit
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-4 text-center">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        No startup idea submitted yet
+                      </p>
+                      <Link href="/submit-idea">
+                        <Button size="sm" variant="outline">
+                          <Sparkles className="w-3 h-3 mr-1" />
+                          Submit Your First Idea
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

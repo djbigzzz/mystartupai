@@ -24,6 +24,7 @@ import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import MobileNavigation from "@/components/mobile-navigation";
 import ProfileManagement from "@/components/profile/profile-management";
 import GuidedOnboarding from "@/components/onboarding/guided-onboarding";
+import IdeaManagementCard from "@/components/idea-management-card";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -298,6 +299,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* Idea Management Card */}
+      <IdeaManagementCard idea={userIdeas && userIdeas.length > 0 ? userIdeas[0] : null} />
 
       {/* Simple Step Indicators Only - No detailed analysis content */}
       <Card data-testid="card-workflow-steps">
