@@ -355,7 +355,7 @@ export default function AppEntry() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6" data-page="auth">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">

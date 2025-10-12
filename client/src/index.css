@@ -90,9 +90,10 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
-  /* Landing page uses normal theme - no Cypherpunk overrides */
+  /* Landing page and auth pages use normal theme - no Cypherpunk overrides */
+  /* Pages with data-page="landing" or data-page="auth" will not be affected by Cypherpunk theme */
 
-  /* BRIGHT GREEN TEXT - Only for dashboard pages */
+  /* BRIGHT GREEN TEXT - Only for dashboard pages (data-page="dashboard") */
   .cypherpunk [data-page="dashboard"] *:not([class*="bg-white"]):not([class*="bg-gray-50"]):not([class*="bg-gradient"]) {
     color: hsl(120 100% 90%) !important;
     text-shadow: 0 0 8px rgba(0, 255, 65, 0.6) !important;
