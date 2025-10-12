@@ -15,6 +15,7 @@ MyStartup.ai utilizes a modern web application architecture with a React fronten
 - **Framework**: React 18 with TypeScript.
 - **Build Tool**: Vite.
 - **UI/UX**: `shadcn/ui` components based on Radix UI primitives, styled with Tailwind CSS, emphasizing a clean, professional dark theme with balanced visuals and clear content hierarchy. Includes Light, Dark, and Cypherpunk themes with persistence and visual effects (e.g., Matrix rain).
+  - **Cypherpunk Theme**: Optimized Matrix terminal aesthetic with bright neon green text (80-92% lightness), green-tinted card backgrounds (22% lightness, 25% saturation), enhanced glow effects on all UI elements, 2px green borders on cards, and 60% opacity background Matrix rain effect at z-0. All text forced to bright green for maximum visibility and authentic terminal feel.
 - **Routing**: Wouter for client-side navigation.
 - **State Management**: TanStack Query manages server-side data.
 - **Form Handling**: React Hook Form with Zod for schema validation.
