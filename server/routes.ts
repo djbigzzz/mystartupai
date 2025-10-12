@@ -809,11 +809,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Clean up expired challenges (older than 5 minutes)
         const fiveMinutesAgo = timestamp - (5 * 60 * 1000);
-        Object.keys(req.session.authChallenges).forEach(key => {
-          if (req.session.authChallenges[key].timestamp < fiveMinutesAgo) {
-            delete req.session.authChallenges[key];
-          }
-        });
+        const challenges = req.session.authChallenges;
+        if (challenges) {
+          Object.keys(challenges).forEach(key => {
+            if (challenges[key]?.timestamp < fiveMinutesAgo) {
+              delete challenges[key];
+            }
+          });
+        }
         
         // Store new challenge
         req.session.authChallenges[nonce] = {
@@ -1126,7 +1129,7 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         const validatedData = insertStartupIdeaSchema.parse(sanitizedData);
         
         // Check if user already has an active idea
-        const existingIdeas = await storage.getStartupIdeasByEmail(validatedData.email);
+        const existingIdeas = await storage.getStartupIdeasByEmail(validatedData.email || '');
         
         let idea;
         if (existingIdeas.length > 0) {
