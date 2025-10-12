@@ -90,16 +90,7 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
-  /* COMPLETELY DISABLE Cypherpunk theme on landing page */
-  .cypherpunk [data-page="landing"],
-  .cypherpunk [data-page="landing"] *,
-  .cypherpunk [data-page="landing"] input,
-  .cypherpunk [data-page="landing"] button,
-  .cypherpunk [data-page="landing"] a,
-  .cypherpunk [data-page="landing"] [class*="card"],
-  .cypherpunk [data-page="landing"] [class*="Card"] {
-    all: revert !important;
-  }
+  /* Landing page uses normal theme - no Cypherpunk overrides */
 
   /* BRIGHT GREEN TEXT - Only for dashboard pages */
   .cypherpunk [data-page="dashboard"] *:not([class*="bg-white"]):not([class*="bg-gray-50"]):not([class*="bg-gradient"]) {
