@@ -329,12 +329,12 @@ export default function MarketingHome() {
                 </span>
               </h1>
               
-              <p className="text-xl text-blue-100 mb-6 leading-relaxed drop-shadow-sm">
-                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. <span className="text-yellow-200 font-semibold">Web3-native platform</span> with Solana payments — no equity required.
+              <p className="text-xl text-white mb-6 leading-relaxed drop-shadow-lg font-medium">
+                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. <span className="text-green-300 font-bold">Web3-native platform</span> with Solana payments — no equity required.
               </p>
               
               {/* Social Proof & Urgency */}
-              <div className="flex items-center justify-center sm:justify-start mb-6 text-blue-200">
+              <div className="flex items-center justify-center sm:justify-start mb-6 text-white">
                 <div className="flex items-center mr-6">
                   <div className="flex -space-x-2 mr-3">
                     <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full border-2 border-white"></div>
@@ -380,8 +380,8 @@ export default function MarketingHome() {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 pt-6 sm:pt-8 border-t border-white/20">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center px-1">
-                    <div className="text-sm lg:text-lg font-bold text-white drop-shadow-sm leading-tight break-words">{stat.number}</div>
-                    <div className="text-[10px] lg:text-xs text-blue-200 mt-1 break-words">{stat.label}</div>
+                    <div className="text-sm lg:text-lg font-bold text-white drop-shadow-md leading-tight break-words">{stat.number}</div>
+                    <div className="text-[10px] lg:text-xs text-green-200 mt-1 break-words font-medium">{stat.label}</div>
                   </div>
                 ))}
               </div>

@@ -90,33 +90,14 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
-  /* Only apply Cypherpunk effects to backgrounds that can support them */
-  .cypherpunk [class*="bg-background"],
-  .cypherpunk [class*="bg-card"],
-  .cypherpunk [class*="bg-popover"],
-  .cypherpunk [class*="bg-muted"],
-  .cypherpunk [class*="bg-slate"],
-  .cypherpunk [class*="bg-zinc"],
-  .cypherpunk [class*="bg-gray-9"],
-  .cypherpunk [class*="bg-black"],
-  .cypherpunk aside,
-  .cypherpunk nav:not(.bg-white),
-  .cypherpunk [role="main"],
-  .cypherpunk main {
+  /* UNIVERSAL BRIGHT GREEN TEXT - Apply to everything by default */
+  .cypherpunk,
+  .cypherpunk * {
+    color: hsl(120 100% 90%) !important;
     text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
-    color: hsl(120 100% 90%);
   }
   
-  .cypherpunk [class*="bg-background"] *,
-  .cypherpunk [class*="bg-card"] *,
-  .cypherpunk [class*="bg-popover"] *,
-  .cypherpunk [class*="bg-muted"] *,
-  .cypherpunk aside *,
-  .cypherpunk main * {
-    color: hsl(120 100% 90%);
-  }
-  
-  /* Landing page and light backgrounds - use normal colors */
+  /* EXCEPTIONS: Light backgrounds get normal dark text */
   .cypherpunk [class*="bg-white"],
   .cypherpunk [class*="bg-gray-50"],
   .cypherpunk [class*="bg-gray-100"],
