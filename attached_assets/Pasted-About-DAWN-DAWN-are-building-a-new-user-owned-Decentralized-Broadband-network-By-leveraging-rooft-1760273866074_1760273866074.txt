@@ -1,0 +1,60 @@
+About DAWN
+DAWN are building a new user-owned, Decentralized Broadband network. By leveraging rooftop antennas and a peer-to-peer marketplace built on Solana, DAWN empowers individuals to become self-sovereign internet providers. At the center of this movement is the Black Box, a powerful DePIN-ready router designed to host everything from peer-to-peer broadband to AI and privacy applications. We believe it’s inevitable that every household will one day include a toaster, an oven, and a Black Box. At this Cypherpunk hackathon, what new use case will you launch on the Black Box?
+
+The DAWN protocol and hardware together give users the tools and trustless infrastructure needed to deliver their own internet connectivity, backed by onchain transparency and security.
+
+Learn DAWN’s Praise the Sun Lore
+
+About the Track
+The track is to build a new decentralized application (dApp) for DAWN’s Black Box. The Black Box supports virtual machines, Docker containers, and Linux containers (preferred).
+
+Our partners and the Black Box specs are listed here. For example, the Black Box can provide compute for Arcium, supporting privacy enhancing technology. The Black Box can provide compute for inference.net, making user-owned AI a reality. 
+
+The Black Box promo video is here. The article explaining the Black Box vision is here.
+
+
+Hackathon Track Scope
+
+Here are some product ideas that could be particularly interesting:
+
+Privacy: build something cypherpunk.
+
+AI: Have a personal AI agent trained and fine tuned to you, but cypherpunk.
+
+Gaming: provide compute for in game cypherpunk AI agents.
+
+Home entertainment: Build an app to turn the Black Box into a home entertainment device, but cypherpunk.
+
+Submission Requirements
+Build a new MVP or application for DAWNs Black Box. The Black Box can run a virtual machine, docker container or linux container (preferred).
+
+A clear explanation of why it should be on every Black Box.
+
+The project must be submitted through Superteam's platform.
+
+The Github repo can be open or closed source. For closed source submissions, please share access with doug@dawninternet.com .
+
+Submission must be in English.
+
+Judging Criteria
+Innovation: How new or unique is the application?
+
+Technical Implementation: Quality of code, effective integration, and overall functionality.
+
+Impact: The potential real-world impact or utility of the project.
+
+Clarity: How well the project's purpose and DAWN’s role are explained.
+
+Rewards
+1st Place: 3000 USDC
+
+2nd Place: 1500 USDC
+
+3rd Place: 500 USDC
+
+Rules
+Work must be original, SFW, and aligned with DAWN’s brand
+
+You keep ownership; DAWN may repost with credit
+
+Utilise our brand kit, logos, whitepaper and content from the google drive folder here

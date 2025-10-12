@@ -11,11 +11,12 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft, Coins, CreditCard, TrendingUp, AlertTriangle, Heart, Sparkles } from "lucide-react";
+import { User, Edit3, Save, X, Mail, Key, Wallet, Shield, Camera, ArrowLeft, Coins, CreditCard, TrendingUp, AlertTriangle, Heart, Sparkles, Edit } from "lucide-react";
 import { CREDIT_PACKAGES } from "@shared/constants";
 import TwoFactorAuth from "@/components/profile/two-factor-auth";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import MobileNavigation from "@/components/mobile-navigation";
+import { Link } from "wouter";
 
 interface UserProfile {
   id: number;
