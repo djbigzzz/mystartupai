@@ -44,11 +44,15 @@ import PurchaseCreditsPage from "@/pages/purchase-credits";
 import GatewayMonitor from "@/pages/gateway-monitor";
 import PitchDemoLive from "@/pages/pitch-demo-live";
 import NotFound from "@/pages/not-found";
+import LoginPage from "@/pages/login";
+import SignupPage from "@/pages/signup";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/signup" component={SignupPage} />
       <Route path="/submit-idea" component={SubmitIdea} />
       <Route path="/business-plan" component={BusinessPlan} />
       <Route path="/pitch-deck" component={PitchDeck} />

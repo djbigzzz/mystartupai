@@ -2867,6 +2867,99 @@ Provide ONLY the suggested answer, no explanation or preamble:`;
     }
   );
 
+  // AI Market Details - Auto-fill industry, stage, and target market
+  app.post("/api/ai-market-details",
+    requireAuth,
+    advancedRateLimit(20, 5 * 60 * 1000), // 20 requests per 5 minutes
+    body('ideaTitle').isLength({ min: 3, max: 200 }).withMessage('Idea title must be between 3 and 200 characters'),
+    body('description').isLength({ min: 10, max: 2000 }).withMessage('Description must be between 10 and 2000 characters'),
+    handleValidationErrors,
+    async (req: Request, res: Response) => {
+      try {
+        const { ideaTitle, description } = req.body;
+
+        console.log(`🤖 Generating AI market details for: ${ideaTitle}`);
+
+        const marketDetailsPrompt = `You are a business analyst helping to categorize a startup idea.
+
+STARTUP IDEA:
+Title: "${ideaTitle}"
+Description: "${description}"
+
+AVAILABLE OPTIONS:
+
+Industries:
+- Technology
+- Healthcare
+- Finance
+- Education
+- E-commerce
+- SaaS
+- Mobile Apps
+- AI/ML
+- Blockchain
+- Sustainability
+- Food & Beverage
+- Real Estate
+- Transportation
+- Entertainment
+- Other
+
+Stages:
+- Idea Stage
+- Concept Development
+- Market Research
+- MVP Development
+- Beta Testing
+- Pre-Launch
+- Launched
+
+Target Markets:
+- B2B (Business to Business)
+- B2C (Business to Consumer)
+- B2B2C (Business to Business to Consumer)
+- C2C (Consumer to Consumer)
+- Marketplace
+- Enterprise
+- SMB (Small-Medium Business)
+- Individual Consumers
+
+TASK:
+Based on the startup idea, select the MOST APPROPRIATE option from each category.
+
+Respond with ONLY valid JSON in this exact format (no additional text):
+{"industry": "...", "stage": "...", "targetMarket": "..."}`;
+
+        const marketResponse = await openai.chat.completions.create({
+          model: "gpt-4",
+          messages: [{ role: "user", content: marketDetailsPrompt }],
+          temperature: 0.3,
+          max_tokens: 100,
+          response_format: { type: "json_object" }
+        });
+
+        const responseText = marketResponse.choices[0]?.message?.content?.trim();
+
+        if (!responseText) {
+          return res.status(500).json({ error: 'Failed to generate market details' });
+        }
+
+        const marketDetails = JSON.parse(responseText);
+
+        console.log(`✅ AI market details generated:`, marketDetails);
+
+        res.json(marketDetails);
+
+      } catch (error) {
+        console.error('❌ AI market details generation error:', error);
+        res.status(500).json({ 
+          error: 'Failed to generate AI market details',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+  );
+
   // Individual Section Analysis API - Modular analysis approach
   app.post("/api/section-analysis",
     advancedRateLimit(20, 10 * 60 * 1000), // 20 section requests per 10 minutes

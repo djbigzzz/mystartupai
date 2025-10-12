@@ -81,6 +81,7 @@ export default function SubmitIdea() {
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
   const [aiSuggestionLoading, setAiSuggestionLoading] = useState<string | null>(null);
+  const [marketDetailsLoading, setMarketDetailsLoading] = useState(false);
 
   // Fetch user's current idea
   const { data: ideasData = [], isLoading: ideasLoading } = useQuery<StartupIdea[]>({
@@ -143,6 +144,73 @@ export default function SubmitIdea() {
   }, [currentIdea, isAuthenticated, user]);
 
   const watchedFields = form.watch();
+
+  // Handle AI market details generation
+  const handleAIMarketDetails = async () => {
+    if (!watchedFields.ideaTitle || !watchedFields.description) {
+      toast({
+        title: "Missing Information",
+        description: "Please complete the idea title and description first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setMarketDetailsLoading(true);
+
+    try {
+      const response = await fetch("/api/ai-market-details", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          ideaTitle: watchedFields.ideaTitle,
+          description: watchedFields.description,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate market details");
+      }
+
+      const data = await response.json();
+      
+      // Set the AI-generated values to the form fields
+      if (data.industry) {
+        form.setValue('industry', data.industry, { 
+          shouldDirty: true, 
+          shouldValidate: true 
+        });
+      }
+      if (data.stage) {
+        form.setValue('stage', data.stage, { 
+          shouldDirty: true, 
+          shouldValidate: true 
+        });
+      }
+      if (data.targetMarket) {
+        form.setValue('targetMarket', data.targetMarket, { 
+          shouldDirty: true, 
+          shouldValidate: true 
+        });
+      }
+
+      toast({
+        title: "Market Details Filled",
+        description: "AI has analyzed your idea and filled the market details",
+      });
+    } catch (error) {
+      toast({
+        title: "Error generating market details",
+        description: error instanceof Error ? error.message : "Please try again",
+        variant: "destructive"
+      });
+    } finally {
+      setMarketDetailsLoading(false);
+    }
+  };
 
   // Handle AI suggestion generation
   const handleAISuggestion = async (fieldName: string, question: string) => {
@@ -378,13 +446,33 @@ export default function SubmitIdea() {
                 {/* Market Details Card */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Building className="w-5 h-5 mr-2 text-purple-600" />
-                      Market Details
-                    </CardTitle>
-                    <CardDescription>
-                      Industry, target market, and business context
-                    </CardDescription>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center">
+                          <Building className="w-5 h-5 mr-2 text-purple-600" />
+                          Market Details
+                        </CardTitle>
+                        <CardDescription className="mt-2">
+                          Industry, target market, and business context
+                        </CardDescription>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAIMarketDetails}
+                        disabled={!watchedFields.ideaTitle || !watchedFields.description || marketDetailsLoading}
+                        data-testid="ai-fill-market-details"
+                        className="shrink-0"
+                      >
+                        {marketDetailsLoading ? (
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-4 h-4 mr-2" />
+                        )}
+                        {marketDetailsLoading ? 'Analyzing...' : 'AI Fill'}
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
