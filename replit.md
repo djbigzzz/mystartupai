@@ -15,22 +15,27 @@ Preferred communication style: Simple, everyday language.
   - Trust signals: Repositioned above CTA button in highlighted glass-effect box with green checkmarks and updated "48-hour delivery" messaging
   - CTA button: Enlarged from px-10 py-4 to px-12 py-6 for greater prominence
   - Demo preview: Reduced size from 50% to ~30% width (lg:grid-cols-5 with 3:2 split) giving more breathing room to hero content
-- **3-Theme Mode System**: Light, Dark, and Web3 (futuristic galaxy) themes with cycling toggle and localStorage persistence
-  - Web3 theme features animated galaxy background, neon cyan/purple/magenta colors, starfield effects, and glowing UI elements
-  - Theme toggle button in header cycles through all three modes
-- **Web3 Visual Effects System**: Canvas-based animation system for Web3 theme
-  - Particle system with 50 cyan/purple glowing particles with mouse attraction physics
-  - Mouse trail effect with purple/magenta glow following cursor
-  - Click ripple effects with dual expanding rings (cyan + magenta) and particle bursts
+- **3-Theme Mode System (October 12, 2025)**: Light, Dark, and Cypherpunk themes with cycling toggle and localStorage persistence
+  - Cypherpunk theme features Matrix-style green-on-black terminal aesthetic with falling character rain effect
+  - Theme toggle button cycles through Light → Dark → Cypherpunk → Light
+  - Theme toggle shows Terminal icon with green "CYPHERPUNK" text in monospace font when active
+  - Legacy "web3" theme automatically migrated to "cypherpunk" for existing users
+- **Cypherpunk Visual Effects System (October 12, 2025)**: Canvas-based Matrix rain animation for Cypherpunk theme
+  - Falling character columns with Japanese katakana (ｱｲｳｴｵ...), numbers, and ASCII letters
+  - 50+ columns of cascading characters at varying speeds with trail effects
+  - Terminal-style click effects with expanding brackets ([]) and bars (|)
+  - Classic Matrix green (#00ff41) on pure black background
+  - Courier New monospace font for authentic hacker/terminal aesthetic
+  - All UI elements (buttons, inputs) have green borders with neon glow effects
   - Performance-optimized using refs and requestAnimationFrame (60fps target)
   - Proper cleanup on theme change, no React re-renders during animation
-  - Full-screen canvas with pointer-events: none for click-through, mix-blend-mode: screen for glow effect
+  - Full-screen canvas with pointer-events: none for click-through
 - **Brand Gradient Styling**: Consistent gradient branding across platform using `from-blue-600 via-purple-600 to-blue-700`
   - Marketing home page: 6 major section headings use gradient text (bg-clip-text text-transparent)
   - Dashboard welcome header: Full gradient background with theme compatibility
   - Dashboard CardTitle: Gradient text for "Your Next Step" section
   - Logo sizing: Increased dashboard sidebar logo by 1.4x (sm→md, 40px→56px) for enhanced visibility
-  - All gradients tested and verified across Light, Dark, and Web3 themes
+  - All gradients tested and verified across Light, Dark, and Cypherpunk themes
 - **Credits Display Fix**: Corrected API field accessor from `balance` to `credits` to properly display user credit balance
 - **Profile Page Navigation**: Added consistent sidebar navigation matching dashboard layout with responsive mobile/desktop support
 - **Logo Branding**: MyStartup.ai logo added to all pages for consistent branding
@@ -49,7 +54,7 @@ Preferred communication style: Simple, everyday language.
 - **Theme-Aware Background Effects**: Dynamic floating orbs and gradients for light/dark themes
   - Light theme: Radial gradient overlay with 3 floating blue/purple orbs (400px, blur 80px)
   - Dark theme: Enhanced gradient with 3 floating cyan/purple/magenta orbs (500-600px, blur 100px)
-  - Web3 theme: Isolated from background effects, relies solely on Web3Effects component
+  - Cypherpunk theme: Isolated from background effects, relies solely on CypherpunkEffects component
   - All effects use `pointer-events: none` with z-index layering for proper interactivity
 - **Accessibility Support**: prefers-reduced-motion implementation across all animations
   - Disables orb animations for motion-sensitive users
