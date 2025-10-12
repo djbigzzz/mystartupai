@@ -187,6 +187,15 @@
   .cypherpunk [data-page="dashboard"] button:hover {
     box-shadow: 0 0 25px rgba(100, 180, 255, 0.8);
   }
+
+  /* Sidebar navigation text - BRIGHT BLUE for visibility */
+  .cypherpunk [data-page="dashboard"] nav span,
+  .cypherpunk [data-page="dashboard"] nav h3,
+  .cypherpunk [data-page="dashboard"] button span {
+    color: hsl(210 100% 92%) !important;
+    text-shadow: 0 0 15px rgba(100, 180, 255, 1) !important;
+    font-weight: 600 !important;
+  }
   
   /* Primary buttons - dashboard only */
   .cypherpunk [data-page="dashboard"] button[class*="primary"],
