@@ -106,47 +106,47 @@
     box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
   }
   
-  /* Input and form elements - DARK backgrounds for dashboard only */
+  /* Input and form elements - WHITE backgrounds for visibility on dashboard */
   .cypherpunk [data-page="dashboard"] input,
   .cypherpunk [data-page="dashboard"] textarea,
   .cypherpunk [data-page="dashboard"] select {
     border: 1px solid #00ff41 !important;
     box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-    color: hsl(120 100% 95%) !important;
-    background: hsl(120 25% 10%) !important;
+    color: black !important;
+    background: white !important;
   }
   
-  /* Placeholder text - dashboard only */
+  /* Placeholder text - dashboard only (dark gray for white backgrounds) */
   .cypherpunk [data-page="dashboard"] input::placeholder,
   .cypherpunk [data-page="dashboard"] textarea::placeholder {
-    color: hsl(120 70% 70%) !important;
-    opacity: 0.9;
+    color: hsl(0 0% 50%) !important;
+    opacity: 0.7;
   }
   
-  /* Select dropdowns - dashboard only */
+  /* Select dropdowns - WHITE backgrounds for dashboard */
   .cypherpunk [data-page="dashboard"] select,
   .cypherpunk [data-page="dashboard"] [role="listbox"],
   .cypherpunk [data-page="dashboard"] [role="option"],
   .cypherpunk [data-page="dashboard"] [data-radix-select-content],
   .cypherpunk [data-page="dashboard"] [data-radix-popper-content-wrapper] {
-    background: hsl(120 25% 10%) !important;
-    color: hsl(120 100% 95%) !important;
+    background: white !important;
+    color: black !important;
   }
   
-  /* Dropdown items on hover - dashboard only */
+  /* Dropdown items on hover - light gray for dashboard */
   .cypherpunk [data-page="dashboard"] [role="option"]:hover,
   .cypherpunk [data-page="dashboard"] [data-radix-select-item]:hover {
-    background: hsl(120 30% 15%) !important;
-    color: hsl(120 100% 98%) !important;
+    background: hsl(0 0% 95%) !important;
+    color: black !important;
   }
   
-  /* Popover and dropdown containers - dashboard only */
+  /* Popover and dropdown containers - WHITE for dashboard */
   .cypherpunk [data-page="dashboard"] [class*="popover"],
   .cypherpunk [data-page="dashboard"] [class*="Popover"],
   .cypherpunk [data-page="dashboard"] [class*="dropdown"],
   .cypherpunk [data-page="dashboard"] [class*="Dropdown"],
   .cypherpunk [data-page="dashboard"] [data-radix-popover-content] {
-    background: hsl(120 25% 12%) !important;
+    background: white !important;
     border: 2px solid hsl(120 100% 45%) !important;
     box-shadow: 0 0 25px rgba(0, 255, 65, 0.3) !important;
   }
