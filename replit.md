@@ -103,6 +103,18 @@ Preferred communication style: Simple, everyday language.
   - Overflow handling with `overflow-auto` on scrollable content areas
   - Touch-friendly button sizing with `flex-1 sm:flex-none` for full-width buttons on mobile
 
+### Critical Bug Fixes
+- **Web3 User Idea Persistence (October 12, 2025)**: Fixed critical bug preventing Web3 users from saving startup ideas
+  - **Root Cause**: POST /api/ideas was missing authentication and userId assignment, causing orphaned ideas with NULL userId
+  - **Symptoms**: Web3 users received 403 Forbidden errors when accessing their ideas, ideas weren't saving properly
+  - **Fix Applied**:
+    - Added requireAuth middleware to POST /api/ideas endpoint to ensure user authentication
+    - Extract userId from req.user.id and assign it when creating/updating ideas
+    - Changed idea lookup from email-based (getStartupIdeasByEmail) to userId-based (getStartupIdeasByUserId) to support Web3 users without emails
+    - Database cleanup: Fixed 25 orphaned ideas by matching them to users (23 by email, idea #25 manually assigned to user #51)
+  - **Testing**: Comprehensive e2e tests verified ideas now save with userId, no 403 errors, updates work correctly, no duplicates created
+  - **Impact**: Web3 users can now fully use the platform without authentication or persistence issues
+
 ### Development Infrastructure
 - **Test User Seeding**: Automatic seeding of test users in development environment
   - Test account: web3user@test.com / password123 (CORE plan, 6,200 credits)
