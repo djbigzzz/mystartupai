@@ -312,17 +312,25 @@ export default function MarketingHome() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
             <div className="relative z-10 lg:col-span-3">
-              <Badge className="mb-6 glass-effect text-white hover:bg-white/30 backdrop-blur-sm border border-white/30 transform hover:scale-105 transition-all duration-300">
-                <Zap className="w-4 h-4 mr-1 animate-pulse" />
-                Live & Ready to Use
-              </Badge>
+              <div className="flex flex-wrap gap-3 mb-6">
+                <Badge className="glass-effect text-white hover:bg-white/30 backdrop-blur-sm border border-white/30 transform hover:scale-105 transition-all duration-300">
+                  <Zap className="w-4 h-4 mr-1 animate-pulse" />
+                  Live & Ready to Use
+                </Badge>
+                <Badge className="glass-effect bg-purple-500/20 text-yellow-200 hover:bg-purple-500/30 backdrop-blur-sm border border-yellow-200/30 transform hover:scale-105 transition-all duration-300">
+                  <Sparkles className="w-4 h-4 mr-1" />
+                  Web3-Native • Solana Payments
+                </Badge>
+              </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
-                Your AI Co-Founder
+              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent drop-shadow-lg">
+                  Your AI Co-Founder
+                </span>
               </h1>
               
               <p className="text-xl text-blue-100 mb-6 leading-relaxed drop-shadow-sm">
-                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. Our startup accelerator platform provides the tools and guidance you need — no equity required.
+                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. <span className="text-yellow-200 font-semibold">Web3-native platform</span> with Solana payments — no equity required.
               </p>
               
               {/* Social Proof & Urgency */}
@@ -350,7 +358,7 @@ export default function MarketingHome() {
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
-                  <span className="font-medium">48-hour delivery</span>
+                  <span className="font-medium">Start building instantly</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
