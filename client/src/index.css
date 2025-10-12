@@ -106,6 +106,32 @@
     border: 2px solid hsl(120 100% 40%);
     box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
   }
+
+  /* Bright headings and important text in cards - dashboard only */
+  .cypherpunk [data-page="dashboard"] h1,
+  .cypherpunk [data-page="dashboard"] h2,
+  .cypherpunk [data-page="dashboard"] h3,
+  .cypherpunk [data-page="dashboard"] h4,
+  .cypherpunk [data-page="dashboard"] h5,
+  .cypherpunk [data-page="dashboard"] h6,
+  .cypherpunk [data-page="dashboard"] [class*="Card"] h1,
+  .cypherpunk [data-page="dashboard"] [class*="Card"] h2,
+  .cypherpunk [data-page="dashboard"] [class*="Card"] h3,
+  .cypherpunk [data-page="dashboard"] [class*="Card"] h4,
+  .cypherpunk [data-page="dashboard"] [class*="card"] p:not([class*="text-gray"]),
+  .cypherpunk [data-page="dashboard"] [class*="font-bold"],
+  .cypherpunk [data-page="dashboard"] [class*="font-semibold"] {
+    color: hsl(120 100% 95%) !important;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.8) !important;
+  }
+
+  /* Paragraph text in cards - brighter */
+  .cypherpunk [data-page="dashboard"] [class*="Card"] p,
+  .cypherpunk [data-page="dashboard"] [class*="card"] p,
+  .cypherpunk [data-page="dashboard"] [class*="text-sm"] {
+    color: hsl(120 90% 85%) !important;
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5) !important;
+  }
   
   /* Input and form elements - WHITE backgrounds for visibility on dashboard */
   .cypherpunk [data-page="dashboard"] input,
