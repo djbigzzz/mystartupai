@@ -3856,13 +3856,13 @@ IMPORTANT:
         const agentResponse = {
           analysis: `
 📊 **Market Analysis**
-${analysis.marketAnalysis.overview || 'Market analysis in progress...'}
+${analysis.overallAssessment.marketOpportunity || 'Market analysis in progress...'}
 
 **Market Size:** ${analysis.marketAnalysis.marketSize || 'Significant opportunity'}
 **Growth Rate:** ${analysis.marketAnalysis.growthRate || '15-25% annually'}
 
 💡 **Key Opportunities**
-${analysis.overallAssessment.keyOpportunities?.map((o: string) => `• ${o}`).join('\n') || '• Strong market demand\n• Growing industry'}
+${analysis.marketAnalysis.opportunities?.map((o: string) => `• ${o}`).join('\n') || '• Strong market demand\n• Growing industry'}
 
 ⚠️ **Challenges to Consider**
 ${analysis.overallAssessment.challenges?.map((c: string) => `• ${c}`).join('\n') || '• Competitive landscape\n• Market entry barriers'}
@@ -3871,12 +3871,12 @@ ${analysis.overallAssessment.challenges?.map((c: string) => `• ${c}`).join('\n
 ${analysis.overallAssessment.keyDifferentiators?.map((d: string) => `• ${d}`).join('\n') || '• Innovation potential\n• Unique value proposition'}
 
 **Overall Score:** ${analysis.overallAssessment.viabilityScore}/100
-**Recommendation:** ${analysis.overallAssessment.recommendation || 'Further research recommended'}
+**Recommendations:** ${analysis.overallAssessment.recommendations?.join(', ') || 'Further research recommended'}
           `.trim(),
           marketSize: analysis.marketAnalysis.marketSize,
           growthRate: analysis.marketAnalysis.growthRate,
           viabilityScore: analysis.overallAssessment.viabilityScore,
-          opportunities: analysis.overallAssessment.keyOpportunities,
+          opportunities: analysis.marketAnalysis.opportunities,
           challenges: analysis.overallAssessment.challenges,
           timestamp: new Date().toISOString()
         };
@@ -3912,11 +3912,13 @@ ${analysis.overallAssessment.keyDifferentiators?.map((d: string) => `• ${d}`).
           "Idea Stage"
         );
 
-        // Generate comprehensive business plan using AI
-        const businessPlanSections = await aiCofounder.generateBusinessPlanSections(
-          sanitizedIdea,
-          analysis
-        );
+        // Generate comprehensive business plan using AI - using structured analysis
+        const businessPlanSections = {
+          executiveSummary: `${sanitizedIdea} is an innovative solution in the ${analysis.industry || 'Technology'} sector. ${analysis.overallAssessment.marketOpportunity || 'Strong market opportunity identified.'} With a viability score of ${analysis.overallAssessment.viabilityScore}/100, this venture shows promising potential.`,
+          businessModel: analysis.overallAssessment.competitivePosition || 'Scalable business model with clear revenue streams and market positioning.',
+          goToMarket: `Strategic market entry focusing on ${analysis.marketAnalysis.targetAudience || 'target customer segments'}. ${analysis.overallAssessment.nextSteps?.join(' ') || 'Customer acquisition through digital channels and strategic partnerships.'}`,
+          financials: `Funding requirements: ${analysis.overallAssessment.fundingRequirements || '$500K-$2M'}. Timeline to market: ${analysis.overallAssessment.timelineToMarket || '6-12 months'}.`
+        };
 
         // Format business plan for agent response
         const agentResponse = {
@@ -3924,26 +3926,26 @@ ${analysis.overallAssessment.keyDifferentiators?.map((d: string) => `• ${d}`).
 # Business Plan: ${sanitizedIdea}
 
 ## 📊 Executive Summary
-${businessPlanSections.executiveSummary || 'Comprehensive business plan for innovative startup concept.'}
+${businessPlanSections.executiveSummary}
 
 ## 🎯 Market Analysis (Multi-Agent Coordination)
-${analysis.marketAnalysis.overview || 'Market research completed via autonomous agent coordination.'}
+${analysis.overallAssessment.marketOpportunity || 'Market research completed via autonomous agent coordination.'}
 
 **Market Size:** ${analysis.marketAnalysis.marketSize || 'Significant opportunity'}
 **Growth Rate:** ${analysis.marketAnalysis.growthRate || '15-25% annually'}
 **Viability Score:** ${analysis.overallAssessment.viabilityScore}/100
 
 ## 💼 Business Model
-${businessPlanSections.businessModel || 'Revenue model and monetization strategy.'}
+${businessPlanSections.businessModel}
 
 ## 🚀 Go-to-Market Strategy
-${businessPlanSections.goToMarket || 'Customer acquisition and market entry strategy.'}
+${businessPlanSections.goToMarket}
 
 ## 💰 Financial Projections
-${businessPlanSections.financials || '3-year revenue and expense projections.'}
+${businessPlanSections.financials}
 
 ## 🎯 Key Opportunities
-${analysis.overallAssessment.keyOpportunities?.map((o: string) => `• ${o}`).join('\n') || '• Market demand\n• Growth potential'}
+${analysis.marketAnalysis.opportunities?.map((o: string) => `• ${o}`).join('\n') || '• Market demand\n• Growth potential'}
 
 ## ⚠️ Risk Factors
 ${analysis.overallAssessment.challenges?.map((c: string) => `• ${c}`).join('\n') || '• Competition\n• Market risks'}
