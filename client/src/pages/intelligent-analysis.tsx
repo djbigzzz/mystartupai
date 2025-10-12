@@ -99,7 +99,7 @@ export default function IntelligentAnalysisPage() {
         <div className="flex-1 lg:ml-0 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading your idea...</p>
+            <p className="text-gray-700 dark:text-gray-200 text-lg font-medium">Loading your idea...</p>
           </div>
         </div>
       </div>
@@ -121,13 +121,13 @@ export default function IntelligentAnalysisPage() {
         <div className="flex-1 lg:ml-0 flex items-center justify-center p-4">
           <div className="max-w-md w-full text-center">
             <div className="mb-6">
-              <div className="mx-auto w-20 h-20 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4">
-                <Lightbulb className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+              <div className="mx-auto w-20 h-20 bg-blue-100 dark:bg-blue-500/30 rounded-full flex items-center justify-center mb-4">
+                <Lightbulb className="w-10 h-10 text-blue-600 dark:text-blue-300" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 No Idea to Analyze Yet
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-gray-700 dark:text-gray-200 mb-6 text-lg">
                 Start by submitting your startup idea. Our AI will analyze it, ask clarifying questions, and provide valuable insights to help you build a successful business.
               </p>
             </div>
