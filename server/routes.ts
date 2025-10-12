@@ -1107,11 +1107,15 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   
   // Submit startup idea for analysis with comprehensive validation
   app.post("/api/ideas", 
+    requireAuth,
     advancedRateLimit(10, 15 * 60 * 1000), // 10 idea submissions per 15 minutes
     validateStartupIdea,
     handleValidationErrors,
     async (req: Request, res: Response) => {
       try {
+        // Get authenticated user ID
+        const userId = (req.user as any).id;
+        
         // Sanitize all inputs
         const sanitizedData = {
           ...req.body,
@@ -1129,16 +1133,22 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         // Validate and parse with schema
         const validatedData = insertStartupIdeaSchema.parse(sanitizedData);
         
-        // Check if user already has an active idea
-        const existingIdeas = await storage.getStartupIdeasByEmail(validatedData.email || '');
+        // Check if user already has an active idea (by userId, not email - supports Web3 users)
+        const existingIdeas = await storage.getStartupIdeasByUserId(userId);
         
         let idea;
         if (existingIdeas.length > 0) {
           // Update the existing idea (single-idea approach)
-          idea = await storage.updateStartupIdea(existingIdeas[0].id, validatedData);
+          idea = await storage.updateStartupIdea(existingIdeas[0].id, {
+            ...validatedData,
+            userId
+          });
         } else {
-          // Create the first idea record
-          idea = await storage.createStartupIdea(validatedData);
+          // Create the first idea record with userId
+          idea = await storage.createStartupIdea({
+            ...validatedData,
+            userId
+          });
         }
         
         // Ensure idea exists
