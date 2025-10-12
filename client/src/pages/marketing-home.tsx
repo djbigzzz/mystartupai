@@ -324,7 +324,7 @@ export default function MarketingHome() {
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent drop-shadow-lg">
+                <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(251,191,36,0.5)]">
                   Your AI Co-Founder
                 </span>
               </h1>
@@ -368,7 +368,7 @@ export default function MarketingHome() {
               
               <div className="flex flex-col sm:flex-row justify-center sm:justify-start gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-yellow-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
+                  <Button size="lg" variant="ghost" className="!bg-gradient-to-r !from-green-400 !to-emerald-500 !text-white hover:!from-green-300 hover:!to-emerald-400 px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-green-500/50 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
                     <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
                     <span className="relative z-10">🚀 Start Free Now</span>
                     <ArrowRight className="ml-2 w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
