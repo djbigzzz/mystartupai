@@ -60,23 +60,23 @@
 
   .cypherpunk {
     --background: 0 0% 5%;
-    --foreground: 120 100% 75%;
-    --card: 120 20% 18%;
-    --card-foreground: 120 100% 90%;
-    --popover: 120 20% 18%;
-    --popover-foreground: 120 100% 90%;
+    --foreground: 120 100% 80%;
+    --card: 120 25% 22%;
+    --card-foreground: 120 100% 92%;
+    --popover: 120 25% 22%;
+    --popover-foreground: 120 100% 92%;
     --primary: 120 100% 50%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 120 30% 20%;
-    --secondary-foreground: 120 100% 85%;
-    --muted: 120 20% 22%;
-    --muted-foreground: 120 60% 70%;
-    --accent: 120 100% 40%;
-    --accent-foreground: 0 0% 0%;
+    --secondary: 120 35% 24%;
+    --secondary-foreground: 120 100% 88%;
+    --muted: 120 25% 25%;
+    --muted-foreground: 120 70% 75%;
+    --accent: 120 100% 45%;
+    --accent-foreground: 120 100% 95%;
     --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 120 100% 35%;
-    --input: 120 15% 15%;
+    --border: 120 100% 40%;
+    --input: 120 20% 20%;
     --ring: 120 100% 50%;
     --chart-1: 120 100% 50%;
     --chart-2: 140 100% 45%;
@@ -91,51 +91,66 @@
   }
   
   .cypherpunk * {
-    text-shadow: 0 0 5px rgba(0, 255, 65, 0.4);
+    text-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
   }
   
-  /* Comprehensive visibility for ALL containers and UI elements */
-  .cypherpunk div,
-  .cypherpunk section,
-  .cypherpunk article,
-  .cypherpunk main,
-  .cypherpunk header,
-  .cypherpunk footer,
-  .cypherpunk [class*="card"],
-  .cypherpunk [class*="Card"],
-  .cypherpunk [class*="container"],
-  .cypherpunk [class*="wrapper"] {
-    /* Let CSS variables handle backgrounds naturally */
+  /* Force all text to be bright green - NO black text allowed */
+  .cypherpunk,
+  .cypherpunk * {
+    color: hsl(120 100% 80%) !important;
   }
   
-  /* Ensure visible borders on interactive containers */
+  /* Comprehensive visibility for ALL containers */
   .cypherpunk [class*="card"],
   .cypherpunk [class*="Card"] {
-    border: 1px solid hsl(120 100% 35%);
+    border: 2px solid hsl(120 100% 40%);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
   }
   
-  .cypherpunk button,
+  /* Input and form elements */
   .cypherpunk input,
   .cypherpunk textarea,
   .cypherpunk select {
+    border: 1px solid #00ff41 !important;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+    color: hsl(120 100% 85%) !important;
+    background: hsl(120 20% 18%) !important;
+  }
+  
+  /* Placeholder text */
+  .cypherpunk input::placeholder,
+  .cypherpunk textarea::placeholder {
+    color: hsl(120 60% 60%) !important;
+    opacity: 0.8;
+  }
+  
+  /* Buttons */
+  .cypherpunk button {
     border: 1px solid #00ff41 !important;
     box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
   }
   
   .cypherpunk button:hover {
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.6);
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.7);
   }
   
-  /* Enhance primary button visibility */
+  /* Primary buttons - bright neon green */
   .cypherpunk button[class*="primary"],
   .cypherpunk a[class*="primary"] {
-    background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%) !important;
+    background: linear-gradient(135deg, #00ff41 0%, #00dd38 100%) !important;
     color: #000 !important;
-    border: 1px solid #00ff41 !important;
-    font-weight: 600;
+    border: 2px solid #00ff41 !important;
+    font-weight: 700;
+    text-shadow: none !important;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
   }
   
-  /* Secondary buttons */
+  .cypherpunk button[class*="primary"]:hover,
+  .cypherpunk a[class*="primary"]:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.8);
+  }
+  
+  /* Secondary/outline buttons */
   .cypherpunk button[class*="secondary"],
   .cypherpunk button[class*="outline"] {
     background: transparent !important;
@@ -143,31 +158,71 @@
     color: #00ff41 !important;
   }
   
+  /* Ghost buttons */
+  .cypherpunk button[class*="ghost"] {
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: hsl(120 100% 75%) !important;
+  }
+  
+  .cypherpunk button[class*="ghost"]:hover {
+    border-color: #00ff41 !important;
+    background: hsl(120 20% 15%) !important;
+  }
+  
   /* Better sidebar visibility */
   .cypherpunk aside,
   .cypherpunk nav {
-    border-right: 1px solid hsl(120 100% 35%) !important;
+    border-right: 2px solid hsl(120 100% 40%) !important;
   }
   
-  /* Ensure headings are bright and visible */
+  /* Headings - EXTRA bright with strong glow */
   .cypherpunk h1,
   .cypherpunk h2,
   .cypherpunk h3,
   .cypherpunk h4,
   .cypherpunk h5,
   .cypherpunk h6 {
-    color: hsl(120 100% 80%);
-    text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+    color: hsl(120 100% 85%) !important;
+    text-shadow: 0 0 15px rgba(0, 255, 65, 0.7);
+    font-weight: 700;
   }
   
-  /* Links should be visible */
+  /* H1 and H2 get even more glow */
+  .cypherpunk h1,
+  .cypherpunk h2 {
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.8);
+  }
+  
+  /* Links */
   .cypherpunk a {
-    color: hsl(120 100% 65%);
+    color: hsl(120 100% 70%) !important;
   }
   
   .cypherpunk a:hover {
-    color: hsl(120 100% 75%);
-    text-shadow: 0 0 10px rgba(0, 255, 65, 0.6);
+    color: hsl(120 100% 80%) !important;
+    text-shadow: 0 0 12px rgba(0, 255, 65, 0.7);
+  }
+  
+  /* Labels and small text */
+  .cypherpunk label,
+  .cypherpunk [class*="label"] {
+    color: hsl(120 100% 75%) !important;
+    font-weight: 600;
+  }
+  
+  /* Muted/secondary text */
+  .cypherpunk [class*="muted"],
+  .cypherpunk [class*="text-muted"] {
+    color: hsl(120 70% 65%) !important;
+  }
+  
+  /* Badges and pills */
+  .cypherpunk [class*="badge"],
+  .cypherpunk [class*="pill"] {
+    border: 1px solid #00ff41 !important;
+    background: hsl(120 30% 25%) !important;
+    color: hsl(120 100% 85%) !important;
   }
 }
 
