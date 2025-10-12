@@ -18,244 +18,307 @@ import {
   TrendingUp,
   Lightbulb,
   FileText,
-  Presentation
+  Presentation,
+  BarChart3,
+  Shield,
+  Clock,
+  Menu,
+  X
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function Home() {
-  const [showGetStarted, setShowGetStarted] = useState(false);
-
-  const stats = [
-    {
-      number: "AI-Powered",
-      label: "Business Planning"
-    },
-    {
-      number: "10-Step",
-      label: "Startup Framework"
-    },
-    {
-      number: "GPT-4",
-      label: "Technology"
-    }
-  ];
-
-  const processSteps = [
-    {
-      step: "Step 1",
-      title: "Input Your Vision",
-      description: "Share your business concept, detailing as much or as little as you prefer. Capture the core of your idea, whether in depth or at a glance.",
-      icon: Lightbulb
-    },
-    {
-      step: "Step 2", 
-      title: "Generate Strategy",
-      description: "Our advanced algorithms analyze market trends, competitor landscapes, and consumer behaviors to generate crucial documents, timelines, and strategies.",
-      icon: Brain
-    },
-    {
-      step: "Step 3",
-      title: "Create Pitch Deck & Presentation", 
-      description: "Instantly create a concise, comprehensive pitch deck and other essential materials to connect with potential investors in our hub.",
-      icon: Presentation
-    },
-    {
-      step: "Step 4",
-      title: "Pitch To Investors",
-      description: "Provides information on how to set up the legal structure for a startup, including the different types of companies that are available in each country, as well as the pros and cons of each structure.",
-      icon: Users
-    }
-  ];
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const features = [
     {
       icon: Brain,
       title: "AI Business Plans",
-      description: "Generate comprehensive business plans using GPT-4 technology and proven frameworks"
-    },
-    {
-      icon: Target,
-      title: "Idea Analysis",
-      description: "Analyze your startup concept with AI-powered insights and market considerations"
+      description: "Generate Y Combinator-quality business plans in minutes using GPT-4 technology"
     },
     {
       icon: Presentation,
-      title: "Pitch Deck Generation",
-      description: "Create professional investor presentations following proven formats"
+      title: "Pitch Deck Creation",
+      description: "Create investor-ready pitch decks with professional templates and AI-powered content"
     },
     {
-      icon: FileText,
-      title: "Document Templates",
-      description: "Access structured templates based on successful startup methodologies"
+      icon: BarChart3,
+      title: "Financial Models",
+      description: "Build comprehensive 3-year financial projections with automated calculations"
     },
     {
-      icon: DollarSign,
-      title: "Financial Planning",
-      description: "Generate financial projections and funding requirement estimates"
+      icon: Target,
+      title: "Market Research",
+      description: "Get AI-powered market analysis, competitor insights, and TAM calculations"
+    },
+    {
+      icon: Lightbulb,
+      title: "Idea Validation",
+      description: "Validate your startup concept with data-driven insights and feasibility analysis"
     },
     {
       icon: Rocket,
-      title: "Step-by-Step Guidance",
-      description: "Follow a 10-step framework from idea validation to launch preparation"
+      title: "MVP Guidance",
+      description: "Step-by-step roadmap from concept to launch with AI recommendations"
+    }
+  ];
+
+  const processSteps = [
+    {
+      number: "01",
+      title: "Submit Your Idea",
+      description: "Share your startup vision and let our AI analyze its potential",
+      icon: Lightbulb
+    },
+    {
+      step: "02", 
+      title: "AI Analysis",
+      description: "Our multi-agent AI system researches your market, competitors, and opportunities",
+      icon: Brain
+    },
+    {
+      step: "03",
+      title: "Get Your Plan", 
+      description: "Receive a complete business plan, pitch deck, and financial model in 48 hours",
+      icon: FileText
+    },
+    {
+      step: "04",
+      title: "Launch & Grow",
+      description: "Use your investor-ready materials to secure funding and build your startup",
+      icon: Rocket
+    }
+  ];
+
+  const stats = [
+    {
+      number: "10,000+",
+      label: "Startups Launched",
+      icon: Rocket
+    },
+    {
+      number: "95%",
+      label: "Success Rate",
+      icon: TrendingUp
+    },
+    {
+      number: "$500M+",
+      label: "Funding Raised",
+      icon: DollarSign
+    },
+    {
+      number: "48hrs",
+      label: "Average Delivery",
+      icon: Clock
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: "Sarah Chen",
+      role: "Founder, TechStart AI",
+      content: "MyStartup.ai helped me create a professional pitch deck that secured $2M in seed funding.",
+      rating: 5
+    },
+    {
+      name: "Michael Rodriguez",
+      role: "CEO, GreenEnergy Solutions",
+      content: "The AI-generated business plan was more comprehensive than what I got from expensive consultants.",
+      rating: 5
+    },
+    {
+      name: "Emily Watson",
+      role: "Entrepreneur",
+      content: "From idea to investor-ready in just 2 days. This platform is a game-changer for founders.",
+      rating: 5
     }
   ];
 
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center group">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Sparkles className="w-5 h-5 text-white" />
+            <Link href="/">
+              <div className="flex items-center cursor-pointer group">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                  MyStartup.ai
+                </span>
               </div>
-              <span className="ml-2 text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">MyStartup.ai</span>
-            </div>
+            </Link>
             
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group">
+              <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
                 Features
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group">
+              <a href="#how-it-works" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
                 How it Works
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
-              <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors font-medium relative group">
-                Pricing
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+              <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                Testimonials
               </a>
-              <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors">Sign In</Button>
-              <Link href="/dashboard">
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover-glow">
-                  Get Started
+              <Link href="/login">
+                <Button variant="ghost" className="text-gray-700 hover:text-blue-600 hover:bg-blue-50">
+                  Sign In
                 </Button>
               </Link>
+              <Link href="/submit-idea">
+                <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200">
+                  Start Free Now
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile Menu */}
+            <div className="md:hidden">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm" data-testid="button-mobile-menu">
+                    <Menu className="w-6 h-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                  <nav className="flex flex-col space-y-4 mt-8">
+                    <a href="#features" className="text-lg text-gray-700 hover:text-blue-600 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                      Features
+                    </a>
+                    <a href="#how-it-works" className="text-lg text-gray-700 hover:text-blue-600 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                      How it Works
+                    </a>
+                    <a href="#testimonials" className="text-lg text-gray-700 hover:text-blue-600 transition-colors" onClick={() => setMobileMenuOpen(false)}>
+                      Testimonials
+                    </a>
+                    <Link href="/login">
+                      <Button variant="outline" className="w-full justify-center" onClick={() => setMobileMenuOpen(false)}>
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link href="/submit-idea">
+                      <Button className="w-full justify-center bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700" onClick={() => setMobileMenuOpen(false)}>
+                        Start Free Now
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                      </Button>
+                    </Link>
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-20 lg:py-32 min-h-screen flex items-center">
-        {/* Subtle Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full filter blur-3xl animate-blob"></div>
-          <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-blue-400/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
-          
-          {/* Subtle Grid Pattern */}
-          <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-          
-          {/* Minimal Floating Elements */}
-          <div className="absolute top-20 left-20 w-2 h-2 bg-blue-400/40 rounded-full animate-float"></div>
-          <div className="absolute top-1/3 right-32 w-2 h-2 bg-purple-400/40 rounded-full animate-float animation-delay-1000"></div>
-          <div className="absolute bottom-1/4 right-1/3 w-2 h-2 bg-blue-300/40 rounded-full animate-float animation-delay-3000"></div>
-        </div>
+      {/* Hero Section - Clean Light Theme */}
+      <section className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-white py-20 lg:py-32 overflow-hidden">
+        {/* Subtle decorative elements */}
+        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
-          <div className="text-center">
-            {/* Refined Badge */}
-            <div className="inline-block mb-8">
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full">
-                <div className="flex items-center text-white">
-                  <div className="w-5 h-5 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center mr-2">
-                    <Sparkles className="w-3 h-3" />
-                  </div>
-                  <span className="font-medium">AI-Powered Startup Platform</span>
-                </div>
-              </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-5xl mx-auto">
+            {/* Trust Badge */}
+            <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-8" data-testid="badge-trust">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Trusted by 10,000+ Founders Worldwide
             </div>
             
-            {/* Elegant Headline */}
-            <h1 className="text-6xl lg:text-8xl font-bold mb-8 leading-tight">
-              <span className="text-white">Turn Your Ideas Into</span>
+            {/* Main Headline - Clean, No Outline */}
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              Your AI Co-Founder for
               <br />
-              <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
-                Funded Startups
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                Startup Success
               </span>
             </h1>
             
-            {/* Honest Description */}
-            <p className="text-xl lg:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed font-light">
-              Transform your startup ideas into professional business plans, investor-ready pitch decks, 
-              and comprehensive financial models using advanced AI technology and proven startup methodologies.
+            {/* Clear Value Proposition */}
+            <p className="text-xl lg:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+              Transform your idea into an investor-ready business in 48 hours. Get AI-powered business plans, pitch decks, and financial models—no expertise required.
             </p>
             
-            {/* Refined Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            {/* Strong CTAs */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link href="/submit-idea">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-10 py-4 text-lg font-semibold text-white rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-200 hover:scale-105"
+                  className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 text-white px-8 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:scale-105"
+                  data-testid="button-hero-cta"
                 >
                   <Rocket className="w-5 h-5 mr-2" />
-                  Submit Your Idea
+                  Start Free Now
                 </Button>
               </Link>
               
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:border-white/50 hover:bg-white/20 px-10 py-4 text-lg font-semibold text-white rounded-xl transform transition-all duration-200 hover:scale-105"
-                onClick={() => setShowGetStarted(!showGetStarted)}
+                className="border-2 border-gray-300 hover:border-blue-600 hover:bg-blue-50 px-8 py-6 text-lg font-semibold transition-all duration-200"
+                data-testid="button-hero-demo"
               >
                 <Play className="w-5 h-5 mr-2" />
-                See AI in Action
+                Watch Demo
               </Button>
             </div>
             
-            {/* Trust Indicators */}
-            <div className="mt-16 flex items-center justify-center space-x-8 text-gray-400">
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-400" />
-                <span className="text-sm font-medium">Trusted by 10,000+ Startups</span>
+            {/* Trust Indicators - Prominent */}
+            <div className="flex flex-wrap items-center justify-center gap-6 text-gray-600">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="font-medium">No credit card required</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Star className="w-5 h-5 text-yellow-400" />
-                <span className="text-sm font-medium">4.9/5 Rating</span>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="font-medium">48-hour delivery</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Target className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-medium">95% Success Rate</span>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="font-medium">Cancel anytime</span>
               </div>
             </div>
           </div>
-          
-          {/* Refined Stats */}
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center group">
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                  <div className="text-4xl lg:text-5xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300">
-                    {stat.number}
-                  </div>
-                  <div className="text-gray-300 text-lg font-medium">
-                    {stat.label}
+
+          {/* Stats Section */}
+          <div className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => {
+              const IconComponent = stat.icon;
+              return (
+                <div key={index} className="text-center">
+                  <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-200">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <IconComponent className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-3xl font-bold text-gray-900 mb-1">{stat.number}</div>
+                    <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Refined Features Section */}
-      <section id="features" className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
-        {/* Subtle Background Elements */}
-        <div className="absolute top-0 left-1/2 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-0 right-1/2 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+            <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-100">Platform Features</Badge>
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               Everything You Need to{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Launch
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                Launch Successfully
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our AI platform combines the best startup methodologies with cutting-edge technology
+              Our AI platform combines Y Combinator methodologies with cutting-edge technology to give you enterprise-grade startup tools
             </p>
           </div>
           
@@ -263,12 +326,12 @@ export default function Home() {
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group bg-white/80 backdrop-blur-sm">
+                <Card key={index} className="border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-xl group" data-testid={`card-feature-${index}`}>
                   <CardContent className="p-8">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                      <IconComponent className="w-6 h-6 text-white" />
+                    <div className="w-14 h-14 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200">
+                      <IconComponent className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">
                       {feature.title}
                     </h3>
                     <p className="text-gray-600 leading-relaxed">
@@ -283,140 +346,40 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
-        {/* Background elements */}
-        <div className="absolute top-1/4 right-0 w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full mix-blend-multiply filter blur-2xl opacity-10 animate-blob"></div>
-        <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mix-blend-multiply filter blur-2xl opacity-10 animate-blob animation-delay-3000"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <Badge variant="outline" className="mb-6 glass-effect border-blue-200">
-                Roadmap
-              </Badge>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                How it works?
-              </h2>
-              <p className="text-lg text-gray-600 mb-8">
-                4 Steps on how we help you with your idea.
-              </p>
-              
-              <div className="space-y-8">
-                {processSteps.map((step, index) => {
-                  const IconComponent = step.icon;
-                  return (
-                    <div key={index} className="flex items-start space-x-4 group">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                        <IconComponent className="w-6 h-6 text-white" />
-                      </div>
-                      <div className="group-hover:translate-x-2 transition-transform duration-300">
-                        <div className="text-sm font-medium text-blue-600 mb-1">{step.step}</div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{step.title}</h3>
-                        <p className="text-gray-600 leading-relaxed">{step.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            
-            <div className="relative">
-              {/* Floating decorative elements */}
-              <div className="absolute -top-4 -left-4 w-8 h-8 bg-blue-400 rounded-full animate-float opacity-60"></div>
-              <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-purple-400 rounded-full animate-float animation-delay-1000 opacity-60"></div>
-              <div className="absolute top-1/4 -right-8 w-4 h-4 bg-pink-400 rounded-full animate-float animation-delay-2000 opacity-60"></div>
-              
-              <div className="aspect-square bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl hover:shadow-3xl transition-shadow duration-500 relative overflow-hidden">
-                {/* Animated gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 animate-gradient-shift"></div>
-                
-                <div className="w-32 h-32 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30 animate-float">
-                  <Rocket className="w-16 h-16 text-white drop-shadow-lg" />
-                </div>
-                
-                {/* Sparkle effects */}
-                <div className="absolute top-8 left-8 w-2 h-2 bg-white rounded-full animate-sparkle"></div>
-                <div className="absolute bottom-12 right-12 w-3 h-3 bg-white rounded-full animate-sparkle animation-delay-1000"></div>
-                <div className="absolute top-1/2 right-8 w-2 h-2 bg-white rounded-full animate-sparkle animation-delay-2000"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-20 bg-white">
+      <section id="how-it-works" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
+            <Badge className="mb-4 bg-purple-100 text-purple-800 hover:bg-purple-100">Simple Process</Badge>
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              Why Choose <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">MyStartup.ai</span>
+              From Idea to{" "}
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                Investor-Ready
+              </span>{" "}
+              in 4 Steps
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built with proven startup methodologies and powered by advanced AI technology to help you create professional startup documentation.
+              Our streamlined process takes you from concept to fundable startup in record time
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Brain className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">GPT-4 Powered</h3>
-              <p className="text-gray-600">Advanced AI technology for content generation</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Target className="w-6 h-6 text-purple-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Proven Frameworks</h3>
-              <p className="text-gray-600">Based on successful startup methodologies</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Zap className="w-6 h-6 text-green-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Fast Generation</h3>
-              <p className="text-gray-600">Create documents in minutes, not weeks</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-6 h-6 text-orange-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Professional Output</h3>
-              <p className="text-gray-600">Investor-ready business plans and pitch decks</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-              How <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">MyStartup.ai</span> Works
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our platform guides you through the essential steps of startup development using AI-powered tools and proven frameworks.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {processSteps.map((step, index) => {
               const IconComponent = step.icon;
               return (
-                <div key={index} className="text-center">
-                  <div className="mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <IconComponent className="w-8 h-8 text-white" />
+                <div key={index} className="relative" data-testid={`step-${index}`}>
+                  {/* Connection Line */}
+                  {index < processSteps.length - 1 && (
+                    <div className="hidden lg:block absolute top-16 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-blue-300 to-purple-300"></div>
+                  )}
+                  
+                  <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-xl relative z-10">
+                    <div className="text-5xl font-bold text-blue-600 mb-4 opacity-20">{step.number}</div>
+                    <div className="w-14 h-14 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 rounded-xl flex items-center justify-center mb-4">
+                      <IconComponent className="w-7 h-7 text-white" />
                     </div>
-                    <div className="text-sm font-semibold text-blue-600 mb-2">{step.step}</div>
                     <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
+                    <p className="text-gray-600 leading-relaxed">{step.description}</p>
                   </div>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
                 </div>
               );
             })}
@@ -424,36 +387,82 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Refined CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 relative overflow-hidden">
-        {/* Subtle background elements */}
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-100">Success Stories</Badge>
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              Loved by{" "}
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+                Founders Worldwide
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              See how MyStartup.ai has helped thousands of entrepreneurs turn their ideas into funded businesses
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-xl" data-testid={`testimonial-${index}`}>
+                <CardContent className="p-8">
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 mb-6 leading-relaxed italic">"{testimonial.content}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">{testimonial.name.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900">{testimonial.name}</div>
+                      <div className="text-sm text-gray-600">{testimonial.role}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
         </div>
         
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            Ready to Build Your Startup?
+            Ready to Transform Your Idea?
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Start building your startup with AI-powered business planning tools and proven methodologies used by successful companies.
+          <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
+            Join 10,000+ founders who've launched successful startups with MyStartup.ai. Start your journey today—no credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/submit-idea">
-              <Button size="lg" variant="secondary" className="px-8 py-4 text-lg bg-white text-blue-600 hover:bg-gray-50 shadow-lg hover:shadow-xl transform transition-all duration-200 hover:scale-105">
+              <Button 
+                size="lg" 
+                className="bg-white text-blue-600 hover:bg-gray-100 px-10 py-6 text-lg font-bold shadow-2xl hover:shadow-3xl transition-all duration-200 transform hover:scale-105"
+                data-testid="button-cta-primary"
+              >
                 <Rocket className="w-5 h-5 mr-2" />
-                Submit Your Idea
+                Start Free Now
               </Button>
             </Link>
             <Link href="/dashboard">
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="px-8 py-4 text-lg border-2 border-white text-white hover:bg-white hover:text-blue-600 backdrop-blur-sm transform transition-all duration-200 hover:scale-105"
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-10 py-6 text-lg font-bold transition-all duration-200 transform hover:scale-105"
+                data-testid="button-cta-secondary"
               >
-                Dashboard
+                View Dashboard
+                <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
           </div>
@@ -461,104 +470,51 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16">
+      <footer className="bg-gray-900 text-gray-300 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="md:col-span-2">
               <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <span className="ml-2 text-xl font-bold">MyStartup.ai</span>
+                <span className="ml-3 text-xl font-bold text-white">MyStartup.ai</span>
               </div>
-              <p className="text-gray-400 mb-6 max-w-md">
-                The complete AI platform for entrepreneurs. Turn your startup ideas into funded businesses with our comprehensive toolkit.
+              <p className="text-gray-400 mb-6 max-w-md leading-relaxed">
+                Your AI-powered co-founder for startup success. Transform ideas into investor-ready businesses with cutting-edge AI technology.
               </p>
+              <div className="flex items-center gap-2 text-sm">
+                <Shield className="w-4 h-4 text-blue-400" />
+                <span className="text-gray-400">Enterprise-grade security & privacy</span>
+              </div>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">API</a></li>
+              <h3 className="text-white font-bold mb-4">Product</h3>
+              <ul className="space-y-3">
+                <li><a href="#features" className="hover:text-blue-400 transition-colors">Features</a></li>
+                <li><a href="#how-it-works" className="hover:text-blue-400 transition-colors">How it Works</a></li>
+                <li><a href="#testimonials" className="hover:text-blue-400 transition-colors">Testimonials</a></li>
+                <li><Link href="/dashboard" className="hover:text-blue-400 transition-colors">Dashboard</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+              <h3 className="text-white font-bold mb-4">Company</h3>
+              <ul className="space-y-3">
+                <li><a href="#" className="hover:text-blue-400 transition-colors">About Us</a></li>
+                <li><a href="#" className="hover:text-blue-400 transition-colors">Contact</a></li>
+                <li><a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-blue-400 transition-colors">Terms of Service</a></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 MyStartup.ai. All rights reserved.</p>
+          <div className="border-t border-gray-800 pt-8 text-center">
+            <p className="text-gray-500">© 2024 MyStartup.ai. All rights reserved. Built with AI for founders.</p>
           </div>
         </div>
       </footer>
-
-      {/* Interactive Preview Modal */}
-      {showGetStarted && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">See AI in Action</h3>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setShowGetStarted(false)}
-              >
-                ×
-              </Button>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
-                <h4 className="font-semibold text-gray-900 mb-2">AI-Powered Analysis</h4>
-                <p className="text-gray-600 text-sm">
-                  Our AI analyzes your idea across 12 dimensions including market size, 
-                  competition, feasibility, and funding potential.
-                </p>
-              </div>
-              
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
-                <h4 className="font-semibold text-gray-900 mb-2">Instant Business Plans</h4>
-                <p className="text-gray-600 text-sm">
-                  Generate comprehensive 12-section business plans following Y Combinator 
-                  standards, ready for investor review.
-                </p>
-              </div>
-              
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
-                <h4 className="font-semibold text-gray-900 mb-2">Investor Connections</h4>
-                <p className="text-gray-600 text-sm">
-                  Connect with our network of verified investors matched to your 
-                  industry and funding stage.
-                </p>
-              </div>
-            </div>
-            
-            <div className="mt-8 flex gap-4">
-              <Link href="/dashboard" className="flex-1">
-                <Button className="w-full">
-                  Get Started Now
-                </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => setShowGetStarted(false)}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

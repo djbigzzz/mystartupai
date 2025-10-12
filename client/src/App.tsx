@@ -9,7 +9,7 @@ import { DemoSessionProvider } from "@/contexts/demo-session-context";
 import { CreditProvider } from "@/contexts/credit-context";
 import { Web3Effects } from "@/components/web3-effects";
 import ThemeBackgroundEffects from "@/components/theme-background-effects";
-import Home from "@/pages/marketing-home";
+import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import SubmitIdea from "@/pages/submit-idea";
 import BusinessPlan from "@/pages/business-plan";
