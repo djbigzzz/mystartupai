@@ -90,77 +90,88 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
+  /* COMPLETELY DISABLE Cypherpunk theme on landing page */
+  .cypherpunk [data-page="landing"],
+  .cypherpunk [data-page="landing"] *,
+  .cypherpunk [data-page="landing"] input,
+  .cypherpunk [data-page="landing"] button,
+  .cypherpunk [data-page="landing"] a,
+  .cypherpunk [data-page="landing"] [class*="card"],
+  .cypherpunk [data-page="landing"] [class*="Card"] {
+    all: revert !important;
+  }
+
   /* BRIGHT GREEN TEXT - Only for dashboard pages */
   .cypherpunk [data-page="dashboard"] *:not([class*="bg-white"]):not([class*="bg-gray-50"]):not([class*="bg-gradient"]) {
     color: hsl(120 100% 90%) !important;
     text-shadow: 0 0 8px rgba(0, 255, 65, 0.6) !important;
   }
   
-  /* Comprehensive visibility for ALL containers */
-  .cypherpunk [class*="card"],
-  .cypherpunk [class*="Card"] {
+  /* Comprehensive visibility for dashboard only */
+  .cypherpunk [data-page="dashboard"] [class*="card"],
+  .cypherpunk [data-page="dashboard"] [class*="Card"] {
     border: 2px solid hsl(120 100% 40%);
     box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
   }
   
-  /* Input and form elements - DARK backgrounds for high contrast */
-  .cypherpunk input,
-  .cypherpunk textarea,
-  .cypherpunk select {
+  /* Input and form elements - DARK backgrounds for dashboard only */
+  .cypherpunk [data-page="dashboard"] input,
+  .cypherpunk [data-page="dashboard"] textarea,
+  .cypherpunk [data-page="dashboard"] select {
     border: 1px solid #00ff41 !important;
     box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
     color: hsl(120 100% 95%) !important;
     background: hsl(120 25% 10%) !important;
   }
   
-  /* Placeholder text - brighter and more visible */
-  .cypherpunk input::placeholder,
-  .cypherpunk textarea::placeholder {
+  /* Placeholder text - dashboard only */
+  .cypherpunk [data-page="dashboard"] input::placeholder,
+  .cypherpunk [data-page="dashboard"] textarea::placeholder {
     color: hsl(120 70% 70%) !important;
     opacity: 0.9;
   }
   
-  /* Select dropdowns and their content - FORCE dark backgrounds */
-  .cypherpunk select,
-  .cypherpunk [role="listbox"],
-  .cypherpunk [role="option"],
-  .cypherpunk [data-radix-select-content],
-  .cypherpunk [data-radix-popper-content-wrapper] {
+  /* Select dropdowns - dashboard only */
+  .cypherpunk [data-page="dashboard"] select,
+  .cypherpunk [data-page="dashboard"] [role="listbox"],
+  .cypherpunk [data-page="dashboard"] [role="option"],
+  .cypherpunk [data-page="dashboard"] [data-radix-select-content],
+  .cypherpunk [data-page="dashboard"] [data-radix-popper-content-wrapper] {
     background: hsl(120 25% 10%) !important;
     color: hsl(120 100% 95%) !important;
   }
   
-  /* Dropdown items on hover */
-  .cypherpunk [role="option"]:hover,
-  .cypherpunk [data-radix-select-item]:hover {
+  /* Dropdown items on hover - dashboard only */
+  .cypherpunk [data-page="dashboard"] [role="option"]:hover,
+  .cypherpunk [data-page="dashboard"] [data-radix-select-item]:hover {
     background: hsl(120 30% 15%) !important;
     color: hsl(120 100% 98%) !important;
   }
   
-  /* Popover and dropdown containers */
-  .cypherpunk [class*="popover"],
-  .cypherpunk [class*="Popover"],
-  .cypherpunk [class*="dropdown"],
-  .cypherpunk [class*="Dropdown"],
-  .cypherpunk [data-radix-popover-content] {
+  /* Popover and dropdown containers - dashboard only */
+  .cypherpunk [data-page="dashboard"] [class*="popover"],
+  .cypherpunk [data-page="dashboard"] [class*="Popover"],
+  .cypherpunk [data-page="dashboard"] [class*="dropdown"],
+  .cypherpunk [data-page="dashboard"] [class*="Dropdown"],
+  .cypherpunk [data-page="dashboard"] [data-radix-popover-content] {
     background: hsl(120 25% 12%) !important;
     border: 2px solid hsl(120 100% 45%) !important;
     box-shadow: 0 0 25px rgba(0, 255, 65, 0.3) !important;
   }
   
-  /* Buttons */
-  .cypherpunk button {
+  /* Buttons - dashboard only */
+  .cypherpunk [data-page="dashboard"] button {
     border: 1px solid #00ff41 !important;
     box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
   }
   
-  .cypherpunk button:hover {
+  .cypherpunk [data-page="dashboard"] button:hover {
     box-shadow: 0 0 25px rgba(0, 255, 65, 0.7);
   }
   
-  /* Primary buttons - bright neon green */
-  .cypherpunk button[class*="primary"],
-  .cypherpunk a[class*="primary"] {
+  /* Primary buttons - dashboard only */
+  .cypherpunk [data-page="dashboard"] button[class*="primary"],
+  .cypherpunk [data-page="dashboard"] a[class*="primary"] {
     background: linear-gradient(135deg, #00ff41 0%, #00dd38 100%) !important;
     color: #000 !important;
     border: 2px solid #00ff41 !important;
@@ -169,92 +180,92 @@
     box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
   }
   
-  .cypherpunk button[class*="primary"]:hover,
-  .cypherpunk a[class*="primary"]:hover {
+  .cypherpunk [data-page="dashboard"] button[class*="primary"]:hover,
+  .cypherpunk [data-page="dashboard"] a[class*="primary"]:hover {
     box-shadow: 0 0 30px rgba(0, 255, 65, 0.8);
   }
   
-  /* Secondary/outline buttons */
-  .cypherpunk button[class*="secondary"],
-  .cypherpunk button[class*="outline"] {
+  /* Secondary/outline buttons - dashboard only */
+  .cypherpunk [data-page="dashboard"] button[class*="secondary"],
+  .cypherpunk [data-page="dashboard"] button[class*="outline"] {
     background: transparent !important;
     border: 2px solid #00ff41 !important;
     color: #00ff41 !important;
   }
   
-  /* Ghost buttons */
-  .cypherpunk button[class*="ghost"] {
+  /* Ghost buttons - dashboard only */
+  .cypherpunk [data-page="dashboard"] button[class*="ghost"] {
     background: transparent !important;
     border: 1px solid transparent !important;
     color: hsl(120 100% 75%) !important;
   }
   
-  .cypherpunk button[class*="ghost"]:hover {
+  .cypherpunk [data-page="dashboard"] button[class*="ghost"]:hover {
     border-color: #00ff41 !important;
     background: hsl(120 20% 15%) !important;
   }
   
-  /* Better sidebar visibility */
-  .cypherpunk aside,
-  .cypherpunk nav {
+  /* Better sidebar visibility - dashboard only */
+  .cypherpunk [data-page="dashboard"] aside,
+  .cypherpunk [data-page="dashboard"] nav {
     border-right: 2px solid hsl(120 100% 40%) !important;
   }
   
-  /* Headings - ULTRA bright with maximum glow */
-  .cypherpunk h1,
-  .cypherpunk h2,
-  .cypherpunk h3,
-  .cypherpunk h4,
-  .cypherpunk h5,
-  .cypherpunk h6 {
+  /* Headings - dashboard only */
+  .cypherpunk [data-page="dashboard"] h1,
+  .cypherpunk [data-page="dashboard"] h2,
+  .cypherpunk [data-page="dashboard"] h3,
+  .cypherpunk [data-page="dashboard"] h4,
+  .cypherpunk [data-page="dashboard"] h5,
+  .cypherpunk [data-page="dashboard"] h6 {
     color: hsl(120 100% 95%) !important;
     text-shadow: 0 0 20px rgba(0, 255, 65, 0.9);
     font-weight: 700;
   }
   
-  /* H1 and H2 get MAXIMUM glow */
-  .cypherpunk h1,
-  .cypherpunk h2 {
+  /* H1 and H2 get MAXIMUM glow - dashboard only */
+  .cypherpunk [data-page="dashboard"] h1,
+  .cypherpunk [data-page="dashboard"] h2 {
     text-shadow: 0 0 25px rgba(0, 255, 65, 1);
   }
   
-  /* Links - bright and glowing */
-  .cypherpunk a {
+  /* Links - dashboard only */
+  .cypherpunk [data-page="dashboard"] a {
     color: hsl(120 100% 85%) !important;
   }
   
-  .cypherpunk a:hover {
+  .cypherpunk [data-page="dashboard"] a:hover {
     color: hsl(120 100% 95%) !important;
     text-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
   }
   
-  /* Labels and small text - extra bright */
-  .cypherpunk label,
-  .cypherpunk [class*="label"] {
+  /* Labels - dashboard only */
+  .cypherpunk [data-page="dashboard"] label,
+  .cypherpunk [data-page="dashboard"] [class*="label"] {
     color: hsl(120 100% 88%) !important;
     font-weight: 600;
   }
   
-  /* Muted/secondary text - still bright enough to read */
-  .cypherpunk [class*="muted"],
-  .cypherpunk [class*="text-muted"] {
+  /* Muted text - dashboard only */
+  .cypherpunk [data-page="dashboard"] [class*="muted"],
+  .cypherpunk [data-page="dashboard"] [class*="text-muted"] {
     color: hsl(120 80% 75%) !important;
   }
   
-  /* Badges and pills - dark bg with bright text */
-  .cypherpunk [class*="badge"],
-  .cypherpunk [class*="pill"] {
+  /* Badges and pills - dashboard only */
+  .cypherpunk [data-page="dashboard"] [class*="badge"],
+  .cypherpunk [data-page="dashboard"] [class*="pill"] {
     border: 1px solid #00ff41 !important;
     background: hsl(120 30% 15%) !important;
     color: hsl(120 100% 95%) !important;
   }
   
-  /* Dialogs and modals - dark green backgrounds */
-  .cypherpunk [role="dialog"],
-  .cypherpunk [class*="dialog"],
-  .cypherpunk [class*="Dialog"],
-  .cypherpunk [class*="modal"],
-  .cypherpunk [class*="Modal"] {
+  /* Dialogs and modals - dashboard only */
+  .cypherpunk [data-page="dashboard"] [role="dialog"],
+  .cypherpunk [data-page="dashboard"] [class*="dialog"],
+  .cypherpunk [data-page="dashboard"] [class*="Dialog"],
+  .cypherpunk [data-page="dashboard"] [class*="modal"],
+  .cypherpunk [data-page="dashboard"] [class*="Modal"] {
     background: hsl(120 25% 10%) !important;
     border: 2px solid hsl(120 100% 45%) !important;
     box-shadow: 0 0 30px rgba(0, 255, 65, 0.4) !important;
