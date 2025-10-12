@@ -9,6 +9,12 @@ Preferred communication style: Simple, everyday language.
 ## Recent Updates (October 2025)
 
 ### UI/UX Enhancements
+- **Landing Page Polish (October 2025)**: Targeted improvements for better conversion and readability
+  - Navigation links: Increased contrast (gray-600→gray-800) and weight (medium→semibold) for better readability
+  - Hero headline: Removed outline text effect on "Your AI Co-Founder" - now clean solid white with drop-shadow for modern look
+  - Trust signals: Repositioned above CTA button in highlighted glass-effect box with green checkmarks and updated "48-hour delivery" messaging
+  - CTA button: Enlarged from px-10 py-4 to px-12 py-6 for greater prominence
+  - Demo preview: Reduced size from 50% to ~30% width (lg:grid-cols-5 with 3:2 split) giving more breathing room to hero content
 - **3-Theme Mode System**: Light, Dark, and Web3 (futuristic galaxy) themes with cycling toggle and localStorage persistence
   - Web3 theme features animated galaxy background, neon cyan/purple/magenta colors, starfield effects, and glowing UI elements
   - Theme toggle button in header cycles through all three modes

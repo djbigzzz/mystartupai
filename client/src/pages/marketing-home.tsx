@@ -206,13 +206,13 @@ export default function MarketingHome() {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" data-testid="nav-link-features">
+              <a href="#features" className="text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold" data-testid="nav-link-features">
                 AI Tools
               </a>
-              <a href="#how-it-works" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" data-testid="nav-link-process">
+              <a href="#how-it-works" className="text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold" data-testid="nav-link-process">
                 Business Plans
               </a>
-              <a href="#who-its-for" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium" data-testid="nav-link-audience">
+              <a href="#who-its-for" className="text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold" data-testid="nav-link-audience">
                 For Entrepreneurs
               </a>
               <Link href="/app">
@@ -310,17 +310,15 @@ export default function MarketingHome() {
           </div>
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
+            <div className="relative z-10 lg:col-span-3">
               <Badge className="mb-6 glass-effect text-white hover:bg-white/30 backdrop-blur-sm border border-white/30 transform hover:scale-105 transition-all duration-300">
                 <Zap className="w-4 h-4 mr-1 animate-pulse" />
                 Live & Ready to Use
               </Badge>
               
-              <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight text-3d transform hover:scale-105 transition-transform duration-500">
-                <span className="bg-gradient-to-r from-yellow-200 via-yellow-100 to-white bg-clip-text text-transparent animate-pulse">
-                  Your AI Co-Founder
-                </span>
+              <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
+                Your AI Co-Founder
               </h1>
               
               <p className="text-xl text-blue-100 mb-6 leading-relaxed drop-shadow-sm">
@@ -344,24 +342,30 @@ export default function MarketingHome() {
                 </div>
               </div>
               
+              {/* Trust Indicators - Moved above CTA */}
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-white text-base mb-6 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-white/20">
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
+                  <span className="font-medium">No credit card required</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
+                  <span className="font-medium">48-hour delivery</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
+                  <span className="font-medium">Cancel anytime</span>
+                </div>
+              </div>
+              
               <div className="flex flex-col sm:flex-row justify-center sm:justify-start gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 px-10 py-4 text-xl font-bold shadow-2xl hover:shadow-yellow-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
+                  <Button size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-yellow-500/25 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
                     <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
                     <span className="relative z-10">🚀 Start Free Now</span>
                     <ArrowRight className="ml-2 w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
-              </div>
-              
-              {/* Trust Indicators */}
-              <div className="flex items-center justify-center sm:justify-start text-blue-200 text-sm mb-8">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                <span className="mr-6">No credit card required</span>
-                <CheckCircle className="w-4 h-4 mr-2" />
-                <span className="mr-6">Quick setup</span>
-                <CheckCircle className="w-4 h-4 mr-2" />
-                <span>Cancel anytime</span>
               </div>
 
               {/* Stats */}
@@ -375,7 +379,7 @@ export default function MarketingHome() {
               </div>
             </div>
             
-            <div className="relative">
+            <div className="relative lg:col-span-2 scale-90 lg:scale-100">
               <InteractiveDemo />
             </div>
           </div>
