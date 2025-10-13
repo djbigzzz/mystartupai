@@ -322,9 +322,8 @@ export default function MarketingHome() {
             <div>
               <h4 className="font-semibold mb-6">Product</h4>
               <ul className="space-y-3 text-sm text-gray-400">
-                <li><Link href="#"><span className="hover:text-white cursor-pointer transition-colors">Features</span></Link></li>
-                <li><Link href="#"><span className="hover:text-white cursor-pointer transition-colors">Pricing</span></Link></li>
-                <li><Link href="#"><span className="hover:text-white cursor-pointer transition-colors">FAQs</span></Link></li>
+                <li><Link href="#features"><span className="hover:text-white cursor-pointer transition-colors">Features</span></Link></li>
+                <li><Link href="#faqs"><span className="hover:text-white cursor-pointer transition-colors">FAQs</span></Link></li>
               </ul>
             </div>
             <div>
