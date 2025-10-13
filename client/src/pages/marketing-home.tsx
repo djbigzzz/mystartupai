@@ -256,138 +256,45 @@ export default function MarketingHome() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 hero-3d">
-        {/* Advanced 3D Background */}
-        <div className="absolute inset-0 gradient-mesh opacity-30"></div>
-        
-        {/* Floating 3D Geometric Shapes */}
-        <div className="absolute top-10 right-10 floating-shape">
-          <div className="w-24 h-24 bg-gradient-to-br from-white/20 to-blue-200/20 rounded-3xl transform rotate-45 morphing-bg"></div>
-        </div>
-        <div className="absolute top-40 left-10 floating-shape">
-          <div className="w-32 h-32 bg-gradient-to-br from-purple-200/20 to-white/20 rounded-full morphing-bg"></div>
-        </div>
-        <div className="absolute bottom-20 right-1/4 floating-shape">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-2xl transform -rotate-12 morphing-bg"></div>
-        </div>
-        <div className="absolute top-1/3 left-1/4 floating-shape">
-          <div className="w-16 h-16 bg-gradient-to-br from-white/15 to-blue-300/15 rounded-full morphing-bg"></div>
-        </div>
-        
-        {/* Animated Particles */}
-        {[...Array(15)].map((_, i) => (
-          <div 
-            key={i}
-            className="particle" 
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${8 + Math.random() * 6}s`
-            }}
-          ></div>
-        ))}
-        
-        {/* Enhanced Background Pattern Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-white/20 to-purple-50/10"></div>
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                           radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 1px, transparent 1px),
-                           radial-gradient(circle at 40% 80%, rgba(255,255,255,0.05) 1px, transparent 1px),
-                           radial-gradient(circle at 60% 20%, rgba(255,255,255,0.08) 1px, transparent 1px)`,
-          backgroundSize: '100px 100px, 80px 80px, 120px 120px, 150px 150px'
-        }}></div>
-        
-        {/* 3D Floating Logo Elements */}
-        <div className="absolute top-20 right-20 opacity-20 hidden lg:block transform hover:scale-110 transition-transform duration-500">
-          <div className="floating-shape">
-            <Logo size="lg" showText={false} />
-          </div>
-        </div>
-        <div className="absolute bottom-20 left-20 opacity-15 hidden lg:block transform hover:scale-110 transition-transform duration-500">
-          <div className="floating-shape" style={{animationDelay: '-3s'}}>
-            <Logo size="md" showText={false} />
-          </div>
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
-            <div className="relative z-10 lg:col-span-3">
-              <div className="flex flex-wrap gap-3 mb-6">
-                <Badge className="glass-effect text-white hover:bg-white/30 backdrop-blur-sm border border-white/30 transform hover:scale-105 transition-all duration-300">
-                  <Zap className="w-4 h-4 mr-1 animate-pulse" />
-                  Live & Ready to Use
-                </Badge>
-                <Badge className="glass-effect bg-purple-500/20 text-yellow-200 hover:bg-purple-500/30 backdrop-blur-sm border border-yellow-200/30 transform hover:scale-105 transition-all duration-300">
-                  <Sparkles className="w-4 h-4 mr-1" />
-                  Web3-Native • Solana Payments
-                </Badge>
+      {/* Hero Section - Minimal Clean Design */}
+      <section className="relative bg-white dark:bg-gray-950 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full mb-8">
+                <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Platform live & ready</span>
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-gray-100 via-white to-gray-100 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,255,255,0.4)]">
-                  Your AI Co-Founder
-                </span>
+              <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+                Your AI Co-Founder
               </h1>
               
-              <p className="text-xl text-white mb-6 leading-relaxed drop-shadow-lg font-medium">
-                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. <span className="text-green-300 font-bold">Web3-native platform</span> with Solana payments — no equity required.
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed max-w-2xl">
+                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research.
               </p>
               
-              {/* Social Proof & Urgency */}
-              <div className="flex items-center justify-center sm:justify-start mb-6 text-white">
-                <div className="flex items-center mr-6">
-                  <div className="flex -space-x-2 mr-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-gray-600">+</div>
-                  </div>
-                  <span className="text-sm font-medium">Join founders building their next startup</span>
-                </div>
-                <div className="flex items-center text-yellow-200">
-                  <CheckCircle className="w-4 h-4 fill-current mr-1" />
-                  <span className="text-sm font-medium">Platform live & ready</span>
-                </div>
-              </div>
-              
-              {/* Trust Indicators - Moved above CTA */}
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-white text-base mb-6 bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 border border-white/20">
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
-                  <span className="font-medium">No credit card required</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
-                  <span className="font-medium">Start building instantly</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
-                  <span className="font-medium">Cancel anytime</span>
-                </div>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row justify-center sm:justify-start gap-4 mb-8">
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" variant="ghost" className="!bg-gradient-to-r !from-green-400 !to-emerald-500 !text-white hover:!from-green-300 hover:!to-emerald-400 px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-green-500/50 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
-                    <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                    <span className="relative z-10">🚀 Start Free Now</span>
-                    <ArrowRight className="ml-2 w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
+                  <Button size="lg" className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 px-8" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
+                    Start Free Now
+                    <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 pt-6 sm:pt-8 border-t border-white/20">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8 border-t border-gray-200 dark:border-gray-800">
                 {stats.map((stat, index) => (
-                  <div key={index} className="text-center px-1">
-                    <div className="text-sm lg:text-lg font-bold text-white drop-shadow-md leading-tight break-words">{stat.number}</div>
-                    <div className="text-[10px] lg:text-xs text-green-200 mt-1 break-words font-medium">{stat.label}</div>
+                  <div key={index}>
+                    <div className="text-sm font-semibold text-gray-500 dark:text-gray-500">{stat.number}</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-600 mt-1">{stat.label}</div>
                   </div>
                 ))}
               </div>
             </div>
             
-            <div className="relative lg:col-span-2 scale-90 lg:scale-100">
+            <div className="relative">
               <InteractiveDemo />
             </div>
           </div>
