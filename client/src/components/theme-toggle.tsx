@@ -3,44 +3,54 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/theme-context";
 
 export function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
-
-  const getThemeIcon = () => {
-    if (theme === "light") {
-      return (
-        <>
-          <Sun className="w-5 h-5 mr-2" />
-          <span className="font-semibold">Light</span>
-        </>
-      );
-    } else if (theme === "dark") {
-      return (
-        <>
-          <Moon className="w-5 h-5 mr-2" />
-          <span className="font-semibold">Dark</span>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <Terminal className="w-5 h-5 mr-2 text-green-500" />
-          <span className="font-semibold font-mono text-green-500">CYPHERPUNK</span>
-        </>
-      );
-    }
-  };
+  const { theme, setTheme } = useTheme();
 
   return (
-    <Button
-      variant="outline"
-      size="default"
-      onClick={toggleTheme}
-      className={`border-2 hover:scale-105 transition-transform ${
-        theme === 'cypherpunk' ? 'bg-black border-green-500 hover:bg-gray-900' : ''
-      }`}
-      data-testid="button-theme-toggle"
-    >
-      {getThemeIcon()}
-    </Button>
+    <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
+      {/* Light Theme */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setTheme("light")}
+        className={`px-3 py-1.5 transition-all ${
+          theme === 'light' 
+            ? 'bg-white dark:bg-gray-700 shadow-sm' 
+            : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+        }`}
+        data-testid="button-theme-light"
+      >
+        <Sun className={`w-4 h-4 ${theme === 'light' ? 'text-yellow-500' : 'text-gray-500'}`} />
+      </Button>
+
+      {/* Dark Theme */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setTheme("dark")}
+        className={`px-3 py-1.5 transition-all ${
+          theme === 'dark' 
+            ? 'bg-white dark:bg-gray-700 shadow-sm' 
+            : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+        }`}
+        data-testid="button-theme-dark"
+      >
+        <Moon className={`w-4 h-4 ${theme === 'dark' ? 'text-blue-500' : 'text-gray-500'}`} />
+      </Button>
+
+      {/* Cypherpunk Theme */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setTheme("cypherpunk")}
+        className={`px-3 py-1.5 transition-all ${
+          theme === 'cypherpunk' 
+            ? 'bg-black border border-green-500 shadow-lg' 
+            : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+        }`}
+        data-testid="button-theme-cypherpunk"
+      >
+        <Terminal className={`w-4 h-4 ${theme === 'cypherpunk' ? 'text-green-500' : 'text-gray-500'}`} />
+      </Button>
+    </div>
   );
 }
