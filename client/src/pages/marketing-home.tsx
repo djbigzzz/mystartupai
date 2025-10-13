@@ -516,18 +516,22 @@ export default function MarketingHome() {
               const isHighlighted = index === 0 || index === 2;
               
               return (
-                <Card 
-                  key={index} 
+                <div
                   className={`
                     ${isHighlighted ? 'md:transform md:-translate-y-4' : ''}
-                    border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl 
-                    shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
-                    hover:shadow-[0_20px_60px_rgb(0,0,0,0.3)]
-                    dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]
-                    dark:hover:shadow-[0_20px_60px_rgb(0,0,0,0.6)]
+                    !border-0 rounded-lg
+                    !shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
+                    hover:!shadow-[0_20px_60px_rgb(0,0,0,0.3)]
+                    dark:!shadow-[0_8px_30px_rgb(0,0,0,0.4)]
+                    dark:hover:!shadow-[0_20px_60px_rgb(0,0,0,0.6)]
                     transition-all duration-500 h-full group relative overflow-hidden
-                    before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-500/5 before:to-purple-500/5 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500
                   `}
+                  style={{ 
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: 'none'
+                  }}
                 >
                   {/* Animated gradient border on hover */}
                   <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
@@ -561,7 +565,7 @@ export default function MarketingHome() {
                       </div>
                     </div>
                   </CardContent>
-                </Card>
+                </div>
               );
             })}
           </div>
