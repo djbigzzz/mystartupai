@@ -313,7 +313,6 @@ export default function MarketingHome() {
             <div>
               <div className="flex items-center gap-2 mb-6">
                 <Logo />
-                <span className="text-xl font-semibold">mystartup.ai</span>
               </div>
               <p className="text-sm text-gray-400">
                 Building the future of startup creation with AI
@@ -342,9 +341,8 @@ export default function MarketingHome() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+          <div className="border-t border-white/5 pt-8 text-center text-sm text-gray-500">
             <div>© 2025 MyStartup.ai. All rights reserved.</div>
-            <div>Built for Colosseum Hackathon • DAWN Track</div>
           </div>
         </div>
       </footer>
