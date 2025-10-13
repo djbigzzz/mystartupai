@@ -1,4 +1,4 @@
-import { Moon, Sun, Terminal } from "lucide-react";
+import { Moon, Sun, Skull } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/theme-context";
 
@@ -44,12 +44,12 @@ export function ThemeToggle() {
         onClick={() => setTheme("cypherpunk")}
         className={`px-3 py-1.5 transition-all ${
           theme === 'cypherpunk' 
-            ? 'bg-black border border-green-500 shadow-lg' 
+            ? 'bg-black border border-green-500 shadow-[0_0_20px_rgba(0,255,65,0.5)]' 
             : 'hover:bg-gray-200 dark:hover:bg-gray-700'
         }`}
         data-testid="button-theme-cypherpunk"
       >
-        <Terminal className={`w-4 h-4 ${theme === 'cypherpunk' ? 'text-green-500' : 'text-gray-500'}`} />
+        <Skull className={`w-4 h-4 ${theme === 'cypherpunk' ? 'text-green-500 drop-shadow-[0_0_8px_rgba(0,255,65,1)]' : 'text-gray-500'}`} />
       </Button>
     </div>
   );

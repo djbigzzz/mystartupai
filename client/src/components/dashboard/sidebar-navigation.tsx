@@ -349,44 +349,51 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
 
         {/* User Profile Section */}
         {!collapsed && user && (
-          <div className="flex items-center space-x-3 pb-3 border-b border-gray-200 dark:border-gray-700" data-testid="profile-section">
-            <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
-              <AvatarImage src={user.avatar || undefined} />
-              <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold">
-                {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-gray-900 dark:text-white truncate" data-testid="text-user-name">
-                {user.name || 'User'}
-              </div>
-              <Link href="/purchase-credits">
-                <div className="flex items-center gap-1 mt-0.5 cursor-pointer hover:opacity-80 transition-opacity">
-                  {user.currentPlan === 'PRO' ? (
-                    <Crown className="w-3 h-3 text-purple-600 dark:text-purple-400" />
-                  ) : user.currentPlan === 'CORE' ? (
-                    <CreditCard className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                  ) : (
-                    <Zap className="w-3 h-3 text-gray-600 dark:text-gray-400" />
-                  )}
-                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-plan">
-                    {user.currentPlan || 'FREEMIUM'} Plan
-                  </div>
+          <>
+            <div className="flex items-center space-x-3" data-testid="profile-section">
+              <Avatar className="h-10 w-10 ring-2 ring-blue-100 dark:ring-blue-900">
+                <AvatarImage src={user.avatar || undefined} />
+                <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold">
+                  {user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white truncate" data-testid="text-user-name">
+                  {user.name || 'User'}
                 </div>
-              </Link>
+                <Link href="/purchase-credits">
+                  <div className="flex items-center gap-1 mt-0.5 cursor-pointer hover:opacity-80 transition-opacity">
+                    {user.currentPlan === 'PRO' ? (
+                      <Crown className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                    ) : user.currentPlan === 'CORE' ? (
+                      <CreditCard className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    ) : (
+                      <Zap className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                    )}
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate" data-testid="text-user-plan">
+                      {user.currentPlan || 'FREEMIUM'} Plan
+                    </div>
+                  </div>
+                </Link>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
+                className="h-8 w-8 p-0 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                title="Logout"
+                data-testid="button-logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleLogout}
-              disabled={logoutMutation.isPending}
-              className="h-8 w-8 p-0 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-              title="Logout"
-              data-testid="button-logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
+            
+            {/* Theme Toggle - Right under user plan */}
+            <div className="flex justify-center pb-3 border-b border-gray-200 dark:border-gray-700">
+              <ThemeToggle />
+            </div>
+          </>
         )}
 
         {collapsed && user && (
@@ -402,15 +409,12 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
 
         {/* Controls */}
         {!collapsed && (
-          <div className="flex items-center space-x-2">
-            <Link href="/profile" className="flex-1">
-              <Button variant="outline" size="sm" className="w-full justify-start h-9" data-testid="button-profile-settings">
-                <User className="h-4 w-4 mr-2" />
-                Profile & Settings
-              </Button>
-            </Link>
-            <ThemeToggle />
-          </div>
+          <Link href="/profile" className="w-full">
+            <Button variant="outline" size="sm" className="w-full justify-start h-9" data-testid="button-profile-settings">
+              <User className="h-4 w-4 mr-2" />
+              Profile & Settings
+            </Button>
+          </Link>
         )}
 
         {collapsed && (
