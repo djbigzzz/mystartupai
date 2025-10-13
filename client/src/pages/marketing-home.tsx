@@ -581,46 +581,93 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="how-it-works" className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center mb-6">
-              <Logo size="md" showText={false} className="mr-3" />
-              <h2 className="text-3xl lg:text-4xl font-bold">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
-                  How to Build Investor-Ready Materials More Efficiently
-                </span>
-              </h2>
+      {/* How It Works - ANIMATED TIMELINE */}
+      <section id="how-it-works" className="py-24 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 relative overflow-hidden">
+        {/* Animated stars/dots background */}
+        <div className="absolute inset-0 opacity-20">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 2}s`
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Gradient overlays */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="heading-2 mb-6 text-white">
+              How to Build Investor-Ready Materials
+            </h2>
+            <p className="text-body-lg text-blue-200 max-w-3xl mx-auto">
+              Four simple steps to transform your idea into a fundable startup
+            </p>
+          </div>
+          
+          {/* Interactive Timeline */}
+          <div className="relative">
+            {/* Vertical connecting line (desktop) */}
+            <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 transform -translate-x-1/2 opacity-30"></div>
+            
+            <div className="space-y-20">
+              {howItWorks.map((step, index) => {
+                const IconComponent = step.icon;
+                const isEven = index % 2 === 0;
+                
+                return (
+                  <div key={index} className={`relative flex items-center ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}>
+                    {/* Content card */}
+                    <div className={`flex-1 ${isEven ? 'lg:pr-16' : 'lg:pl-16'}`}>
+                      <Card className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl hover:shadow-[0_20px_60px_rgba(59,130,246,0.4)] transition-all duration-500 group">
+                        <CardContent className="p-8">
+                          <div className="flex items-start gap-6">
+                            <div className="relative">
+                              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                <IconComponent className="w-8 h-8 text-white" />
+                              </div>
+                              <div className="absolute -top-2 -right-2 w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center border-2 border-white/20">
+                                <span className="text-white font-bold text-sm">{step.step}</span>
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="text-2xl font-bold text-white mb-3">{step.title}</h3>
+                              <p className="text-blue-100 leading-relaxed">{step.description}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Center dot connector (desktop) */}
+                    <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 border-4 border-gray-900 shadow-lg pulse-glow"></div>
+                    </div>
+
+                    {/* Spacer for layout */}
+                    <div className="hidden lg:block flex-1"></div>
+                  </div>
+                );
+              })}
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {howItWorks.map((step, index) => {
-              const IconComponent = step.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="relative mb-6">
-                    <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg hover:shadow-blue-500/30">
-                      <IconComponent className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">{step.step}</span>
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 transform hover:scale-105 transition-transform duration-300">{step.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 transform hover:translate-y-1 transition-transform duration-300">{step.description}</p>
-                </div>
-              );
-            })}
-          </div>
-          
-          <div className="text-center">
+          <div className="text-center mt-16">
             <Link href="/app">
-              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white px-8 py-4 text-lg font-bold transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 relative overflow-hidden group" data-testid="button-process-cta">
-                <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                <span className="relative z-10">🚀 Start Free Now</span>
-                <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
+              <Button size="lg" className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-400 hover:via-purple-400 hover:to-pink-400 text-white px-10 py-6 text-lg font-bold transform hover:scale-105 hover:shadow-[0_20px_60px_rgba(147,51,234,0.6)] transition-all duration-300 relative overflow-hidden group" data-testid="button-process-cta">
+                <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                <span className="relative z-10 flex items-center">
+                  <Rocket className="w-5 h-5 mr-2" />
+                  Start Your Journey
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </span>
               </Button>
             </Link>
           </div>
