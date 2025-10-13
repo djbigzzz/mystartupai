@@ -22,6 +22,37 @@ MyStartup.ai utilizes a modern web application architecture with a React fronten
 - **Branding**: Consistent use of brand gradients across the platform.
 - **Accessibility**: Implemented `prefers-reduced-motion` for animations.
 
+### Design System
+A comprehensive design system ensuring visual consistency across the application:
+
+#### Typography Scale
+- **Headings**: `.heading-1` through `.heading-6` with responsive sizing
+  - H1: 4xl → 5xl (mobile → desktop)
+  - H2: 3xl → 4xl
+  - H3: 2xl → 3xl
+  - H4: xl → 2xl
+  - H5: lg → xl
+  - H6: base → lg
+- **Body Text**: `.text-body-lg`, `.text-body`, `.text-body-sm`
+- **Utility Text**: `.text-caption`, `.text-label`, `.text-tiny`
+
+#### Spacing Tokens
+- **Section Spacing**: `.section-spacing`, `.section-spacing-sm`, `.section-spacing-lg`
+- **Container Widths**: `.container-narrow`, `.container-default`, `.container-wide`
+- **Card Padding**: `.card-padding`, `.card-padding-sm`, `.card-padding-lg`
+- **Stack (Vertical)**: `.stack-xs` through `.stack-xl` (2px → 48px)
+- **Inline (Horizontal)**: `.inline-xs` through `.inline-lg` (8px → 32px)
+- **Grid Gaps**: `.grid-gap-sm`, `.grid-gap-md`, `.grid-gap-lg`
+
+#### Brand Gradients
+- **Primary**: `.gradient-text-primary` (Blue → Purple → Blue)
+- **Secondary**: `.gradient-text-secondary` (Blue → Purple)
+- **Accent**: `.gradient-text-accent` (Purple → Cyan)
+
+#### Font Family
+- **Primary**: Inter (with system font fallback)
+- **Monospace**: Courier New (Cypherpunk theme only)
+
 ### Backend
 - **Runtime**: Node.js with Express.js.
 - **Language**: TypeScript with ES modules.
