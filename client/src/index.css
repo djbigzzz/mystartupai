@@ -188,10 +188,22 @@
     box-shadow: 0 0 25px rgba(100, 180, 255, 0.8);
   }
 
-  /* Sidebar navigation text - BRIGHT BLUE for visibility */
-  .cypherpunk [data-page="dashboard"] nav span,
-  .cypherpunk [data-page="dashboard"] nav h3,
-  .cypherpunk [data-page="dashboard"] button span {
+  /* Sidebar navigation buttons - WHITE backgrounds */
+  .cypherpunk [data-page="dashboard"] nav button {
+    background: white !important;
+    border: 2px solid hsl(210 100% 65%) !important;
+    box-shadow: 0 0 15px rgba(100, 180, 255, 0.4) !important;
+  }
+
+  /* Sidebar navigation text - BLACK on white buttons */
+  .cypherpunk [data-page="dashboard"] nav button span,
+  .cypherpunk [data-page="dashboard"] nav button {
+    color: black !important;
+    text-shadow: none !important;
+  }
+
+  /* Section headers still bright blue */
+  .cypherpunk [data-page="dashboard"] nav h3 {
     color: hsl(210 100% 92%) !important;
     text-shadow: 0 0 15px rgba(100, 180, 255, 1) !important;
     font-weight: 600 !important;
