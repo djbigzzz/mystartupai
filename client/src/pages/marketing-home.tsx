@@ -674,38 +674,69 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* Who It's For */}
-      <section id="who-its-for" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center mb-6">
-              <Logo size="md" showText={false} className="mr-3" />
-              <h2 className="text-3xl lg:text-4xl font-bold">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
-                  Best AI Startup Tools for Entrepreneurs & Business Founders
-                </span>
-              </h2>
-            </div>
+      {/* Who It's For - ASYMMETRIC GRID */}
+      <section id="who-its-for" className="py-24 bg-gradient-to-br from-white via-purple-50/20 to-pink-50/20 dark:from-gray-900 dark:via-purple-950/10 dark:to-pink-950/10 transition-colors duration-300 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-10 left-10 w-64 h-64 bg-gradient-to-br from-purple-300/20 to-pink-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-64 h-64 bg-gradient-to-br from-blue-300/20 to-purple-300/20 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="heading-2 mb-6">
+              <span className="gradient-text-primary">
+                Best AI Startup Tools for Entrepreneurs
+              </span>
+            </h2>
+            <p className="text-body-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Whether you're a first-time founder or serial entrepreneur, we have the tools to accelerate your journey
+            </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Asymmetric Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
             {targetAudiences.map((audience, index) => {
               const IconComponent = audience.icon;
+              const isLarge = index === 1; // Middle card is larger
+              
               return (
-                <Card key={index} className="border-2 hover:border-blue-200 dark:hover:border-blue-600 dark:bg-gray-800 dark:border-gray-700 transition-all duration-500 card-3d group relative overflow-hidden">
-                  {/* Card background gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 to-purple-50/20 dark:from-blue-900/10 dark:to-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <CardContent className="p-8 text-center relative z-10">
-                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                      <IconComponent className="w-8 h-8 text-blue-600" />
+                <Card 
+                  key={index} 
+                  className={`
+                    ${isLarge ? 'lg:col-span-2 lg:row-span-2' : 'lg:col-span-2'}
+                    bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0
+                    shadow-[0_8px_30px_rgb(0,0,0,0.12)]
+                    hover:shadow-[0_20px_60px_rgb(147,51,234,0.3)]
+                    dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]
+                    dark:hover:shadow-[0_20px_60px_rgb(147,51,234,0.5)]
+                    transition-all duration-500 group relative overflow-hidden
+                    ${isLarge ? 'transform lg:-translate-y-8' : ''}
+                  `}
+                >
+                  {/* Gradient border effect */}
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                  
+                  <CardContent className={`${isLarge ? 'p-10' : 'p-8'} relative z-10 h-full flex flex-col`}>
+                    <div className="mb-6">
+                      <div className={`${isLarge ? 'w-24 h-24' : 'w-20 h-20'} rounded-3xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                        <IconComponent className={`${isLarge ? 'w-12 h-12' : 'w-10 h-10'} text-white`} />
+                      </div>
                     </div>
-                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">{audience.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-6">{audience.description}</p>
-                    <div className="space-y-2">
+                    
+                    <h3 className={`${isLarge ? 'text-3xl' : 'text-2xl'} font-bold text-gray-900 dark:text-white mb-4`}>
+                      {audience.title}
+                    </h3>
+                    
+                    <p className={`${isLarge ? 'text-lg' : 'text-base'} text-gray-600 dark:text-gray-300 mb-6 flex-grow`}>
+                      {audience.description}
+                    </p>
+                    
+                    <div className="space-y-3">
                       {audience.examples.map((example, idx) => (
-                        <div key={idx} className="flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          <span className="text-gray-600 dark:text-gray-300 text-sm">{example}</span>
+                        <div key={idx} className="flex items-start gap-3">
+                          <CheckCircle className={`${isLarge ? 'w-6 h-6' : 'w-5 h-5'} text-green-500 mt-0.5 flex-shrink-0`} />
+                          <span className={`${isLarge ? 'text-base' : 'text-sm'} text-gray-600 dark:text-gray-300`}>
+                            {example}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -717,28 +748,74 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* What Makes Us Different */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
-                What Makes Us Different
-              </span>
+      {/* What Makes Us Different - CREATIVE CARDS */}
+      <section className="py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+        {/* Diagonal lines pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(255, 255, 255, 0.1) 10px,
+              rgba(255, 255, 255, 0.1) 11px
+            )`
+          }}></div>
+        </div>
+
+        {/* Floating orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-blob"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <h2 className="heading-2 mb-6 text-white">
+              What Makes Us Different
             </h2>
+            <p className="text-body-lg text-purple-200 max-w-3xl mx-auto">
+              Built different. Think different. Succeed different.
+            </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {differentiators.map((diff, index) => {
               const IconComponent = diff.icon;
+              const gradients = [
+                'from-blue-500 to-cyan-500',
+                'from-purple-500 to-pink-500',
+                'from-orange-500 to-red-500',
+                'from-green-500 to-emerald-500'
+              ];
+              
               return (
-                <div key={index} className="text-center p-6">
-                  <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="w-8 h-8 text-purple-600" />
+                <Card 
+                  key={index} 
+                  className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:shadow-[0_20px_60px_rgba(168,85,247,0.4)] transition-all duration-500 group relative overflow-hidden"
+                >
+                  {/* Animated gradient background on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index]} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
+                  
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 shimmer-effect"></div>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{diff.title}</h3>
-                  <p className="text-gray-600">{diff.description}</p>
-                </div>
+                  
+                  <CardContent className="p-8 text-center relative z-10">
+                    <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${gradients[index]} flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 relative`}>
+                      <IconComponent className="w-10 h-10 text-white" />
+                      {/* Icon glow effect */}
+                      <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${gradients[index]} blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500`}></div>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-purple-200 transition-all duration-300">
+                      {diff.title}
+                    </h3>
+                    
+                    <p className="text-purple-200 text-sm leading-relaxed">
+                      {diff.description}
+                    </p>
+                  </CardContent>
+                </Card>
               );
             })}
           </div>
