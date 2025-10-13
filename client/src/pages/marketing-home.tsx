@@ -47,9 +47,6 @@ export default function MarketingHome() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 blur-lg opacity-50"></div>
                 <Logo />
               </div>
-              <span className="text-xl font-semibold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                mystartup.ai
-              </span>
             </div>
             
             <nav className="hidden md:flex items-center gap-10">
@@ -295,10 +292,6 @@ export default function MarketingHome() {
                 <div className="flex items-center gap-2">
                   <Check className="w-5 h-5 text-green-400" />
                   <span className="text-gray-400">No credit card required</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-400" />
-                  <span className="text-gray-400">10 free credits</span>
                 </div>
               </div>
             </div>
