@@ -132,6 +132,15 @@
     color: hsl(120 95% 80%) !important;
     text-shadow: 0 0 8px rgba(0, 255, 65, 0.7) !important;
   }
+
+  /* CardDescription - ULTRA BRIGHT for visibility */
+  .cypherpunk [data-page="dashboard"] [class*="CardDescription"],
+  .cypherpunk [data-page="dashboard"] [class*="card-description"],
+  .cypherpunk [data-page="dashboard"] [class*="text-muted"] {
+    color: hsl(120 100% 88%) !important;
+    text-shadow: 0 0 15px rgba(0, 255, 65, 0.9) !important;
+    font-weight: 500 !important;
+  }
   
   /* Input and form elements - WHITE backgrounds for visibility on dashboard */
   .cypherpunk [data-page="dashboard"] input,
