@@ -394,74 +394,172 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-800 transition-colors duration-300 relative overflow-hidden">
-        {/* Subtle background elements */}
-        <div className="absolute top-20 left-10 floating-shape opacity-5">
-          <div className="w-40 h-40 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full morphing-bg"></div>
+      {/* Problem Section - BENTO GRID LAYOUT */}
+      <section className="py-24 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/20 transition-colors duration-300 relative overflow-hidden">
+        {/* Animated gradient mesh background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-400/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-pink-400/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
         </div>
-        <div className="absolute bottom-20 right-10 floating-shape opacity-5">
-          <div className="w-32 h-32 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-3xl morphing-bg"></div>
-        </div>
+        
+        {/* Floating geometric shapes */}
+        <div className="absolute top-20 right-20 w-32 h-32 border-2 border-blue-300/20 rounded-3xl rotate-12 floating-shape"></div>
+        <div className="absolute bottom-32 left-20 w-24 h-24 border-2 border-purple-300/20 rounded-2xl -rotate-12 floating-shape" style={{animationDelay: '-2s'}}></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-6 transform hover:scale-105 transition-transform duration-300">
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
-                Common Startup Challenges (And How AI Can Help You Avoid Them)
+            <h2 className="heading-2 mb-6">
+              <span className="gradient-text-primary">
+                Common Startup Challenges
               </span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-              <div className="text-center p-6">
-                <Clock className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Time & Money Wasted on Poor Planning</h3>
-                <p className="text-gray-600 dark:text-gray-300">Without proper business planning and validation, many founders spend significant time building products without market validation</p>
-              </div>
-              <div className="text-center p-6">
-                <DollarSign className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Expensive Access</h3>
-                <p className="text-gray-600 dark:text-gray-300">Access to accelerators or consultants requires equity or high fees</p>
-              </div>
-              <div className="text-center p-6">
-                <Target className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Investor Readiness</h3>
-                <p className="text-gray-600 dark:text-gray-300">Most founders struggle with market validation and investor materials</p>
-              </div>
+            <p className="text-body-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              And How AI Can Help You Avoid Them
+            </p>
+          </div>
+          
+          {/* Bento Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mt-12">
+            {/* Large featured card - spans 4 columns */}
+            <Card className="md:col-span-4 bg-gradient-to-br from-blue-500 to-blue-600 border-0 shadow-2xl overflow-hidden group hover:shadow-blue-500/50 transition-all duration-500">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+              <CardContent className="p-8 md:p-12 relative z-10">
+                <div className="flex items-start gap-6">
+                  <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                    <Clock className="w-12 h-12 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Time & Money Wasted</h3>
+                    <p className="text-blue-50 text-lg leading-relaxed">
+                      Without proper business planning and validation, many founders spend 6-12 months building products nobody wants. Our AI analyzes market fit in hours, not months - saving you time and capital.
+                    </p>
+                    <div className="mt-6 flex items-center gap-3">
+                      <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full">
+                        <span className="text-white font-semibold">Save 6+ months</span>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-2 transition-transform duration-300" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Two stacked cards on the right */}
+            <div className="md:col-span-2 space-y-6">
+              <Card className="bg-gradient-to-br from-purple-500 to-purple-600 border-0 shadow-xl overflow-hidden group hover:shadow-purple-500/50 transition-all duration-500">
+                <CardContent className="p-6 relative z-10">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl w-fit mb-4">
+                    <DollarSign className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-3">Expensive Access</h3>
+                  <p className="text-purple-50 text-sm">
+                    Accelerators take 7-10% equity. Consultants charge $10k+. Get enterprise-level guidance at a fraction of the cost.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-pink-500 to-rose-600 border-0 shadow-xl overflow-hidden group hover:shadow-pink-500/50 transition-all duration-500">
+                <CardContent className="p-6 relative z-10">
+                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl w-fit mb-4">
+                    <Target className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-3">Investor Readiness</h3>
+                  <p className="text-pink-50 text-sm">
+                    90% of founders struggle with pitch materials. Our AI creates investor-grade decks and financials automatically.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Solution Section */}
-      <section id="features" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center mb-6">
-              <Logo size="lg" showText={false} className="mr-4" />
-              <h2 className="text-3xl lg:text-4xl font-bold">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
+      {/* Solution Section - GLASSMORPHISM & 3D CARDS */}
+      <section id="features" className="py-24 bg-gradient-to-br from-white via-blue-50/20 to-purple-50/20 dark:from-gray-900 dark:via-blue-950/10 dark:to-purple-950/10 transition-colors duration-300 relative overflow-hidden">
+        {/* Animated background grid */}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(to right, rgb(59, 130, 246) 1px, transparent 1px),
+              linear-gradient(to bottom, rgb(59, 130, 246) 1px, transparent 1px)
+            `,
+            backgroundSize: '4rem 4rem'
+          }}></div>
+        </div>
+
+        {/* Gradient orbs */}
+        <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-gradient-to-br from-purple-400/20 to-transparent rounded-full blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-20">
+            <div className="flex items-center justify-center mb-8">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mr-4 shadow-xl">
+                <Logo size="lg" showText={false} className="invert brightness-0" />
+              </div>
+              <h2 className="heading-2">
+                <span className="gradient-text-primary">
                   AI Startup Tools & Business Plan Generator
                 </span>
               </h2>
             </div>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Complete AI-powered startup acceleration platform with business plan generator, pitch deck creator, financial modeling tools, and market research capabilities - designed to help entrepreneurs validate ideas and prepare for funding.
+            <p className="text-body-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Complete AI-powered startup acceleration platform with business plan generator, pitch deck creator, financial modeling tools, and market research capabilities.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {/* 3D Card Grid with Staggered Heights */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
+              const isHighlighted = index === 0 || index === 2;
+              
               return (
-                <Card key={index} className="border-0 shadow-lg hover:shadow-2xl dark:bg-gray-800 dark:border dark:border-gray-700 transition-all duration-500 h-full card-3d group relative overflow-hidden">
-                  {/* Card background gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <CardContent className="p-6 text-center h-full flex flex-col relative z-10">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center mx-auto mb-4 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg`}>
-                      <IconComponent className="w-8 h-8 text-white" />
+                <Card 
+                  key={index} 
+                  className={`
+                    ${isHighlighted ? 'md:transform md:-translate-y-4' : ''}
+                    border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl 
+                    shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
+                    hover:shadow-[0_20px_60px_rgb(0,0,0,0.3)]
+                    dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]
+                    dark:hover:shadow-[0_20px_60px_rgb(0,0,0,0.6)]
+                    transition-all duration-500 h-full group relative overflow-hidden
+                    before:absolute before:inset-0 before:bg-gradient-to-br before:from-blue-500/5 before:to-purple-500/5 before:opacity-0 before:group-hover:opacity-100 before:transition-opacity before:duration-500
+                  `}
+                >
+                  {/* Animated gradient border on hover */}
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                  
+                  <CardContent className="p-8 text-center h-full flex flex-col relative z-10">
+                    <div className={`
+                      w-20 h-20 rounded-3xl bg-gradient-to-br ${feature.color} 
+                      flex items-center justify-center mx-auto mb-6 
+                      transform group-hover:scale-110 group-hover:rotate-6 
+                      transition-all duration-500 
+                      shadow-lg group-hover:shadow-2xl
+                      relative
+                      before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-0 before:group-hover:opacity-100 before:transition-opacity
+                    `}>
+                      <IconComponent className="w-10 h-10 text-white relative z-10" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">{feature.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 flex-grow group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">{feature.description}</p>
+                    
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">
+                      {feature.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed flex-grow">
+                      {feature.description}
+                    </p>
+
+                    {/* Hover reveal arrow */}
+                    <div className="mt-6 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                      <div className="inline-flex items-center text-blue-600 dark:text-blue-400 font-semibold text-sm">
+                        <span>Learn more</span>
+                        <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               );
@@ -470,10 +568,13 @@ export default function MarketingHome() {
           
           <div className="text-center">
             <Link href="/app">
-              <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white px-8 py-4 text-lg font-bold transform hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25 transition-all duration-300 relative overflow-hidden group" data-testid="button-features-cta">
-                <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                <span className="relative z-10">🚀 Start Free Now</span>
-                <ArrowRight className="ml-2 w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
+              <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white px-10 py-6 text-lg font-bold transform hover:scale-105 hover:shadow-[0_20px_60px_rgba(16,185,129,0.4)] transition-all duration-300 relative overflow-hidden group" data-testid="button-features-cta">
+                <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                <span className="relative z-10 flex items-center">
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Start Building Free
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </span>
               </Button>
             </Link>
           </div>
