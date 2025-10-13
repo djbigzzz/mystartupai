@@ -93,18 +93,18 @@
   /* Landing page and auth pages use normal theme - no Cypherpunk overrides */
   /* Pages with data-page="landing" or data-page="auth" will not be affected by Cypherpunk theme */
 
-  /* BRIGHT BLUE TEXT - Only for dashboard pages (data-page="dashboard") */
+  /* BRIGHT GREEN TEXT - Only for dashboard pages (data-page="dashboard") */
   /* Exclude sidebar navigation, buttons with explicit colors, and white backgrounds */
   .cypherpunk [data-page="dashboard"] *:not([class*="bg-white"]):not([class*="bg-gray-50"]):not([class*="bg-gradient"]):not(nav *):not(button *):not([class*="sidebar"] *) {
-    color: hsl(210 100% 85%) !important;
-    text-shadow: 0 0 8px rgba(100, 180, 255, 0.8) !important;
+    color: hsl(120 100% 85%) !important;
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.8) !important;
   }
   
   /* Comprehensive visibility for dashboard only */
   .cypherpunk [data-page="dashboard"] [class*="card"],
   .cypherpunk [data-page="dashboard"] [class*="Card"] {
-    border: 2px solid hsl(210 100% 60%);
-    box-shadow: 0 0 20px rgba(100, 180, 255, 0.25);
+    border: 2px solid hsl(120 100% 60%);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.25);
   }
 
   /* Bright headings and important text in cards - dashboard only */
@@ -121,24 +121,24 @@
   .cypherpunk [data-page="dashboard"] [class*="card"] p:not([class*="text-gray"]),
   .cypherpunk [data-page="dashboard"] [class*="font-bold"],
   .cypherpunk [data-page="dashboard"] [class*="font-semibold"] {
-    color: hsl(210 100% 90%) !important;
-    text-shadow: 0 0 12px rgba(100, 180, 255, 1) !important;
+    color: hsl(120 100% 90%) !important;
+    text-shadow: 0 0 12px rgba(0, 255, 65, 1) !important;
   }
 
   /* Paragraph text in cards - brighter */
   .cypherpunk [data-page="dashboard"] [class*="Card"] p,
   .cypherpunk [data-page="dashboard"] [class*="card"] p,
   .cypherpunk [data-page="dashboard"] [class*="text-sm"] {
-    color: hsl(210 95% 80%) !important;
-    text-shadow: 0 0 8px rgba(100, 180, 255, 0.7) !important;
+    color: hsl(120 95% 80%) !important;
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.7) !important;
   }
   
   /* Input and form elements - WHITE backgrounds for visibility on dashboard */
   .cypherpunk [data-page="dashboard"] input,
   .cypherpunk [data-page="dashboard"] textarea,
   .cypherpunk [data-page="dashboard"] select {
-    border: 1px solid #64b4ff !important;
-    box-shadow: 0 0 15px rgba(100, 180, 255, 0.4);
+    border: 1px solid #00ff41 !important;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
     color: black !important;
     background: white !important;
   }
@@ -174,25 +174,25 @@
   .cypherpunk [data-page="dashboard"] [class*="Dropdown"],
   .cypherpunk [data-page="dashboard"] [data-radix-popover-content] {
     background: white !important;
-    border: 2px solid hsl(210 100% 65%) !important;
-    box-shadow: 0 0 25px rgba(100, 180, 255, 0.4) !important;
+    border: 2px solid hsl(120 100% 45%) !important;
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.3) !important;
   }
   
   /* Buttons - dashboard only */
   .cypherpunk [data-page="dashboard"] button {
-    border: 1px solid #64b4ff !important;
-    box-shadow: 0 0 10px rgba(100, 180, 255, 0.4);
+    border: 1px solid #00ff41 !important;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
   }
   
   .cypherpunk [data-page="dashboard"] button:hover {
-    box-shadow: 0 0 25px rgba(100, 180, 255, 0.8);
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.7);
   }
 
   /* Sidebar navigation buttons - WHITE backgrounds */
   .cypherpunk [data-page="dashboard"] nav button {
     background: white !important;
-    border: 2px solid hsl(210 100% 65%) !important;
-    box-shadow: 0 0 15px rgba(100, 180, 255, 0.4) !important;
+    border: 2px solid hsl(120 100% 45%) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.4) !important;
   }
 
   /* Sidebar navigation text - BLACK on white buttons */
@@ -202,10 +202,10 @@
     text-shadow: none !important;
   }
 
-  /* Section headers still bright blue */
+  /* Section headers still bright green */
   .cypherpunk [data-page="dashboard"] nav h3 {
-    color: hsl(210 100% 92%) !important;
-    text-shadow: 0 0 15px rgba(100, 180, 255, 1) !important;
+    color: hsl(120 100% 92%) !important;
+    text-shadow: 0 0 15px rgba(0, 255, 65, 1) !important;
     font-weight: 600 !important;
   }
   

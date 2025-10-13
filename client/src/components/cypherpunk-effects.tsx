@@ -100,20 +100,20 @@ export function CypherpunkEffects() {
           drop.char = characters[Math.floor(Math.random() * characters.length)];
         }
 
-        // Brighter head of the drop - BLUE
-        ctx.fillStyle = `rgba(100, 180, 255, ${drop.opacity})`;
+        // Brighter head of the drop - GREEN
+        ctx.fillStyle = `rgba(0, 255, 65, ${drop.opacity})`;
         ctx.fillText(drop.char, drop.x, drop.y);
 
-        // Dimmer trail - BLUE
-        ctx.fillStyle = `rgba(80, 150, 230, ${drop.opacity * 0.5})`;
+        // Dimmer trail - GREEN
+        ctx.fillStyle = `rgba(0, 200, 50, ${drop.opacity * 0.5})`;
         ctx.fillText(
           characters[Math.floor(Math.random() * characters.length)],
           drop.x,
           drop.y - fontSize
         );
 
-        // Very dim trail - BLUE
-        ctx.fillStyle = `rgba(60, 120, 200, ${drop.opacity * 0.2})`;
+        // Very dim trail - GREEN
+        ctx.fillStyle = `rgba(0, 150, 35, ${drop.opacity * 0.2})`;
         ctx.fillText(
           characters[Math.floor(Math.random() * characters.length)],
           drop.x,
@@ -141,7 +141,7 @@ export function CypherpunkEffects() {
           const opacity = 1 - progress;
 
           ctx.font = `${Math.floor(size)}px "Courier New", monospace`;
-          ctx.fillStyle = `rgba(100, 180, 255, ${opacity})`;
+          ctx.fillStyle = `rgba(0, 255, 65, ${opacity})`;
           
           // Draw expanding brackets
           const bracket = progress < 0.5 ? '[' : '{';
@@ -156,7 +156,7 @@ export function CypherpunkEffects() {
 
           // Draw center cross
           if (progress < 0.3) {
-            ctx.fillStyle = `rgba(100, 180, 255, ${opacity * 1.5})`;
+            ctx.fillStyle = `rgba(0, 255, 65, ${opacity * 1.5})`;
             ctx.fillText('+', effect.x - 7, effect.y + 5);
           }
         }
