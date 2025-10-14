@@ -431,9 +431,9 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
             }}
             data-testid="button-connect-phantom"
           >
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 128 128" fill="none">
-              <path d="M101.667 19.333C101.667 8.6667 93 0 82.333 0H45.667C35 0 26.333 8.6667 26.333 19.333V108.667C26.333 119.333 35 128 45.667 128C56.333 128 65 119.333 65 108.667V84.667H82.333C93 84.667 101.667 76 101.667 65.333V19.333ZM50.5 42.667C47.5 42.667 45 40.167 45 37.167C45 34.167 47.5 31.667 50.5 31.667C53.5 31.667 56 34.167 56 37.167C56 40.167 53.5 42.667 50.5 42.667ZM77.5 42.667C74.5 42.667 72 40.167 72 37.167C72 34.167 74.5 31.667 77.5 31.667C80.5 31.667 83 34.167 83 37.167C83 40.167 80.5 42.667 77.5 42.667Z" fill="#AB9FF2"/>
-            </svg>
+            <div className="w-4 h-4 mr-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+              <span className="text-xs text-white font-bold">P</span>
+            </div>
             Phantom
           </Button>
           <Button 
