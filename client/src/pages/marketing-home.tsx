@@ -4,7 +4,6 @@ import { Logo } from "@/components/logo";
 import { ArrowRight, Sparkles, Rocket, Target, Zap, Wallet, ChevronDown, Check, Star } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { SplitText } from "@/components/split-text";
-import { Hyperspeed } from "@/components/hyperspeed";
 
 export default function MarketingHome() {
   const [scrollY, setScrollY] = useState(0);
@@ -94,10 +93,25 @@ export default function MarketingHome() {
 
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden">
       
-      {/* Hyperspeed Background */}
-      <Hyperspeed />
+      {/* Animated Gradient Background with Orbs */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-blue-950/30 via-purple-950/20 to-pink-950/30">
+        <div className="absolute inset-0 opacity-50">
+          {/* Floating gradient orbs */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl animate-float-slower"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl animate-float"></div>
+        </div>
+      </div>
+      
+      {/* Animated Dot Pattern Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-[1]">
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }}></div>
+      </div>
 
       {/* Premium Header with Glassmorphism */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-black/30 backdrop-blur-xl ${
