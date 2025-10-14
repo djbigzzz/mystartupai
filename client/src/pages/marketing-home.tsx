@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { ArrowRight, Sparkles, Rocket, Target, Zap, Wallet, ChevronDown, Check, Star } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import LiquidEther from "@/components/liquid-ether";
 
 export default function MarketingHome() {
   const [scrollY, setScrollY] = useState(0);
@@ -95,38 +94,22 @@ export default function MarketingHome() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden">
       
-      {/* Animated Background Gradient */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-950/20 via-purple-950/10 to-pink-950/20 animate-gradient-shift"></div>
+      {/* Animated Gradient Background with Orbs */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-blue-950/30 via-purple-950/20 to-pink-950/30">
+        <div className="absolute inset-0 opacity-50">
+          {/* Floating gradient orbs */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl animate-float-slower"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-500/20 rounded-full blur-3xl animate-float"></div>
+        </div>
+      </div>
       
-      {/* Animated Dot Pattern */}
-      <div className="fixed inset-0 pointer-events-none">
+      {/* Animated Dot Pattern Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-[1]">
         <div className="absolute inset-0 opacity-[0.02]" style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
           backgroundSize: '50px 50px'
         }}></div>
-      </div>
-
-      {/* WebGL Fluid Simulation Background */}
-      <div className="fixed inset-0 z-0" style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0 }}>
-        <LiquidEther 
-          colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-          mouseForce={20}
-          cursorSize={100}
-          isViscous={false}
-          viscous={30}
-          iterationsViscous={32}
-          iterationsPoisson={32}
-          dt={0.014}
-          BFECC={true}
-          resolution={0.5}
-          isBounce={false}
-          autoDemo={true}
-          autoSpeed={0.5}
-          autoIntensity={2.2}
-          takeoverDuration={0.25}
-          autoResumeDelay={3000}
-          autoRampDuration={0.6}
-        />
       </div>
 
       {/* Premium Header with Glassmorphism */}

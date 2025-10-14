@@ -84,6 +84,10 @@
   animation: float-delayed 20s ease-in-out infinite;
 }
 
+.animate-float-slower {
+  animation: float-slow 18s ease-in-out infinite 2s;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
