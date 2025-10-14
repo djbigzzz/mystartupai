@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import DOMPurify from 'isomorphic-dompurify';
 import { 
   FileText, 
   Download, 
@@ -80,6 +81,55 @@ interface BusinessPlanGeneratorProps {
   ideaId: number;
   ideaData: any;
 }
+
+// Function to convert markdown to formatted HTML
+const formatMarkdownContent = (content: string): string => {
+  if (!content) return '';
+  
+  let formatted = content;
+  
+  // Convert bold (**text** or __text__)
+  formatted = formatted.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  formatted = formatted.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  
+  // Convert italic (*text* or _text_)
+  formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  formatted = formatted.replace(/_(.+?)_/g, '<em>$1</em>');
+  
+  // Convert headings (### Heading)
+  formatted = formatted.replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>');
+  formatted = formatted.replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold mt-6 mb-3">$1</h2>');
+  formatted = formatted.replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold mt-8 mb-4">$1</h1>');
+  
+  // Convert bullet lists (- item or * item)
+  formatted = formatted.replace(/^[\-\*] (.+)$/gm, '<li class="ml-6">$1</li>');
+  
+  // Wrap consecutive list items in ul tags
+  formatted = formatted.replace(/(<li class="ml-6">.*<\/li>\n?)+/g, (match) => {
+    return `<ul class="list-disc mb-4">${match}</ul>`;
+  });
+  
+  // Convert numbered lists (1. item)
+  formatted = formatted.replace(/^\d+\.\s(.+)$/gm, '<li class="ml-6">$1</li>');
+  
+  // Wrap consecutive numbered list items in ol tags
+  formatted = formatted.replace(/(<li class="ml-6">.*<\/li>\n?)+/g, (match) => {
+    if (!match.includes('<ul')) {
+      return `<ol class="list-decimal mb-4">${match}</ol>`;
+    }
+    return match;
+  });
+  
+  // Convert line breaks to paragraphs
+  formatted = formatted.split('\n\n').map(para => {
+    if (para.trim() && !para.startsWith('<')) {
+      return `<p class="mb-4">${para}</p>`;
+    }
+    return para;
+  }).join('\n');
+  
+  return DOMPurify.sanitize(formatted);
+};
 
 export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlanGeneratorProps) {
   const { toast } = useToast();
@@ -896,12 +946,14 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
                         {/* Content preview - show first 150 chars */}
                         {section.content && !isEditing && (
                           <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            <div className="text-sm text-gray-700 dark:text-gray-300">
-                              {section.content.length > 150 
-                                ? `${section.content.substring(0, 150)}...` 
-                                : section.content
-                              }
-                            </div>
+                            <div 
+                              className="text-sm text-gray-700 dark:text-gray-300 prose prose-sm max-w-none dark:prose-invert"
+                              dangerouslySetInnerHTML={{ 
+                                __html: section.content.length > 150 
+                                  ? formatMarkdownContent(section.content.substring(0, 150) + '...') 
+                                  : formatMarkdownContent(section.content)
+                              }}
+                            />
                             <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
                               <span>{section.wordCount} words</span>
                               {section.lastGenerated && (
@@ -1019,9 +1071,10 @@ export default function BusinessPlanGenerator({ ideaId, ideaData }: BusinessPlan
                               {section.title}
                             </h2>
                           </div>
-                          <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300 leading-relaxed text-justify">
-                            {section.content}
-                          </div>
+                          <div 
+                            className="text-gray-700 dark:text-gray-300 leading-relaxed prose max-w-none dark:prose-invert"
+                            dangerouslySetInnerHTML={{ __html: formatMarkdownContent(section.content) }}
+                          />
                           {section.quality && getOverallQualityScore() > 0 && (
                             <div className="mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
                               Section quality score: {section.quality.score}/100
