@@ -48,6 +48,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { ReactBitsPicker, type ReactBitsComponent } from "@/components/react-bits-picker";
 
 interface WebsiteBuilderProps {
   companyData: any;
@@ -96,6 +97,8 @@ export default function WebsiteBuilder({ companyData, businessPlan }: WebsiteBui
   const [publishProgress, setPublishProgress] = useState(0);
   const [activeTab, setActiveTab] = useState("design");
   const [dragOverSection, setDragOverSection] = useState<string | null>(null);
+  const [showReactBitsPicker, setShowReactBitsPicker] = useState(false);
+  const [selectedSectionForComponent, setSelectedSectionForComponent] = useState<string | null>(null);
   
   // Enhanced state for AI features
   const [brandTheme, setBrandTheme] = useState<BrandTheme>({
@@ -686,6 +689,30 @@ export default function WebsiteBuilder({ companyData, businessPlan }: WebsiteBui
     setSections(prev => [...prev, newSection]);
   };
 
+  const handleComponentSelect = (component: ReactBitsComponent) => {
+    if (selectedSectionForComponent) {
+      setSections(prev => prev.map(section => 
+        section.id === selectedSectionForComponent
+          ? { 
+              ...section, 
+              customStyles: component.code,
+              content: `${section.content}\n\n<!-- React Bits Component: ${component.name} -->`
+            }
+          : section
+      ));
+      toast({
+        title: "Component Added!",
+        description: `${component.name} has been added to your section.`
+      });
+      setSelectedSectionForComponent(null);
+    }
+  };
+
+  const openReactBitsPicker = (sectionId: string) => {
+    setSelectedSectionForComponent(sectionId);
+    setShowReactBitsPicker(true);
+  };
+
   // Security utility function to escape HTML content
   const escapeHtml = (unsafe: string): string => {
     if (!unsafe || typeof unsafe !== 'string') return '';
@@ -1151,6 +1178,16 @@ export default function WebsiteBuilder({ companyData, businessPlan }: WebsiteBui
                                 <Button
                                   variant="ghost"
                                   size="sm"
+                                  onClick={() => openReactBitsPicker(section.id)}
+                                  className="h-6 w-6 p-0 text-purple-500 hover:text-purple-700"
+                                  data-testid={`button-add-component-${section.id}`}
+                                  title="Add React Bits Component"
+                                >
+                                  <Sparkles className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => generateAIContent(section.id)}
                                   disabled={isGenerating}
                                   className="h-6 w-6 p-0"
@@ -1476,6 +1513,16 @@ export default function WebsiteBuilder({ companyData, businessPlan }: WebsiteBui
           </div>
         </div>
       </div>
+
+      {/* React Bits Component Picker */}
+      <ReactBitsPicker
+        open={showReactBitsPicker}
+        onClose={() => {
+          setShowReactBitsPicker(false);
+          setSelectedSectionForComponent(null);
+        }}
+        onSelect={handleComponentSelect}
+      />
     </div>
   );
 }
