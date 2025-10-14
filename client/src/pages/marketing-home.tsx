@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { ArrowRight, Sparkles, Rocket, Target, Zap, Wallet, ChevronDown, Check, Star } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback } from "react";
+import LiquidEther from "@/components/liquid-ether";
 
 export default function MarketingHome() {
   const [scrollY, setScrollY] = useState(0);
@@ -90,16 +91,6 @@ export default function MarketingHome() {
     }
   ];
 
-  // Memoized stable particle positions to prevent re-renders
-  const etherParticles = useMemo(() => 
-    Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      top: Math.random() * 100,
-      left: Math.random() * 100,
-      duration: 5 + Math.random() * 10,
-      delay: Math.random() * 5
-    })), 
-  []);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden">
@@ -115,60 +106,18 @@ export default function MarketingHome() {
         }}></div>
       </div>
 
-      {/* Enhanced Liquid Ether Background with React Bits-inspired effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        {/* Floating orbs with mouse tracking - enhanced movement */}
-        <div 
-          className="absolute w-96 h-96 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-full blur-3xl animate-pulse"
-          style={{
-            top: `${Math.max(0, Math.min(80, 25 + (mousePosition.y / window.innerHeight) * 30))}%`,
-            left: `${Math.max(0, Math.min(80, 20 + (mousePosition.x / window.innerWidth) * 40))}%`,
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
-        />
-        <div 
-          className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full blur-3xl animate-pulse"
-          style={{
-            top: `${Math.max(0, Math.min(80, 40 - (mousePosition.y / window.innerHeight) * 25))}%`,
-            right: `${Math.max(0, Math.min(80, 15 + (mousePosition.x / window.innerWidth) * 35))}%`,
-            animationDelay: '1s',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
-        />
-        <div 
-          className="absolute w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse"
-          style={{
-            bottom: `${Math.max(0, Math.min(80, 20 + (mousePosition.y / window.innerHeight) * 20))}%`,
-            left: `${Math.max(0, Math.min(80, 40 - (mousePosition.x / window.innerWidth) * 30))}%`,
-            animationDelay: '2s',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
-        />
-        
-        {/* Floating ether particles with stable positions */}
-        {etherParticles.map((particle) => (
-          <div
-            key={particle.id}
-            className="absolute w-1 h-1 bg-white/30 rounded-full"
-            style={{
-              top: `${particle.top}%`,
-              left: `${particle.left}%`,
-              animation: `ether-float ${particle.duration}s ease-in-out infinite`,
-              animationDelay: `${particle.delay}s`,
-              boxShadow: '0 0 10px rgba(255,255,255,0.5)'
-            }}
-          />
-        ))}
-        
-        {/* Laser beam effects */}
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-blue-500/40 to-transparent" 
-          style={{ animation: 'laser 3s ease-in-out infinite' }} 
-        />
-        <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-purple-500/40 to-transparent" 
-          style={{ animation: 'laser 3s ease-in-out infinite', animationDelay: '1.5s' }} 
-        />
-        <div className="absolute top-0 left-2/3 w-px h-full bg-gradient-to-b from-transparent via-pink-500/30 to-transparent" 
-          style={{ animation: 'laser 3s ease-in-out infinite', animationDelay: '0.75s' }} 
+      {/* WebGL Fluid Simulation Background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <LiquidEther 
+          colors={['#3B82F6', '#8B5CF6', '#EC4899']}
+          mouseForce={25}
+          cursorSize={120}
+          resolution={0.6}
+          autoDemo={true}
+          autoSpeed={0.6}
+          autoIntensity={2.5}
+          autoResumeDelay={2000}
+          className="opacity-60 pointer-events-auto"
         />
       </div>
 
