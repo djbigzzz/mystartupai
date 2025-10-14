@@ -8,6 +8,7 @@ import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import { pool } from "./db";
 import type { Request, Response, NextFunction } from "express";
+import crypto from "crypto";
 
 // Security Headers Middleware
 export const securityHeaders = helmet({
@@ -185,6 +186,17 @@ export const verifyPassword = async (password: string, hash: string): Promise<bo
 // Session Security with PostgreSQL store
 const PgSession = connectPgSimple(session);
 
+// Generate session fingerprint to prevent session hijacking
+export const generateSessionFingerprint = (req: Request): string => {
+  const userAgent = req.headers['user-agent'] || '';
+  const acceptLanguage = req.headers['accept-language'] || '';
+  const acceptEncoding = req.headers['accept-encoding'] || '';
+  
+  // Create fingerprint from browser characteristics
+  const fingerprintData = `${userAgent}|${acceptLanguage}|${acceptEncoding}`;
+  return crypto.createHash('sha256').update(fingerprintData).digest('hex');
+};
+
 export const secureSessionConfig = {
   name: 'mystartup_session', // Don't use default session name
   secret: process.env.SESSION_SECRET!,
@@ -203,10 +215,45 @@ export const secureSessionConfig = {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax' as const, // Changed from 'strict' to 'lax' for OAuth
-    domain: process.env.NODE_ENV === 'production' ? '.mystartup.ai' : undefined, // Allow subdomain for OAuth
+    sameSite: 'lax' as const,
+    domain: process.env.NODE_ENV === 'production' ? '.mystartup.ai' : undefined,
+    path: '/',
   },
   rolling: true, // Reset expiration on activity
+  genid: () => {
+    // Generate cryptographically secure session IDs
+    return crypto.randomBytes(32).toString('hex');
+  }
+};
+
+// Session validation middleware - prevents session hijacking
+export const validateSession = (req: Request, res: Response, next: NextFunction) => {
+  // Check if user is authenticated via Passport (req.session.passport.user exists)
+  const isAuthenticated = req.session && (req.session as any).passport?.user;
+  
+  if (isAuthenticated) {
+    const currentFingerprint = generateSessionFingerprint(req);
+    const storedFingerprint = (req.session as any).fingerprint;
+    const userId = (req.session as any).passport.user;
+    
+    // If fingerprint doesn't match, destroy the session (potential hijacking)
+    if (storedFingerprint && storedFingerprint !== currentFingerprint) {
+      console.warn(`🚨 Session hijacking attempt detected for user ${userId} - fingerprint mismatch`);
+      req.session.destroy((err) => {
+        if (err) console.error('Session destruction error:', err);
+      });
+      return res.status(401).json({ 
+        message: 'Session invalid - security check failed',
+        code: 'SESSION_HIJACK_DETECTED'
+      });
+    }
+    
+    // Store/update fingerprint on first auth or when missing
+    if (!storedFingerprint) {
+      (req.session as any).fingerprint = currentFingerprint;
+    }
+  }
+  next();
 };
 
 // Environment Validation

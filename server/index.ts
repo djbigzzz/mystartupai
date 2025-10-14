@@ -11,7 +11,8 @@ import {
   secureSessionConfig,
   validateEnvironment,
   secureRequestLogger,
-  secureErrorHandler
+  secureErrorHandler,
+  validateSession
 } from "./security";
 import { monitorDatabaseConnections } from "./database-security";
 import { setBrowserSecurityHeaders, sanitizeFrontendInputs, validateFrontendInputs, generateCSRFToken } from "./frontend-security";
@@ -95,6 +96,9 @@ if (process.env.NODE_ENV !== 'test') {
 
 // Session middleware with enhanced security
 app.use(session(secureSessionConfig));
+
+// CRITICAL: Session validation to prevent hijacking
+app.use(validateSession);
 
 app.use((req, res, next) => {
   const start = Date.now();

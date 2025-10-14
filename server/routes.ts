@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema, insertDemoSessionSchema, insertArtifactSchema } from "@shared/schema";
 import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck, generateWebsiteContent, generateBusinessPlanSection, assessSectionQuality } from "./openai";
 import { agenticAI, AgenticAICofounder } from "./agentic-ai";
+import { generateSessionFingerprint } from "./security";
 import OpenAI from "openai";
 
 // Initialize the enhanced AI co-founder
@@ -297,6 +298,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error("Login after signup error:", err);
             return res.status(500).json({ message: "Account created but login failed" });
           }
+          // Store session fingerprint for security
+          (req.session as any).fingerprint = generateSessionFingerprint(req);
           const cleanUser = cleanUserDataForResponse(user);
           res.status(201).json({ 
             message: "Account created successfully", 
@@ -342,6 +345,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error('❌ Session creation failed:', err);
             return next(err);
           }
+          // Store session fingerprint for security
+          (req.session as any).fingerprint = generateSessionFingerprint(req);
           console.log('✅ Login successful for user:', user.id, user.email, rememberMe ? '(remembered)' : '');
           const cleanUser = cleanUserDataForResponse(user);
           res.json({ user: cleanUser });
@@ -1047,6 +1052,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
               console.error("Wallet login error:", err);
               return res.status(500).json({ message: "Login failed" });
             }
+            // Store session fingerprint for security
+            (req.session as any).fingerprint = generateSessionFingerprint(req);
             const cleanUser = cleanUserDataForResponse(user);
             console.log(`✅ Wallet login successful: ${user.id} via ${authMethod}`);
             res.json({ user: cleanUser });
@@ -1074,6 +1081,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
               console.error("Wallet signup login error:", err);
               return res.status(500).json({ message: "Account created but login failed" });
             }
+            // Store session fingerprint for security
+            (req.session as any).fingerprint = generateSessionFingerprint(req);
             const cleanUser = cleanUserDataForResponse(newUser);
             console.log(`✅ Wallet signup successful: ${newUser.id} via ${authMethod}`);
             res.status(201).json({ user: cleanUser });
