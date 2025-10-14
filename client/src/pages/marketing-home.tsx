@@ -143,6 +143,30 @@ export default function MarketingHome() {
               </div>
             </div>
 
+            {/* Mobile Demo Preview */}
+            <div className={`relative z-10 lg:hidden mt-12 transition-all duration-1000 delay-300 transform ${
+              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+            }`}>
+              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                  <span className="text-sm text-gray-400">AI Co-Founder Active</span>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { icon: <Sparkles className="w-4 h-4 text-blue-400" />, text: "Analyzing your idea", color: "blue" },
+                    { icon: <Rocket className="w-4 h-4 text-purple-400" />, text: "Building business plan", color: "purple" },
+                    { icon: <Target className="w-4 h-4 text-pink-400" />, text: "Creating pitch deck", color: "pink" }
+                  ].map((item, i) => (
+                    <div key={i} className={`flex items-center gap-3 p-3 bg-${item.color}-500/10 rounded-lg border border-${item.color}-500/20`}>
+                      {item.icon}
+                      <span className="text-sm text-gray-300">{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Right Demo Video Section - Emergent Style */}
             <div className={`relative z-10 hidden lg:block transition-all duration-1000 delay-300 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
@@ -308,6 +332,75 @@ export default function MarketingHome() {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="relative py-20 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { value: "10x", label: "Faster than traditional methods", gradient: "from-blue-400 to-cyan-400" },
+              { value: "100%", label: "YC-standard compliance", gradient: "from-purple-400 to-pink-400" },
+              { value: "24/7", label: "AI co-founder availability", gradient: "from-orange-400 to-red-400" }
+            ].map((stat, i) => (
+              <div key={i} className="relative group">
+                <div className={`absolute inset-0 bg-gradient-to-r ${stat.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl blur-xl`}></div>
+                <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 text-center hover:bg-white/10 transition-all duration-300 hover:scale-105">
+                  <div className={`text-5xl font-bold mb-3 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                    {stat.value}
+                  </div>
+                  <div className="text-gray-400">{stat.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faqs" className="relative py-32 px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl lg:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Frequently Asked Questions
+              </span>
+            </h2>
+          </div>
+
+          <div className="space-y-6">
+            {[
+              {
+                question: "How does the AI Co-Founder work?",
+                answer: "Our AI analyzes your startup idea using GPT-4 and creates comprehensive business plans, pitch decks, and financial models following Y Combinator standards. It's like having an experienced co-founder available 24/7."
+              },
+              {
+                question: "Do I need a credit card to get started?",
+                answer: "No credit card required! You can start for free and explore all the features. We offer usage-based pricing with transparent credit allocation."
+              },
+              {
+                question: "What makes this different from other AI tools?",
+                answer: "We're the only platform that combines Solana-native payments, Y Combinator-standard outputs, and autonomous AI agents that can execute tasks on your behalf. Plus, we focus exclusively on startup creation."
+              },
+              {
+                question: "Can I use my own wallet?",
+                answer: "Yes! We support Solana wallets including Phantom and Solflare. You can authenticate and make payments using your preferred Web3 wallet."
+              },
+              {
+                question: "How accurate are the financial models?",
+                answer: "Our AI uses industry benchmarks and real market data to create detailed financial projections. All models are based on proven frameworks used by successful startups."
+              }
+            ].map((faq, i) => (
+              <div key={i} className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-xl"></div>
+                <div className="relative bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 transition-all duration-300">
+                  <h3 className="text-lg font-semibold mb-3 text-white">{faq.question}</h3>
+                  <p className="text-gray-400">{faq.answer}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="relative py-32 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
@@ -352,13 +445,29 @@ export default function MarketingHome() {
       {/* Footer */}
       <footer className="relative border-t border-white/5 bg-black/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto py-20 px-6 lg:px-8">
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap items-center justify-center gap-8 mb-16 pb-16 border-b border-white/5">
+            <div className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10">
+              <Star className="w-5 h-5 text-orange-400" />
+              <span className="text-sm text-gray-300">YC Standards</span>
+            </div>
+            <div className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10">
+              <Wallet className="w-5 h-5 text-purple-400" />
+              <span className="text-sm text-gray-300">Solana Native</span>
+            </div>
+            <div className="flex items-center gap-3 px-6 py-3 bg-white/5 rounded-full border border-white/10">
+              <Zap className="w-5 h-5 text-blue-400" />
+              <span className="text-sm text-gray-300">AI-Powered</span>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-6">
                 <Logo />
               </div>
               <p className="text-sm text-gray-400">
-                Building the future of startup creation with AI
+                Your AI Co-Founder for building investor-ready startups
               </p>
             </div>
             <div>
