@@ -7,6 +7,8 @@ import { useState, useEffect } from "react";
 export default function MarketingHome() {
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [demoStage, setDemoStage] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   
   useEffect(() => {
     setIsVisible(true);
@@ -14,6 +16,65 @@ export default function MarketingHome() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (isPlaying) {
+      const interval = setInterval(() => {
+        setDemoStage((prev) => {
+          const nextStage = prev + 1;
+          if (nextStage > 4) {
+            setIsPlaying(false);
+            return 0;
+          }
+          return nextStage;
+        });
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [isPlaying]);
+
+  const handlePlayDemo = () => {
+    setDemoStage(0);
+    setIsPlaying(true);
+  };
+
+  const demoStages = [
+    {
+      title: "Input Your Idea",
+      description: "Share your startup concept",
+      icon: <Sparkles className="w-4 h-4" />,
+      color: "blue",
+      progress: 20
+    },
+    {
+      title: "AI Analysis",
+      description: "Market research & validation",
+      icon: <Target className="w-4 h-4" />,
+      color: "purple",
+      progress: 40
+    },
+    {
+      title: "Business Plan",
+      description: "YC-standard comprehensive plan",
+      icon: <Rocket className="w-4 h-4" />,
+      color: "pink",
+      progress: 60
+    },
+    {
+      title: "Pitch Deck",
+      description: "Professional investor deck",
+      icon: <Zap className="w-4 h-4" />,
+      color: "cyan",
+      progress: 80
+    },
+    {
+      title: "Investor Ready!",
+      description: "Complete startup package",
+      icon: <Star className="w-4 h-4" />,
+      color: "green",
+      progress: 100
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden">
@@ -167,24 +228,24 @@ export default function MarketingHome() {
               </div>
             </div>
 
-            {/* Right Demo Video Section - Emergent Style */}
+            {/* Right Interactive Demo Section */}
             <div className={`relative z-10 hidden lg:block transition-all duration-1000 delay-300 transform ${
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
             }`}>
-              {/* Demo Video Container */}
-              <div className="relative group">
+              {/* Demo Container */}
+              <div className="relative group cursor-pointer" onClick={handlePlayDemo} data-testid="demo-interactive-container">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 blur-3xl group-hover:blur-2xl transition-all duration-500"></div>
                 
-                {/* Video Frame */}
+                {/* Interactive Demo Frame */}
                 <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-2 shadow-2xl overflow-hidden">
                   <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl aspect-video overflow-hidden">
-                    {/* Demo Animation */}
+                    {/* Demo Content */}
                     <div className="absolute inset-0 p-6 flex flex-col">
                       {/* Header */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                          <span className="text-xs text-gray-400">AI Co-Founder Active</span>
+                          <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-green-400 animate-pulse' : 'bg-gray-500'}`}></div>
+                          <span className="text-xs text-gray-400">{isPlaying ? 'AI Processing' : 'Ready to Demo'}</span>
                         </div>
                         <div className="flex gap-1.5">
                           <div className="w-2 h-2 rounded-full bg-red-500/50"></div>
@@ -193,64 +254,141 @@ export default function MarketingHome() {
                         </div>
                       </div>
 
-                      {/* Animated Content */}
-                      <div className="flex-1 space-y-3">
-                        <div className="bg-blue-500/10 rounded-lg p-3 border border-blue-500/20 animate-pulse">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Sparkles className="w-3 h-3 text-blue-400" />
-                            <span className="text-xs text-blue-300">Analyzing your idea...</span>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="h-2 bg-blue-400/20 rounded-full w-full"></div>
-                            <div className="h-2 bg-blue-400/20 rounded-full w-4/5"></div>
-                          </div>
-                        </div>
-
-                        <div className="bg-purple-500/10 rounded-lg p-3 border border-purple-500/20 animate-pulse delay-150">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Rocket className="w-3 h-3 text-purple-400" />
-                            <span className="text-xs text-purple-300">Building business plan...</span>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="h-2 bg-purple-400/20 rounded-full w-full"></div>
-                            <div className="h-2 bg-purple-400/20 rounded-full w-3/4"></div>
-                          </div>
-                        </div>
-
-                        <div className="bg-pink-500/10 rounded-lg p-3 border border-pink-500/20 animate-pulse delay-300">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Target className="w-3 h-3 text-pink-400" />
-                            <span className="text-xs text-pink-300">Creating pitch deck...</span>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="h-2 bg-pink-400/20 rounded-full w-full"></div>
-                            <div className="h-2 bg-pink-400/20 rounded-full w-2/3"></div>
-                          </div>
-                        </div>
+                      {/* Stage Visualization */}
+                      <div className="flex-1 flex flex-col justify-center space-y-4">
+                        {demoStages.map((stage, index) => {
+                          const isActive = index === demoStage;
+                          const isPast = index < demoStage;
+                          
+                          const colorClasses = {
+                            blue: {
+                              bg: 'bg-blue-500/10',
+                              border: 'border-blue-500/20',
+                              iconBg: 'bg-blue-500/20',
+                              iconText: 'text-blue-400',
+                              text: 'text-blue-300',
+                              ring: 'ring-blue-500/30'
+                            },
+                            purple: {
+                              bg: 'bg-purple-500/10',
+                              border: 'border-purple-500/20',
+                              iconBg: 'bg-purple-500/20',
+                              iconText: 'text-purple-400',
+                              text: 'text-purple-300',
+                              ring: 'ring-purple-500/30'
+                            },
+                            pink: {
+                              bg: 'bg-pink-500/10',
+                              border: 'border-pink-500/20',
+                              iconBg: 'bg-pink-500/20',
+                              iconText: 'text-pink-400',
+                              text: 'text-pink-300',
+                              ring: 'ring-pink-500/30'
+                            },
+                            cyan: {
+                              bg: 'bg-cyan-500/10',
+                              border: 'border-cyan-500/20',
+                              iconBg: 'bg-cyan-500/20',
+                              iconText: 'text-cyan-400',
+                              text: 'text-cyan-300',
+                              ring: 'ring-cyan-500/30'
+                            },
+                            green: {
+                              bg: 'bg-green-500/10',
+                              border: 'border-green-500/20',
+                              iconBg: 'bg-green-500/20',
+                              iconText: 'text-green-400',
+                              text: 'text-green-300',
+                              ring: 'ring-green-500/30'
+                            }
+                          };
+                          
+                          const colors = colorClasses[stage.color as keyof typeof colorClasses];
+                          
+                          return (
+                            <div 
+                              key={index} 
+                              className={`relative transition-all duration-500 transform ${
+                                isActive ? 'scale-105' : isPast ? 'opacity-50 scale-95' : 'opacity-30 scale-90'
+                              }`}
+                              data-testid={`demo-stage-${index}`}
+                            >
+                              <div className={`${colors.bg} rounded-lg p-3 border ${colors.border} ${
+                                isActive ? `animate-pulse ring-2 ${colors.ring}` : ''
+                              }`}>
+                                <div className="flex items-center gap-3">
+                                  <div className={`p-2 rounded-lg ${colors.iconBg} ${colors.iconText}`}>
+                                    {stage.icon}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className={`text-sm font-medium ${isActive ? colors.text : 'text-gray-400'}`}>
+                                      {stage.title}
+                                    </div>
+                                    <div className="text-xs text-gray-500">{stage.description}</div>
+                                  </div>
+                                  {isPast && (
+                                    <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center">
+                                      <Check className="w-3 h-3 text-green-400" />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Progress Bar */}
-                      <div className="mt-4">
-                        <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full animate-[progress_3s_ease-in-out_infinite]"></div>
+                      <div className="mt-4 space-y-2">
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>Progress</span>
+                          <span>{demoStages[demoStage]?.progress || 0}%</span>
+                        </div>
+                        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                            style={{ width: `${demoStages[demoStage]?.progress || 0}%` }}
+                          ></div>
                         </div>
                       </div>
                     </div>
 
                     {/* Play Button Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                        <div className="w-0 h-0 border-t-8 border-t-transparent border-l-12 border-l-white border-b-8 border-b-transparent ml-1"></div>
+                    {!isPlaying && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 hover:scale-110 transition-transform" data-testid="button-play-demo">
+                          <div className="w-0 h-0 border-t-10 border-t-transparent border-l-16 border-l-white border-b-10 border-b-transparent ml-1"></div>
+                        </div>
+                        <div className="absolute bottom-8 text-sm text-white/80 font-medium">
+                          Click to see AI in action
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                {/* YC Standards Badge */}
-                <div className="absolute -bottom-4 -right-4 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-3 shadow-2xl">
+                {/* Interactive Badges */}
+                <div className="absolute -bottom-4 -right-4 flex gap-2">
+                  <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-3 shadow-2xl animate-pulse">
+                    <div className="flex items-center gap-2">
+                      <Star className="w-4 h-4 text-white" />
+                      <span className="text-white text-sm font-bold">YC Standards</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Floating Feature Pills */}
+                <div className="absolute -left-8 top-1/4 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full px-4 py-2 shadow-xl opacity-90 hover:opacity-100 transition-opacity">
                   <div className="flex items-center gap-2">
-                    <Star className="w-4 h-4 text-white" />
-                    <span className="text-white text-sm font-bold">YC Standards</span>
+                    <Sparkles className="w-3 h-3 text-white" />
+                    <span className="text-white text-xs font-medium">GPT-4 Powered</span>
+                  </div>
+                </div>
+                
+                <div className="absolute -right-8 top-2/3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full px-4 py-2 shadow-xl opacity-90 hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-3 h-3 text-white" />
+                    <span className="text-white text-xs font-medium">10x Faster</span>
                   </div>
                 </div>
               </div>
