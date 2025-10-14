@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { ArrowRight, Sparkles, Rocket, Target, Zap, Wallet, ChevronDown, Check, Star } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { SplitText } from "@/components/split-text";
 
 export default function MarketingHome() {
   const [scrollY, setScrollY] = useState(0);
@@ -171,27 +172,20 @@ export default function MarketingHome() {
               </div>
               
               <h1 className="text-6xl lg:text-7xl font-bold mb-6 leading-[1.1]">
-                <span className="relative inline-block">
-                  <span className="bg-gradient-to-br from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-                    Transform ideas into
-                  </span>
-                </span>
+                <SplitText 
+                  text="Transform ideas into" 
+                  className="bg-gradient-to-br from-white via-gray-200 to-gray-400 bg-clip-text text-transparent mb-2"
+                  animateBy="words"
+                  delay={0.2}
+                />
                 <br />
-                <span className="relative inline-block">
-                  {/* Metallic paint effect */}
-                  <span 
-                    className="bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent relative"
-                    style={{
-                      backgroundImage: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 25%, #c084fc 50%, #f472b6 75%, #60a5fa 100%)',
-                      backgroundSize: '200% 200%',
-                      animation: 'metallic-shine 3s ease-in-out infinite',
-                      WebkitTextStroke: '1px rgba(255,255,255,0.1)',
-                      filter: 'drop-shadow(0 0 20px rgba(168, 85, 247, 0.4))'
-                    }}
-                  >
-                    investor-ready startups
-                  </span>
-                </span>
+                <SplitText 
+                  text="investor-ready startups" 
+                  className="bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent relative"
+                  animateBy="words"
+                  delay={0.8}
+                  type="spring"
+                />
               </h1>
               
               <p className="text-xl text-gray-400 mb-8 max-w-xl">
