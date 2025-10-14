@@ -72,7 +72,7 @@ export function SplitText({
 
     gsap.set(elements, from);
 
-    ScrollTrigger.create({
+    const scrollTrigger = ScrollTrigger.create({
       trigger: containerRef.current,
       start: "top bottom",
       end: "bottom top",
@@ -93,7 +93,7 @@ export function SplitText({
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      scrollTrigger.kill();
     };
   }, [text, delay, duration, ease, splitType, from, to, threshold, rootMargin]);
 
