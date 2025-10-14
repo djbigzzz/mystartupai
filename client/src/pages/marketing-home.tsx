@@ -2,20 +2,34 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { ArrowRight, Sparkles, Rocket, Target, Zap, Wallet, ChevronDown, Check, Star } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 
 export default function MarketingHome() {
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [demoStage, setDemoStage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
+  // Throttled mouse tracking for smooth performance
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    requestAnimationFrame(() => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    });
+  }, []);
+
   useEffect(() => {
     setIsVisible(true);
     const handleScroll = () => setScrollY(window.scrollY);
+    
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("mousemove", handleMouseMove);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [handleMouseMove]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -76,6 +90,17 @@ export default function MarketingHome() {
     }
   ];
 
+  // Memoized stable particle positions to prevent re-renders
+  const etherParticles = useMemo(() => 
+    Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      duration: 5 + Math.random() * 10,
+      delay: Math.random() * 5
+    })), 
+  []);
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white overflow-x-hidden">
       
@@ -90,11 +115,61 @@ export default function MarketingHome() {
         }}></div>
       </div>
 
-      {/* Floating Orbs */}
+      {/* Enhanced Liquid Ether Background with React Bits-inspired effects */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-float-slow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float-delayed"></div>
-        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl animate-float"></div>
+        {/* Floating orbs with mouse tracking */}
+        <div 
+          className="absolute w-96 h-96 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-full blur-3xl animate-pulse"
+          style={{
+            top: `${25 + mousePosition.y * 0.01}%`,
+            left: `${20 + mousePosition.x * 0.01}%`,
+            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        />
+        <div 
+          className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full blur-3xl animate-pulse"
+          style={{
+            top: `${40 - mousePosition.y * 0.008}%`,
+            right: `${15 + mousePosition.x * 0.008}%`,
+            animationDelay: '1s',
+            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        />
+        <div 
+          className="absolute w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse"
+          style={{
+            bottom: `${20 + mousePosition.y * 0.005}%`,
+            left: `${40 - mousePosition.x * 0.005}%`,
+            animationDelay: '2s',
+            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        />
+        
+        {/* Floating ether particles with stable positions */}
+        {etherParticles.map((particle) => (
+          <div
+            key={particle.id}
+            className="absolute w-1 h-1 bg-white/30 rounded-full"
+            style={{
+              top: `${particle.top}%`,
+              left: `${particle.left}%`,
+              animation: `ether-float ${particle.duration}s ease-in-out infinite`,
+              animationDelay: `${particle.delay}s`,
+              boxShadow: '0 0 10px rgba(255,255,255,0.5)'
+            }}
+          />
+        ))}
+        
+        {/* Laser beam effects */}
+        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-blue-500/40 to-transparent" 
+          style={{ animation: 'laser 3s ease-in-out infinite' }} 
+        />
+        <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-transparent via-purple-500/40 to-transparent" 
+          style={{ animation: 'laser 3s ease-in-out infinite', animationDelay: '1.5s' }} 
+        />
+        <div className="absolute top-0 left-2/3 w-px h-full bg-gradient-to-b from-transparent via-pink-500/30 to-transparent" 
+          style={{ animation: 'laser 3s ease-in-out infinite', animationDelay: '0.75s' }} 
+        />
       </div>
 
       {/* Premium Header with Glassmorphism */}
@@ -156,12 +231,26 @@ export default function MarketingHome() {
               </div>
               
               <h1 className="text-6xl lg:text-7xl font-bold mb-6 leading-[1.1]">
-                <span className="bg-gradient-to-br from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
-                  Transform ideas into
+                <span className="relative inline-block">
+                  <span className="bg-gradient-to-br from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+                    Transform ideas into
+                  </span>
                 </span>
                 <br />
-                <span className="bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  investor-ready startups
+                <span className="relative inline-block">
+                  {/* Metallic paint effect */}
+                  <span 
+                    className="bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent relative"
+                    style={{
+                      backgroundImage: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 25%, #c084fc 50%, #f472b6 75%, #60a5fa 100%)',
+                      backgroundSize: '200% 200%',
+                      animation: 'metallic-shine 3s ease-in-out infinite',
+                      WebkitTextStroke: '1px rgba(255,255,255,0.1)',
+                      filter: 'drop-shadow(0 0 20px rgba(168, 85, 247, 0.4))'
+                    }}
+                  >
+                    investor-ready startups
+                  </span>
                 </span>
               </h1>
               

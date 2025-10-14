@@ -30,6 +30,44 @@
   100% { transform: translateX(400%); }
 }
 
+/* React Bits-inspired animations */
+@keyframes metallic-shine {
+  0%, 100% { 
+    background-position: 0% 50%;
+  }
+  50% { 
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes laser {
+  0%, 100% { 
+    opacity: 0.2;
+    transform: translateY(0);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: translateY(-10px);
+  }
+}
+
+/* Ether particle float animation (separate from existing float animation) */
+@keyframes ether-float {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: translateY(-20px) translateX(10px);
+    opacity: 0.6;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
 .animate-gradient-shift {
   animation: gradient-shift 8s ease-in-out infinite;
 }
