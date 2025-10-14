@@ -55,6 +55,13 @@ interface WebsiteBuilderProps {
   businessPlan?: any;
 }
 
+interface ReactBitsComponentData {
+  id: string;
+  name: string;
+  category: string;
+  props: Record<string, any>;
+}
+
 interface WebsiteSection {
   id: string;
   name: string;
@@ -64,6 +71,7 @@ interface WebsiteSection {
   customStyles?: string;
   order: number;
   type: 'hero' | 'about' | 'features' | 'testimonials' | 'pricing' | 'contact' | 'custom';
+  reactBitsComponent?: ReactBitsComponentData;
 }
 
 interface BrandTheme {
@@ -695,14 +703,18 @@ export default function WebsiteBuilder({ companyData, businessPlan }: WebsiteBui
         section.id === selectedSectionForComponent
           ? { 
               ...section, 
-              customStyles: component.code,
-              content: `${section.content}\n\n<!-- React Bits Component: ${component.name} -->`
+              reactBitsComponent: {
+                id: component.id,
+                name: component.name,
+                category: component.category,
+                props: component.customProps || component.defaultProps
+              }
             }
           : section
       ));
       toast({
-        title: "Component Added!",
-        description: `${component.name} has been added to your section.`
+        title: "Animation Added!",
+        description: `${component.name} will be included in your website.`
       });
       setSelectedSectionForComponent(null);
     }
@@ -1170,6 +1182,12 @@ export default function WebsiteBuilder({ companyData, businessPlan }: WebsiteBui
                                   <Badge variant="outline" className="text-xs">
                                     <Sparkles className="w-2 h-2 mr-1" />
                                     AI
+                                  </Badge>
+                                )}
+                                {section.reactBitsComponent && (
+                                  <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                    <Zap className="w-2 h-2 mr-1" />
+                                    {section.reactBitsComponent.name}
                                   </Badge>
                                 )}
                               </div>

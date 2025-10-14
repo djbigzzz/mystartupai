@@ -31,6 +31,7 @@ export interface ReactBitsComponent {
   description: string;
   previewImage?: string;
   defaultProps: Record<string, any>;
+  customProps?: Record<string, any>;
   code: string;
 }
 
@@ -148,7 +149,7 @@ export function ReactBitsPicker({ open, onClose, onSelect }: ReactBitsPickerProp
     if (selectedComponent) {
       onSelect({
         ...selectedComponent,
-        defaultProps: customProps
+        customProps: customProps
       });
       onClose();
     }
