@@ -117,31 +117,31 @@ export default function MarketingHome() {
 
       {/* Enhanced Liquid Ether Background with React Bits-inspired effects */}
       <div className="fixed inset-0 pointer-events-none">
-        {/* Floating orbs with mouse tracking */}
+        {/* Floating orbs with mouse tracking - enhanced movement */}
         <div 
           className="absolute w-96 h-96 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded-full blur-3xl animate-pulse"
           style={{
-            top: `${25 + mousePosition.y * 0.01}%`,
-            left: `${20 + mousePosition.x * 0.01}%`,
-            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            top: `${Math.max(0, Math.min(80, 25 + (mousePosition.y / window.innerHeight) * 30))}%`,
+            left: `${Math.max(0, Math.min(80, 20 + (mousePosition.x / window.innerWidth) * 40))}%`,
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
         <div 
           className="absolute w-96 h-96 bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-full blur-3xl animate-pulse"
           style={{
-            top: `${40 - mousePosition.y * 0.008}%`,
-            right: `${15 + mousePosition.x * 0.008}%`,
+            top: `${Math.max(0, Math.min(80, 40 - (mousePosition.y / window.innerHeight) * 25))}%`,
+            right: `${Math.max(0, Math.min(80, 15 + (mousePosition.x / window.innerWidth) * 35))}%`,
             animationDelay: '1s',
-            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
         <div 
           className="absolute w-64 h-64 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse"
           style={{
-            bottom: `${20 + mousePosition.y * 0.005}%`,
-            left: `${40 - mousePosition.x * 0.005}%`,
+            bottom: `${Math.max(0, Math.min(80, 20 + (mousePosition.y / window.innerHeight) * 20))}%`,
+            left: `${Math.max(0, Math.min(80, 40 - (mousePosition.x / window.innerWidth) * 30))}%`,
             animationDelay: '2s',
-            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
         
