@@ -38,6 +38,7 @@ import {
   X
 } from "lucide-react";
 import { Link } from "wouter";
+import { AuroraBackground, WaveBackground } from "@/components/react-bits";
 
 interface DemoStep {
   id: string;

@@ -30,6 +30,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { SplitText, GridDistortion, AnimatedGradient } from "@/components/react-bits";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -219,11 +220,21 @@ export default function Home() {
 
       {/* Hero Section - Clean Light Theme */}
       <section className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-white py-20 lg:py-32 overflow-hidden">
-        {/* Subtle decorative elements */}
-        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        {/* React Bits Animated Background */}
+        <GridDistortion 
+          className="opacity-30" 
+          gridSize={60} 
+          distortionStrength={15} 
+          color="rgba(139, 92, 246, 0.4)"
+          speed={0.0008}
+        />
+        <AnimatedGradient 
+          colors={["rgba(139, 92, 246, 0.15)", "rgba(236, 72, 153, 0.15)", "rgba(59, 130, 246, 0.15)"]}
+          speed={8}
+          blur={120}
+        />
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="text-center max-w-5xl mx-auto">
             {/* Trust Badge */}
             <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-8" data-testid="badge-trust">
@@ -231,14 +242,23 @@ export default function Home() {
               Trusted by 10,000+ Founders Worldwide
             </div>
             
-            {/* Main Headline - Clean, No Outline */}
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              Your AI Co-Founder for
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
-                Startup Success
-              </span>
-            </h1>
+            {/* Main Headline with Split Text Animation */}
+            <SplitText
+              text="Your AI Co-Founder for"
+              tag="h1"
+              className="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 mb-2 leading-tight"
+              delay={50}
+              duration={0.8}
+              ease="elastic.out(1, 0.3)"
+            />
+            <SplitText
+              text="Startup Success"
+              tag="h1"
+              className="text-5xl sm:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent mb-6 leading-tight"
+              delay={60}
+              duration={0.9}
+              ease="elastic.out(1, 0.3)"
+            />
             
             {/* Clear Value Proposition */}
             <p className="text-xl lg:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed">
