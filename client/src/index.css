@@ -25,6 +25,11 @@
   66% { transform: translateY(-20px) translateX(20px); }
 }
 
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
 .animate-gradient-shift {
   animation: gradient-shift 8s ease-in-out infinite;
 }
