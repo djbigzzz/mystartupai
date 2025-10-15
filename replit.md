@@ -58,7 +58,7 @@ A comprehensive design system ensuring visual consistency across the application
 - **Language**: TypeScript with ES modules.
 - **Database ORM**: Drizzle ORM.
 - **API Design**: RESTful API.
-- **AI Integration**: Core functionality leverages OpenAI's GPT-4 for advanced AI analysis, content generation, and autonomous agent capabilities, including multi-agent coordination.
+- **AI Integration**: Core functionality leverages Anthropic's Claude 4.5 Sonnet (claude-sonnet-4-20250514) for advanced AI analysis, content generation, and autonomous agent capabilities, including multi-agent coordination.
 
 ### Database
 - **Database System**: PostgreSQL, configured for serverless deployment with Neon.
@@ -81,7 +81,7 @@ A comprehensive design system ensuring visual consistency across the application
 
 ### Core Technologies
 - `@neondatabase/serverless`: Serverless PostgreSQL connections.
-- `openai`: OpenAI API integration.
+- `@anthropic-ai/sdk`: Anthropic Claude AI integration.
 - `drizzle-orm`: Database ORM.
 - `@tanstack/react-query`: Frontend server state management.
 - `react-hook-form`: Form handling.
