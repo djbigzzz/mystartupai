@@ -11,6 +11,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.66.0",
     "@babel/parser": "^7.28.4",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^3.10.0",
