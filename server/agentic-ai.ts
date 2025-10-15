@@ -1,10 +1,11 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
 // Agentic AI Co-founder System for MyStartup.ai
 // This system provides specialized AI agents that work together as a true AI co-founder
+// Using Claude Sonnet 4 (claude-sonnet-4-20250514) for enhanced AI capabilities
 
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY
+const anthropic = new Anthropic({ 
+  apiKey: process.env.ANTHROPIC_API_KEY
 });
 
 // Truly free web research client using public data sources
@@ -410,28 +411,23 @@ Extract factual information from the provided sources only. If information is no
 
   private async analyzeWithStructuredAI(prompt: string): Promise<any> {
     try {
-      // Try OpenAI with structured JSON output if available
-      if (process.env.OPENAI_API_KEY) {
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+      // Try Anthropic Claude with structured JSON output if available
+      if (process.env.ANTHROPIC_API_KEY) {
+        const response = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 2000,
+          temperature: 0,
+          system: "You are a market research analyst. Only use facts present in provided sources. If information is not found in sources, set value to null and explain in explain_uncertainty field. Always include citations from source URLs. Respond with valid JSON only.",
           messages: [
-            {
-              role: "system",
-              content: "You are a market research analyst. Only use facts present in provided sources. If information is not found in sources, set value to null and explain in explain_uncertainty field. Always include citations from source URLs. Respond with valid JSON only."
-            },
             {
               role: "user", 
               content: prompt
             }
-          ],
-          max_tokens: 2000,
-          temperature: 0,
-          top_p: 0,
-          seed: 12345,
-          response_format: { type: "json_object" }
+          ]
         });
 
-        const content = response.choices[0].message.content || "{}";
+        const textBlock = response.content[0];
+        const content = textBlock.type === 'text' ? textBlock.text : '{}';
         return JSON.parse(content);
       } else {
         // Fallback to heuristic analysis without AI
@@ -446,24 +442,22 @@ Extract factual information from the provided sources only. If information is no
   private async analyzeWithAI(prompt: string): Promise<string> {
     try {
       // Legacy method for backward compatibility
-      if (process.env.OPENAI_API_KEY) {
-        const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+      if (process.env.ANTHROPIC_API_KEY) {
+        const response = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1500,
+          temperature: 0.3,
+          system: "You are a market research analyst. Analyze web search results and provide structured insights.",
           messages: [
-            {
-              role: "system",
-              content: "You are a market research analyst. Analyze web search results and provide structured insights."
-            },
             {
               role: "user",
               content: prompt
             }
-          ],
-          max_tokens: 1500,
-          temperature: 0.3
+          ]
         });
 
-        return response.choices[0].message.content || "Analysis unavailable";
+        const textBlock = response.content[0];
+        return textBlock.type === 'text' ? textBlock.text : "Analysis unavailable";
       } else {
         return this.heuristicAnalysis(prompt);
       }
@@ -682,23 +676,21 @@ export class AgenticAICofounder {
     `;
 
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 2000,
+        system: "You are an AI co-founder with access to real market data. Provide detailed, actionable startup analysis. Respond with valid JSON only.",
         messages: [
-          {
-            role: "system",
-            content: "You are an AI co-founder with access to real market data. Provide detailed, actionable startup analysis."
-          },
           {
             role: "user",
             content: prompt
           }
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 2000
+        ]
       });
 
-      return JSON.parse(response.choices[0].message.content || "{}");
+      const textBlock = response.content[0];
+      const content = textBlock.type === 'text' ? textBlock.text : '{}';
+      return JSON.parse(content);
     } catch (error) {
       console.error("Overall assessment generation error:", error);
       return {
@@ -740,23 +732,21 @@ export class AgenticAICofounder {
         Focus on being specific, data-driven, and compelling.
       `;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 800,
+        temperature: 0.7,
+        system: "You are an AI co-founder creating investor-grade business plan sections. Write professionally with specific details and metrics.",
         messages: [
-          {
-            role: "system",
-            content: "You are an AI co-founder creating investor-grade business plan sections. Write professionally with specific details and metrics."
-          },
           {
             role: "user",
             content: prompt
           }
-        ],
-        max_tokens: 800,
-        temperature: 0.7
+        ]
       });
 
-      const content = response.choices[0].message.content || '';
+      const textBlock = response.content[0];
+      const content = textBlock.type === 'text' ? textBlock.text : '';
       const wordCount = content.split(' ').length;
       const baseScore = Math.max(60, Math.min(95, 70 + Math.floor(wordCount / 30)));
       
@@ -1079,17 +1069,19 @@ export class AgenticAI {
       Available investors: ${this.investorDatabase.length}
       Available grants: ${this.grantDatabase.length}`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        temperature: 0.7,
+        system: systemPrompt + "\n\nRespond with valid JSON only.",
         messages: [
-          { role: "system", content: systemPrompt },
           { role: "user", content: message }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0.7
+        ]
       });
 
-      const result = JSON.parse(response.choices[0].message.content || '{}');
+      const textBlock = response.content[0];
+      const content = textBlock.type === 'text' ? textBlock.text : '{}';
+      const result = JSON.parse(content);
       
       return {
         response: result.response || "I understand. How can I help you with your startup today?",

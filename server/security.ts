@@ -19,7 +19,7 @@ export const securityHeaders = helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
-      connectSrc: ["'self'", "https://*.openai.com", "https://api.openai.com", "wss://relay.walletconnect.com", "https://*.walletconnect.com"],
+      connectSrc: ["'self'", "https://*.anthropic.com", "https://api.anthropic.com", "wss://relay.walletconnect.com", "https://*.walletconnect.com"],
       frameSrc: ["'self'", "https://*.walletconnect.com", "https://*.walletconnect.org", "https://*.web3modal.com", "data:"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
@@ -261,7 +261,7 @@ export const validateEnvironment = () => {
   const required = [
     'SESSION_SECRET',
     'DATABASE_URL',
-    'OPENAI_API_KEY'
+    'ANTHROPIC_API_KEY'
   ];
 
   const optional = [
