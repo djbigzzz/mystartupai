@@ -4,17 +4,17 @@ import session from "express-session";
 import passport from "./auth";
 import { storage } from "./storage";
 import { insertStartupIdeaSchema, insertCompanySchema, insertDocumentSchema, insertUserSchema, insertWaitlistSchema, insertStartupProfileSchema, insertDemoSessionSchema, insertArtifactSchema } from "@shared/schema";
-import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck, generateWebsiteContent, generateBusinessPlanSection, assessSectionQuality } from "./openai";
+import { analyzeStartupIdea, generateBusinessPlan, generatePitchDeck, generateWebsiteContent, generateBusinessPlanSection, assessSectionQuality } from "./anthropic";
 import { agenticAI, AgenticAICofounder } from "./agentic-ai";
 import { generateSessionFingerprint } from "./security";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
 // Initialize the enhanced AI co-founder
 const aiCofounder = new AgenticAICofounder();
 
-// Initialize OpenAI client for direct API calls
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY
+// Initialize Anthropic client for direct API calls
+const anthropic = new Anthropic({ 
+  apiKey: process.env.ANTHROPIC_API_KEY
 });
 import { body, query } from "express-validator";
 import {
@@ -2965,14 +2965,15 @@ INSTRUCTIONS:
 
 Provide ONLY the suggested answer, no explanation or preamble:`;
 
-        const suggestionResponse = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [{ role: "user", content: suggestionPrompt }],
+        const suggestionResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 200,
           temperature: 0.7,
-          max_tokens: 200
+          messages: [{ role: "user", content: suggestionPrompt }]
         });
 
-        const suggestion = suggestionResponse.choices[0]?.message?.content?.trim();
+        const suggestionTextBlock = suggestionResponse.content[0];
+        const suggestion = (suggestionTextBlock.type === 'text' ? suggestionTextBlock.text : '').trim();
 
         if (!suggestion) {
           return res.status(500).json({ error: 'Failed to generate suggestion' });
@@ -3058,15 +3059,15 @@ Based on the startup idea, select the MOST APPROPRIATE option from each category
 Respond with ONLY valid JSON in this exact format (no additional text):
 {"industry": "...", "stage": "...", "targetMarket": "..."}`;
 
-        const marketResponse = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [{ role: "user", content: marketDetailsPrompt }],
-          temperature: 0.3,
+        const marketResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
           max_tokens: 100,
-          response_format: { type: "json_object" }
+          temperature: 0.3,
+          messages: [{ role: "user", content: marketDetailsPrompt }]
         });
 
-        const responseText = marketResponse.choices[0]?.message?.content?.trim();
+        const marketTextBlock = marketResponse.content[0];
+        const responseText = (marketTextBlock.type === 'text' ? marketTextBlock.text : '').trim();
 
         if (!responseText) {
           return res.status(500).json({ error: 'Failed to generate market details' });
@@ -3238,15 +3239,15 @@ Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutl
           return res.status(400).json({ error: 'Invalid section ID' });
         }
 
-        const analysisResponse = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [{ role: "user", content: prompt }],
-          temperature: 0.3,
+        const analysisResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
           max_tokens: 1000,
-
+          temperature: 0.3,
+          messages: [{ role: "user", content: prompt }]
         });
 
-        const analysisText = analysisResponse.choices[0]?.message?.content?.trim() || "";
+        const analysisTextBlock = analysisResponse.content[0];
+        const analysisText = (analysisTextBlock.type === 'text' ? analysisTextBlock.text : '').trim();
         
         let analysisData;
         try {
@@ -3433,15 +3434,15 @@ Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutl
 
               const prompt = sectionPrompts[sectionId as keyof typeof sectionPrompts];
               if (prompt) {
-                const sectionResponse = await openai.chat.completions.create({
-                  model: "gpt-4",
-                  messages: [{ role: "user", content: prompt }],
-                  temperature: 0.3,
+                const sectionResponse = await anthropic.messages.create({
+                  model: "claude-sonnet-4-20250514",
                   max_tokens: 1000,
-        
+                  temperature: 0.3,
+                  messages: [{ role: "user", content: prompt }]
                 });
 
-                const sectionText = sectionResponse.choices[0]?.message?.content?.trim() || "";
+                const sectionTextBlock = sectionResponse.content[0];
+                const sectionText = (sectionTextBlock.type === 'text' ? sectionTextBlock.text : '').trim();
                 try {
                   const jsonMatch = sectionText.match(/\{[\s\S]*\}/);
                   const jsonStr = jsonMatch ? jsonMatch[0] : sectionText;
@@ -3551,15 +3552,15 @@ IMPORTANT:
 - Be realistic about business scope (local coffee shop vs global tech company)
 - Confidence should reflect how well you understand the specific market context`;
 
-        const analysisResponse = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [{ role: "user", content: analysisPrompt }],
-          temperature: 0.3,
+        const analysisResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
           max_tokens: 1500,
-
+          temperature: 0.3,
+          messages: [{ role: "user", content: analysisPrompt }]
         });
 
-        const analysisText = analysisResponse.choices[0]?.message?.content?.trim() || "";
+        const analysisTextBlock = analysisResponse.content[0];
+        const analysisText = (analysisTextBlock.type === 'text' ? analysisTextBlock.text : '').trim();
         
         let analysisData;
         try {
@@ -3724,14 +3725,15 @@ IMPORTANT:
 - Opportunities should be specific and actionable
 - Base everything on the actual business context, not generic startup advice`;
 
-        const researchResponse = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [{ role: "user", content: researchPrompt }],
+        const researchResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 2000,
           temperature: 0.2,
-          max_tokens: 2000
+          messages: [{ role: "user", content: researchPrompt }]
         });
 
-        const researchText = researchResponse.choices[0]?.message?.content?.trim() || "";
+        const researchTextBlock = researchResponse.content[0];
+        const researchText = (researchTextBlock.type === 'text' ? researchTextBlock.text : '').trim();
         
         let marketData;
         try {
