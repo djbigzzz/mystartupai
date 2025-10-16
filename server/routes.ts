@@ -1720,6 +1720,142 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   });
 
 
+  // ==================== JOURNEY API ROUTES ====================
+  
+  // Get journey progress for authenticated user
+  app.get("/api/journey/progress", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const progress = await storage.getJourneyProgress(userId);
+      
+      if (!progress) {
+        // Create initial progress if doesn't exist
+        const newProgress = await storage.createJourneyProgress({
+          userId,
+          currentStage: 1,
+          stage1Completed: false,
+          stage2Completed: false,
+          stage3Completed: false,
+          stage4Completed: false,
+          progressPercentage: 0,
+          badges: []
+        });
+        return res.json(newProgress);
+      }
+      
+      res.json(progress);
+    } catch (error) {
+      console.error("Error fetching journey progress:", error);
+      res.status(500).json({ message: "Failed to fetch journey progress" });
+    }
+  });
+
+  // Get validation result for authenticated user
+  app.get("/api/journey/validation", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const validation = await storage.getJourneyValidation(userId);
+      
+      if (!validation) {
+        return res.status(404).json({ message: "No validation found. Please validate your idea first." });
+      }
+      
+      res.json(validation);
+    } catch (error) {
+      console.error("Error fetching validation:", error);
+      res.status(500).json({ message: "Failed to fetch validation" });
+    }
+  });
+
+  // Validate startup idea with AI
+  app.post("/api/journey/validate", 
+    requireAuth,
+    checkCredits(CREDIT_COSTS.AI_ANALYSIS, 'Idea Validation'),
+    async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { idea } = req.body;
+      
+      if (!idea || idea.trim().length < 20) {
+        return res.status(400).json({ message: "Please provide a detailed idea description (at least 20 characters)" });
+      }
+
+      // Use Claude AI to validate the idea
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 2000,
+        messages: [{
+          role: "user",
+          content: `You are an expert startup validator. Analyze this startup idea and provide a comprehensive validation report.
+
+Startup Idea: ${idea}
+
+Please provide:
+1. A validation score from 0-100 based on market viability, feasibility, and potential impact
+2. A clear verdict: GO (score >= 70), REFINE (score 50-69), or PIVOT (score < 50)
+3. Market size assessment
+4. Competition analysis
+5. Feasibility assessment
+6. 3-5 key risks
+7. 3-5 key opportunities
+8. 3-5 actionable recommendations
+
+Format your response as JSON with this structure:
+{
+  "score": number,
+  "verdict": "GO" | "REFINE" | "PIVOT",
+  "marketSize": "string description",
+  "competition": "string description",
+  "feasibility": "string description",
+  "risks": ["risk1", "risk2", ...],
+  "opportunities": ["opp1", "opp2", ...],
+  "recommendations": ["rec1", "rec2", ...]
+}`
+        }]
+      });
+
+      const content = response.content[0];
+      const validationData = JSON.parse(content.type === 'text' ? content.text : '{}');
+
+      // Store validation result
+      const validation = await storage.createJourneyValidation({
+        userId,
+        score: validationData.score,
+        verdict: validationData.verdict,
+        marketSize: validationData.marketSize,
+        competition: validationData.competition,
+        feasibility: validationData.feasibility,
+        risks: validationData.risks,
+        opportunities: validationData.opportunities,
+        recommendations: validationData.recommendations
+      });
+
+      // Update journey progress
+      await storage.updateJourneyProgress(userId, {
+        stage1Completed: validationData.score >= 60,
+        currentStage: validationData.score >= 60 ? 2 : 1,
+        progressPercentage: validationData.score >= 60 ? 25 : Math.floor(validationData.score / 4)
+      });
+
+      // Deduct credits
+      await deductCreditsWithTracking(
+        req,
+        userId,
+        CREDIT_COSTS.AI_ANALYSIS,
+        'Idea Validation',
+        'journey_validation',
+        validation.id
+      );
+
+      res.json(validationData);
+    } catch (error) {
+      console.error("Error validating idea:", error);
+      res.status(500).json({ message: "Failed to validate idea. Please try again." });
+    }
+  });
+
+  // ==================== END JOURNEY API ROUTES ====================
+
   // Generate pitch deck for an idea
   app.post("/api/ideas/:id/pitch-deck", 
     requireAuth,

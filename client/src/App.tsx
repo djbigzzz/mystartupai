@@ -44,6 +44,7 @@ import PurchaseCreditsPage from "@/pages/purchase-credits";
 import GatewayMonitor from "@/pages/gateway-monitor";
 import PitchDemoLive from "@/pages/pitch-demo-live";
 import CoFounderJourney from "@/pages/co-founder-journey";
+import CoFounderValidator from "@/pages/co-founder-validator";
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
@@ -87,6 +88,7 @@ function Router() {
       <Route path="/gateway-monitor" component={GatewayMonitor} />
       <Route path="/pitch-demo-live" component={PitchDemoLive} />
       <Route path="/co-founder-journey" component={CoFounderJourney} />
+      <Route path="/co-founder/validator" component={CoFounderValidator} />
       <Route component={NotFound} />
     </Switch>
   );

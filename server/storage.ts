@@ -19,6 +19,8 @@ import {
   userQuests,
   dailyCheckins,
   creditTransactions,
+  journeyProgress,
+  journeyValidation,
   type User, 
   type InsertUser, 
   type StartupIdea, 
@@ -186,6 +188,13 @@ export interface IStorage {
   getCreditTransaction(id: number): Promise<CreditTransaction | undefined>;
   getCreditTransactionBySignature(signature: string): Promise<CreditTransaction | undefined>;
   getCreditBalance(userId: number): Promise<{ credits: number; transactions: CreditTransaction[] }>;
+  
+  // Journey operations
+  getJourneyProgress(userId: number): Promise<any | undefined>;
+  createJourneyProgress(progress: any): Promise<any>;
+  updateJourneyProgress(userId: number, updates: any): Promise<any | undefined>;
+  getJourneyValidation(userId: number): Promise<any | undefined>;
+  createJourneyValidation(validation: any): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1096,6 +1105,45 @@ export class DatabaseStorage implements IStorage {
     const credits = await this.getUserCredits(userId);
     const transactions = await this.getCreditTransactions(userId, 10); // Last 10 transactions
     return { credits, transactions };
+  }
+
+  // Journey operations
+  async getJourneyProgress(userId: number): Promise<any | undefined> {
+    const [progress] = await db.select()
+      .from(journeyProgress)
+      .where(eq(journeyProgress.userId, userId));
+    return progress || undefined;
+  }
+
+  async createJourneyProgress(progress: any): Promise<any> {
+    const [newProgress] = await db.insert(journeyProgress)
+      .values(progress)
+      .returning();
+    return newProgress;
+  }
+
+  async updateJourneyProgress(userId: number, updates: any): Promise<any | undefined> {
+    const [updated] = await db.update(journeyProgress)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(journeyProgress.userId, userId))
+      .returning();
+    return updated || undefined;
+  }
+
+  async getJourneyValidation(userId: number): Promise<any | undefined> {
+    const [validation] = await db.select()
+      .from(journeyValidation)
+      .where(eq(journeyValidation.userId, userId))
+      .orderBy(desc(journeyValidation.createdAt))
+      .limit(1);
+    return validation || undefined;
+  }
+
+  async createJourneyValidation(validation: any): Promise<any> {
+    const [newValidation] = await db.insert(journeyValidation)
+      .values(validation)
+      .returning();
+    return newValidation;
   }
 }
 
