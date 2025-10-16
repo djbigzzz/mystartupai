@@ -619,4 +619,164 @@ export const insertCreditTransactionSchema = createInsertSchema(creditTransactio
 export type CreditTransaction = typeof creditTransactions.$inferSelect;
 export type InsertCreditTransaction = z.infer<typeof insertCreditTransactionSchema>;
 
+// ========================================
+// CO-FOUNDER JOURNEY SYSTEM (NEW)
+// ========================================
+
+export const journeyProgress = pgTable("journey_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  ideaId: integer("idea_id").references(() => startupIdeas.id),
+  
+  // Current stage tracking
+  currentStage: integer("current_stage").default(1), // 1-4
+  
+  // Stage completion status
+  stage1Completed: boolean("stage1_completed").default(false), // The Validator
+  stage2Completed: boolean("stage2_completed").default(false), // The Strategist
+  stage3Completed: boolean("stage3_completed").default(false), // The Builder
+  stage4Completed: boolean("stage4_completed").default(false), // The Growth Hacker
+  
+  // Validation score (from stage 1)
+  validationScore: integer("validation_score"), // 0-100
+  validationVerdict: text("validation_verdict"), // "GO", "REFINE", "PIVOT"
+  
+  // Badges earned
+  badges: text("badges").array().default(sql`ARRAY[]::text[]`),
+  
+  // Overall progress percentage
+  progressPercentage: integer("progress_percentage").default(0), // 0-100
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const journeyValidation = pgTable("journey_validation", {
+  id: serial("id").primaryKey(),
+  journeyId: integer("journey_id").references(() => journeyProgress.id).notNull(),
+  
+  // Validation results
+  score: integer("score").notNull(), // 0-100
+  verdict: text("verdict").notNull(), // "GO", "REFINE", "PIVOT"
+  
+  // Validation insights
+  marketSize: text("market_size"),
+  competitorCount: integer("competitor_count"),
+  opportunityCount: integer("opportunity_count"),
+  riskLevel: text("risk_level"), // "LOW", "MEDIUM", "HIGH"
+  
+  // Generated tools
+  interviewQuestions: jsonb("interview_questions"), // Array of questions
+  landingPageSuggestions: jsonb("landing_page_suggestions"),
+  mvpSuggestions: jsonb("mvp_suggestions"),
+  
+  // Full analysis data
+  analysisData: jsonb("analysis_data"),
+  
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const journeyStrategy = pgTable("journey_strategy", {
+  id: serial("id").primaryKey(),
+  journeyId: integer("journey_id").references(() => journeyProgress.id).notNull(),
+  
+  // Strategic planning data
+  interviewScripts: jsonb("interview_scripts"),
+  feedbackAnalysis: jsonb("feedback_analysis"),
+  featurePriority: jsonb("feature_priority"), // Ordered list of features to build
+  scopeDefinition: jsonb("scope_definition"), // What NOT to build
+  
+  // Customer discovery
+  targetCustomers: jsonb("target_customers"),
+  customerInsights: jsonb("customer_insights"),
+  
+  // Go-to-market
+  gtmStrategy: jsonb("gtm_strategy"),
+  
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const journeyBuilder = pgTable("journey_builder", {
+  id: serial("id").primaryKey(),
+  journeyId: integer("journey_id").references(() => journeyProgress.id).notNull(),
+  
+  // Builder outputs
+  businessPlanGenerated: boolean("business_plan_generated").default(false),
+  pitchDeckGenerated: boolean("pitch_deck_generated").default(false),
+  financialModelGenerated: boolean("financial_model_generated").default(false),
+  
+  // Document data
+  businessPlanData: jsonb("business_plan_data"),
+  pitchDeckData: jsonb("pitch_deck_data"),
+  financialData: jsonb("financial_data"),
+  
+  // Export status
+  exportedFormats: text("exported_formats").array().default(sql`ARRAY[]::text[]`),
+  
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const journeyGrowth = pgTable("journey_growth", {
+  id: serial("id").primaryKey(),
+  journeyId: integer("journey_id").references(() => journeyProgress.id).notNull(),
+  
+  // Growth strategies
+  investorMatches: jsonb("investor_matches"),
+  acquisitionChannels: jsonb("acquisition_channels"),
+  mvpIterations: jsonb("mvp_iterations"),
+  
+  // Traction metrics
+  customerCount: integer("customer_count").default(0),
+  revenue: decimal("revenue", { precision: 10, scale: 2 }),
+  growthRate: decimal("growth_rate", { precision: 5, scale: 2 }),
+  
+  // Funding status
+  fundingStatus: text("funding_status"), // "seeking", "in_progress", "funded"
+  fundingAmount: decimal("funding_amount", { precision: 12, scale: 2 }),
+  
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+// Insert schemas and types
+export const insertJourneyProgressSchema = createInsertSchema(journeyProgress).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertJourneyValidationSchema = createInsertSchema(journeyValidation).omit({
+  id: true,
+  completedAt: true,
+});
+
+export const insertJourneyStrategySchema = createInsertSchema(journeyStrategy).omit({
+  id: true,
+  completedAt: true,
+});
+
+export const insertJourneyBuilderSchema = createInsertSchema(journeyBuilder).omit({
+  id: true,
+  completedAt: true,
+});
+
+export const insertJourneyGrowthSchema = createInsertSchema(journeyGrowth).omit({
+  id: true,
+  completedAt: true,
+});
+
+export type JourneyProgress = typeof journeyProgress.$inferSelect;
+export type InsertJourneyProgress = z.infer<typeof insertJourneyProgressSchema>;
+
+export type JourneyValidation = typeof journeyValidation.$inferSelect;
+export type InsertJourneyValidation = z.infer<typeof insertJourneyValidationSchema>;
+
+export type JourneyStrategy = typeof journeyStrategy.$inferSelect;
+export type InsertJourneyStrategy = z.infer<typeof insertJourneyStrategySchema>;
+
+export type JourneyBuilder = typeof journeyBuilder.$inferSelect;
+export type InsertJourneyBuilder = z.infer<typeof insertJourneyBuilderSchema>;
+
+export type JourneyGrowth = typeof journeyGrowth.$inferSelect;
+export type InsertJourneyGrowth = z.infer<typeof insertJourneyGrowthSchema>;
+
 
