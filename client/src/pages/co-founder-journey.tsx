@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Lock, CheckCircle2, Search, Target, Rocket, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
 import type { JourneyProgress } from "@shared/schema";
+import { AuroraBackground } from "@/components/react-bits/aurora-background";
+import { SplitText } from "@/components/react-bits/split-text";
+import { AnimatedGradient } from "@/components/react-bits/animated-gradient";
 
 // Co-Founder personas with distinct identities
 const coFounders = [
@@ -84,6 +87,25 @@ export default function CoFounderJourney() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 relative overflow-hidden">
+      {/* ReactBits Aurora Background - Premium northern lights effect */}
+      <AuroraBackground 
+        className="opacity-30"
+        colors={[
+          "rgba(139, 92, 246, 0.5)",
+          "rgba(236, 72, 153, 0.5)",
+          "rgba(59, 130, 246, 0.5)",
+        ]}
+        speed={0.002}
+      />
+
+      {/* ReactBits Animated Gradient Overlay */}
+      <AnimatedGradient 
+        className="opacity-10"
+        colors={["#8b5cf6", "#ec4899", "#3b82f6"]}
+        speed={4}
+        blur={120}
+      />
+
       {/* Animated background effects */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10"></div>
       
@@ -104,13 +126,18 @@ export default function CoFounderJourney() {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-12">
-        {/* Header */}
+        {/* Header with SplitText Animation */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text">
-              Your AI Co-Founder Journey
-            </span>
-          </h1>
+          <SplitText
+            text="Your AI Co-Founder Journey"
+            tag="h1"
+            className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text"
+            splitType="chars"
+            delay={40}
+            duration={0.6}
+            from={{ opacity: 0, y: 50, rotationX: -90 }}
+            to={{ opacity: 1, y: 0, rotationX: 0 }}
+          />
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Four expert co-founders who won't let you build the wrong thing
           </p>
