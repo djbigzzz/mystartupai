@@ -1134,7 +1134,7 @@ export class DatabaseStorage implements IStorage {
     const [validation] = await db.select()
       .from(journeyValidation)
       .where(eq(journeyValidation.userId, userId))
-      .orderBy(desc(journeyValidation.createdAt))
+      .orderBy(desc(journeyValidation.completedAt))
       .limit(1);
     return validation || undefined;
   }

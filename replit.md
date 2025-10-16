@@ -67,6 +67,12 @@ A comprehensive design system ensuring visual consistency across the application
 
 ### Key Features & Design Patterns
 - **AI-Powered Modules**: Y Combinator-inspired AI modules for workflow steps, including AI suggestion buttons for form assistance.
+- **Co-Founder Journey System**: A validation-first approach positioned as "Your AI Co-Founder Who Won't Let You Build the Wrong Thing." Features a 4-stage sequential journey:
+  - **The Validator** (Stage 1): Enhanced idea validation with 0-100 scoring system and clear GO/REFINE/PIVOT verdicts. Includes market size analysis, competition assessment, and feasibility scoring.
+  - **The Strategist** (Stage 2): Customer discovery, interview scripts, and feature prioritization (unlocks when validation score > 60).
+  - **The Builder** (Stage 3): Consolidated business plan, pitch deck, and financial model generation.
+  - **The Growth Hacker** (Stage 4): Investor matching, customer acquisition strategies, and MVP iteration guidance.
+  - Progressive unlock system with glass morphism UI, human avatars, and GSAP-powered animations using ReactBits components (AuroraBackground, SplitText, AnimatedGradient).
 - **Agentic AI Platform**: Autonomous AI agents for natural language interactions and real-time task execution.
 - **MVP Development Tools**: AI-powered code generation for various MVP templates.
 - **Comprehensive Workflow Dashboard**: A guided 10-step workflow with progress tracking and mobile responsiveness.

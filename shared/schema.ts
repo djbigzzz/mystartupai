@@ -653,7 +653,8 @@ export const journeyProgress = pgTable("journey_progress", {
 
 export const journeyValidation = pgTable("journey_validation", {
   id: serial("id").primaryKey(),
-  journeyId: integer("journey_id").references(() => journeyProgress.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  journeyId: integer("journey_id").references(() => journeyProgress.id),
   
   // Validation results
   score: integer("score").notNull(), // 0-100

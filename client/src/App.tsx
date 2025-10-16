@@ -88,7 +88,7 @@ function Router() {
       <Route path="/gateway-monitor" component={GatewayMonitor} />
       <Route path="/pitch-demo-live" component={PitchDemoLive} />
       <Route path="/co-founder-journey" component={CoFounderJourney} />
-      <Route path="/co-founder/validator" component={CoFounderValidator} />
+      <Route path="/co-founder-validator" component={CoFounderValidator} />
       <Route component={NotFound} />
     </Switch>
   );

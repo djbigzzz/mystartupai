@@ -1815,7 +1815,12 @@ Format your response as JSON with this structure:
       });
 
       const content = response.content[0];
-      const validationData = JSON.parse(content.type === 'text' ? content.text : '{}');
+      let textContent = content.type === 'text' ? content.text : '{}';
+      
+      // Strip markdown code fences if present
+      textContent = textContent.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
+      
+      const validationData = JSON.parse(textContent);
 
       // Store validation result
       const validation = await storage.createJourneyValidation({

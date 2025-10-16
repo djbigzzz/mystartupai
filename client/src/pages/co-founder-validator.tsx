@@ -50,7 +50,7 @@ export default function CoFounderValidator() {
       setIsAnalyzing(true);
       const response = await apiRequest('/api/journey/validate', {
         method: 'POST',
-        body: JSON.stringify({ idea }),
+        body: { idea },
       });
       return response;
     },
@@ -237,12 +237,12 @@ export default function CoFounderValidator() {
                 {/* Score & Verdict */}
                 <Card className="bg-white/10 backdrop-blur-lg border-white/20">
                   <CardContent className="pt-6">
-                    <div className="text-center mb-6">
+                    <div className="text-center mb-6" data-testid="validation-score">
                       <div className={`text-7xl font-bold mb-2 ${getScoreColor(validationResult.score)}`} data-testid="text-validation-score">
                         {validationResult.score}
                         <span className="text-3xl text-gray-400">/100</span>
                       </div>
-                      <Progress value={validationResult.score} className="h-3 mb-4" />
+                      <Progress value={validationResult.score} className="h-3 mb-4" data-testid="progress-validation-score" />
                       
                       <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 ${getVerdictColor(validationResult.verdict)}`} data-testid="badge-verdict">
                         {getVerdictIcon(validationResult.verdict)}
@@ -279,7 +279,7 @@ export default function CoFounderValidator() {
                         Risks to Consider
                       </h3>
                       <ul className="space-y-1">
-                        {validationResult.risks.map((risk, idx) => (
+                        {(validationResult.risks || []).map((risk, idx) => (
                           <li key={idx} className="text-sm text-gray-300 flex items-start gap-2">
                             <span className="text-red-400 mt-1">•</span>
                             <span>{risk}</span>
@@ -294,7 +294,7 @@ export default function CoFounderValidator() {
                         Opportunities
                       </h3>
                       <ul className="space-y-1">
-                        {validationResult.opportunities.map((opp, idx) => (
+                        {(validationResult.opportunities || []).map((opp, idx) => (
                           <li key={idx} className="text-sm text-gray-300 flex items-start gap-2">
                             <span className="text-green-400 mt-1">•</span>
                             <span>{opp}</span>
@@ -309,7 +309,7 @@ export default function CoFounderValidator() {
                         Recommendations
                       </h3>
                       <ul className="space-y-1">
-                        {validationResult.recommendations.map((rec, idx) => (
+                        {(validationResult.recommendations || []).map((rec, idx) => (
                           <li key={idx} className="text-sm text-gray-300 flex items-start gap-2">
                             <span className="text-blue-400 mt-1">•</span>
                             <span>{rec}</span>

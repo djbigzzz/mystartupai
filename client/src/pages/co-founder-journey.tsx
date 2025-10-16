@@ -23,7 +23,7 @@ const coFounders = [
     locked: false,
     avatar: "👩‍🔬", // Analytical scientist
     unlockCondition: "Always unlocked",
-    route: "/co-founder/validator"
+    route: "/co-founder-validator"
   },
   {
     id: 2,
@@ -35,7 +35,7 @@ const coFounders = [
     locked: true,
     avatar: "👨‍💼", // Strategic thinker
     unlockCondition: "Complete validation with score > 60",
-    route: "/co-founder/strategist"
+    route: "/co-founder-strategist"
   },
   {
     id: 3,
@@ -47,7 +47,7 @@ const coFounders = [
     locked: true,
     avatar: "👩‍💻", // Creative builder
     unlockCondition: "Complete strategic planning",
-    route: "/co-founder/builder"
+    route: "/co-founder-builder"
   },
   {
     id: 4,
@@ -59,7 +59,7 @@ const coFounders = [
     locked: true,
     avatar: "🚀", // Growth expert
     unlockCondition: "Complete investor materials",
-    route: "/co-founder/growth"
+    route: "/co-founder-growth"
   }
 ];
 
