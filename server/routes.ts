@@ -3483,13 +3483,34 @@ Respond with JSON: {"currentTrends": [...], "emergingTech": [...], "industryOutl
 
           console.log(`✅ Modular analysis completed for ${sections.length} sections`);
           
+          // Transform sectionResults to frontend-expected format
+          const marketInsights = {
+            competitors: [
+              ...(sectionResults['competitive-analysis']?.directCompetitors || []),
+              ...(sectionResults['competitive-analysis']?.indirectCompetitors || [])
+            ],
+            opportunities: sectionResults['market-opportunity']?.opportunities || [],
+            challenges: [
+              ...(sectionResults['risk-analysis']?.marketRisks || []),
+              ...(sectionResults['risk-analysis']?.operationalRisks || []),
+              ...(sectionResults['risk-analysis']?.financialRisks || [])
+            ].slice(0, 5), // Limit to top 5 challenges
+            marketTrends: sectionResults['market-opportunity']?.trends || sectionResults['trend-analysis']?.currentTrends || [],
+            marketSize: {
+              tam: sectionResults['market-opportunity']?.tam,
+              sam: sectionResults['market-opportunity']?.sam,
+              realistic: sectionResults['target-market']?.marketSize
+            }
+          };
+          
           // Save analysis results to database if ideaId is provided
           if (ideaId) {
             try {
               await storage.updateStartupIdea(ideaId, {
                 analysis: {
                   intelligentAnalysis: analysisData,
-                  marketInsights: sectionResults,
+                  marketInsights: marketInsights,
+                  sectionData: sectionResults, // Keep raw section data for reference
                   timestamp: new Date().toISOString()
                 }
               });

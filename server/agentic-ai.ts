@@ -398,13 +398,26 @@ Extract factual information from the provided sources only. If information is no
       
       const aiAnalysis = await this.analyzeWithStructuredAI(analysisPrompt);
 
+      // Helper to ensure array format
+      const ensureArray = (data: any, fallback: string[]): string[] => {
+        if (Array.isArray(data)) return data;
+        if (typeof data === 'string') return [data];
+        return fallback;
+      };
+
       return {
         marketSize: aiAnalysis.market_size?.value || "Data not available from sources",
         growthRate: aiAnalysis.growth_rate?.cagr || "Growth data not available from sources", 
-        trends: aiAnalysis.trends?.map((t: any) => t.trend) || ["Insufficient trend data from sources"],
-        competitors: aiAnalysis.competitors?.map((c: any) => c.name) || ["Competitor data not available from sources"],
-        opportunities: aiAnalysis.opportunities || ["Opportunity data not available from sources"],
-        threats: aiAnalysis.threats || ["Threat data not available from sources"],
+        trends: ensureArray(
+          aiAnalysis.trends?.map ? aiAnalysis.trends.map((t: any) => t.trend || t) : aiAnalysis.trends,
+          ["Insufficient trend data from sources"]
+        ),
+        competitors: ensureArray(
+          aiAnalysis.competitors?.map ? aiAnalysis.competitors.map((c: any) => c.name || c) : aiAnalysis.competitors,
+          ["Competitor data not available from sources"]
+        ),
+        opportunities: ensureArray(aiAnalysis.opportunities, ["Opportunity data not available from sources"]),
+        threats: ensureArray(aiAnalysis.threats, ["Threat data not available from sources"]),
         citations: [
           ...marketData.results.map(r => r.url).filter(Boolean),
           ...competitorData.results.map(r => r.url).filter(Boolean),
@@ -665,7 +678,14 @@ export class AgenticAICofounder {
     stage: string,
     marketAnalysis: MarketAnalysis
   ): Promise<OverallAssessment> {
-    // Use OpenAI to synthesize all the research into a comprehensive assessment
+    // Helper to safely join arrays (defensive check)
+    const safeJoin = (data: any, fallback: string = "N/A"): string => {
+      if (Array.isArray(data)) return data.join(", ");
+      if (typeof data === 'string') return data;
+      return fallback;
+    };
+
+    // Use Claude to synthesize all the research into a comprehensive assessment
     const prompt = `
       As an AI co-founder, provide a comprehensive assessment of this startup idea based on real market research.
       
@@ -677,9 +697,9 @@ export class AgenticAICofounder {
       Market Research Findings:
       - Market Size: ${marketAnalysis.marketSize}
       - Growth Rate: ${marketAnalysis.growthRate}
-      - Key Trends: ${marketAnalysis.trends.join(", ")}
-      - Main Competitors: ${marketAnalysis.competitors.join(", ")}
-      - Opportunities: ${marketAnalysis.opportunities.join(", ")}
+      - Key Trends: ${safeJoin(marketAnalysis.trends, "Market trends unavailable")}
+      - Main Competitors: ${safeJoin(marketAnalysis.competitors, "Competitor data unavailable")}
+      - Opportunities: ${safeJoin(marketAnalysis.opportunities, "Opportunity data unavailable")}
       
       Provide a JSON response with:
       - viabilityScore: number (1-100)
