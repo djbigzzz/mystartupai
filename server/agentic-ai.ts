@@ -8,6 +8,24 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
 });
 
+// Helper function to strip Markdown code fences from Claude responses
+function stripMarkdownCodeFences(text: string): string {
+  // Remove ```json ... ``` or ``` ... ``` wrappers
+  return text.replace(/^```(?:json)?\s*\n?/gm, '').replace(/\n?```\s*$/gm, '').trim();
+}
+
+// Helper function to safely parse JSON from Claude responses
+function parseClaudeJSON(text: string): any {
+  try {
+    // First try direct parsing
+    return JSON.parse(text);
+  } catch (e) {
+    // If that fails, strip markdown fences and try again
+    const cleaned = stripMarkdownCodeFences(text);
+    return JSON.parse(cleaned);
+  }
+}
+
 // Truly free web research client using public data sources
 class FreeWebResearchClient {
   private readonly timeout = 10000; // 10 second timeout
@@ -417,7 +435,7 @@ Extract factual information from the provided sources only. If information is no
           model: "claude-sonnet-4-20250514",
           max_tokens: 2000,
           temperature: 0,
-          system: "You are a market research analyst. Only use facts present in provided sources. If information is not found in sources, set value to null and explain in explain_uncertainty field. Always include citations from source URLs. Respond with valid JSON only.",
+          system: "You are a market research analyst. Only use facts present in provided sources. If information is not found in sources, set value to null and explain in explain_uncertainty field. Always include citations from source URLs. Respond with valid JSON only - do not wrap your response in markdown code fences.",
           messages: [
             {
               role: "user", 
@@ -428,7 +446,7 @@ Extract factual information from the provided sources only. If information is no
 
         const textBlock = response.content[0];
         const content = textBlock.type === 'text' ? textBlock.text : '{}';
-        return JSON.parse(content);
+        return parseClaudeJSON(content);
       } else {
         // Fallback to heuristic analysis without AI
         return this.getStructuredFallback(prompt);
@@ -679,7 +697,7 @@ export class AgenticAICofounder {
       const response = await anthropic.messages.create({
         model: "claude-sonnet-4-20250514",
         max_tokens: 2000,
-        system: "You are an AI co-founder with access to real market data. Provide detailed, actionable startup analysis. Respond with valid JSON only.",
+        system: "You are an AI co-founder with access to real market data. Provide detailed, actionable startup analysis. Respond with valid JSON only - do not wrap your response in markdown code fences.",
         messages: [
           {
             role: "user",
@@ -690,7 +708,7 @@ export class AgenticAICofounder {
 
       const textBlock = response.content[0];
       const content = textBlock.type === 'text' ? textBlock.text : '{}';
-      return JSON.parse(content);
+      return parseClaudeJSON(content);
     } catch (error) {
       console.error("Overall assessment generation error:", error);
       return {
