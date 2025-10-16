@@ -43,6 +43,7 @@ import MarketResearchPage from "@/pages/market-research";
 import PurchaseCreditsPage from "@/pages/purchase-credits";
 import GatewayMonitor from "@/pages/gateway-monitor";
 import PitchDemoLive from "@/pages/pitch-demo-live";
+import CoFounderJourney from "@/pages/co-founder-journey";
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
@@ -85,6 +86,7 @@ function Router() {
       <Route path="/purchase-credits" component={PurchaseCreditsPage} />
       <Route path="/gateway-monitor" component={GatewayMonitor} />
       <Route path="/pitch-demo-live" component={PitchDemoLive} />
+      <Route path="/co-founder-journey" component={CoFounderJourney} />
       <Route component={NotFound} />
     </Switch>
   );
