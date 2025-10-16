@@ -14,7 +14,8 @@ import {
   Sparkles,
   Target,
   Users,
-  DollarSign
+  DollarSign,
+  RefreshCcw
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { AuroraBackground } from "@/components/react-bits/aurora-background";
@@ -23,6 +24,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface ValidationResult {
+  idea: string;
   score: number;
   verdict: 'GO' | 'REFINE' | 'PIVOT';
   marketSize: string;
@@ -320,17 +322,105 @@ export default function CoFounderValidator() {
                   </CardContent>
                 </Card>
 
-                {/* Next Steps */}
-                {validationResult.score >= 60 && (
-                  <Button
-                    onClick={() => navigate('/co-founder-journey')}
-                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                    data-testid="button-proceed-strategist"
-                  >
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Proceed to The Strategist →
-                  </Button>
-                )}
+                {/* Next Steps - Always Show */}
+                <Card className="bg-white/10 backdrop-blur-lg border-white/20">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">🎯 Next Steps</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {validationResult.score >= 60 ? (
+                      <>
+                        <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                          <p className="text-green-400 font-semibold mb-2">✅ Validation Passed!</p>
+                          <p className="text-sm text-gray-300">
+                            Your idea has strong potential. You've unlocked the next co-founder stages to build your startup.
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Button
+                            onClick={() => navigate('/co-founder-journey')}
+                            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                            data-testid="button-proceed-strategist"
+                          >
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                            Continue to The Strategist →
+                          </Button>
+                          
+                          <p className="text-xs text-gray-400 text-center">
+                            Generate business plan, pitch deck & financial model
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                          <p className="text-yellow-400 font-semibold mb-2">
+                            {validationResult.verdict === 'REFINE' ? '🔄 Refinement Needed' : '⚠️ Pivot Required'}
+                          </p>
+                          <p className="text-sm text-gray-300">
+                            {validationResult.verdict === 'REFINE' 
+                              ? 'Your idea has potential but needs refinement. Score 60+ to unlock the next stages.'
+                              : 'Significant changes needed. Consider pivoting your approach to improve viability.'}
+                          </p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-300">Current Score:</span>
+                            <span className={`font-bold ${validationResult.score >= 60 ? 'text-green-400' : 'text-yellow-400'}`}>
+                              {validationResult.score}/100
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-300">Required to Unlock:</span>
+                            <span className="font-bold text-gray-400">60/100</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-2 border-t border-white/10">
+                          <p className="text-sm font-semibold text-white mb-3">🔒 What You'll Unlock at 60+:</p>
+                          <div className="space-y-2">
+                            {[
+                              { icon: '👨‍💼', label: 'The Strategist', desc: 'Customer discovery & planning' },
+                              { icon: '🏗️', label: 'The Builder', desc: 'Business plan, pitch deck & financials' },
+                              { icon: '🚀', label: 'The Growth Hacker', desc: 'Investor matching & scaling' }
+                            ].map((item, idx) => (
+                              <div key={idx} className="flex items-start gap-3 p-2 rounded bg-white/5 opacity-60">
+                                <span className="text-lg">{item.icon}</span>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-gray-300">{item.label}</p>
+                                  <p className="text-xs text-gray-500">{item.desc}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            setIdeaDescription(validationResult.idea);
+                          }}
+                          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                          data-testid="button-refine-idea"
+                        >
+                          <RefreshCcw className="w-4 h-4 mr-2" />
+                          Refine Your Idea & Re-Validate
+                        </Button>
+                      </>
+                    )}
+
+                    <Button
+                      onClick={() => navigate('/co-founder-journey')}
+                      variant="outline"
+                      className="w-full border-white/20 text-white hover:bg-white/10"
+                      data-testid="button-back-journey"
+                    >
+                      ← Back to Journey
+                    </Button>
+                  </CardContent>
+                </Card>
               </>
             ) : (
               <Card className="bg-white/10 backdrop-blur-lg border-white/20 border-dashed">

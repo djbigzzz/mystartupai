@@ -1842,14 +1842,13 @@ Format your response as JSON with this structure:
         progressPercentage: validationData.score >= 60 ? 25 : Math.floor(validationData.score / 4)
       });
 
-      // Deduct credits
+      // Deduct credits (no relatedId for journey validations since they're not tied to startup_ideas)
       await deductCreditsWithTracking(
         req,
         userId,
         CREDIT_COSTS.AI_ANALYSIS,
         'Idea Validation',
-        'journey_validation',
-        validation.id
+        'journey_validation'
       );
 
       res.json(validationData);
