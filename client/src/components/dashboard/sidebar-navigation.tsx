@@ -126,6 +126,13 @@ export default function SidebarNavigation({ className }: SidebarNavigationProps)
       icon: LayoutDashboard,
     },
     {
+      id: "co-founder-journey",
+      name: "Co-Founder Journey",
+      href: "/co-founder-journey",
+      icon: Users,
+      badge: "New",
+    },
+    {
       id: "submit-idea",
       name: "Submit Idea",
       href: "/submit-idea",
