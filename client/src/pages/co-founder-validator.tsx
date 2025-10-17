@@ -112,10 +112,17 @@ export default function CoFounderValidator() {
   
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [showResults, setShowResults] = useState(false);
 
   // Fetch validation result if exists
   const { data: validationResult } = useQuery<ValidationResult>({
     queryKey: ['/api/journey/validation'],
+    onSuccess: (data) => {
+      // Show results if validation exists
+      if (data) {
+        setShowResults(true);
+      }
+    }
   });
 
   // Toggle section expansion
@@ -160,6 +167,7 @@ export default function CoFounderValidator() {
       queryClient.invalidateQueries({ queryKey: ['/api/journey/validation'] });
       queryClient.invalidateQueries({ queryKey: ['/api/journey/progress'] });
       setIsAnalyzing(false);
+      setShowResults(true); // Show results after validation
       toast({
         title: "Validation Complete! 🎯",
         description: `Your idea scored ${data.score}/100`,
@@ -249,7 +257,7 @@ export default function CoFounderValidator() {
           </p>
         </div>
 
-        {!validationResult ? (
+        {!showResults || !validationResult ? (
           /* ========== INPUT FORM ========== */
           <div className="max-w-4xl mx-auto space-y-6">
             {/* Section 1: Idea Overview */}
@@ -942,7 +950,10 @@ export default function CoFounderValidator() {
                     </div>
 
                     <Button
-                      onClick={() => window.location.reload()}
+                      onClick={() => {
+                        setShowResults(false);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                       data-testid="button-refine-idea"
                     >
