@@ -1940,6 +1940,58 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
     }
   });
 
+  // AI Improve text endpoint for form fields
+  app.post("/api/journey/ai-improve", 
+    requireAuth,
+    async (req, res) => {
+    try {
+      const { text, fieldType } = req.body;
+      
+      if (!text || text.trim().length === 0) {
+        return res.status(400).json({ message: "Text is required" });
+      }
+
+      // Define improvement prompts for different field types
+      const prompts: Record<string, string> = {
+        title: `Improve this startup idea title to make it more compelling and memorable. Keep it concise (under 60 characters) but impactful:\n\n"${text}"\n\nProvide ONLY the improved title, nothing else.`,
+        
+        description: `Improve this startup description to be clear, compelling, and investor-friendly. Focus on the problem, solution, and value proposition:\n\n"${text}"\n\nProvide ONLY the improved description (1-2 sentences), nothing else.`,
+        
+        problem: `Improve this problem statement to be more specific, quantifiable, and compelling. Include who faces this problem and why it matters:\n\n"${text}"\n\nProvide ONLY the improved problem statement, nothing else.`,
+        
+        solution: `Improve this solution description to be clearer and more compelling. Focus on the unique approach and key benefits:\n\n"${text}"\n\nProvide ONLY the improved solution description, nothing else.`,
+        
+        target: `Improve this target market description to be more specific with demographics, behaviors, and market size insights:\n\n"${text}"\n\nProvide ONLY the improved target market description, nothing else.`,
+        
+        'market-size': `Improve this market size description with more specific numbers, TAM/SAM/SOM framework if applicable:\n\n"${text}"\n\nProvide ONLY the improved market size description, nothing else.`,
+        
+        competitors: `Improve this competitor list to be more specific and structured. Include both direct and indirect competitors:\n\n"${text}"\n\nProvide ONLY the improved competitor description, nothing else.`,
+        
+        edge: `Improve this competitive edge description to be more compelling and defensible. Focus on unique advantages:\n\n"${text}"\n\nProvide ONLY the improved competitive edge description, nothing else.`,
+      };
+
+      const prompt = prompts[fieldType] || `Improve this text to be clearer and more professional:\n\n"${text}"\n\nProvide ONLY the improved text, nothing else.`;
+
+      // Use Claude AI to improve the text
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 500,
+        messages: [{
+          role: "user",
+          content: prompt
+        }]
+      });
+
+      const content = response.content[0];
+      const improvedText = content.type === 'text' ? content.text.trim() : text;
+
+      res.json({ improvedText });
+    } catch (error) {
+      console.error("Error improving text:", error);
+      res.status(500).json({ message: "Failed to improve text. Please try again." });
+    }
+  });
+
   // ==================== END JOURNEY API ROUTES ====================
 
   // Generate pitch deck for an idea

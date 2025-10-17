@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -117,13 +117,14 @@ export default function CoFounderValidator() {
   // Fetch validation result if exists
   const { data: validationResult } = useQuery<ValidationResult>({
     queryKey: ['/api/journey/validation'],
-    onSuccess: (data) => {
-      // Show results if validation exists
-      if (data) {
-        setShowResults(true);
-      }
-    }
   });
+
+  // Auto-show results when validation data is loaded
+  React.useEffect(() => {
+    if (validationResult) {
+      setShowResults(true);
+    }
+  }, [validationResult]);
 
   // Toggle section expansion
   const toggleSection = (section: string) => {
@@ -133,13 +134,71 @@ export default function CoFounderValidator() {
     }));
   };
 
-  // AI Improve functions (placeholder for now - will implement later)
-  const handleAIImprove = async (field: string) => {
-    toast({
-      title: "AI Enhancement",
-      description: `Improving ${field}...`,
-    });
-    // TODO: Implement AI enhancement
+  // AI Improve mutation
+  const aiImproveMutation = useMutation({
+    mutationFn: async ({ text, fieldType }: { text: string; fieldType: string }) => {
+      const response = await apiRequest('/api/journey/ai-improve', {
+        method: 'POST',
+        body: { text, fieldType },
+      });
+      return response;
+    },
+    onSuccess: (data, variables) => {
+      const improvedText = data.improvedText;
+      
+      // Update the appropriate field based on fieldType
+      switch (variables.fieldType) {
+        case 'title':
+          setIdeaTitle(improvedText);
+          break;
+        case 'description':
+          setIdeaDescription(improvedText);
+          break;
+        case 'problem':
+          setProblemStatement(improvedText);
+          break;
+        case 'solution':
+          setSolutionApproach(improvedText);
+          break;
+        case 'target':
+          setTargetMarket(improvedText);
+          break;
+        case 'market-size':
+          setMarketSize(improvedText);
+          break;
+        case 'competitors':
+          setCompetitors(improvedText);
+          break;
+        case 'edge':
+          setCompetitiveEdge(improvedText);
+          break;
+      }
+      
+      toast({
+        title: "✨ Text Improved!",
+        description: "AI has enhanced your content",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Enhancement Failed",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleAIImprove = (fieldType: string, currentText: string) => {
+    if (!currentText || currentText.trim().length === 0) {
+      toast({
+        title: "No Text to Improve",
+        description: "Please enter some text first",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    aiImproveMutation.mutate({ text: currentText, fieldType });
   };
 
   // Validate idea mutation
@@ -276,11 +335,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('title')}
+                      onClick={() => handleAIImprove('title', ideaTitle)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Input
@@ -297,11 +357,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('description')}
+                      onClick={() => handleAIImprove('description', ideaDescription)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Textarea
@@ -371,11 +432,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('problem')}
+                      onClick={() => handleAIImprove('problem', problemStatement)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Textarea
@@ -397,11 +459,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('solution')}
+                      onClick={() => handleAIImprove('solution', solutionApproach)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Textarea
@@ -432,11 +495,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('target')}
+                      onClick={() => handleAIImprove('target', targetMarket)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Textarea
@@ -454,11 +518,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('market-size')}
+                      onClick={() => handleAIImprove('market-size', marketSize)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Textarea
@@ -488,11 +553,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('competitors')}
+                      onClick={() => handleAIImprove('competitors', competitors)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Textarea
@@ -510,11 +576,12 @@ export default function CoFounderValidator() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleAIImprove('edge')}
+                      onClick={() => handleAIImprove('edge', competitiveEdge)}
+                      disabled={aiImproveMutation.isPending}
                       className="text-xs"
                     >
                       <Sparkles className="w-3 h-3 mr-1" />
-                      AI Improve
+                      {aiImproveMutation.isPending ? 'Improving...' : 'AI Improve'}
                     </Button>
                   </div>
                   <Textarea
