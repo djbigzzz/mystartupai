@@ -1942,9 +1942,22 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
 
   // AI Improve text endpoint for form fields
   app.post("/api/journey/ai-improve", 
-    requireAuth,
     async (req, res) => {
     try {
+      // Check authentication manually with better logging
+      console.log("[AI Improve] Request received");
+      console.log("[AI Improve] isAuthenticated:", req.isAuthenticated?.());
+      console.log("[AI Improve] User:", req.user);
+      console.log("[AI Improve] Session:", req.session ? "exists" : "missing");
+      
+      if (!req.isAuthenticated || !req.isAuthenticated()) {
+        console.log("[AI Improve] Authentication failed - returning 401");
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const userId = (req.user as any)?.id;
+      console.log("[AI Improve] User ID:", userId);
+      
       const { text, fieldType } = req.body;
       
       if (!text || text.trim().length === 0) {
