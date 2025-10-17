@@ -1767,50 +1767,129 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   });
 
-  // Validate startup idea with AI
+  // Validate startup idea with AI - Comprehensive 8-Dimension Analysis
   app.post("/api/journey/validate", 
     requireAuth,
     checkCredits(CREDIT_COSTS.AI_ANALYSIS, 'Idea Validation'),
     async (req, res) => {
     try {
       const userId = (req.user as any).id;
-      const { idea } = req.body;
+      const { 
+        ideaTitle = "",
+        idea, 
+        industry = "",
+        stage = "idea",
+        problemStatement = "",
+        solutionApproach = "",
+        targetMarket = "",
+        marketSize = "",
+        competitors = "",
+        competitiveEdge = ""
+      } = req.body;
       
       if (!idea || idea.trim().length < 20) {
         return res.status(400).json({ message: "Please provide a detailed idea description (at least 20 characters)" });
       }
 
-      // Use Claude AI to validate the idea
+      // Build comprehensive context for AI
+      const context = `
+STARTUP IDEA DETAILS:
+Title: ${ideaTitle || "Not provided"}
+Description: ${idea}
+Industry: ${industry || "Not specified"}
+Stage: ${stage || "Idea stage"}
+
+PROBLEM & SOLUTION:
+Problem: ${problemStatement || "Not detailed"}
+Solution: ${solutionApproach || "Not detailed"}
+
+MARKET & CUSTOMERS:
+Target Market: ${targetMarket || "Not specified"}
+Market Size: ${marketSize || "Not researched"}
+
+COMPETITION:
+Competitors: ${competitors || "Not identified"}
+Competitive Edge: ${competitiveEdge || "Not defined"}
+      `.trim();
+
+      // Use Claude AI to validate the idea with comprehensive analysis
       const response = await anthropic.messages.create({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 2000,
+        max_tokens: 4000,
         messages: [{
           role: "user",
-          content: `You are an expert startup validator. Analyze this startup idea and provide a comprehensive validation report.
+          content: `You are an expert startup validator in the style of Y Combinator. Provide comprehensive validation across 8 critical dimensions.
 
-Startup Idea: ${idea}
+${context}
 
-Please provide:
-1. A validation score from 0-100 based on market viability, feasibility, and potential impact
-2. A clear verdict: GO (score >= 70), REFINE (score 50-69), or PIVOT (score < 50)
-3. Market size assessment
-4. Competition analysis
-5. Feasibility assessment
-6. 3-5 key risks
-7. 3-5 key opportunities
-8. 3-5 actionable recommendations
+Analyze this startup across these 8 dimensions and return a JSON response:
 
-Format your response as JSON with this structure:
 {
-  "score": number,
-  "verdict": "GO" | "REFINE" | "PIVOT",
-  "marketSize": "string description",
-  "competition": "string description",
-  "feasibility": "string description",
-  "risks": ["risk1", "risk2", ...],
-  "opportunities": ["opp1", "opp2", ...],
-  "recommendations": ["rec1", "rec2", ...]
-}`
+  "score": <0-100 overall score>,
+  "verdict": "<GO if >=70, REFINE if 50-69, PIVOT if <50>",
+  "ideaClarity": {
+    "score": <0-100>,
+    "problemDefinition": "<clear problem statement>",
+    "solutionClarity": "<solution clarity assessment>",
+    "oneSentencePitch": "<craft a one-sentence pitch>"
+  },
+  "marketValidation": {
+    "score": <0-100>,
+    "tam": "<Total Addressable Market estimate>",
+    "sam": "<Serviceable Addressable Market>",
+    "som": "<Serviceable Obtainable Market>",
+    "growthRate": "<market growth rate estimate>",
+    "marketTiming": "<early/perfect/late>",
+    "whyNow": ["reason 1", "reason 2", "reason 3"]
+  },
+  "competitiveIntelligence": {
+    "score": <0-100>,
+    "competitionLevel": "<none/low/medium/high/saturated>",
+    "directCompetitors": ["competitor 1", "competitor 2", "competitor 3"],
+    "competitiveEdge": "<assessment of competitive advantages>"
+  },
+  "customerDiscovery": {
+    "score": <0-100>,
+    "personaClarity": "<target customer description>",
+    "painPointSeverity": <1-10>,
+    "willingnessToPay": "<low/medium/high with reasoning>",
+    "earlyAdopterProfile": "<who would be early adopters>"
+  },
+  "problemSolutionFit": {
+    "score": <0-100>,
+    "problemSeverity": <1-10>,
+    "solutionFeasibility": <1-10>,
+    "tenXTest": "<is this 10x better than alternatives?>",
+    "recommendation": "<proceed/iterate/pivot>"
+  },
+  "riskAssessment": {
+    "score": <0-100, higher = lower risk>,
+    "topRisks": ["risk 1", "risk 2", "risk 3"],
+    "topOpportunities": ["opportunity 1", "opportunity 2", "opportunity 3"]
+  },
+  "validationExperiments": {
+    "experiments": [
+      {
+        "name": "Experiment name",
+        "description": "What to test and how",
+        "week": 1
+      },
+      {
+        "name": "Experiment 2",
+        "description": "Description",
+        "week": 2
+      },
+      {
+        "name": "Experiment 3",
+        "description": "Description",
+        "week": 3
+      }
+    ]
+  },
+  "recommendations": ["actionable recommendation 1", "recommendation 2", "recommendation 3"]
+}
+
+Be thorough, analytical, and provide specific, actionable insights. Calculate scores based on the information provided.`
         }]
       });
 
@@ -1821,18 +1900,21 @@ Format your response as JSON with this structure:
       textContent = textContent.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
       
       const validationData = JSON.parse(textContent);
+      
+      // Add the original idea to response
+      validationData.idea = idea;
 
-      // Store validation result
+      // Store validation result (basic fields for backward compatibility)
       const validation = await storage.createJourneyValidation({
         userId,
         score: validationData.score,
         verdict: validationData.verdict,
-        marketSize: validationData.marketSize,
-        competition: validationData.competition,
-        feasibility: validationData.feasibility,
-        risks: validationData.risks,
-        opportunities: validationData.opportunities,
-        recommendations: validationData.recommendations
+        marketSize: validationData.marketValidation?.tam || "Market size not analyzed",
+        competition: validationData.competitiveIntelligence?.competitiveEdge || "Competition not analyzed",
+        feasibility: `Problem: ${validationData.problemSolutionFit?.problemSeverity || 0}/10, Solution: ${validationData.problemSolutionFit?.solutionFeasibility || 0}/10`,
+        risks: validationData.riskAssessment?.topRisks || [],
+        opportunities: validationData.riskAssessment?.topOpportunities || [],
+        recommendations: validationData.recommendations || []
       });
 
       // Update journey progress
@@ -1842,7 +1924,7 @@ Format your response as JSON with this structure:
         progressPercentage: validationData.score >= 60 ? 25 : Math.floor(validationData.score / 4)
       });
 
-      // Deduct credits (no relatedId for journey validations since they're not tied to startup_ideas)
+      // Deduct credits
       await deductCreditsWithTracking(
         req,
         userId,
