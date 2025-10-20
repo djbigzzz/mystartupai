@@ -1878,8 +1878,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         competitiveEdge = ""
       } = req.body;
       
-      if (!idea || idea.trim().length < 20) {
-        return res.status(400).json({ message: "Please provide a detailed idea description (at least 20 characters)" });
+      if (!idea || idea.trim().length < 10) {
+        return res.status(400).json({ message: "Please provide an idea description (at least 10 characters)" });
       }
 
       console.log(`[Validation] Starting validation for: ${ideaTitle}`);
