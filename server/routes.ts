@@ -16,6 +16,97 @@ const aiCofounder = new AgenticAICofounder();
 const anthropic = new Anthropic({ 
   apiKey: process.env.ANTHROPIC_API_KEY
 });
+
+// Perplexity API configuration
+const PERPLEXITY_API_URL = "https://api.perplexity.ai/chat/completions";
+const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
+
+// Market research function using Perplexity
+async function conductMarketResearch(ideaTitle: string, ideaDescription: string, industry: string, targetMarket: string) {
+  if (!PERPLEXITY_API_KEY) {
+    console.warn("Perplexity API key not configured, skipping market research");
+    return null;
+  }
+
+  try {
+    const queries = [
+      {
+        name: "competitors",
+        question: `Find the top 5-10 competitors and similar companies for "${ideaTitle}" in the ${industry} industry. Include company names, funding amounts, and key differentiators. Focus on recent 2024-2025 data.`
+      },
+      {
+        name: "market_trends",
+        question: `What are the latest market trends, growth rate, and market size for ${industry} focusing on ${targetMarket}? Include specific numbers and recent 2024-2025 data.`
+      },
+      {
+        name: "customer_insights",
+        question: `What are customers saying about products similar to "${ideaDescription}" in ${industry}? What pain points are they experiencing? Include recent customer feedback from 2024-2025.`
+      },
+      {
+        name: "funding_landscape",
+        question: `What recent funding rounds (2024-2025) have occurred in ${industry} for companies similar to "${ideaTitle}"? Include investor names and amounts.`
+      }
+    ];
+
+    const results = await Promise.all(
+      queries.map(async ({ name, question }) => {
+        try {
+          const response = await fetch(PERPLEXITY_API_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'llama-3.1-sonar-large-128k-online',
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are a market research analyst. Provide factual, data-driven insights with specific numbers, company names, and sources.'
+                },
+                {
+                  role: 'user',
+                  content: question
+                }
+              ],
+              max_tokens: 800,
+              temperature: 0.2,
+              top_p: 0.9,
+              search_recency_filter: 'month',
+              return_related_questions: false
+            })
+          });
+
+          if (!response.ok) {
+            console.error(`Perplexity API error for ${name}:`, response.status);
+            return { name, data: null, citations: [] };
+          }
+
+          const data = await response.json();
+          return {
+            name,
+            data: data.choices[0]?.message?.content || null,
+            citations: data.citations || []
+          };
+        } catch (error) {
+          console.error(`Error in market research query ${name}:`, error);
+          return { name, data: null, citations: [] };
+        }
+      })
+    );
+
+    return {
+      competitors: results.find(r => r.name === 'competitors'),
+      marketTrends: results.find(r => r.name === 'market_trends'),
+      customerInsights: results.find(r => r.name === 'customer_insights'),
+      fundingLandscape: results.find(r => r.name === 'funding_landscape'),
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error("Market research error:", error);
+    return null;
+  }
+}
 import { body, query } from "express-validator";
 import {
   authRateLimiter,
@@ -1791,8 +1882,21 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         return res.status(400).json({ message: "Please provide a detailed idea description (at least 20 characters)" });
       }
 
-      // Build comprehensive context for AI
-      const context = `
+      console.log(`[Validation] Starting validation for: ${ideaTitle}`);
+      console.log(`[Validation] Conducting real-time market research...`);
+
+      // Step 1: Conduct real-time market research with Perplexity
+      const marketResearch = await conductMarketResearch(
+        ideaTitle || idea.substring(0, 100),
+        idea,
+        industry || "technology",
+        targetMarket || "consumers"
+      );
+
+      console.log(`[Validation] Market research completed. Has data:`, !!marketResearch);
+
+      // Build comprehensive context for AI including market research
+      let context = `
 STARTUP IDEA DETAILS:
 Title: ${ideaTitle || "Not provided"}
 Description: ${idea}
@@ -1812,7 +1916,30 @@ Competitors: ${competitors || "Not identified"}
 Competitive Edge: ${competitiveEdge || "Not defined"}
       `.trim();
 
-      // Use Claude AI to validate the idea with comprehensive analysis
+      // Add real market research data if available
+      if (marketResearch) {
+        context += `\n\n=== REAL-TIME MARKET RESEARCH (from live web data ${marketResearch.timestamp}) ===\n\n`;
+        
+        if (marketResearch.competitors?.data) {
+          context += `COMPETITIVE LANDSCAPE:\n${marketResearch.competitors.data}\n\n`;
+        }
+        
+        if (marketResearch.marketTrends?.data) {
+          context += `MARKET TRENDS & SIZE:\n${marketResearch.marketTrends.data}\n\n`;
+        }
+        
+        if (marketResearch.customerInsights?.data) {
+          context += `CUSTOMER INSIGHTS:\n${marketResearch.customerInsights.data}\n\n`;
+        }
+        
+        if (marketResearch.fundingLandscape?.data) {
+          context += `FUNDING LANDSCAPE:\n${marketResearch.fundingLandscape.data}\n\n`;
+        }
+      }
+
+      console.log(`[Validation] Running Claude AI analysis...`);
+
+      // Step 2: Use Claude AI to validate with both user input and market research
       const response = await anthropic.messages.create({
         model: "claude-sonnet-4-20250514",
         max_tokens: 4000,
@@ -1903,6 +2030,33 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
       
       // Add the original idea to response
       validationData.idea = idea;
+
+      // Add market research metadata to response
+      if (marketResearch) {
+        validationData.marketResearch = {
+          hasData: true,
+          timestamp: marketResearch.timestamp,
+          sources: {
+            competitors: marketResearch.competitors?.citations?.length || 0,
+            marketTrends: marketResearch.marketTrends?.citations?.length || 0,
+            customerInsights: marketResearch.customerInsights?.citations?.length || 0,
+            fundingLandscape: marketResearch.fundingLandscape?.citations?.length || 0
+          },
+          totalSources: [
+            ...(marketResearch.competitors?.citations || []),
+            ...(marketResearch.marketTrends?.citations || []),
+            ...(marketResearch.customerInsights?.citations || []),
+            ...(marketResearch.fundingLandscape?.citations || [])
+          ].filter((v, i, a) => a.indexOf(v) === i).length // unique sources
+        };
+      } else {
+        validationData.marketResearch = {
+          hasData: false,
+          message: "Market research unavailable - validation based on AI analysis only"
+        };
+      }
+
+      console.log(`[Validation] AI analysis complete. Score: ${validationData.score}, Verdict: ${validationData.verdict}`);
 
       // Store validation result (basic fields for backward compatibility)
       const validation = await storage.createJourneyValidation({

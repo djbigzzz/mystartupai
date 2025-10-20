@@ -92,6 +92,18 @@ interface ValidationResult {
     }>;
   };
   recommendations: string[];
+  marketResearch?: {
+    hasData: boolean;
+    timestamp?: string;
+    sources?: {
+      competitors: number;
+      marketTrends: number;
+      customerInsights: number;
+      fundingLandscape: number;
+    };
+    totalSources?: number;
+    message?: string;
+  };
 }
 
 export default function CoFounderValidator() {
@@ -622,6 +634,7 @@ export default function CoFounderValidator() {
                   <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                     <p>⏱️ Validation takes 30-45 seconds</p>
                     <p>🧠 AI will analyze 8 critical dimensions</p>
+                    <p>🔍 Includes real-time market research from the web</p>
                   </div>
                 </div>
               </CardContent>
@@ -654,11 +667,30 @@ export default function CoFounderValidator() {
                     <span className="font-bold">VERDICT: {validationResult.verdict}</span>
                   </Badge>
 
+                  {/* Market Research Badge */}
+                  {validationResult.marketResearch?.hasData && (
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-full">
+                      <Search className="w-4 h-4 text-purple-500" />
+                      <span className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                        Real-Time Market Research Applied
+                      </span>
+                      <Badge variant="secondary" className="text-xs">
+                        {validationResult.marketResearch.totalSources} sources
+                      </Badge>
+                    </div>
+                  )}
+
                   <p className="mt-4 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                     {validationResult.verdict === 'GO' && "Your idea shows strong potential. Proceed with strategic planning and customer validation."}
                     {validationResult.verdict === 'REFINE' && "Your idea has potential but needs refinement. Address key concerns before proceeding."}
                     {validationResult.verdict === 'PIVOT' && "Significant changes needed. Consider pivoting your approach or addressing fundamental issues."}
                   </p>
+                  
+                  {validationResult.marketResearch?.hasData && (
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      Analysis includes live data from {new Date(validationResult.marketResearch.timestamp || '').toLocaleDateString()}
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
