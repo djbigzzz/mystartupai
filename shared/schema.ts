@@ -78,6 +78,7 @@ export const startupIdeas = pgTable("startup_ideas", {
   validationScore: integer("validation_score"),
   validationVerdict: text("validation_verdict"), // GO, REFINE, PIVOT
   validationResult: jsonb("validation_result"), // Full 8-dimension validation data
+  validationHistory: jsonb("validation_history"), // Array of {score, timestamp, changes} for iteration tracking
   analysisStatus: text("analysis_status").default("pending"),
   status: text("status").default("active"), // active, archived, deleted
   deletedAt: timestamp("deleted_at"),
