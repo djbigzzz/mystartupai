@@ -13,6 +13,8 @@ import { AnimatedGradient } from "@/components/react-bits/animated-gradient";
 import { useTheme } from "@/contexts/theme-context";
 import ThemeBackgroundEffects from "@/components/theme-background-effects";
 import { CypherpunkEffects } from "@/components/cypherpunk-effects";
+import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
+import MobileNavigation from "@/components/mobile-navigation";
 
 // Co-Founder personas with distinct identities
 const coFounders = [
@@ -90,61 +92,72 @@ export default function CoFounderJourney() {
   };
 
   return (
-    <div 
-      className="min-h-screen bg-background text-foreground relative overflow-hidden transition-colors duration-300"
-      data-page="co-founder-journey"
-    >
-      {/* Theme-aware background effects */}
-      <ThemeBackgroundEffects />
-      <CypherpunkEffects />
-
-      {/* ReactBits effects - only show in dark theme */}
-      {theme === "dark" && (
-        <>
-          <AuroraBackground 
-            className="opacity-30"
-            colors={[
-              "rgba(139, 92, 246, 0.5)",
-              "rgba(236, 72, 153, 0.5)",
-              "rgba(59, 130, 246, 0.5)",
-            ]}
-            speed={0.002}
-          />
-          <AnimatedGradient 
-            className="opacity-10"
-            colors={["#8b5cf6", "#ec4899", "#3b82f6"]}
-            speed={4}
-            blur={120}
-          />
-        </>
-      )}
-
-      {/* Grid pattern - theme-aware */}
-      <div className={`absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] ${
-        theme === "light" ? "opacity-5" : theme === "cypherpunk" ? "opacity-20" : "opacity-10"
-      }`}></div>
+    <div className="min-h-screen bg-background text-foreground flex" data-page="co-founder-journey">
+      {/* Mobile Navigation */}
+      <div className="lg:hidden">
+        <MobileNavigation />
+      </div>
       
-      {/* Floating particles - theme-aware */}
-      {theme !== "cypherpunk" && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className={`absolute w-1 h-1 rounded-full opacity-30 animate-float ${
-                theme === "light" ? "bg-blue-400" : "bg-purple-400"
-              }`}
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${5 + Math.random() * 10}s`
-              }}
-            />
-          ))}
-        </div>
-      )}
+      {/* Sidebar Navigation - Desktop Only */}
+      <div className="hidden lg:block">
+        <SidebarNavigation />
+      </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-12">
+      {/* Main Content with Theme Effects */}
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-0 relative overflow-hidden">
+        {/* Theme-aware background effects */}
+        <ThemeBackgroundEffects />
+        <CypherpunkEffects />
+
+        {/* ReactBits effects - only show in dark theme */}
+        {theme === "dark" && (
+          <>
+            <AuroraBackground 
+              className="opacity-30"
+              colors={[
+                "rgba(139, 92, 246, 0.5)",
+                "rgba(236, 72, 153, 0.5)",
+                "rgba(59, 130, 246, 0.5)",
+              ]}
+              speed={0.002}
+            />
+            <AnimatedGradient 
+              className="opacity-10"
+              colors={["#8b5cf6", "#ec4899", "#3b82f6"]}
+              speed={4}
+              blur={120}
+            />
+          </>
+        )}
+
+        {/* Grid pattern - theme-aware */}
+        <div className={`absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] ${
+          theme === "light" ? "opacity-5" : theme === "cypherpunk" ? "opacity-20" : "opacity-10"
+        }`}></div>
+        
+        {/* Floating particles - theme-aware */}
+        {theme !== "cypherpunk" && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className={`absolute w-1 h-1 rounded-full opacity-30 animate-float ${
+                  theme === "light" ? "bg-blue-400" : "bg-purple-400"
+                }`}
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 5}s`,
+                  animationDuration: `${5 + Math.random() * 10}s`
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Page Content */}
+        <div className="relative z-10 flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 overflow-auto">
+          <div className="max-w-7xl mx-auto">
         {/* Header with SplitText Animation */}
         <div className="text-center mb-12">
           <SplitText
@@ -291,25 +304,27 @@ export default function CoFounderJourney() {
             Complete each stage to unlock the next co-founder
           </p>
         </div>
-      </div>
+          </div>
+        </div>
 
-      {/* Custom animations */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        .animate-float {
-          animation: float linear infinite;
-        }
-        .animate-shimmer {
-          animation: shimmer 2s ease-in-out infinite;
-        }
-      `}</style>
+        {/* Custom animations */}
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+          }
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+          .animate-float {
+            animation: float linear infinite;
+          }
+          .animate-shimmer {
+            animation: shimmer 2s ease-in-out infinite;
+          }
+        `}</style>
+      </div>
     </div>
   );
 }
