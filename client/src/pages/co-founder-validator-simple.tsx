@@ -106,7 +106,6 @@ const QUICK_START_TEMPLATES = [
 export default function CoFounderValidatorSimple() {
   const { toast } = useToast();
   const [ideaText, setIdeaText] = useState("");
-  const [showResults, setShowResults] = useState(false);
 
   // Fetch existing idea
   const { data: savedIdea, isLoading: ideaLoading } = useQuery<SavedIdea | null>({
@@ -134,7 +133,7 @@ export default function CoFounderValidatorSimple() {
       return response;
     },
     onSuccess: (data: ValidationResult) => {
-      setShowResults(true);
+      setIdeaText(""); // Clear input after validation
       queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
       toast({
         title: "Validation Complete!",
@@ -145,6 +144,32 @@ export default function CoFounderValidatorSimple() {
       toast({
         title: "Validation Failed",
         description: error?.message || "Please try again",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Start over mutation - archives current idea
+  const startOverMutation = useMutation({
+    mutationFn: async () => {
+      if (!savedIdea) return;
+      await apiRequest(`/api/ideas/${savedIdea.id}`, {
+        method: "PATCH",
+        body: { status: "archived" },
+      });
+    },
+    onSuccess: () => {
+      setIdeaText("");
+      queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
+      toast({
+        title: "Starting fresh",
+        description: "Your previous idea has been archived. Ready for a new validation!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Could not archive idea. Please try again.",
         variant: "destructive",
       });
     },
@@ -163,8 +188,7 @@ export default function CoFounderValidatorSimple() {
   };
 
   const handleStartOver = () => {
-    setIdeaText("");
-    setShowResults(false);
+    startOverMutation.mutate();
   };
 
   const handleUseTemplate = (description: string) => {
@@ -172,7 +196,7 @@ export default function CoFounderValidatorSimple() {
   };
 
   const validationResult = savedIdea?.validationResult;
-  const hasValidatedIdea = Boolean(savedIdea && !showResults);
+  const hasValidatedIdea = Boolean(savedIdea);
 
   const getVerdictColor = (verdict: string) => {
     switch (verdict) {
