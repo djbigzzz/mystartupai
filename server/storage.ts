@@ -88,6 +88,7 @@ export interface IStorage {
   createStartupIdea(idea: InsertStartupIdea): Promise<StartupIdea>;
   getStartupIdea(id: number): Promise<StartupIdea | undefined>;
   updateStartupIdea(id: number, updates: Partial<StartupIdea>): Promise<StartupIdea | undefined>;
+  updateStartupIdeaDraft(userId: number, draftData: any): Promise<StartupIdea | undefined>;
   deleteStartupIdea(id: number): Promise<boolean>;
   getStartupIdeasByEmail(email: string): Promise<StartupIdea[]>;
   getStartupIdeasByUserId(userId: number): Promise<StartupIdea[]>;
@@ -284,6 +285,48 @@ export class DatabaseStorage implements IStorage {
       .where(eq(startupIdeas.id, id))
       .returning();
     return updatedIdea || undefined;
+  }
+
+  async updateStartupIdeaDraft(userId: number, draftData: any): Promise<StartupIdea | undefined> {
+    // Find the active idea for this user
+    const [activeIdea] = await db
+      .select()
+      .from(startupIdeas)
+      .where(and(
+        eq(startupIdeas.userId, userId),
+        eq(startupIdeas.status, 'active')
+      ))
+      .limit(1);
+
+    if (activeIdea) {
+      // Update existing idea's draft
+      const [updated] = await db
+        .update(startupIdeas)
+        .set({ 
+          draftData,
+          updatedAt: new Date()
+        })
+        .where(eq(startupIdeas.id, activeIdea.id))
+        .returning();
+      return updated || undefined;
+    } else {
+      // Create new idea with draft data
+      const [newIdea] = await db
+        .insert(startupIdeas)
+        .values({
+          userId,
+          name: draftData.ideaTitle || 'Untitled Idea',
+          email: '', // Will be filled from user
+          ideaTitle: draftData.ideaTitle || 'Untitled Idea',
+          description: draftData.problemStatement || '',
+          industry: 'Technology',
+          stage: 'idea',
+          draftData,
+          status: 'active'
+        })
+        .returning();
+      return newIdea;
+    }
   }
 
   async getStartupIdeasByEmail(email: string): Promise<StartupIdea[]> {

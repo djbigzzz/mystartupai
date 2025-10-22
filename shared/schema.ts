@@ -168,6 +168,7 @@ export const startupProfiles = pgTable("startup_profiles", {
 });
 
 export const insertStartupIdeaSchema = createInsertSchema(startupIdeas).pick({
+  userId: true,
   name: true,
   email: true,
   ideaTitle: true,
@@ -178,7 +179,13 @@ export const insertStartupIdeaSchema = createInsertSchema(startupIdeas).pick({
   problemStatement: true,
   solutionApproach: true,
   competitiveAdvantage: true,
+  competitiveLandscape: true,
+  businessModel: true,
+  uniqueValueProp: true,
   revenueModel: true,
+  analysisStatus: true,
+  status: true,
+  draftData: true,
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({

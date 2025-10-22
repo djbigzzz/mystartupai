@@ -2179,6 +2179,95 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
     }
   });
 
+  // Auto-save draft data
+  app.post("/api/journey/auto-save", 
+    requireAuth,
+    async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const { draftData } = req.body;
+
+      if (!draftData) {
+        return res.status(400).json({ message: "Draft data is required" });
+      }
+
+      const savedIdea = await storage.updateStartupIdeaDraft(userId, draftData);
+      
+      res.json({ 
+        success: true,
+        ideaId: savedIdea?.id 
+      });
+    } catch (error) {
+      console.error("Error auto-saving draft:", error);
+      res.status(500).json({ message: "Failed to save draft" });
+    }
+  });
+
+  // AI Suggest field content - generates intelligent suggestions based on context
+  app.post("/api/journey/suggest-field", 
+    requireAuth,
+    async (req, res) => {
+    try {
+      const { fieldName, formData } = req.body;
+      
+      if (!fieldName) {
+        return res.status(400).json({ message: "Field name is required" });
+      }
+
+      // Build context from existing form data
+      const context = {
+        title: formData?.ideaTitle || '',
+        problem: formData?.problemStatement || '',
+        solution: formData?.solutionApproach || '',
+        market: formData?.targetMarket || '',
+        competition: formData?.competitiveLandscape || '',
+        businessModel: formData?.businessModel || '',
+        valueProp: formData?.uniqueValueProp || ''
+      };
+
+      // Define suggestion prompts for each field
+      const prompts: Record<string, string> = {
+        ideaTitle: `Generate a compelling startup idea title (under 60 characters) based on this context:\n${context.problem ? `Problem: ${context.problem}` : ''}\n${context.solution ? `Solution: ${context.solution}` : ''}\n\nProvide ONLY the title, nothing else.`,
+        
+        problemStatement: `Generate a clear, specific problem statement for this startup idea:\n${context.title ? `Idea: ${context.title}` : ''}\n${context.solution ? `Solution approach: ${context.solution}` : ''}\n\nDescribe WHO faces the problem, WHAT the problem is, and WHY it matters. Be specific and quantifiable. Provide ONLY the problem statement (2-3 sentences).`,
+        
+        solutionApproach: `Generate a compelling solution description for this startup:\n${context.title ? `Idea: ${context.title}` : ''}\n${context.problem ? `Problem: ${context.problem}` : ''}\n\nExplain HOW your solution works, WHAT makes it unique, and the KEY benefits. Be specific about the approach. Provide ONLY the solution description (2-3 sentences).`,
+        
+        targetMarket: `Generate a specific target market description:\n${context.title ? `Idea: ${context.title}` : ''}\n${context.problem ? `Problem: ${context.problem}` : ''}\n${context.solution ? `Solution: ${context.solution}` : ''}\n\nDefine the specific customer segments, demographics, behaviors, and market characteristics. Be as specific as possible. Provide ONLY the target market description (2-3 sentences).`,
+        
+        competitiveLandscape: `Analyze the competitive landscape for:\n${context.title ? `Idea: ${context.title}` : ''}\n${context.market ? `Market: ${context.market}` : ''}\n${context.solution ? `Solution: ${context.solution}` : ''}\n\nIdentify direct competitors, indirect competitors, and alternative solutions. Mention specific companies if applicable. Provide ONLY the competitive landscape analysis (3-4 sentences).`,
+        
+        businessModel: `Suggest a business model for:\n${context.title ? `Idea: ${context.title}` : ''}\n${context.market ? `Market: ${context.market}` : ''}\n${context.solution ? `Solution: ${context.solution}` : ''}\n\nExplain how the business will make money, pricing strategy, and revenue streams. Be specific and realistic. Provide ONLY the business model description (2-3 sentences).`,
+        
+        uniqueValueProp: `Generate a unique value proposition for:\n${context.title ? `Idea: ${context.title}` : ''}\n${context.problem ? `Problem: ${context.problem}` : ''}\n${context.solution ? `Solution: ${context.solution}` : ''}\n${context.competition ? `Competition: ${context.competition}` : ''}\n\nWhat makes this solution uniquely valuable? What defensible advantages does it have? Provide ONLY the value proposition (2-3 sentences).`
+      };
+
+      const prompt = prompts[fieldName];
+      if (!prompt) {
+        return res.status(400).json({ message: "Invalid field name" });
+      }
+
+      // Use Claude AI to generate suggestion
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 300,
+        temperature: 0.7,
+        messages: [{
+          role: "user",
+          content: prompt
+        }]
+      });
+
+      const content = response.content[0];
+      const suggestion = content.type === 'text' ? content.text.trim() : '';
+
+      res.json({ suggestion });
+    } catch (error) {
+      console.error("Error generating field suggestion:", error);
+      res.status(500).json({ message: "Failed to generate suggestion. Please try again." });
+    }
+  });
+
   // AI Improve text endpoint for form fields
   app.post("/api/journey/ai-improve", 
     async (req, res) => {
