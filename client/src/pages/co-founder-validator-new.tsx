@@ -110,7 +110,7 @@ export default function CoFounderValidatorNew() {
         method: "POST",
         body: {
           ideaTitle: data.title,
-          description: data.description,
+          idea: data.description, // Backend expects 'idea' field
           industry: "Technology", // Default, AI will determine
           stage: "Idea Stage",
           problemStatement: data.description,
