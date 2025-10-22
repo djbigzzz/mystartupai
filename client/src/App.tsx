@@ -44,7 +44,7 @@ import PurchaseCreditsPage from "@/pages/purchase-credits";
 import GatewayMonitor from "@/pages/gateway-monitor";
 import PitchDemoLive from "@/pages/pitch-demo-live";
 import CoFounderJourney from "@/pages/co-founder-journey";
-import CoFounderValidator from "@/pages/co-founder-validator";
+import CoFounderValidator from "@/pages/co-founder-validator-new";
 import CoFounderStrategist from "@/pages/co-founder-strategist";
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
