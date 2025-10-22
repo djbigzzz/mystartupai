@@ -1367,10 +1367,10 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   );
 
   // Get startup ideas for authenticated user (protected route)
+  // SINGLE IDEA PER USER MODEL: Returns only the ONE active idea
   app.get("/api/ideas", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
-      const { status, verdict } = req.query;
       
       // Support both email-based users and Web3 wallet users
       let ideas;
@@ -1382,27 +1382,13 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         return res.status(400).json({ message: "User identification failed" });
       }
       
-      // Filter out soft-deleted ideas by default
-      ideas = ideas.filter((idea: any) => idea.status !== 'deleted');
+      // Find the single active idea (not deleted, status = active)
+      const activeIdea = ideas.find((idea: any) => 
+        idea.status === 'active' && !idea.deletedAt
+      );
       
-      // Apply status filter if provided
-      if (status && typeof status === 'string') {
-        ideas = ideas.filter((idea: any) => idea.status === status);
-      }
-      
-      // Apply verdict filter if provided (GO, REFINE, PIVOT)
-      if (verdict && typeof verdict === 'string') {
-        ideas = ideas.filter((idea: any) => idea.validationVerdict === verdict.toUpperCase());
-      }
-      
-      // Sort by most recent first
-      ideas.sort((a: any, b: any) => {
-        const dateA = new Date(a.updatedAt || a.createdAt).getTime();
-        const dateB = new Date(b.updatedAt || b.createdAt).getTime();
-        return dateB - dateA;
-      });
-      
-      res.json(ideas);
+      // Return single idea or null
+      res.json(activeIdea || null);
     } catch (error) {
       console.error("Error fetching ideas:", error);
       res.status(500).json({ message: "Failed to fetch ideas" });
@@ -2123,6 +2109,39 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
       }
 
       console.log(`[Validation] AI analysis complete. Score: ${validationData.score}, Verdict: ${validationData.verdict}`);
+
+      // SINGLE IDEA PER USER MODEL: Archive all existing active ideas for this user
+      const existingIdeas = await storage.getStartupIdeasByUserId(userId);
+      for (const existingIdea of existingIdeas) {
+        if (existingIdea.status === 'active' && !existingIdea.deletedAt) {
+          await storage.updateStartupIdea(existingIdea.id, { status: 'archived' });
+          console.log(`[Validation] Archived previous idea: ${existingIdea.ideaTitle}`);
+        }
+      }
+
+      // Create new startup idea with validation results
+      const newIdea = await storage.createStartupIdea({
+        userId,
+        name: (req.user as any).name || 'Founder',
+        email: (req.user as any).email || '',
+        ideaTitle: ideaTitle || idea.substring(0, 100),
+        description: idea,
+        industry: industry || "Technology",
+        stage,
+        problemStatement,
+        solutionApproach,
+        targetMarket,
+        marketSize,
+        competitors,
+        competitiveAdvantage: competitiveEdge,
+        validationScore: validationData.score,
+        validationVerdict: validationData.verdict,
+        validationResult: validationData,
+        status: 'active',
+        analysisStatus: 'completed'
+      });
+
+      console.log(`[Validation] Created new idea with ID: ${newIdea.id}`);
 
       // Store validation result (basic fields for backward compatibility)
       const validation = await storage.createJourneyValidation({
