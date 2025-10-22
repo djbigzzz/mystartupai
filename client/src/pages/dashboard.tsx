@@ -98,6 +98,17 @@ export default function Dashboard() {
     
     const latestIdea = userIdeas[0];
     
+    // Safety check for latestIdea
+    if (!latestIdea) {
+      return {
+        step: 1,
+        title: "Submit Your Startup Idea",
+        description: "Start by submitting your startup idea to get AI-powered insights",
+        link: "/submit-idea",
+        progress: 0
+      };
+    }
+    
     // Check if analysis is complete
     if (!latestIdea.analysis || latestIdea.analysisStatus === "pending") {
       return {
