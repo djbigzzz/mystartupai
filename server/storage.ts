@@ -266,8 +266,7 @@ export class DatabaseStorage implements IStorage {
       .insert(startupIdeas)
       .values({
         ...insertIdea,
-        analysisStatus: "pending",
-        validationScore: null
+        analysisStatus: insertIdea.analysisStatus || "pending"
       })
       .returning();
     return idea;
