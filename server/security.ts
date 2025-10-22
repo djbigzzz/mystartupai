@@ -126,11 +126,14 @@ export const validateStartupIdea = [
     'Pre-Launch',
     'Launched'
   ]),
-  body('targetMarket').optional().isLength({ max: 500 }).trim().escape(),
-  body('problemStatement').optional().isLength({ max: 1000 }).trim().escape(),
-  body('solutionApproach').optional().isLength({ max: 1000 }).trim().escape(),
-  body('competitiveAdvantage').optional().isLength({ max: 1000 }).trim().escape(),
-  body('revenueModel').optional().isLength({ max: 500 }).trim().escape()
+  body('targetMarket').optional().isLength({ max: 2000 }).trim().escape(),
+  body('problemStatement').optional().isLength({ max: 2000 }).trim().escape(),
+  body('solutionApproach').optional().isLength({ max: 2000 }).trim().escape(),
+  body('competitiveAdvantage').optional().isLength({ max: 2000 }).trim().escape(),
+  body('competitiveLandscape').optional().isLength({ max: 2000 }).trim().escape(),
+  body('businessModel').optional().isLength({ max: 2000 }).trim().escape(),
+  body('uniqueValueProp').optional().isLength({ max: 2000 }).trim().escape(),
+  body('revenueModel').optional().isLength({ max: 2000 }).trim().escape()
 ];
 
 // Validation Result Middleware

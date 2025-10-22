@@ -279,11 +279,15 @@ export function validateInputLengths(req: Request, res: Response, next: NextFunc
     description: 2000,
     industry: 100,
     stage: 50,
-    targetMarket: 500,
-    problemStatement: 1000,
-    solutionApproach: 1000,
-    competitiveAdvantage: 1000,
-    revenueModel: 500
+    targetMarket: 2000,
+    problemStatement: 2000,
+    solutionApproach: 2000,
+    competitiveAdvantage: 2000,
+    competitiveLandscape: 2000,
+    businessModel: 2000,
+    uniqueValueProp: 2000,
+    revenueModel: 2000,
+    ideaTitle: 200
   };
   
   function validateLengths(obj: any, path: string = ''): string | null {
