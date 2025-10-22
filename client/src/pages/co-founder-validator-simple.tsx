@@ -581,7 +581,8 @@ export default function CoFounderValidatorSimple() {
           </div>
         </div>
       </div>
-      </div>
     </div>
+    </div>
+  </div>
   );
 }
