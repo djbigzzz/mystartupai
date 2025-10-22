@@ -811,6 +811,11 @@ export default function CoFounderValidator() {
                       const DimensionIcon = config.icon;
                       const isExpanded = expandedSections[config.key];
                       
+                      // Skip if dimension data doesn't exist
+                      if (!dimensionData || typeof dimensionData.score === 'undefined') {
+                        return null;
+                      }
+                      
                       return (
                         <Card 
                           key={config.key} 
