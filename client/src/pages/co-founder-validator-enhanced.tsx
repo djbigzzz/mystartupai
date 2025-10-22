@@ -7,12 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Sparkles, TrendingUp, Target, AlertCircle, Lightbulb, ArrowRight, RotateCcw, Search, Database, Brain, BarChart3, CheckCircle2, Loader2, Save, Check } from "lucide-react";
+import { Sparkles, TrendingUp, Target, AlertCircle, Lightbulb, ArrowRight, RotateCcw, Search, Database, Brain, BarChart3, CheckCircle2, Loader2, Save, Check, AlertTriangle, Edit, TrendingDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import MobileNavigation from "@/components/mobile-navigation";
 import { debounce } from "lodash";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useLocation } from "wouter";
 
 interface ValidationResult {
   score: number;
@@ -150,6 +161,7 @@ function ResearchProgress() {
 
 export default function CoFounderValidatorEnhanced() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [formData, setFormData] = useState<IdeaFormData>({
     ideaTitle: "",
     problemStatement: "",
@@ -161,17 +173,19 @@ export default function CoFounderValidatorEnhanced() {
   });
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const [aiSuggesting, setAiSuggesting] = useState<string | null>(null);
+  const [isRefining, setIsRefining] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [previousScore, setPreviousScore] = useState<number | null>(null);
 
   // Fetch existing idea
   const { data: savedIdea, isLoading: ideaLoading } = useQuery<SavedIdea | null>({
     queryKey: ["/api/ideas"],
   });
 
-  // Load draft data when component mounts
+  // Load idea data when component mounts (for both draft and validated ideas)
   useEffect(() => {
-    if (savedIdea?.draftData) {
-      setFormData(savedIdea.draftData);
-    } else if (savedIdea && !savedIdea.validationScore) {
+    if (savedIdea) {
+      // Always load the latest idea data, whether it's a draft or validated
       setFormData({
         ideaTitle: savedIdea.ideaTitle || "",
         problemStatement: savedIdea.problemStatement || "",
@@ -209,7 +223,7 @@ export default function CoFounderValidatorEnhanced() {
   );
 
   // Handle field change
-  const handleFieldChange = (field: keyof FormData, value: string) => {
+  const handleFieldChange = (field: keyof IdeaFormData, value: string) => {
     const newData = { ...formData, [field]: value };
     setFormData(newData);
     debouncedSave(newData);
@@ -225,7 +239,7 @@ export default function CoFounderValidatorEnhanced() {
       return response.suggestion;
     },
     onSuccess: (suggestion, fieldName) => {
-      handleFieldChange(fieldName as keyof FormData, suggestion);
+      handleFieldChange(fieldName as keyof IdeaFormData, suggestion);
       setAiSuggesting(null);
       toast({
         title: "AI Suggestion Applied",
@@ -250,6 +264,11 @@ export default function CoFounderValidatorEnhanced() {
   // Validation mutation
   const validateMutation = useMutation({
     mutationFn: async () => {
+      // Store current score before re-validation
+      if (savedIdea?.validationScore && isRefining) {
+        setPreviousScore(savedIdea.validationScore);
+      }
+      
       const response = await apiRequest("/api/journey/validate", {
         method: "POST",
         body: {
@@ -263,16 +282,30 @@ export default function CoFounderValidatorEnhanced() {
           marketSize: "",
           competitors: formData.competitiveLandscape || "",
           competitiveEdge: formData.uniqueValueProp || "",
+          isRefinement: isRefining,
         },
       });
       return response;
     },
     onSuccess: (data: ValidationResult) => {
       queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
-      toast({
-        title: "Validation Complete!",
-        description: `Your idea scored ${data.score}/100 - ${data.verdict}`,
-      });
+      
+      // Show score improvement if refining
+      if (isRefining && previousScore !== null) {
+        const scoreDiff = data.score - previousScore;
+        const diffText = scoreDiff > 0 ? `+${scoreDiff}` : `${scoreDiff}`;
+        toast({
+          title: "Re-Validation Complete!",
+          description: `Your idea scored ${data.score}/100 (${diffText}) - ${data.verdict}`,
+        });
+        setIsRefining(false);
+      } else {
+        toast({
+          title: "Validation Complete!",
+          description: `Your idea scored ${data.score}/100 - ${data.verdict}`,
+        });
+      }
+      setPreviousScore(null);
     },
     onError: (error: any) => {
       toast({
@@ -280,6 +313,7 @@ export default function CoFounderValidatorEnhanced() {
         description: error?.message || "Please try again",
         variant: "destructive",
       });
+      setPreviousScore(null);
     },
   });
 
@@ -320,6 +354,21 @@ export default function CoFounderValidatorEnhanced() {
       return;
     }
     validateMutation.mutate();
+  };
+
+  const handleRefineIdea = () => {
+    if (savedIdea) {
+      setFormData({
+        ideaTitle: savedIdea.ideaTitle || "",
+        problemStatement: savedIdea.problemStatement || "",
+        solutionApproach: savedIdea.solutionApproach || "",
+        targetMarket: savedIdea.targetMarket || "",
+        competitiveLandscape: savedIdea.competitiveLandscape || "",
+        businessModel: savedIdea.businessModel || "",
+        uniqueValueProp: savedIdea.uniqueValueProp || "",
+      });
+      setIsRefining(true);
+    }
   };
 
   const hasValidatedIdea = Boolean(savedIdea?.validationScore);
@@ -393,27 +442,55 @@ export default function CoFounderValidatorEnhanced() {
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-2">
                         <Lightbulb className="w-5 h-5" />
-                        {hasValidatedIdea ? "Your Validated Idea" : "Articulate Your Idea"}
+                        {hasValidatedIdea && !isRefining ? "Your Validated Idea" : "Articulate Your Idea"}
                       </CardTitle>
-                      {hasValidatedIdea && (
-                        <Button variant="outline" size="sm" onClick={() => startOverMutation.mutate()} data-testid="button-start-over">
-                          <RotateCcw className="w-4 h-4 mr-2" /> Start Over
-                        </Button>
-                      )}
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {hasValidatedIdea ? (
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3">
+                    {hasValidatedIdea && !isRefining ? (
+                      <div className="space-y-6">
+                        {/* Validated Idea Summary */}
+                        <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
                           <div className="flex-1">
                             <h3 className="font-semibold text-lg">{savedIdea!.ideaTitle}</h3>
-                            <p className="text-sm text-muted-foreground mt-1">{savedIdea!.description}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{savedIdea!.problemStatement}</p>
                           </div>
                           <div className="text-right">
                             <div className={`text-3xl font-bold ${getScoreColor(savedIdea!.validationScore)}`}>{savedIdea!.validationScore}</div>
                             <Badge className={getVerdictColor(savedIdea!.validationVerdict)}>{savedIdea!.validationVerdict}</Badge>
                           </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="grid gap-3">
+                          <Button onClick={handleRefineIdea} className="w-full" size="lg" data-testid="button-refine-idea">
+                            <Edit className="w-4 h-4 mr-2" />
+                            Refine & Re-Validate
+                          </Button>
+                          
+                          {savedIdea!.validationScore >= 60 && (
+                            <Button 
+                              onClick={() => setLocation("/co-founder/strategist")} 
+                              variant="outline" 
+                              className="w-full" 
+                              size="lg"
+                              data-testid="button-continue-strategist"
+                            >
+                              <ArrowRight className="w-4 h-4 mr-2" />
+                              Continue to The Strategist
+                            </Button>
+                          )}
+                          
+                          <Button 
+                            onClick={() => setShowDeleteDialog(true)} 
+                            variant="destructive" 
+                            className="w-full" 
+                            size="lg"
+                            data-testid="button-start-over"
+                          >
+                            <AlertTriangle className="w-4 h-4 mr-2" />
+                            Start Over
+                          </Button>
                         </div>
                       </div>
                     ) : (
@@ -502,13 +579,47 @@ export default function CoFounderValidatorEnhanced() {
                           <Textarea placeholder="What makes you uniquely valuable? Defensible advantages..." rows={3} value={formData.uniqueValueProp} onChange={(e) => handleFieldChange("uniqueValueProp", e.target.value)} data-testid="input-uniqueValueProp" />
                         </div>
 
-                        <Button onClick={handleValidate} disabled={validateMutation.isPending} className="w-full" size="lg" data-testid="button-validate-enhanced">
-                          {validateMutation.isPending ? (
-                            <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Analyzing... (60-90s)</>
-                          ) : (
-                            <><ArrowRight className="w-4 h-4 mr-2" /> Validate My Idea</>
+                        <div className="flex gap-3">
+                          {isRefining && (
+                            <Button 
+                              onClick={() => {
+                                setIsRefining(false);
+                                if (savedIdea) {
+                                  setFormData({
+                                    ideaTitle: savedIdea.ideaTitle || "",
+                                    problemStatement: savedIdea.problemStatement || "",
+                                    solutionApproach: savedIdea.solutionApproach || "",
+                                    targetMarket: savedIdea.targetMarket || "",
+                                    competitiveLandscape: savedIdea.competitiveLandscape || "",
+                                    businessModel: savedIdea.businessModel || "",
+                                    uniqueValueProp: savedIdea.uniqueValueProp || "",
+                                  });
+                                }
+                              }}
+                              variant="outline" 
+                              className="flex-1" 
+                              size="lg"
+                              data-testid="button-cancel-refine"
+                            >
+                              Cancel
+                            </Button>
                           )}
-                        </Button>
+                          <Button 
+                            onClick={handleValidate} 
+                            disabled={validateMutation.isPending} 
+                            className={isRefining ? "flex-1" : "w-full"} 
+                            size="lg" 
+                            data-testid="button-validate-enhanced"
+                          >
+                            {validateMutation.isPending ? (
+                              <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Analyzing... (60-90s)</>
+                            ) : isRefining ? (
+                              <><ArrowRight className="w-4 h-4 mr-2" /> Re-Validate My Idea</>
+                            ) : (
+                              <><ArrowRight className="w-4 h-4 mr-2" /> Validate My Idea</>
+                            )}
+                          </Button>
+                        </div>
                       </>
                     )}
                   </CardContent>
@@ -592,6 +703,34 @@ export default function CoFounderValidatorEnhanced() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle className="w-5 h-5" />
+              Delete Your Idea?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete your idea and all validation data. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="dialog-cancel">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowDeleteDialog(false);
+                startOverMutation.mutate();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="dialog-confirm-delete"
+            >
+              Yes, Delete Forever
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

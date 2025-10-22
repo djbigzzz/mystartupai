@@ -1927,7 +1927,8 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         targetMarket = "",
         marketSize = "",
         competitors = "",
-        competitiveEdge = ""
+        competitiveEdge = "",
+        isRefinement = false
       } = req.body;
       
       if (!idea || idea.trim().length < 10) {
@@ -2110,38 +2111,101 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
 
       console.log(`[Validation] AI analysis complete. Score: ${validationData.score}, Verdict: ${validationData.verdict}`);
 
-      // SINGLE IDEA PER USER MODEL: Archive all existing active ideas for this user
-      const existingIdeas = await storage.getStartupIdeasByUserId(userId);
-      for (const existingIdea of existingIdeas) {
-        if (existingIdea.status === 'active' && !existingIdea.deletedAt) {
-          await storage.updateStartupIdea(existingIdea.id, { status: 'archived' });
-          console.log(`[Validation] Archived previous idea: ${existingIdea.ideaTitle}`);
+      let ideaRecord;
+      
+      if (isRefinement) {
+        // REFINEMENT MODE: Update existing idea and track history
+        const existingIdeas = await storage.getStartupIdeasByUserId(userId);
+        const currentIdea = existingIdeas.find(i => i.status === 'active' && !i.deletedAt);
+        
+        if (currentIdea) {
+          // Build validation history entry
+          const historyEntry = {
+            score: validationData.score,
+            verdict: validationData.verdict,
+            timestamp: new Date().toISOString(),
+            changes: {
+              ideaTitle,
+              problemStatement,
+              solutionApproach,
+              targetMarket,
+              competitors,
+              competitiveEdge
+            }
+          };
+          
+          // Get existing history or initialize
+          const existingHistory = currentIdea.validationHistory as any[] || [];
+          const updatedHistory = [...existingHistory, historyEntry];
+          
+          // Update existing idea with new validation and history
+          await storage.updateStartupIdea(currentIdea.id, {
+            ideaTitle: ideaTitle || currentIdea.ideaTitle,
+            description: idea,
+            problemStatement,
+            solutionApproach,
+            targetMarket,
+            competitors,
+            competitiveAdvantage: competitiveEdge,
+            validationScore: validationData.score,
+            validationVerdict: validationData.verdict,
+            validationResult: validationData,
+            validationHistory: updatedHistory,
+            analysisStatus: 'completed'
+          });
+          
+          ideaRecord = { ...currentIdea, id: currentIdea.id };
+          console.log(`[Validation] Updated existing idea ID: ${currentIdea.id} (refinement #${updatedHistory.length})`);
         }
       }
+      
+      if (!isRefinement || !ideaRecord) {
+        // INITIAL VALIDATION: Archive existing and create new idea
+        const existingIdeas = await storage.getStartupIdeasByUserId(userId);
+        for (const existingIdea of existingIdeas) {
+          if (existingIdea.status === 'active' && !existingIdea.deletedAt) {
+            await storage.updateStartupIdea(existingIdea.id, { status: 'archived' });
+            console.log(`[Validation] Archived previous idea: ${existingIdea.ideaTitle}`);
+          }
+        }
 
-      // Create new startup idea with validation results
-      const newIdea = await storage.createStartupIdea({
-        userId,
-        name: (req.user as any).name || 'Founder',
-        email: (req.user as any).email || '',
-        ideaTitle: ideaTitle || idea.substring(0, 100),
-        description: idea,
-        industry: industry || "Technology",
-        stage,
-        problemStatement,
-        solutionApproach,
-        targetMarket,
-        marketSize,
-        competitors,
-        competitiveAdvantage: competitiveEdge,
-        validationScore: validationData.score,
-        validationVerdict: validationData.verdict,
-        validationResult: validationData,
-        status: 'active',
-        analysisStatus: 'completed'
-      });
-
-      console.log(`[Validation] Created new idea with ID: ${newIdea.id}`);
+        // Create new startup idea with validation results
+        const newIdea = await storage.createStartupIdea({
+          userId,
+          name: (req.user as any).name || 'Founder',
+          email: (req.user as any).email || '',
+          ideaTitle: ideaTitle || idea.substring(0, 100),
+          description: idea,
+          industry: industry || "Technology",
+          stage,
+          problemStatement,
+          solutionApproach,
+          targetMarket,
+          competitors,
+          competitiveAdvantage: competitiveEdge,
+          validationScore: validationData.score,
+          validationVerdict: validationData.verdict,
+          validationResult: validationData,
+          validationHistory: [{
+            score: validationData.score,
+            verdict: validationData.verdict,
+            timestamp: new Date().toISOString(),
+            changes: {
+              ideaTitle,
+              problemStatement,
+              solutionApproach,
+              targetMarket,
+              competitors,
+              competitiveEdge
+            }
+          }],
+          status: 'active',
+          analysisStatus: 'completed'
+        });
+        
+        ideaRecord = newIdea;
+        console.log(`[Validation] Created new idea with ID: ${newIdea.id}`);
+      }
 
       // Store validation result (basic fields for backward compatibility)
       const validation = await storage.createJourneyValidation({
