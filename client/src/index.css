@@ -376,6 +376,91 @@
 }
 
 /* ============================================
+   CO-FOUNDER JOURNEY PAGE - THEME STYLES
+   ============================================ */
+
+/* Light Theme - Co-Founder Journey */
+.light [data-page="co-founder-journey"] .cofounder-card.cofounder-unlocked {
+  background: linear-gradient(to bottom right, var(--card), var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.light [data-page="co-founder-journey"] .cofounder-card.cofounder-unlocked h3,
+.light [data-page="co-founder-journey"] .cofounder-card.cofounder-unlocked p {
+  color: hsl(var(--foreground)) !important;
+}
+
+.light [data-page="co-founder-journey"] .cofounder-card.cofounder-locked {
+  background: hsl(var(--muted)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Cypherpunk Theme - Co-Founder Journey */
+.cypherpunk [data-page="co-founder-journey"] h1 {
+  color: hsl(120 100% 92%) !important;
+  text-shadow: 0 0 25px rgba(0, 255, 65, 1) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] .cofounder-card {
+  background: hsl(120 25% 12%) !important;
+  border: 2px solid hsl(120 100% 45%) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] .cofounder-card.cofounder-unlocked {
+  background: hsl(120 30% 15%) !important;
+  border-color: hsl(120 100% 60%) !important;
+  box-shadow: 0 0 25px rgba(0, 255, 65, 0.5) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] .cofounder-card.cofounder-unlocked:hover {
+  box-shadow: 0 0 35px rgba(0, 255, 65, 0.7) !important;
+  border-color: hsl(120 100% 70%) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] .cofounder-card h3 {
+  color: hsl(120 100% 90%) !important;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.6) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] .cofounder-card p {
+  color: hsl(120 100% 80%) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] button {
+  border: 2px solid hsl(120 100% 45%) !important;
+  background: hsl(120 25% 18%) !important;
+  color: hsl(120 100% 90%) !important;
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] button:hover {
+  box-shadow: 0 0 25px rgba(0, 255, 65, 0.6) !important;
+  background: hsl(120 30% 20%) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] .cofounder-locked {
+  opacity: 0.5 !important;
+  border-color: hsl(120 50% 30%) !important;
+}
+
+/* Progress card styling for Cypherpunk */
+.cypherpunk [data-page="co-founder-journey"] [class*="Card"]:not(.cofounder-card) {
+  background: hsl(120 25% 15%) !important;
+  border: 2px solid hsl(120 100% 45%) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] [class*="Card"]:not(.cofounder-card) * {
+  color: hsl(120 100% 85%) !important;
+}
+
+.cypherpunk [data-page="co-founder-journey"] [class*="Card"]:not(.cofounder-card) p.font-bold {
+  color: hsl(120 100% 95%) !important;
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.6) !important;
+}
+
+/* ============================================
    DESIGN SYSTEM - Typography & Spacing
    ============================================ */
 

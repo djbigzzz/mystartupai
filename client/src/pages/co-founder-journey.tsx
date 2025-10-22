@@ -10,6 +10,9 @@ import type { JourneyProgress } from "@shared/schema";
 import { AuroraBackground } from "@/components/react-bits/aurora-background";
 import { SplitText } from "@/components/react-bits/split-text";
 import { AnimatedGradient } from "@/components/react-bits/animated-gradient";
+import { useTheme } from "@/contexts/theme-context";
+import ThemeBackgroundEffects from "@/components/theme-background-effects";
+import { CypherpunkEffects } from "@/components/cypherpunk-effects";
 
 // Co-Founder personas with distinct identities
 const coFounders = [
@@ -66,6 +69,7 @@ const coFounders = [
 export default function CoFounderJourney() {
   const [, navigate] = useLocation();
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const { theme } = useTheme();
 
   // Fetch journey progress
   const { data: journeyProgress } = useQuery<JourneyProgress>({
@@ -86,44 +90,59 @@ export default function CoFounderJourney() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 relative overflow-hidden">
-      {/* ReactBits Aurora Background - Premium northern lights effect */}
-      <AuroraBackground 
-        className="opacity-30"
-        colors={[
-          "rgba(139, 92, 246, 0.5)",
-          "rgba(236, 72, 153, 0.5)",
-          "rgba(59, 130, 246, 0.5)",
-        ]}
-        speed={0.002}
-      />
+    <div 
+      className="min-h-screen bg-background text-foreground relative overflow-hidden transition-colors duration-300"
+      data-page="co-founder-journey"
+    >
+      {/* Theme-aware background effects */}
+      <ThemeBackgroundEffects />
+      <CypherpunkEffects />
 
-      {/* ReactBits Animated Gradient Overlay */}
-      <AnimatedGradient 
-        className="opacity-10"
-        colors={["#8b5cf6", "#ec4899", "#3b82f6"]}
-        speed={4}
-        blur={120}
-      />
-
-      {/* Animated background effects */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10"></div>
-      
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-purple-400 rounded-full opacity-30 animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${5 + Math.random() * 10}s`
-            }}
+      {/* ReactBits effects - only show in dark theme */}
+      {theme === "dark" && (
+        <>
+          <AuroraBackground 
+            className="opacity-30"
+            colors={[
+              "rgba(139, 92, 246, 0.5)",
+              "rgba(236, 72, 153, 0.5)",
+              "rgba(59, 130, 246, 0.5)",
+            ]}
+            speed={0.002}
           />
-        ))}
-      </div>
+          <AnimatedGradient 
+            className="opacity-10"
+            colors={["#8b5cf6", "#ec4899", "#3b82f6"]}
+            speed={4}
+            blur={120}
+          />
+        </>
+      )}
+
+      {/* Grid pattern - theme-aware */}
+      <div className={`absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] ${
+        theme === "light" ? "opacity-5" : theme === "cypherpunk" ? "opacity-20" : "opacity-10"
+      }`}></div>
+      
+      {/* Floating particles - theme-aware */}
+      {theme !== "cypherpunk" && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className={`absolute w-1 h-1 rounded-full opacity-30 animate-float ${
+                theme === "light" ? "bg-blue-400" : "bg-purple-400"
+              }`}
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${5 + Math.random() * 10}s`
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="relative z-10 container mx-auto px-4 py-12">
         {/* Header with SplitText Animation */}
@@ -131,39 +150,43 @@ export default function CoFounderJourney() {
           <SplitText
             text="Your AI Co-Founder Journey"
             tag="h1"
-            className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text"
+            className={`text-5xl font-bold mb-4 ${
+              theme === "cypherpunk" 
+                ? "text-primary" 
+                : "bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text"
+            }`}
             splitType="chars"
             delay={40}
             duration={0.6}
             from={{ opacity: 0, y: 50, rotationX: -90 }}
             to={{ opacity: 1, y: 0, rotationX: 0 }}
           />
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Four expert co-founders who won't let you build the wrong thing
           </p>
         </div>
 
         {/* Progress Overview */}
         <div className="max-w-4xl mx-auto mb-12">
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-6">
+          <Card className="backdrop-blur-lg border-2 p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-sm text-gray-400 mb-1">Overall Progress</p>
-                <p className="text-2xl font-bold text-white">Stage {currentStage} of 4 Complete</p>
+                <p className="text-sm text-muted-foreground mb-1">Overall Progress</p>
+                <p className="text-2xl font-bold">Stage {currentStage} of 4 Complete</p>
               </div>
               {badges.length > 0 && (
                 <div className="flex gap-2">
                   {badges.map((badge, i) => (
-                    <Badge key={i} variant="outline" className="bg-purple-500/20 text-purple-300 border-purple-500/50">
+                    <Badge key={i} variant="outline">
                       {badge}
                     </Badge>
                   ))}
                 </div>
               )}
             </div>
-            <Progress value={progressPercentage} className="h-3 bg-white/10" />
-            <p className="text-sm text-gray-400 mt-2">{progressPercentage}% Complete</p>
-          </div>
+            <Progress value={progressPercentage} className="h-3" />
+            <p className="text-sm text-muted-foreground mt-2">{progressPercentage}% Complete</p>
+          </Card>
         </div>
 
         {/* Co-Founder Cards Grid */}
@@ -177,20 +200,21 @@ export default function CoFounderJourney() {
               <Card
                 key={coFounder.id}
                 className={`
-                  relative overflow-hidden transition-all duration-300 border-2
+                  relative overflow-hidden transition-all duration-300 border-2 cofounder-card
                   ${unlocked 
-                    ? `bg-gradient-to-br ${coFounder.color} border-white/30 hover:scale-105 hover:shadow-2xl cursor-pointer` 
-                    : 'bg-gray-800/50 border-gray-700/50 opacity-60 cursor-not-allowed'
+                    ? `cofounder-unlocked bg-gradient-to-br ${coFounder.color} hover:scale-105 hover:shadow-2xl cursor-pointer` 
+                    : 'cofounder-locked opacity-60 cursor-not-allowed'
                   }
                   ${isHovered && unlocked ? 'shadow-[0_0_30px_rgba(168,85,247,0.5)]' : ''}
                 `}
+                data-unlocked={unlocked}
                 onMouseEnter={() => setHoveredCard(coFounder.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 onClick={() => unlocked && navigate(coFounder.route)}
                 data-testid={`cofounder-card-${coFounder.id}`}
               >
-                {/* Glassmorphism overlay */}
-                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                {/* Glassmorphism overlay - theme-aware */}
+                {theme === "dark" && <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>}
                 
                 <CardContent className="relative p-6">
                   {/* Header with Avatar & Status */}
@@ -208,50 +232,51 @@ export default function CoFounderJourney() {
                       {/* Icon Badge */}
                       <div className={`
                         w-12 h-12 rounded-full flex items-center justify-center
-                        ${unlocked ? 'bg-white/20' : 'bg-gray-700/50'}
+                        ${unlocked ? 'bg-primary/20' : 'bg-muted'}
                       `}>
-                        <Icon className={`w-6 h-6 ${unlocked ? 'text-white' : 'text-gray-500'}`} />
+                        <Icon className={`w-6 h-6 ${unlocked ? 'text-primary' : 'text-muted-foreground'}`} />
                       </div>
                     </div>
 
                     {/* Lock/Unlock Status */}
                     {unlocked ? (
-                      <CheckCircle2 className="w-8 h-8 text-green-400" data-testid={`status-unlocked-${coFounder.id}`} />
+                      <CheckCircle2 className="w-8 h-8 text-green-500" data-testid={`status-unlocked-${coFounder.id}`} />
                     ) : (
-                      <Lock className="w-8 h-8 text-gray-500" data-testid={`status-locked-${coFounder.id}`} />
+                      <Lock className="w-8 h-8 text-muted-foreground" data-testid={`status-locked-${coFounder.id}`} />
                     )}
                   </div>
 
                   {/* Content */}
                   <div>
-                    <h3 className={`text-2xl font-bold mb-2 ${unlocked ? 'text-white' : 'text-gray-400'}`}>
+                    <h3 className={`text-2xl font-bold mb-2 ${unlocked ? '' : 'text-muted-foreground'}`}>
                       {coFounder.name}
                     </h3>
-                    <p className={`text-sm mb-3 ${unlocked ? 'text-white/90' : 'text-gray-500'}`}>
+                    <p className={`text-sm mb-3 ${unlocked ? 'text-foreground/90' : 'text-muted-foreground'}`}>
                       {coFounder.title}
                     </p>
-                    <p className={`text-sm mb-4 ${unlocked ? 'text-white/70' : 'text-gray-600'}`}>
+                    <p className={`text-sm mb-4 ${unlocked ? 'text-foreground/70' : 'text-muted-foreground/70'}`}>
                       {coFounder.description}
                     </p>
 
                     {/* Action Button / Unlock Condition */}
                     {unlocked ? (
                       <Button 
-                        className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30"
+                        variant="outline"
+                        className="w-full"
                         data-testid={`button-start-${coFounder.id}`}
                       >
                         {journeyProgress?.[`stage${coFounder.id}Completed` as keyof JourneyProgress] ? 'Review' : 'Start'} →
                       </Button>
                     ) : (
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Lock className="w-4 h-4" />
                         <span>{coFounder.unlockCondition}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Animated glow for active card */}
-                  {unlocked && isHovered && (
+                  {/* Animated glow for active card - theme-aware */}
+                  {unlocked && isHovered && theme === "dark" && (
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none"></div>
                   )}
                 </CardContent>
@@ -262,7 +287,7 @@ export default function CoFounderJourney() {
 
         {/* Help Text */}
         <div className="text-center mt-12">
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             Complete each stage to unlock the next co-founder
           </p>
         </div>
