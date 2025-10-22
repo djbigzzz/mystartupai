@@ -1370,6 +1370,7 @@ Issued At: ${new Date(timestamp).toISOString()}`;
   app.get("/api/ideas", requireAuth, async (req, res) => {
     try {
       const user = req.user as any;
+      const { status, verdict } = req.query;
       
       // Support both email-based users and Web3 wallet users
       let ideas;
@@ -1381,6 +1382,26 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         return res.status(400).json({ message: "User identification failed" });
       }
       
+      // Filter out soft-deleted ideas by default
+      ideas = ideas.filter((idea: any) => idea.status !== 'deleted');
+      
+      // Apply status filter if provided
+      if (status && typeof status === 'string') {
+        ideas = ideas.filter((idea: any) => idea.status === status);
+      }
+      
+      // Apply verdict filter if provided (GO, REFINE, PIVOT)
+      if (verdict && typeof verdict === 'string') {
+        ideas = ideas.filter((idea: any) => idea.validationVerdict === verdict.toUpperCase());
+      }
+      
+      // Sort by most recent first
+      ideas.sort((a: any, b: any) => {
+        const dateA = new Date(a.updatedAt || a.createdAt).getTime();
+        const dateB = new Date(b.updatedAt || b.createdAt).getTime();
+        return dateB - dateA;
+      });
+      
       res.json(ideas);
     } catch (error) {
       console.error("Error fetching ideas:", error);
@@ -1388,7 +1409,48 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     }
   });
 
-  // Delete startup idea (allows user to start fresh)
+  // Update idea status (archive/unarchive)
+  app.patch("/api/ideas/:id",
+    requireAuth,
+    validateId,
+    handleValidationErrors,
+    async (req, res) => {
+      try {
+        const id = parseInt(req.params.id);
+        const userId = (req.user as any).id;
+        const { status } = req.body;
+        
+        // Validate status
+        if (status && !['active', 'archived'].includes(status)) {
+          return res.status(400).json({ message: "Invalid status. Must be 'active' or 'archived'" });
+        }
+        
+        const idea = await storage.getStartupIdea(id);
+        
+        if (!idea) {
+          return res.status(404).json({ message: "Startup idea not found" });
+        }
+        
+        // Security check: Ensure the user owns this idea
+        if (idea.userId !== userId) {
+          return res.status(403).json({ message: "Access denied: You don't have permission to update this idea" });
+        }
+        
+        const updated = await storage.updateStartupIdea(id, { status });
+        
+        if (updated) {
+          res.json({ message: "Idea updated successfully", idea: updated });
+        } else {
+          res.status(500).json({ message: "Failed to update idea" });
+        }
+      } catch (error) {
+        console.error("Error updating idea:", error);
+        res.status(500).json({ message: "Failed to update idea" });
+      }
+    }
+  );
+
+  // Delete startup idea (soft delete)
   app.delete("/api/ideas/:id",
     requireAuth,
     validateId,
@@ -1408,7 +1470,11 @@ Issued At: ${new Date(timestamp).toISOString()}`;
           return res.status(403).json({ message: "Access denied: You don't have permission to delete this idea" });
         }
         
-        const deleted = await storage.deleteStartupIdea(id);
+        // Soft delete by setting status to 'deleted' and deletedAt timestamp
+        const deleted = await storage.updateStartupIdea(id, { 
+          status: 'deleted',
+          deletedAt: new Date()
+        });
         
         if (deleted) {
           res.json({ message: "Idea deleted successfully. You can now create a new one!" });

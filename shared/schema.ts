@@ -66,12 +66,19 @@ export const startupIdeas = pgTable("startup_ideas", {
   solutionApproach: text("solution_approach"),
   competitiveAdvantage: text("competitive_advantage"),
   revenueModel: text("revenue_model"),
+  marketSize: text("market_size"),
+  competitors: text("competitors"),
   analysis: jsonb("analysis"),
   businessPlan: jsonb("business_plan"),
   pitchDeck: jsonb("pitch_deck"),
   validationScore: integer("validation_score"),
+  validationVerdict: text("validation_verdict"), // GO, REFINE, PIVOT
+  validationResult: jsonb("validation_result"), // Full 8-dimension validation data
   analysisStatus: text("analysis_status").default("pending"),
+  status: text("status").default("active"), // active, archived, deleted
+  deletedAt: timestamp("deleted_at"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const companies = pgTable("companies", {
