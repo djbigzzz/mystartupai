@@ -65,9 +65,13 @@ export const startupIdeas = pgTable("startup_ideas", {
   problemStatement: text("problem_statement"),
   solutionApproach: text("solution_approach"),
   competitiveAdvantage: text("competitive_advantage"),
+  competitiveLandscape: text("competitive_landscape"),
+  businessModel: text("business_model"),
+  uniqueValueProp: text("unique_value_prop"),
   revenueModel: text("revenue_model"),
   marketSize: text("market_size"),
   competitors: text("competitors"),
+  draftData: jsonb("draft_data"), // Auto-save data before validation
   analysis: jsonb("analysis"),
   businessPlan: jsonb("business_plan"),
   pitchDeck: jsonb("pitch_deck"),
