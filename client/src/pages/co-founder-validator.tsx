@@ -37,7 +37,7 @@ import { useTheme } from "@/contexts/theme-context";
 import MobileNavigation from "@/components/mobile-navigation";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ThemeBackgroundEffects from "@/components/theme-background-effects";
-import CypherpunkEffects from "@/components/cypherpunk-effects";
+import { CypherpunkEffects } from "@/components/cypherpunk-effects";
 
 interface ValidationResult {
   idea: string;
