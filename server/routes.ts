@@ -2267,6 +2267,26 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
     }
   });
 
+  // Delete draft
+  app.delete("/api/journey/delete-draft",
+    requireAuth,
+    async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      
+      // Delete the user's startup idea (draft or validated)
+      await storage.deleteStartupIdea(userId);
+      
+      res.json({ 
+        success: true,
+        message: "Draft deleted successfully"
+      });
+    } catch (error) {
+      console.error("Error deleting draft:", error);
+      res.status(500).json({ message: "Failed to delete draft" });
+    }
+  });
+
   // AI Suggest field content - generates intelligent suggestions based on context
   app.post("/api/journey/suggest-field", 
     requireAuth,

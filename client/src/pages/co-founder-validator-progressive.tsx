@@ -27,6 +27,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import EnhancedTextarea from "@/components/enhanced-textarea";
 import FormStepper from "@/components/form-stepper";
 import LiveResearchProgress from "@/components/live-research-progress";
+import { SaveStatusBar } from "@/components/save-status-bar";
+import { SavedDataComparisonDialog } from "@/components/saved-data-comparison-dialog";
 
 interface ValidationResult {
   score: number;
@@ -58,6 +60,7 @@ interface SavedIdea {
   validationResult: ValidationResult;
   draftData?: any;
   createdAt: string;
+  updatedAt?: string;
 }
 
 interface IdeaFormData {
@@ -95,6 +98,9 @@ export default function CoFounderValidatorProgressive() {
   const [isRefining, setIsRefining] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [previousScore, setPreviousScore] = useState<number | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [showComparisonDialog, setShowComparisonDialog] = useState(false);
+  const [showClearDraftDialog, setShowClearDraftDialog] = useState(false);
 
   // Fetch existing idea
   const { data: savedIdea, isLoading: ideaLoading } = useQuery<SavedIdea | null>({
@@ -113,6 +119,11 @@ export default function CoFounderValidatorProgressive() {
         businessModel: savedIdea.businessModel || "",
         uniqueValueProp: savedIdea.uniqueValueProp || "",
       });
+      
+      // Initialize lastSavedAt from existing draft's updatedAt timestamp
+      if (savedIdea.updatedAt) {
+        setLastSavedAt(new Date(savedIdea.updatedAt));
+      }
     }
   }, [savedIdea]);
 
@@ -127,9 +138,72 @@ export default function CoFounderValidatorProgressive() {
     onMutate: () => setSaveStatus("saving"),
     onSuccess: () => {
       setSaveStatus("saved");
+      setLastSavedAt(new Date());
+      // Invalidate /api/ideas query to sync comparison dialog data
+      queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
       setTimeout(() => setSaveStatus("idle"), 2000);
     },
     onError: () => setSaveStatus("idle"),
+  });
+
+  // Manual save mutation
+  const manualSaveMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("/api/journey/auto-save", {
+        method: "POST",
+        body: { draftData: formData },
+      });
+    },
+    onSuccess: () => {
+      setLastSavedAt(new Date());
+      toast({
+        title: "Draft Saved",
+        description: "Your idea has been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
+    },
+    onError: () => {
+      toast({
+        title: "Save Failed",
+        description: "Could not save your draft. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete draft mutation
+  const deleteDraftMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("/api/journey/delete-draft", {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      setFormData({
+        ideaTitle: "",
+        problemStatement: "",
+        solutionApproach: "",
+        targetMarket: "",
+        competitiveLandscape: "",
+        businessModel: "",
+        uniqueValueProp: "",
+      });
+      setLastSavedAt(null);
+      setCurrentStep(1);
+      setShowSummary(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
+      toast({
+        title: "Draft Cleared",
+        description: "Your draft has been deleted. Starting fresh!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Delete Failed",
+        description: "Could not delete your draft. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   // Debounced auto-save
@@ -410,6 +484,15 @@ export default function CoFounderValidatorProgressive() {
                       </div>
                     ) : (
                       <>
+                        {/* Save Status Bar */}
+                        <SaveStatusBar
+                          lastSavedAt={lastSavedAt}
+                          isSaving={saveStatus === "saving" || manualSaveMutation.isPending}
+                          onViewSaved={() => setShowComparisonDialog(true)}
+                          onSaveNow={() => manualSaveMutation.mutate()}
+                          onClearDraft={() => setShowClearDraftDialog(true)}
+                        />
+
                         {/* Multi-Step Form */}
                         {!showSummary && (
                           <FormStepper steps={FORM_STEPS} currentStep={currentStep} />
@@ -765,6 +848,46 @@ export default function CoFounderValidatorProgressive() {
           </div>
         </div>
       </div>
+
+      {/* Saved Data Comparison Dialog */}
+      <SavedDataComparisonDialog
+        open={showComparisonDialog}
+        onOpenChange={setShowComparisonDialog}
+        savedData={savedIdea ? {
+          ideaTitle: savedIdea.ideaTitle || "",
+          problemStatement: savedIdea.problemStatement || "",
+          solutionApproach: savedIdea.solutionApproach || "",
+          targetMarket: savedIdea.targetMarket || "",
+          competitiveLandscape: savedIdea.competitiveLandscape || "",
+          businessModel: savedIdea.businessModel || "",
+          uniqueValueProp: savedIdea.uniqueValueProp || "",
+        } : null}
+        currentData={formData}
+      />
+
+      {/* Clear Draft Confirmation Dialog */}
+      <AlertDialog open={showClearDraftDialog} onOpenChange={setShowClearDraftDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear Draft?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will delete your current draft and reset the form. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                deleteDraftMutation.mutate();
+                setShowClearDraftDialog(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Yes, Clear Draft
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
