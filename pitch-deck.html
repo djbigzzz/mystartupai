@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyStartup.AI - Investor Pitch Deck</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: white;
+            width: 297mm;
+            height: 210mm;
+            padding: 40px 50px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 35px;
+        }
+
+        .logo-section h1 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #333;
+        }
+
+        .logo-placeholder {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title .icon {
+            font-size: 24px;
+        }
+
+        .section-content {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .feature-item::before {
+            content: "✅";
+            font-size: 14px;
+        }
+
+        .traction-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .stat-item::before {
+            content: "✅";
+            font-size: 14px;
+        }
+
+        .revenue-tiers {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tier {
+            font-size: 13px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .tier-name {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .mvp-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .mvp-banner h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .mvp-banner p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .team-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .team-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .team-member {
+            text-align: center;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .member-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .member-role {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .member-bio {
+            font-size: 10px;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        .contact-info {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        @media print {
+            body {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section">
+            <h1>MYSTARTUP.AI</h1>
+            <div class="tagline">AI-Powered Agentic Co-Founder<br>From Idea to Investor-Ready</div>
+        </div>
+        <div class="logo-placeholder">∞</div>
+    </div>
+
+    <div class="content-grid">
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">🧠</span>
+                <span>CORE VALUE PROP</span>
+            </div>
+            <div class="section-content">
+                AI-native startup accelerator that transforms ideas into investor-ready startups through autonomous agents, real-time automation, and structured business intelligence.
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">📝</span>
+                <span>TRACTION</span>
+            </div>
+            <div class="traction-stats">
+                <div class="stat-item">400+ registered users</div>
+                <div class="stat-item">Passed New Frontiers Phase 1 Incubator</div>
+                <div class="stat-item">Won 2nd place in ICP AI Hackathon</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">💰</span>
+                <span>REVENUE MODEL</span>
+            </div>
+            <div class="revenue-tiers">
+                <div class="tier">
+                    <span class="tier-name">Freemium</span> – Basic idea validation
+                </div>
+                <div class="tier">
+                    <span class="tier-name">Pro ($29/mo)</span> – Full planning + pitch deck
+                </div>
+                <div class="tier">
+                    <span class="tier-name">Enterprise ($99/mo)</span> – Team tools, collaboration
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span class="icon">🚀</span>
+                <span>KEY FEATURES</span>
+            </div>
+            <div class="feature-list">
+                <div class="feature-item">Startup Engine</div>
+                <div class="feature-item">Funding Tools</div>
+                <div class="feature-item">YC business plan</div>
+                <div class="feature-item">AI investor matching</div>
+                <div class="feature-item">Feasibility score</div>
+                <div class="feature-item">Grant auto-checking</div>
+                <div class="feature-item">MVP Builder</div>
+                <div class="feature-item">Market Insights</div>
+                <div class="feature-item">6 templates</div>
+                <div class="feature-item">TAM/SAM analysis</div>
+                <div class="feature-item">React/API gen</div>
+                <div class="feature-item">Persona builder</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mvp-banner">
+        <h2>MVP in 5 hours, not 5 months!</h2>
+        <p>AI-powered code generation for rapid prototyping</p>
+    </div>
+
+    <div class="team-section">
+        <div class="team-title">
+            <span>👥</span>
+            <span>TEAM</span>
+        </div>
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="avatar">AG</div>
+                <div class="member-name">ALEJANDRO GUTTIEREZ</div>
+                <div class="member-role">Advisor</div>
+                <div class="member-bio">Lead Solana Superteam Ireland, Embuldin, Defactor, Blockchain Ireland</div>
+            </div>
+            <div class="team-member">
+                <div class="avatar">GD</div>
+                <div class="member-name">GALIN DIMITROV</div>
+                <div class="member-role">CEO | Founder</div>
+                <div class="member-bio">Superteam IE, BT Group, Salesforce, Fidelity Investment, Master Ventures</div>
+            </div>
+            <div class="team-member">
+                <div class="avatar">BS</div>
+                <div class="member-name">BENJAMIN SZABO</div>
+                <div class="member-role">CMO | Co-Founder</div>
+                <div class="member-bio">Nakapad, Superteam IE, Semoto, Master Ventures</div>
+            </div>
+        </div>
+        <div class="contact-info">
+            Contact: galindimitrov94@gmail.com
+        </div>
+    </div>
+</body>
+</html>
