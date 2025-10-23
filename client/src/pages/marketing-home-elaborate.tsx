@@ -2,6 +2,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ValidatorHeroDemo } from "@/components/validator-hero-demo";
+import { LayeredBackground } from "@/components/layered-background";
 import { ArrowRight, CheckCircle, Target, Users, FileText, TrendingUp } from "lucide-react";
 
 const STAGES = [
@@ -38,8 +40,11 @@ const STAGES = [
 export default function MarketingHome() {
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white overflow-hidden" data-page="landing">
+      {/* Layered Animated Background */}
+      <LayeredBackground />
+      
       {/* Subtle grid background */}
-      <div className="fixed inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0"></div>
 
       {/* Navigation */}
       <nav className="relative z-50 border-b border-gray-200 dark:border-white/10">
@@ -115,90 +120,9 @@ export default function MarketingHome() {
               </div>
             </div>
 
-            {/* Right Side - Simple Product Preview */}
+            {/* Right Side - Animated Product Demo */}
             <div className="relative lg:block hidden">
-              <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 shadow-2xl">
-                {/* Browser chrome */}
-                <div className="bg-gray-100 dark:bg-gray-800/50 border-b border-gray-200 dark:border-white/10 px-4 py-3 flex items-center gap-2">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-                  </div>
-                  <div className="flex-1 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-white/10">
-                      <div className="w-3 h-3 text-green-400">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                      </div>
-                      <span className="text-xs text-gray-600 dark:text-gray-400">mystartup.ai/validator</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Simple mockup content */}
-                <div className="p-8 space-y-6 min-h-[500px] bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black">
-                  {/* Header */}
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                      <Target className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">The Validator</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">AI validation with market research</p>
-                    </div>
-                  </div>
-
-                  {/* Validation Results */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Validation Results</h3>
-                      <div className="px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
-                        <span className="text-green-600 dark:text-green-400 font-semibold text-sm">GO</span>
-                      </div>
-                    </div>
-                    
-                    {/* Score */}
-                    <div className="relative">
-                      <div className="flex items-end gap-1 mb-2">
-                        <div className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                          85
-                        </div>
-                        <div className="text-gray-500 mb-2">/100</div>
-                      </div>
-                      <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full" 
-                          style={{ width: '85%' }}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* Dimensions */}
-                    <div className="grid grid-cols-2 gap-3 pt-4">
-                      {[
-                        { label: "Market Size", score: 90 },
-                        { label: "Competition", score: 75 },
-                        { label: "Feasibility", score: 88 },
-                        { label: "Timing", score: 82 }
-                      ].map((dim, i) => (
-                        <div key={i} className="p-3 bg-gray-100 dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/10">
-                          <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">{dim.label}</div>
-                          <div className="text-lg font-semibold text-gray-900 dark:text-white">{dim.score}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Live Badge */}
-                  <div className="flex items-center gap-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                    <span className="text-sm text-blue-600 dark:text-blue-300">Live market research completed</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Glow effect */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 opacity-20 rounded-2xl blur-2xl -z-10"></div>
+              <ValidatorHeroDemo />
             </div>
           </div>
         </div>
