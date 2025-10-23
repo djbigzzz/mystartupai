@@ -1917,6 +1917,10 @@ Issued At: ${new Date(timestamp).toISOString()}`;
     async (req, res) => {
     try {
       const userId = (req.user as any).id;
+      
+      console.log('[Validation] Request body keys:', Object.keys(req.body));
+      console.log('[Validation] Request body:', JSON.stringify(req.body, null, 2));
+      
       const { 
         ideaTitle = "",
         idea, 
@@ -1931,7 +1935,11 @@ Issued At: ${new Date(timestamp).toISOString()}`;
         isRefinement = false
       } = req.body;
       
+      console.log('[Validation] Extracted idea:', idea);
+      console.log('[Validation] Idea length:', idea?.length);
+      
       if (!idea || idea.trim().length < 10) {
+        console.log('[Validation] REJECTED: Idea too short or missing');
         return res.status(400).json({ message: "Please provide an idea description (at least 10 characters)" });
       }
 
