@@ -49,35 +49,35 @@ export default function MarketingHome() {
   const { toast } = useToast();
 
   const stats = [
-    { number: "AI-Powered", label: "Idea Validation" },
-    { number: "Comprehensive", label: "Business Plans" },
-    { number: "Professional", label: "Pitch Decks" },
-    { number: "Investor-Ready", label: "Financial Models" }
+    { number: "60 seconds", label: "Validation Time" },
+    { number: "8 Dimensions", label: "Analysis Depth" },
+    { number: "Live Research", label: "Market Data" },
+    { number: "GO/REFINE/PIVOT", label: "Clear Verdict" }
   ];
 
   const features = [
     {
-      icon: Brain,
-      title: "AI Startup Idea Validation",
-      description: "Advanced market research, competitor analysis, and business feasibility assessment powered by AI. Validate your startup concept quickly with comprehensive analysis. Results may vary by idea complexity.",
+      icon: Target,
+      title: "The Validator",
+      description: "Real-time market research + 8-dimension scoring system. Get GO/REFINE/PIVOT verdict in 60 seconds. Know if your idea is worth building before you waste time.",
       color: "from-blue-500 to-blue-600"
     },
     {
-      icon: Presentation,
-      title: "Business Plan Generator",
-      description: "AI-powered business plan generator creates comprehensive execution roadmaps, strategic frameworks, and investor-ready documentation tailored to your industry.",
+      icon: Users,
+      title: "The Strategist",
+      description: "Customer discovery framework, interview scripts, and persona building. Map out who needs your product and why they'll pay for it.",
       color: "from-green-500 to-green-600"
     },
     {
-      icon: DollarSign,
-      title: "Pitch Deck Creator & Financial Models",
-      description: "Professional pitch deck creator and financial modeling tools. Generate investor presentations and detailed financial projections with customizable templates and industry benchmarks.",
+      icon: FileText,
+      title: "The Builder",
+      description: "YC-style business plans, AI pitch decks, and financial models. Transform validated ideas into investor-ready materials.",
       color: "from-purple-500 to-purple-600"
     },
     {
-      icon: Rocket,
-      title: "MVP Builder & Growth Strategy",
-      description: "Complete MVP development framework, go-to-market strategy templates, and growth planning tools. Structured guides and actionable frameworks for startup execution.",
+      icon: TrendingUp,
+      title: "The Growth Hacker",
+      description: "Investor matching, traction strategies, and growth playbooks. Scale your validated startup with AI-powered guidance.",
       color: "from-orange-500 to-orange-600"
     }
   ];
@@ -325,28 +325,27 @@ export default function MarketingHome() {
               
               <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
                 <span className="bg-gradient-to-r from-gray-100 via-white to-gray-100 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,255,255,0.4)]">
-                  Your AI Co-Founder
+                  Stop Building Fast.
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-green-300 via-emerald-200 to-green-300 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,255,255,0.4)]">
+                  Start Building Right.
                 </span>
               </h1>
               
               <p className="text-xl text-white mb-6 leading-relaxed drop-shadow-lg font-medium">
-                Generate comprehensive business plans, pitch decks, and financial models in minutes. Validate startup ideas with AI-powered market research. <span className="text-green-300 font-bold">Web3-native platform</span> with Solana payments — no equity required.
+                Every AI platform builds your idea in minutes. But <span className="text-yellow-300 font-bold">90% of startups fail</span> building the WRONG thing. We validate your idea with <span className="text-green-300 font-bold">real-time market research</span> and 8-dimension scoring BEFORE you waste time building.
               </p>
               
-              {/* Social Proof & Urgency */}
+              {/* Value Prop */}
               <div className="flex items-center justify-center sm:justify-start mb-6 text-white">
                 <div className="flex items-center mr-6">
-                  <div className="flex -space-x-2 mr-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-400 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-gray-300 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold text-gray-600">+</div>
-                  </div>
-                  <span className="text-sm font-medium">Join founders building their next startup</span>
+                  <Target className="w-5 h-5 mr-2 text-green-300" />
+                  <span className="text-sm font-medium">Validate in 60 seconds</span>
                 </div>
                 <div className="flex items-center text-yellow-200">
                   <CheckCircle className="w-4 h-4 fill-current mr-1" />
-                  <span className="text-sm font-medium">Platform live & ready</span>
+                  <span className="text-sm font-medium">Know it's worth building</span>
                 </div>
               </div>
               
@@ -368,9 +367,9 @@ export default function MarketingHome() {
               
               <div className="flex flex-col sm:flex-row justify-center sm:justify-start gap-4 mb-8">
                 <Link href="/app">
-                  <Button size="lg" variant="ghost" className="!bg-gradient-to-r !from-green-400 !to-emerald-500 !text-white hover:!from-green-300 hover:!to-emerald-400 px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-green-500/50 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Start creating your business plan for free" data-testid="button-hero-primary">
+                  <Button size="lg" variant="ghost" className="!bg-gradient-to-r !from-green-400 !to-emerald-500 !text-white hover:!from-green-300 hover:!to-emerald-400 px-12 py-6 text-xl font-bold shadow-2xl hover:shadow-green-500/50 hover:scale-105 transform transition-all duration-300 relative overflow-hidden group" aria-label="Validate your startup idea for free" data-testid="button-hero-primary">
                     <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                    <span className="relative z-10">🚀 Start Free Now</span>
+                    <span className="relative z-10">✅ Validate My Idea (Free)</span>
                     <ArrowRight className="ml-2 w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                   </Button>
                 </Link>
@@ -394,7 +393,7 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* Problem Section - BENTO GRID LAYOUT */}
+      {/* The Gap Section - What's Missing in Current AI Builders */}
       <section className="py-24 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-950/20 dark:to-purple-950/20 transition-colors duration-300 relative overflow-hidden">
         {/* Animated gradient mesh background */}
         <div className="absolute inset-0 opacity-30">
@@ -411,32 +410,32 @@ export default function MarketingHome() {
           <div className="text-center mb-16">
             <h2 className="heading-2 mb-6">
               <span className="gradient-text-primary">
-                Common Startup Challenges
+                The Gap in Current AI Builders
               </span>
             </h2>
             <p className="text-body-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              And How AI Can Help You Avoid Them
+              Bolt, v0, Cursor build fast. But they skip the most critical step.
             </p>
           </div>
           
           {/* Bento Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mt-12">
             {/* Large featured card - spans 4 columns */}
-            <Card className="md:col-span-4 bg-gradient-to-br from-blue-500 to-blue-600 border-0 shadow-2xl overflow-hidden group hover:shadow-blue-500/50 transition-all duration-500">
+            <Card className="md:col-span-4 bg-gradient-to-br from-red-500 to-red-600 border-0 shadow-2xl overflow-hidden group hover:shadow-red-500/50 transition-all duration-500">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
               <CardContent className="p-8 md:p-12 relative z-10">
                 <div className="flex items-start gap-6">
                   <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                    <Clock className="w-12 h-12 text-white" />
+                    <Zap className="w-12 h-12 text-white" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">Time & Money Wasted</h3>
-                    <p className="text-blue-50 text-lg leading-relaxed">
-                      Without proper business planning and validation, many founders spend 6-12 months building products nobody wants. Our AI analyzes market fit in hours, not months - saving you time and capital.
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">They Build Fast, Not Right</h3>
+                    <p className="text-red-50 text-lg leading-relaxed">
+                      Bolt, v0, Cursor can build your app in 5 minutes. But they skip validation, market research, and customer discovery. Result: <span className="font-bold text-yellow-300">Fast execution of bad ideas.</span> 90% of startups fail not because of bad code, but because they built the wrong thing.
                     </p>
                     <div className="mt-6 flex items-center gap-3">
                       <div className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full">
-                        <span className="text-white font-semibold">Save 6+ months</span>
+                        <span className="text-white font-semibold">Validation missing ❌</span>
                       </div>
                       <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-2 transition-transform duration-300" />
                     </div>
@@ -447,26 +446,26 @@ export default function MarketingHome() {
 
             {/* Two stacked cards on the right */}
             <div className="md:col-span-2 space-y-6">
-              <Card className="bg-gradient-to-br from-purple-500 to-purple-600 border-0 shadow-xl overflow-hidden group hover:shadow-purple-500/50 transition-all duration-500">
+              <Card className="bg-gradient-to-br from-gray-700 to-gray-800 border-0 shadow-xl overflow-hidden group hover:shadow-gray-500/50 transition-all duration-500">
                 <CardContent className="p-6 relative z-10">
                   <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl w-fit mb-4">
-                    <DollarSign className="w-8 h-8 text-white" />
+                    <Code className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">Expensive Access</h3>
-                  <p className="text-purple-50 text-sm">
-                    Accelerators take 7-10% equity. Consultants charge $10k+. Get enterprise-level guidance at a fraction of the cost.
+                  <h3 className="text-xl font-bold text-white mb-3">Missing Pre-Build Steps</h3>
+                  <p className="text-gray-50 text-sm">
+                    No market research. No customer discovery. No validation. Just code generation.
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-pink-500 to-rose-600 border-0 shadow-xl overflow-hidden group hover:shadow-pink-500/50 transition-all duration-500">
+              <Card className="bg-gradient-to-br from-green-500 to-green-600 border-0 shadow-xl overflow-hidden group hover:shadow-green-500/50 transition-all duration-500">
                 <CardContent className="p-6 relative z-10">
                   <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl w-fit mb-4">
-                    <Target className="w-8 h-8 text-white" />
+                    <CheckCircle className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">Investor Readiness</h3>
-                  <p className="text-pink-50 text-sm">
-                    90% of founders struggle with pitch materials. Our AI creates investor-grade decks and financials automatically.
+                  <h3 className="text-xl font-bold text-white mb-3">We Fill The Gap</h3>
+                  <p className="text-green-50 text-sm">
+                    Validate FIRST with market research, then use those builders to code it.
                   </p>
                 </CardContent>
               </Card>
@@ -500,12 +499,12 @@ export default function MarketingHome() {
               </div>
               <h2 className="heading-2">
                 <span className="gradient-text-primary">
-                  AI Startup Tools & Business Plan Generator
+                  The 4-Stage Validation Journey
                 </span>
               </h2>
             </div>
             <p className="text-body-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Complete AI-powered startup acceleration platform with business plan generator, pitch deck creator, financial modeling tools, and market research capabilities.
+              Your pre-build AI co-founder that validates ideas BEFORE you waste time building. Real-time market research + 8-dimension scoring → customer discovery → business plans → investor matching.
             </p>
           </div>
           
