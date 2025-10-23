@@ -219,7 +219,7 @@ export default function MarketingHome() {
                 <Button variant="outline" size="sm" data-testid="button-nav-signin">Sign In</Button>
               </Link>
               <Link href="/app">
-                <Button size="sm" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300" data-testid="button-nav-primary">Start Free Now</Button>
+                <Button size="sm" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300" data-testid="button-nav-primary">Validate My Idea</Button>
               </Link>
             </div>
 
@@ -246,7 +246,7 @@ export default function MarketingHome() {
                       <Button variant="outline" className="w-full" data-testid="mobile-button-nav-signin">Sign In</Button>
                     </Link>
                     <Link href="/app">
-                      <Button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 font-bold" data-testid="mobile-button-nav-primary">Start Free Now</Button>
+                      <Button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 font-bold" data-testid="mobile-button-nav-primary">Validate My Idea</Button>
                     </Link>
                   </div>
                 </nav>
@@ -357,7 +357,7 @@ export default function MarketingHome() {
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
-                  <span className="font-medium">Start building instantly</span>
+                  <span className="font-medium">Get validation instantly</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 mr-2 text-green-300" />
@@ -574,8 +574,8 @@ export default function MarketingHome() {
               <Button size="lg" className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white px-10 py-6 text-lg font-bold transform hover:scale-105 hover:shadow-[0_20px_60px_rgba(16,185,129,0.4)] transition-all duration-300 relative overflow-hidden group" data-testid="button-features-cta">
                 <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
                 <span className="relative z-10 flex items-center">
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Start Building Free
+                  <Target className="w-5 h-5 mr-2" />
+                  Get Validation Score
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </span>
               </Button>
@@ -608,10 +608,10 @@ export default function MarketingHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
             <h2 className="heading-2 mb-6 text-white">
-              How to Build Investor-Ready Materials
+              How Validation Works
             </h2>
             <p className="text-body-lg text-blue-200 max-w-3xl mx-auto">
-              Four simple steps to transform your idea into a fundable startup
+              Four simple steps to validate your idea before building anything
             </p>
           </div>
           
@@ -667,8 +667,8 @@ export default function MarketingHome() {
               <Button size="lg" className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-400 hover:via-purple-400 hover:to-pink-400 text-white px-10 py-6 text-lg font-bold transform hover:scale-105 hover:shadow-[0_20px_60px_rgba(147,51,234,0.6)] transition-all duration-300 relative overflow-hidden group" data-testid="button-process-cta">
                 <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
                 <span className="relative z-10 flex items-center">
-                  <Rocket className="w-5 h-5 mr-2" />
-                  Start Your Journey
+                  <Target className="w-5 h-5 mr-2" />
+                  Validate Your Idea
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </span>
               </Button>
@@ -835,11 +835,11 @@ export default function MarketingHome() {
           <div className="flex items-center justify-center mb-6">
             <Logo size="lg" showText={false} className="mr-4" />
             <h2 className="text-3xl lg:text-4xl font-bold text-white">
-              Building the Operating System for Startups
+              Validate Before You Build
             </h2>
           </div>
           <p className="text-xl text-blue-100 max-w-4xl mx-auto mb-8">
-            We believe anyone with an idea should have the tools to become an entrepreneur. MyStartup.ai's mission is to make startup creation borderless, faster, and more accessible — giving every founder an AI co-founder in their pocket.
+            We compete on correctness, not speed. While others build fast, we validate first. Real-time market research, customer discovery, and 8-dimension analysis ensure you build the RIGHT thing — your pre-build AI co-founder that saves you from costly mistakes.
           </p>
         </div>
       </section>
@@ -851,18 +851,18 @@ export default function MarketingHome() {
             <Logo size="lg" showText={false} className="mr-4" />
             <h2 className="text-3xl lg:text-4xl font-bold">
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent">
-                Ready to Build Smarter?
+                Ready to Validate Before Building?
               </span>
             </h2>
           </div>
           <p className="text-xl text-gray-600 mb-8">
-            Start using AI to accelerate your startup journey with comprehensive business planning tools.
+            Get your validation score in 60 seconds. Know if your idea is worth building before you waste time.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/app">
               <Button size="lg" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 hover:from-yellow-300 hover:to-orange-400 px-12 py-4 text-xl font-bold shadow-2xl hover:shadow-yellow-500/25 transform hover:scale-105 transition-all duration-300" data-testid="button-final-primary">
-                🚀 Start Free Now
+                ✅ Validate My Idea (Free)
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
@@ -874,7 +874,7 @@ export default function MarketingHome() {
           </div>
           
           <p className="text-sm text-gray-500 mt-6">
-            No credit card required • Start building in 30 seconds • Cancel anytime
+            No credit card required • Validate in 60 seconds • Cancel anytime
           </p>
         </div>
       </section>
@@ -888,7 +888,7 @@ export default function MarketingHome() {
                 <Logo size="lg" showText={true} />
               </div>
               <p className="text-gray-400 max-w-md">
-                Your AI co-founder for building investor-ready startups. Transform ideas into businesses faster than ever.
+                Your pre-build AI co-founder that validates ideas BEFORE you waste time building. Compete on correctness, not speed.
               </p>
             </div>
             
