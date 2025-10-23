@@ -27,8 +27,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import EnhancedTextarea from "@/components/enhanced-textarea";
 import FormStepper from "@/components/form-stepper";
 import LiveResearchProgress from "@/components/live-research-progress";
-import { SaveStatusBar } from "@/components/save-status-bar";
 import { SavedDataComparisonDialog } from "@/components/saved-data-comparison-dialog";
+import { formatDistanceToNow } from "date-fns";
 
 interface ValidationResult {
   score: number;
@@ -100,16 +100,16 @@ export default function CoFounderValidatorProgressive() {
   const [previousScore, setPreviousScore] = useState<number | null>(null);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [showComparisonDialog, setShowComparisonDialog] = useState(false);
-  const [showClearDraftDialog, setShowClearDraftDialog] = useState(false);
+  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
 
   // Fetch existing idea
   const { data: savedIdea, isLoading: ideaLoading } = useQuery<SavedIdea | null>({
     queryKey: ["/api/ideas"],
   });
 
-  // Load idea data when component mounts (for both draft and validated ideas)
+  // Load idea data ONLY on initial mount - not on every savedIdea change
   useEffect(() => {
-    if (savedIdea) {
+    if (savedIdea && !hasLoadedInitialData) {
       setFormData({
         ideaTitle: savedIdea.ideaTitle || "",
         problemStatement: savedIdea.problemStatement || "",
@@ -124,8 +124,10 @@ export default function CoFounderValidatorProgressive() {
       if (savedIdea.updatedAt) {
         setLastSavedAt(new Date(savedIdea.updatedAt));
       }
+      
+      setHasLoadedInitialData(true);
     }
-  }, [savedIdea]);
+  }, [savedIdea, hasLoadedInitialData]);
 
   // Auto-save mutation
   const autoSaveMutation = useMutation({
@@ -144,31 +146,6 @@ export default function CoFounderValidatorProgressive() {
       setTimeout(() => setSaveStatus("idle"), 2000);
     },
     onError: () => setSaveStatus("idle"),
-  });
-
-  // Manual save mutation
-  const manualSaveMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("/api/journey/auto-save", {
-        method: "POST",
-        body: { draftData: formData },
-      });
-    },
-    onSuccess: () => {
-      setLastSavedAt(new Date());
-      toast({
-        title: "Draft Saved",
-        description: "Your idea has been saved successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
-    },
-    onError: () => {
-      toast({
-        title: "Save Failed",
-        description: "Could not save your draft. Please try again.",
-        variant: "destructive",
-      });
-    },
   });
 
   // Delete draft mutation
@@ -191,6 +168,7 @@ export default function CoFounderValidatorProgressive() {
       setLastSavedAt(null);
       setCurrentStep(1);
       setShowSummary(false);
+      setHasLoadedInitialData(false); // Allow re-loading after delete
       queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
       toast({
         title: "Draft Cleared",
@@ -400,23 +378,12 @@ export default function CoFounderValidatorProgressive() {
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 border-b px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Sparkles className="w-8 h-8 text-primary" />
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold">The Validator</h1>
-                  <p className="text-sm text-muted-foreground mt-1">AI-powered validation with real-time market research</p>
-                </div>
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-8 h-8 text-primary" />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold">The Validator</h1>
+                <p className="text-sm text-muted-foreground mt-1">AI-powered validation with real-time market research</p>
               </div>
-              {saveStatus !== "idle" && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  {saveStatus === "saving" ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
-                  ) : (
-                    <><Check className="w-4 h-4 text-green-600" /> Saved</>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -430,9 +397,32 @@ export default function CoFounderValidatorProgressive() {
               <div className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="w-5 h-5" />
-                      {hasValidatedIdea && !isRefining ? "Your Validated Idea" : "Articulate Your Idea"}
+                    <CardTitle className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Lightbulb className="w-5 h-5" />
+                        {hasValidatedIdea && !isRefining ? "Your Validated Idea" : "Articulate Your Idea"}
+                      </div>
+                      {!hasValidatedIdea && lastSavedAt && (
+                        <button
+                          onClick={() => setShowComparisonDialog(true)}
+                          className={`text-xs hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-1.5 ${
+                            saveStatus === "saving" ? "text-blue-500" : "text-green-600"
+                          }`}
+                          data-testid="button-saved-status"
+                        >
+                          {saveStatus === "saving" ? (
+                            <>
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              <span>Saving...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-3 h-3" />
+                              <span>Saved {formatDistanceToNow(lastSavedAt, { addSuffix: true })}</span>
+                            </>
+                          )}
+                        </button>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -484,15 +474,6 @@ export default function CoFounderValidatorProgressive() {
                       </div>
                     ) : (
                       <>
-                        {/* Save Status Bar */}
-                        <SaveStatusBar
-                          lastSavedAt={lastSavedAt}
-                          isSaving={saveStatus === "saving" || manualSaveMutation.isPending}
-                          onViewSaved={() => setShowComparisonDialog(true)}
-                          onSaveNow={() => manualSaveMutation.mutate()}
-                          onClearDraft={() => setShowClearDraftDialog(true)}
-                        />
-
                         {/* Multi-Step Form */}
                         {!showSummary && (
                           <FormStepper steps={FORM_STEPS} currentStep={currentStep} />
@@ -864,30 +845,6 @@ export default function CoFounderValidatorProgressive() {
         } : null}
         currentData={formData}
       />
-
-      {/* Clear Draft Confirmation Dialog */}
-      <AlertDialog open={showClearDraftDialog} onOpenChange={setShowClearDraftDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Clear Draft?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will delete your current draft and reset the form. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                deleteDraftMutation.mutate();
-                setShowClearDraftDialog(false);
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Yes, Clear Draft
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
