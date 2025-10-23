@@ -172,8 +172,58 @@
     font-family: 'Courier New', Courier, monospace;
   }
   
-  /* Landing page and auth pages use normal theme - no Cypherpunk overrides */
-  /* Pages with data-page="landing" or data-page="auth" will not be affected by Cypherpunk theme */
+  /* Cypherpunk theme for landing page */
+  .cypherpunk [data-page="landing"] {
+    background: hsl(0 0% 5%) !important;
+    color: hsl(120 100% 90%) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] h1,
+  .cypherpunk [data-page="landing"] h2,
+  .cypherpunk [data-page="landing"] h3,
+  .cypherpunk [data-page="landing"] h4,
+  .cypherpunk [data-page="landing"] h5,
+  .cypherpunk [data-page="landing"] h6 {
+    color: hsl(120 100% 92%) !important;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.6) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] p,
+  .cypherpunk [data-page="landing"] span,
+  .cypherpunk [data-page="landing"] div {
+    color: hsl(120 100% 85%) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] button {
+    background: hsl(120 25% 18%) !important;
+    color: hsl(120 100% 90%) !important;
+    border: 2px solid hsl(120 100% 45%) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] button:hover {
+    background: hsl(120 30% 20%) !important;
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.6) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] [class*="border"] {
+    border-color: hsl(120 100% 45%) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] [class*="bg-gray"],
+  .cypherpunk [data-page="landing"] [class*="bg-white"] {
+    background: hsl(120 25% 18%) !important;
+    border: 2px solid hsl(120 100% 45%) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] .bg-gradient-to-br {
+    background: hsl(120 25% 22%) !important;
+  }
+  
+  .cypherpunk [data-page="landing"] [class*="text-gray"],
+  .cypherpunk [data-page="landing"] [class*="text-blue"] {
+    color: hsl(120 100% 80%) !important;
+  }
 
   /* Cards get WHITE backgrounds - dashboard only */
   .cypherpunk [data-page="dashboard"] [class*="card"],
