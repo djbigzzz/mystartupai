@@ -175,24 +175,24 @@ export default function MarketingHome() {
 
   const differentiators = [
     {
-      title: "Agentic AI System",
-      description: "Multiple specialized agents, not just one chatbot",
-      icon: Brain
+      title: "Real-Time Market Research",
+      description: "Live web research via Perplexity AI, not generic analysis",
+      icon: Globe
     },
     {
-      title: "End-to-End Workflow",
-      description: "From validation to investor materials, in one place",
+      title: "8-Dimension Validation",
+      description: "Comprehensive scoring system with GO/REFINE/PIVOT verdicts",
       icon: Target
     },
     {
-      title: "No Equity Required",
-      description: "Unlike accelerators or agencies, keep 100% ownership",
+      title: "Pre-Build Focus",
+      description: "Validate BEFORE building, not after you've wasted time",
       icon: Shield
     },
     {
-      title: "Global Access",
-      description: "Founders anywhere can start instantly, anytime",
-      icon: Globe
+      title: "Compete on Correctness",
+      description: "We help you build RIGHT, not fast. Speed comes later.",
+      icon: Brain
     }
   ];
 
@@ -207,13 +207,13 @@ export default function MarketingHome() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold" data-testid="nav-link-features">
-                AI Tools
+                Validation Journey
               </a>
               <a href="#how-it-works" className="text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold" data-testid="nav-link-process">
-                Business Plans
+                How It Works
               </a>
               <a href="#who-its-for" className="text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-semibold" data-testid="nav-link-audience">
-                For Entrepreneurs
+                Who Needs This
               </a>
               <Link href="/app">
                 <Button variant="outline" size="sm" data-testid="button-nav-signin">Sign In</Button>
@@ -233,13 +233,13 @@ export default function MarketingHome() {
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col gap-4 mt-8">
                   <a href="#features" className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2" data-testid="mobile-nav-link-features">
-                    AI Tools
+                    Validation Journey
                   </a>
                   <a href="#how-it-works" className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2" data-testid="mobile-nav-link-process">
-                    Business Plans
+                    How It Works
                   </a>
                   <a href="#who-its-for" className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2" data-testid="mobile-nav-link-audience">
-                    For Entrepreneurs
+                    Who Needs This
                   </a>
                   <div className="flex flex-col gap-3 mt-4">
                     <Link href="/app">
@@ -687,11 +687,11 @@ export default function MarketingHome() {
           <div className="text-center mb-20">
             <h2 className="heading-2 mb-6">
               <span className="gradient-text-primary">
-                Best AI Startup Tools for Entrepreneurs
+                Who Needs Idea Validation?
               </span>
             </h2>
             <p className="text-body-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Whether you're a first-time founder or serial entrepreneur, we have the tools to accelerate your journey
+              Anyone who wants to build the RIGHT thing instead of wasting time on the wrong idea
             </p>
           </div>
           
@@ -773,10 +773,10 @@ export default function MarketingHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
             <h2 className="heading-2 mb-6 text-white">
-              What Makes Us Different
+              Speed vs. Correctness
             </h2>
             <p className="text-body-lg text-purple-200 max-w-3xl mx-auto">
-              Built different. Think different. Succeed different.
+              Our competitors compete on speed. We compete on correctness. Here's how we're different.
             </p>
           </div>
           
