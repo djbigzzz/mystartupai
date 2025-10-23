@@ -238,21 +238,28 @@ export default function CoFounderValidatorProgressive() {
         setPreviousScore(savedIdea.validationScore);
       }
       
+      console.log('Validating with formData:', formData);
+      
+      const requestBody = {
+        idea: formData.problemStatement,
+        ideaTitle: formData.ideaTitle,
+        industry: "Technology",
+        stage: "Idea Stage",
+        problemStatement: formData.problemStatement,
+        solutionApproach: formData.solutionApproach,
+        targetMarket: formData.targetMarket || "General",
+        marketSize: "",
+        competitors: formData.competitiveLandscape || "",
+        competitiveEdge: formData.uniqueValueProp || "",
+        isRefinement: isRefining,
+      };
+      
+      console.log('Request body:', requestBody);
+      console.log('Problem statement length:', formData.problemStatement?.length);
+      
       const response = await apiRequest("/api/journey/validate", {
         method: "POST",
-        body: {
-          idea: formData.problemStatement,
-          ideaTitle: formData.ideaTitle,
-          industry: "Technology",
-          stage: "Idea Stage",
-          problemStatement: formData.problemStatement,
-          solutionApproach: formData.solutionApproach,
-          targetMarket: formData.targetMarket || "General",
-          marketSize: "",
-          competitors: formData.competitiveLandscape || "",
-          competitiveEdge: formData.uniqueValueProp || "",
-          isRefinement: isRefining,
-        },
+        body: requestBody,
       });
       return response;
     },
@@ -286,14 +293,24 @@ export default function CoFounderValidatorProgressive() {
   });
 
   const handleValidate = () => {
-    if (!formData.ideaTitle.trim() || !formData.problemStatement.trim()) {
+    if (!formData.ideaTitle.trim()) {
       toast({
-        title: "Missing Required Fields",
-        description: "Please fill in at least the Idea Title and Problem Statement.",
+        title: "Missing Idea Title",
+        description: "Please provide an idea title.",
         variant: "destructive",
       });
       return;
     }
+    
+    if (!formData.problemStatement.trim() || formData.problemStatement.trim().length < 10) {
+      toast({
+        title: "Problem Statement Too Short",
+        description: "Please provide a problem statement with at least 10 characters.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     validateMutation.mutate();
   };
 
