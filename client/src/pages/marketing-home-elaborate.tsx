@@ -45,19 +45,7 @@ export default function MarketingHome() {
       <nav className="relative z-50 border-b border-gray-200 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
           <Logo size="lg" showText={true} />
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link href="/login">
-              <Button variant="ghost" className="text-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/10" data-testid="button-login">
-                Log In
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100" data-testid="button-signup">
-                Sign Up
-              </Button>
-            </Link>
-          </div>
+          <ThemeToggle />
         </div>
       </nav>
 
@@ -81,6 +69,16 @@ export default function MarketingHome() {
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-md leading-relaxed">
                 90% of startups fail building the wrong thing. Get AI-powered validation with real-time market research in 60 seconds.
               </p>
+
+              {/* Sign In Link */}
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Already have an account?{" "}
+                <Link href="/login">
+                  <span className="text-black dark:text-white hover:underline cursor-pointer font-medium">
+                    Sign in
+                  </span>
+                </Link>
+              </div>
 
               {/* CTA Button */}
               <div className="flex flex-col gap-3 max-w-sm">
