@@ -1,227 +1,179 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Logo } from "@/components/logo";
-import { 
-  Target,
-  Users,
-  FileText,
-  TrendingUp,
-  ArrowRight,
-  CheckCircle,
-  Zap,
-  Code,
-  X,
-  Menu,
-  Sparkles
-} from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { ArrowRight, CheckCircle, Target, Users, FileText, TrendingUp } from "lucide-react";
 
 export default function MarketingHome() {
   return (
-    <div className="min-h-screen bg-white" data-page="landing">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-xl border-b border-gray-200/50 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <Logo size="lg" showText={true} />
-            
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#validation" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Validation Journey</a>
-              <a href="#how" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">How It Works</a>
-              <a href="#who" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Who Needs This</a>
-              <Link href="/app">
-                <Button variant="ghost" size="sm" className="text-sm">Sign In</Button>
-              </Link>
-              <Link href="/app">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-sm font-medium">Validate My Idea</Button>
-              </Link>
-            </div>
+    <div className="min-h-screen bg-black text-white overflow-hidden" data-page="landing">
+      {/* Subtle grid background */}
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
 
-            {/* Mobile Nav */}
-            <Sheet>
-              <SheetTrigger asChild className="md:hidden">
-                <Button variant="ghost" size="sm"><Menu className="h-5 w-5" /></Button>
-              </SheetTrigger>
-              <SheetContent>
-                <nav className="flex flex-col gap-4 mt-8">
-                  <a href="#validation" className="text-lg font-medium">Validation Journey</a>
-                  <a href="#how" className="text-lg font-medium">How It Works</a>
-                  <a href="#who" className="text-lg font-medium">Who Needs This</a>
-                  <Link href="/app"><Button variant="outline" className="w-full">Sign In</Button></Link>
-                  <Link href="/app"><Button className="w-full bg-blue-600">Validate My Idea</Button></Link>
-                </nav>
-              </SheetContent>
-            </Sheet>
+      {/* Navigation */}
+      <nav className="relative z-50 border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+          <Logo size="lg" showText={true} />
+          <div className="flex items-center gap-4">
+            <Link href="/app">
+              <Button variant="ghost" className="text-white hover:bg-white/10">
+                Sign In
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-24 overflow-hidden">
-        {/* Subtle grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-        
-        {/* Gradient orbs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center max-w-5xl mx-auto">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 mb-8">
-              <Sparkles className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-700">Validate Before You Build</span>
-            </div>
+      {/* Hero Section - Split Layout */}
+      <section className="relative min-h-screen flex items-center">
+        <div className="max-w-7xl mx-auto px-6 w-full">
+          <div className="grid lg:grid-cols-2 gap-16 items-center py-20">
+            {/* Left Side - Copy & CTA */}
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20">
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                <span className="text-sm text-blue-300">Your Pre-Build AI Co-Founder</span>
+              </div>
 
-            {/* Headline */}
-            <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-[1.1] tracking-tight">
-              <span className="text-gray-900">Stop Building</span>
-              <br />
-              <span className="text-gray-900">Fast. Start Building</span>
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
-                Right.
-              </span>
-            </h1>
-            
-            {/* Subheadline */}
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto font-medium">
-              90% of startups fail building the <span className="text-gray-900 font-semibold">wrong thing</span>. 
-              Validate with AI-powered market research in 60 seconds.
-            </p>
+              <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight">
+                Validate before
+                <br />
+                you build
+              </h1>
 
-            {/* CTA */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Link href="/app">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 h-14 shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 transition-all">
-                  Validate My Idea (Free)
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <Button size="lg" variant="outline" className="text-lg px-8 h-14 border-gray-300 hover:border-gray-400">
-                See How It Works
-              </Button>
-            </div>
+              <p className="text-xl text-gray-400 max-w-md leading-relaxed">
+                90% of startups fail building the wrong thing. Get AI-powered validation with real-time market research in 60 seconds.
+              </p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto pt-8 border-t border-gray-200">
-              {[
-                { number: "60s", label: "Validation Time", color: "text-blue-600" },
-                { number: "8", label: "Analysis Dimensions", color: "text-purple-600" },
-                { number: "Live", label: "Market Research", color: "text-green-600" },
-                { number: "3", label: "Clear Verdicts", color: "text-orange-600" }
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <div className={`text-4xl font-bold ${stat.color} mb-2`}>{stat.number}</div>
-                  <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+              {/* CTA Buttons */}
+              <div className="flex flex-col gap-3 max-w-sm">
+                <Link href="/app">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-white text-black hover:bg-gray-100 font-semibold h-12 text-base"
+                    data-testid="button-validate-cta"
+                  >
+                    Validate My Idea (Free)
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+                
+                <div className="text-center text-sm text-gray-500">
+                  No credit card required • 60 second validation
                 </div>
-              ))}
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex items-center gap-8 pt-8 border-t border-white/10">
+                <div>
+                  <div className="text-2xl font-bold">60s</div>
+                  <div className="text-sm text-gray-500">Validation</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">8</div>
+                  <div className="text-sm text-gray-500">Dimensions</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold">Live</div>
+                  <div className="text-sm text-gray-500">Research</div>
+                </div>
+              </div>
             </div>
+
+            {/* Right Side - Product Demo */}
+            <div className="relative lg:block hidden">
+              <div className="relative">
+                {/* Browser-style mockup */}
+                <div className="rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-gray-900 to-black shadow-2xl">
+                  {/* Browser chrome */}
+                  <div className="bg-gray-800/50 border-b border-white/10 px-4 py-3 flex items-center gap-2">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                    </div>
+                    <div className="flex-1 text-center">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-900/50 rounded-lg">
+                        <div className="w-3 h-3 text-green-400">
+                          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </div>
+                        <span className="text-xs text-gray-400">mystartup.ai/validate</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Demo content */}
+                  <div className="p-8 space-y-6 bg-gradient-to-br from-gray-900/50 to-black/50">
+                    {/* Validation Results */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">Validation Results</h3>
+                        <div className="px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-full">
+                          <span className="text-green-400 font-semibold text-sm">GO</span>
+                        </div>
+                      </div>
+                      
+                      {/* Score */}
+                      <div className="relative">
+                        <div className="flex items-end gap-1 mb-2">
+                          <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                            85
+                          </div>
+                          <div className="text-gray-500 mb-2">/100</div>
+                        </div>
+                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" style={{ width: '85%' }}></div>
+                        </div>
+                      </div>
+
+                      {/* Dimensions */}
+                      <div className="grid grid-cols-2 gap-3 pt-4">
+                        {[
+                          { label: "Market Size", score: 90 },
+                          { label: "Competition", score: 75 },
+                          { label: "Feasibility", score: 88 },
+                          { label: "Timing", score: 82 }
+                        ].map((dim, i) => (
+                          <div key={i} className="p-3 bg-white/5 rounded-lg border border-white/10">
+                            <div className="text-xs text-gray-400 mb-1">{dim.label}</div>
+                            <div className="text-lg font-semibold">{dim.score}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Live Research Badge */}
+                    <div className="flex items-center gap-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                      <span className="text-sm text-blue-300">Live market research completed</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-2xl -z-10"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-500">
+          <span className="text-xs">Scroll to see more</span>
+          <div className="w-6 h-10 border-2 border-gray-700 rounded-full flex items-start justify-center p-2">
+            <div className="w-1 h-2 bg-gray-600 rounded-full animate-bounce"></div>
           </div>
         </div>
       </section>
 
-      {/* The Gap Section */}
-      <section className="py-24 bg-gray-50">
+      {/* Features Section - Minimal */}
+      <section className="relative py-32 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900">
-              The Gap in AI Builders
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              4-Stage Journey
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Bolt, v0, and Cursor build fast. But they skip validation.
-            </p>
-          </div>
-
-          {/* Bento Grid */}
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Red Card - Large */}
-            <Card className="md:col-span-2 bg-gradient-to-br from-red-500 to-red-600 border-0 p-10 text-white relative overflow-hidden group hover:shadow-2xl transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-red-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative z-10">
-                <div className="flex items-start gap-8 mb-6">
-                  <div className="p-5 bg-white/20 rounded-2xl backdrop-blur-sm">
-                    <Zap className="w-10 h-10" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-4xl font-bold mb-4">They Build Fast, Not Right</h3>
-                    <p className="text-red-50 text-lg leading-relaxed mb-4">
-                      Bolt, v0, and Cursor can build your app in 5 minutes. But they skip validation, 
-                      market research, and customer discovery.
-                    </p>
-                    <p className="text-red-50 text-lg leading-relaxed">
-                      Result: <span className="font-bold text-yellow-200">Fast execution of bad ideas.</span> 90% of startups 
-                      fail not because of bad code, but because they built the wrong thing.
-                    </p>
-                  </div>
-                </div>
-                <div className="inline-flex items-center gap-2 px-5 py-3 bg-white/20 rounded-xl backdrop-blur-sm">
-                  <span className="font-semibold text-lg">Validation Missing</span>
-                  <X className="w-5 h-5" />
-                </div>
-              </div>
-            </Card>
-
-            {/* Dark Card */}
-            <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-0 p-8 text-white relative overflow-hidden group hover:shadow-2xl transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-700/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative z-10">
-                <div className="p-4 bg-white/10 rounded-xl w-fit mb-6">
-                  <Code className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4">What's Missing</h3>
-                <ul className="space-y-3 text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <span>Market research</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <span>Customer discovery</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <X className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <span>Idea validation</span>
-                  </li>
-                </ul>
-              </div>
-            </Card>
-
-            {/* Green Card */}
-            <Card className="md:col-span-3 bg-gradient-to-br from-green-500 to-green-600 border-0 p-10 text-white relative overflow-hidden group hover:shadow-2xl transition-shadow">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative z-10 flex items-center gap-8">
-                <div className="p-5 bg-white/20 rounded-2xl backdrop-blur-sm">
-                  <CheckCircle className="w-12 h-12" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-4xl font-bold mb-4">We Fill The Gap</h3>
-                  <p className="text-green-50 text-xl leading-relaxed">
-                    Validate FIRST with AI-powered market research and 8-dimension analysis. 
-                    Then use those builders to code it. Build the right thing, fast.
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* 4-Stage Journey */}
-      <section id="validation" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900">
-              4-Stage Validation Journey
-            </h2>
-            <p className="text-xl text-gray-600">
-              From idea to investor-ready in 4 stages
+            <p className="text-xl text-gray-400">
+              From validation to investor-ready
             </p>
           </div>
 
@@ -230,196 +182,119 @@ export default function MarketingHome() {
               {
                 icon: Target,
                 title: "The Validator",
-                description: "Real-time market research + 8-dimension scoring. Get GO/REFINE/PIVOT verdict.",
-                gradient: "from-blue-500 to-blue-600",
-                bgGradient: "from-blue-50 to-blue-100"
+                description: "8-dimension scoring with real-time market research",
+                gradient: "from-blue-500 to-cyan-500"
               },
               {
                 icon: Users,
                 title: "The Strategist",
-                description: "Customer discovery framework, interview scripts, persona building.",
-                gradient: "from-green-500 to-green-600",
-                bgGradient: "from-green-50 to-green-100"
+                description: "Customer discovery and interview frameworks",
+                gradient: "from-green-500 to-emerald-500"
               },
               {
                 icon: FileText,
                 title: "The Builder",
-                description: "YC-style business plans, pitch decks, financial models.",
-                gradient: "from-purple-500 to-purple-600",
-                bgGradient: "from-purple-50 to-purple-100"
+                description: "Business plans, pitch decks, financial models",
+                gradient: "from-purple-500 to-pink-500"
               },
               {
                 icon: TrendingUp,
                 title: "The Growth Hacker",
-                description: "Investor matching, traction strategies, growth playbooks.",
-                gradient: "from-orange-500 to-orange-600",
-                bgGradient: "from-orange-50 to-orange-100"
+                description: "Investor matching and growth strategies",
+                gradient: "from-orange-500 to-red-500"
               }
             ].map((stage, i) => (
-              <Card key={i} className={`p-8 border-2 border-gray-100 hover:border-gray-200 hover:shadow-xl transition-all group bg-gradient-to-br ${stage.bgGradient}`}>
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${stage.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                  <stage.icon className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-sm font-semibold text-gray-500 mb-2">Stage {i + 1}</div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">{stage.title}</h3>
-                <p className="text-gray-700 leading-relaxed">{stage.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section id="how" className="py-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900">How It Works</h2>
-            <p className="text-xl text-gray-600">Validation in 60 seconds</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {[
-              { 
-                step: "1", 
-                title: "Enter Your Idea", 
-                desc: "Simple form—problem, solution, target market",
-                color: "blue"
-              },
-              { 
-                step: "2", 
-                title: "AI Research (60-90s)", 
-                desc: "Live market data via Perplexity AI",
-                color: "purple"
-              },
-              { 
-                step: "3", 
-                title: "8-Dimension Analysis", 
-                desc: "Market size, competition, feasibility scoring",
-                color: "green"
-              },
-              { 
-                step: "4", 
-                title: "Clear Verdict", 
-                desc: "GO / REFINE / PIVOT with actionable insights",
-                color: "orange"
-              }
-            ].map((item, i) => (
-              <div key={i} className="flex items-start gap-6 bg-white p-8 rounded-2xl border-2 border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all">
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br from-${item.color}-500 to-${item.color}-600 text-white flex items-center justify-center font-bold text-2xl flex-shrink-0 shadow-lg`}>
-                  {item.step}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold mb-2 text-gray-900">{item.title}</h3>
-                  <p className="text-gray-600 text-lg">{item.desc}</p>
+              <div key={i} className="group relative">
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all h-full">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stage.gradient} flex items-center justify-center mb-4`}>
+                    <stage.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-xs text-gray-500 mb-2">Stage {i + 1}</div>
+                  <h3 className="text-lg font-semibold mb-2">{stage.title}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">{stage.description}</p>
                 </div>
               </div>
             ))}
           </div>
-
-          <div className="text-center mt-12">
-            <Link href="/app">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-8 h-14">
-                Start Validation <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Who Needs This */}
-      <section id="who" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 text-gray-900">Who Needs This</h2>
-            <p className="text-xl text-gray-600">Anyone building a startup</p>
+      {/* How It Works - Minimal */}
+      <section className="relative py-32 border-t border-white/10">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              How it works
+            </h2>
+            <p className="text-xl text-gray-400">
+              Validation in 60 seconds
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="space-y-6">
             {[
-              { 
-                title: "First-Time Founders", 
-                desc: "Validate your idea before quitting your job",
-                icon: "🚀"
-              },
-              { 
-                title: "Indie Hackers", 
-                desc: "Don't waste months building the wrong thing",
-                icon: "💻"
-              },
-              { 
-                title: "Accelerators & VCs", 
-                desc: "Pre-screen startups with AI validation",
-                icon: "🏢"
-              }
-            ].map((audience, i) => (
-              <Card key={i} className="p-8 text-center border-2 border-gray-100 hover:border-blue-200 hover:shadow-xl transition-all bg-gradient-to-br from-white to-gray-50">
-                <div className="text-6xl mb-4">{audience.icon}</div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">{audience.title}</h3>
-                <p className="text-gray-600 text-lg">{audience.desc}</p>
-              </Card>
+              { num: "1", title: "Enter your idea", desc: "Problem, solution, target market" },
+              { num: "2", title: "AI conducts research", desc: "Live market data in 60-90 seconds" },
+              { num: "3", title: "Get scored results", desc: "8 dimensions, 0-100 scoring" },
+              { num: "4", title: "Receive verdict", desc: "GO / REFINE / PIVOT with insights" }
+            ].map((step, i) => (
+              <div key={i} className="flex items-start gap-6 p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center font-bold flex-shrink-0">
+                  {step.num}
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-1">{step.title}</h3>
+                  <p className="text-gray-400">{step.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-br from-blue-600 via-purple-600 to-blue-600 text-white animate-gradient">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6">
-            Ready to Validate?
+      <section className="relative py-32 border-t border-white/10">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            Ready to validate?
           </h2>
-          <p className="text-xl md:text-2xl mb-12 text-blue-100">
-            Get your validation score in 60 seconds. Know if it's worth building.
+          <p className="text-xl text-gray-400 mb-12">
+            Stop building fast. Start building right.
           </p>
           
           <Link href="/app">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-12 h-16 shadow-2xl hover:shadow-3xl transition-all font-semibold">
+            <Button 
+              size="lg" 
+              className="bg-white text-black hover:bg-gray-100 font-semibold h-14 px-12 text-lg"
+            >
               Validate My Idea (Free)
-              <ArrowRight className="ml-2 w-6 h-6" />
+              <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>
 
-          <p className="text-sm text-blue-100 mt-8">
-            No credit card • 60 second validation • Cancel anytime
+          <p className="text-sm text-gray-500 mt-6">
+            No credit card required • 60 second validation • Cancel anytime
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16">
+      <footer className="relative border-t border-white/10 py-12">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div className="md:col-span-2">
-              <Logo size="lg" showText={true} />
-              <p className="text-gray-400 mt-4 text-lg leading-relaxed">
-                Your pre-build AI co-founder. Validate ideas before you waste time building.
-              </p>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-8">
+              <Logo size="md" showText={true} />
+              <div className="hidden md:flex items-center gap-6 text-sm text-gray-500">
+                <a href="#" className="hover:text-white transition-colors">About</a>
+                <a href="#" className="hover:text-white transition-colors">Blog</a>
+                <a href="#" className="hover:text-white transition-colors">Contact</a>
+              </div>
             </div>
             
-            <div>
-              <h3 className="font-semibold mb-4 text-lg">Product</h3>
-              <ul className="space-y-3 text-gray-400">
-                <li><a href="#validation" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#how" className="hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="/app" className="hover:text-white transition-colors">Dashboard</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4 text-lg">Company</h3>
-              <ul className="space-y-3 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400">© 2025 MyStartup.ai. All rights reserved.</p>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms</a>
+            <div className="flex items-center gap-6 text-sm text-gray-500">
+              <a href="#" className="hover:text-white transition-colors">Privacy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <div>© 2025 MyStartup.ai</div>
             </div>
           </div>
         </div>
