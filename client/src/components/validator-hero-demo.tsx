@@ -49,128 +49,148 @@ export function ValidatorHeroDemo() {
 
   // Check for reduced motion preference
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const reducedMotion = mediaQuery.matches;
-    setPrefersReducedMotion(reducedMotion);
+    try {
+      const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const reducedMotion = mediaQuery.matches;
+      setPrefersReducedMotion(reducedMotion);
 
-    // If reduced motion, skip directly to complete state
-    if (reducedMotion) {
-      setPhase("complete");
-      setDisplayScore(finalScore);
-      setActiveResearch([0, 1, 2, 3]);
-      setTypedText(ideaText);
-      setVisibleResearch(RESEARCH_DATA);
-    }
-
-    const handleChange = () => {
-      const newValue = mediaQuery.matches;
-      setPrefersReducedMotion(newValue);
-      if (newValue) {
+      // If reduced motion, skip directly to complete state
+      if (reducedMotion) {
         setPhase("complete");
         setDisplayScore(finalScore);
         setActiveResearch([0, 1, 2, 3]);
         setTypedText(ideaText);
         setVisibleResearch(RESEARCH_DATA);
       }
-    };
-    mediaQuery.addEventListener("change", handleChange);
-    
-    return () => mediaQuery.removeEventListener("change", handleChange);
+
+      const handleChange = () => {
+        const newValue = mediaQuery.matches;
+        setPrefersReducedMotion(newValue);
+        if (newValue) {
+          setPhase("complete");
+          setDisplayScore(finalScore);
+          setActiveResearch([0, 1, 2, 3]);
+          setTypedText(ideaText);
+          setVisibleResearch(RESEARCH_DATA);
+        }
+      };
+      mediaQuery.addEventListener("change", handleChange);
+      
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    } catch (error) {
+      console.error("Error in reduced motion check:", error);
+    }
   }, []);
 
   // Phase 1: Typing animation (8s total)
   useEffect(() => {
     if (phase !== "typing" || prefersReducedMotion) return;
 
-    let currentIndex = 0;
-    const typingInterval = setInterval(() => {
-      if (currentIndex <= ideaText.length) {
-        setTypedText(ideaText.substring(0, currentIndex));
-        currentIndex++;
-      } else {
-        clearInterval(typingInterval);
-        setTimeout(() => setPhase("researching"), 1000);
-      }
-    }, 60); // 60ms per character for ~8s total
+    try {
+      let currentIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (currentIndex <= ideaText.length) {
+          setTypedText(ideaText.substring(0, currentIndex));
+          currentIndex++;
+        } else {
+          clearInterval(typingInterval);
+          setTimeout(() => setPhase("researching"), 1000);
+        }
+      }, 60); // 60ms per character for ~8s total
 
-    return () => clearInterval(typingInterval);
+      return () => clearInterval(typingInterval);
+    } catch (error) {
+      console.error("Error in typing animation:", error);
+    }
   }, [phase, prefersReducedMotion]);
 
   // Phase 2: Live research animation (20s total)
   useEffect(() => {
     if (phase === "researching") {
-      const timers: NodeJS.Timeout[] = [];
-      
-      // Show research items progressively (every 2.5s)
-      RESEARCH_DATA.forEach((item, i) => {
-        const timer = setTimeout(() => {
-          setVisibleResearch(prev => [...prev, item]);
-          setCurrentResearchIndex(i);
-        }, i * 2500);
-        timers.push(timer);
-      });
+      try {
+        const timers: NodeJS.Timeout[] = [];
+        
+        // Show research items progressively (every 2.5s)
+        RESEARCH_DATA.forEach((item, i) => {
+          const timer = setTimeout(() => {
+            setVisibleResearch(prev => [...prev, item]);
+            setCurrentResearchIndex(i);
+          }, i * 2500);
+          timers.push(timer);
+        });
 
-      // Transition to analyzing after all research shown
-      const transitionTimer = setTimeout(() => {
-        setPhase("analyzing");
-      }, RESEARCH_DATA.length * 2500 + 1000);
-      timers.push(transitionTimer);
+        // Transition to analyzing after all research shown
+        const transitionTimer = setTimeout(() => {
+          setPhase("analyzing");
+        }, RESEARCH_DATA.length * 2500 + 1000);
+        timers.push(transitionTimer);
 
-      return () => timers.forEach(clearTimeout);
+        return () => timers.forEach(clearTimeout);
+      } catch (error) {
+        console.error("Error in research animation:", error);
+      }
     }
   }, [phase]);
 
   // Phase 3: Analyzing with dimensions (22s total)
   useEffect(() => {
     if (phase === "analyzing") {
-      const pulseTimers: NodeJS.Timeout[] = [];
-      
-      // Light up research dimensions sequentially
-      DIMENSIONS.forEach((dim, i) => {
-        const timer = setTimeout(() => {
-          setActiveResearch(prev => [...prev, i]);
-        }, i * 3000); // Every 3 seconds
-        pulseTimers.push(timer);
-      });
-
-      // Start score counting after dimensions lit up
-      const startScoreTimer = setTimeout(() => {
-        let current = 0;
-        const scoreInterval = setInterval(() => {
-          current += 2;
-          if (current >= finalScore) {
-            setDisplayScore(finalScore);
-            clearInterval(scoreInterval);
-            setTimeout(() => setPhase("complete"), 500);
-          } else {
-            setDisplayScore(current);
-          }
-        }, 200); // Count faster for smoother animation
-        pulseTimers.push(scoreInterval);
-      }, 12000);
-      pulseTimers.push(startScoreTimer);
-
-      return () => {
-        pulseTimers.forEach(timer => {
-          clearTimeout(timer);
-          clearInterval(timer);
+      try {
+        const pulseTimers: NodeJS.Timeout[] = [];
+        
+        // Light up research dimensions sequentially
+        DIMENSIONS.forEach((dim, i) => {
+          const timer = setTimeout(() => {
+            setActiveResearch(prev => [...prev, i]);
+          }, i * 3000); // Every 3 seconds
+          pulseTimers.push(timer);
         });
-      };
+
+        // Start score counting after dimensions lit up
+        const startScoreTimer = setTimeout(() => {
+          let current = 0;
+          const scoreInterval = setInterval(() => {
+            current += 2;
+            if (current >= finalScore) {
+              setDisplayScore(finalScore);
+              clearInterval(scoreInterval);
+              setTimeout(() => setPhase("complete"), 500);
+            } else {
+              setDisplayScore(current);
+            }
+          }, 200); // Count faster for smoother animation
+          pulseTimers.push(scoreInterval);
+        }, 12000);
+        pulseTimers.push(startScoreTimer);
+
+        return () => {
+          pulseTimers.forEach(timer => {
+            clearTimeout(timer);
+            clearInterval(timer);
+          });
+        };
+      } catch (error) {
+        console.error("Error in analyzing animation:", error);
+      }
     }
   }, [phase]);
 
   // Phase 4: Complete (10s dwell = 60s total)
   useEffect(() => {
     if (phase === "complete") {
-      const resetTimer = setTimeout(() => {
-        setPhase("typing");
-        setDisplayScore(0);
-        setActiveResearch([]);
-        setTypedText("");
-        setVisibleResearch([]);
-        setCurrentResearchIndex(0);
-      }, 10000);
-      return () => clearTimeout(resetTimer);
+      try {
+        const resetTimer = setTimeout(() => {
+          setPhase("typing");
+          setDisplayScore(0);
+          setActiveResearch([]);
+          setTypedText("");
+          setVisibleResearch([]);
+          setCurrentResearchIndex(0);
+        }, 10000);
+        return () => clearTimeout(resetTimer);
+      } catch (error) {
+        console.error("Error in complete phase:", error);
+      }
     }
   }, [phase]);
 
