@@ -83,18 +83,26 @@ export function ValidatorHeroDemo() {
     if (phase !== "typing" || prefersReducedMotion) return;
 
     let currentIndex = 0;
-    const typingInterval = setInterval(() => {
-      if (currentIndex <= ideaText.length) {
-        setTypedText(ideaText.substring(0, currentIndex));
-        currentIndex++;
-      } else {
-        clearInterval(typingInterval);
-        setTimeout(() => setPhase("researching"), 1000);
-      }
-    }, 60); // 60ms per character for ~8s total
+    let typingInterval: NodeJS.Timeout;
+    
+    // Small delay before starting to ensure component is mounted
+    const startDelay = setTimeout(() => {
+      typingInterval = setInterval(() => {
+        if (currentIndex <= ideaText.length) {
+          setTypedText(ideaText.substring(0, currentIndex));
+          currentIndex++;
+        } else {
+          clearInterval(typingInterval);
+          setTimeout(() => setPhase("researching"), 1000);
+        }
+      }, 60); // 60ms per character for ~8s total
+    }, 100);
 
-    return () => clearInterval(typingInterval);
-  }, [phase, prefersReducedMotion]);
+    return () => {
+      clearTimeout(startDelay);
+      if (typingInterval) clearInterval(typingInterval);
+    };
+  }, [phase, prefersReducedMotion, ideaText]);
 
   // Phase 2: Live research animation (20s total)
   useEffect(() => {
