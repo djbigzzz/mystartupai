@@ -96,65 +96,71 @@ export function MeetAITeam() {
                 className={`
                   relative overflow-hidden transition-all duration-500 border-0
                   ${coFounder.bgColor} hover:scale-105 cursor-pointer
-                  rounded-3xl shadow-2xl
+                  rounded-3xl shadow-2xl h-[600px]
                 `}
                 style={{
-                  transform: isHovered ? 'translateY(-8px) rotateX(2deg)' : 'translateY(0) rotateX(0)',
+                  transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
                   transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
                 onMouseEnter={() => setHoveredCard(coFounder.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 data-testid={`team-card-${coFounder.id}`}
               >
-                <CardContent className="relative p-8 h-full flex flex-col items-center text-center">
-                  {/* Avatar */}
-                  <div className="mb-6">
-                    <div className={`
-                      relative w-40 h-40 rounded-3xl overflow-hidden transition-all duration-500 
-                      border-4 border-black/20 shadow-xl bg-black/10
-                      ${isHovered ? 'scale-110 rotate-3' : 'scale-100 rotate-0'}
-                    `}
-                    style={{
-                      transformStyle: 'preserve-3d',
-                      perspective: '1000px'
-                    }}>
-                      <img 
-                        src={coFounder.avatarImage} 
-                        alt={coFounder.name}
-                        className="w-full h-full object-cover"
-                        style={{
-                          transform: isHovered ? 'translateZ(20px)' : 'translateZ(0)'
-                        }}
-                      />
-                    </div>
-                  </div>
+                {/* Full-card Avatar Background */}
+                <div 
+                  className="absolute inset-0 transition-transform duration-500"
+                  style={{
+                    transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                  }}
+                >
+                  <img 
+                    src={coFounder.avatarImage} 
+                    alt={coFounder.name}
+                    className="w-full h-full object-cover object-center"
+                  />
+                </div>
 
+                {/* Gradient Overlay for text readability */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-b"
+                  style={{
+                    background: coFounder.id === 1 
+                      ? 'linear-gradient(to bottom, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.6), rgba(59, 130, 246, 0.95))'
+                      : coFounder.id === 2
+                      ? 'linear-gradient(to bottom, rgba(34, 197, 94, 0.4), rgba(34, 197, 94, 0.6), rgba(34, 197, 94, 0.95))'
+                      : coFounder.id === 3
+                      ? 'linear-gradient(to bottom, rgba(168, 85, 247, 0.4), rgba(168, 85, 247, 0.6), rgba(168, 85, 247, 0.95))'
+                      : 'linear-gradient(to bottom, rgba(249, 115, 22, 0.4), rgba(249, 115, 22, 0.6), rgba(249, 115, 22, 0.95))'
+                  }}
+                ></div>
+
+                <CardContent className="relative z-10 p-8 h-full flex flex-col items-center text-center justify-end">
                   {/* Name & Role */}
                   <div className="mb-4">
-                    <h3 className="text-3xl font-bold text-white mb-2">
+                    <h3 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
                       {coFounder.name}
                     </h3>
-                    <p className="text-base font-medium text-white/90">
+                    <p className="text-lg font-medium text-white drop-shadow-md">
                       {coFounder.role}
                     </p>
                   </div>
 
                   {/* Tagline */}
-                  <p className="text-sm text-white/95 italic mb-6 min-h-[2.5rem]">
+                  <p className="text-sm text-white/95 italic mb-6 drop-shadow-md">
                     "{coFounder.tagline}"
                   </p>
 
                   {/* Capabilities List */}
-                  <div className="w-full mt-auto">
-                    <div className="bg-black/10 rounded-2xl p-4 backdrop-blur-sm border border-white/20">
+                  <div className="w-full">
+                    <div className="bg-black/40 rounded-2xl p-4 backdrop-blur-md border border-white/30">
                       <ul className="space-y-2 text-left">
                         {coFounder.capabilities.map((capability, idx) => (
                           <li 
                             key={idx} 
-                            className="text-xs text-white/90 flex items-start gap-2"
+                            className="text-xs text-white flex items-start gap-2"
                           >
-                            <span className="text-white/60 mt-0.5">•</span>
-                            <span>{capability}</span>
+                            <span className="text-white/80 mt-0.5">•</span>
+                            <span className="font-medium">{capability}</span>
                           </li>
                         ))}
                       </ul>
