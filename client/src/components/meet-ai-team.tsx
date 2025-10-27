@@ -12,7 +12,7 @@ const aiTeam = [
     name: "Vale",
     role: "The Validator",
     tagline: "I analyze 8 dimensions so you build the right thing",
-    bgColor: "bg-blue-500",
+    bgColor: "bg-slate-700",
     avatarImage: validatorAvatar,
     capabilities: [
       "Real-time market research",
@@ -27,7 +27,7 @@ const aiTeam = [
     name: "Stratos",
     role: "The Strategist",
     tagline: "Customer discovery before code. Every time.",
-    bgColor: "bg-green-500",
+    bgColor: "bg-slate-700",
     avatarImage: strategistAvatar,
     capabilities: [
       "Customer interview scripts",
@@ -42,7 +42,7 @@ const aiTeam = [
     name: "Archie",
     role: "The Builder",
     tagline: "From pitch deck to MVP, I've got the blueprints",
-    bgColor: "bg-purple-500",
+    bgColor: "bg-slate-700",
     avatarImage: builderAvatar,
     capabilities: [
       "Professional pitch decks",
@@ -57,7 +57,7 @@ const aiTeam = [
     name: "Blaze",
     role: "The Growth Hacker",
     tagline: "Let's find your first 1000 customers and investors",
-    bgColor: "bg-orange-500",
+    bgColor: "bg-slate-700",
     avatarImage: growthHackerAvatar,
     capabilities: [
       "Investor matching",
@@ -95,22 +95,27 @@ export function MeetAITeam() {
                 key={coFounder.id}
                 className={`
                   relative overflow-hidden transition-all duration-500 border-0
-                  ${coFounder.bgColor} hover:scale-105 cursor-pointer
-                  rounded-3xl shadow-2xl h-[600px]
+                  ${coFounder.bgColor} cursor-pointer
+                  rounded-3xl shadow-2xl h-[600px] animate-float
                 `}
                 style={{
-                  transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
-                  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                  transform: isHovered ? 'translateY(-8px) rotateY(5deg)' : 'translateY(0) rotateY(0)',
+                  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transformStyle: 'preserve-3d',
+                  perspective: '1000px',
+                  animationDelay: `${coFounder.id * 0.2}s`
                 }}
                 onMouseEnter={() => setHoveredCard(coFounder.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 data-testid={`team-card-${coFounder.id}`}
               >
-                {/* Full-card Avatar Background */}
+                {/* Full-card Avatar Background with 3D Animation */}
                 <div 
-                  className="absolute inset-0 transition-transform duration-500"
+                  className="absolute inset-0 transition-all duration-700 animate-subtle-rotate"
                   style={{
-                    transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                    transform: isHovered ? 'scale(1.15) translateZ(30px)' : 'scale(1.05) translateZ(0)',
+                    transformStyle: 'preserve-3d',
+                    animationDelay: `${coFounder.id * 0.15}s`
                   }}
                 >
                   <img 
@@ -120,17 +125,11 @@ export function MeetAITeam() {
                   />
                 </div>
 
-                {/* Gradient Overlay for text readability */}
+                {/* Gradient Overlay for text readability - neutral gray */}
                 <div 
                   className="absolute inset-0 bg-gradient-to-b"
                   style={{
-                    background: coFounder.id === 1 
-                      ? 'linear-gradient(to bottom, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.6), rgba(59, 130, 246, 0.95))'
-                      : coFounder.id === 2
-                      ? 'linear-gradient(to bottom, rgba(34, 197, 94, 0.4), rgba(34, 197, 94, 0.6), rgba(34, 197, 94, 0.95))'
-                      : coFounder.id === 3
-                      ? 'linear-gradient(to bottom, rgba(168, 85, 247, 0.4), rgba(168, 85, 247, 0.6), rgba(168, 85, 247, 0.95))'
-                      : 'linear-gradient(to bottom, rgba(249, 115, 22, 0.4), rgba(249, 115, 22, 0.6), rgba(249, 115, 22, 0.95))'
+                    background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.3), rgba(51, 65, 85, 0.5), rgba(51, 65, 85, 0.95))'
                   }}
                 ></div>
 
@@ -180,14 +179,32 @@ export function MeetAITeam() {
         </div>
       </div>
 
-      {/* Animations */}
+      {/* 3D Animations */}
       <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
+        @keyframes float {
+          0%, 100% { 
+            transform: translateY(0) rotateX(0deg);
+          }
+          50% { 
+            transform: translateY(-10px) rotateX(2deg);
+          }
         }
-        .animate-shimmer {
-          animation: shimmer 2s ease-in-out infinite;
+        
+        @keyframes subtle-rotate {
+          0%, 100% { 
+            transform: rotateY(-2deg) rotateX(1deg) scale(1.05);
+          }
+          50% { 
+            transform: rotateY(2deg) rotateX(-1deg) scale(1.05);
+          }
+        }
+        
+        .animate-float {
+          animation: float 4s ease-in-out infinite;
+        }
+        
+        .animate-subtle-rotate {
+          animation: subtle-rotate 6s ease-in-out infinite;
         }
       `}</style>
     </section>
