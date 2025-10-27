@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useRef, MouseEvent } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import validatorAvatar from "@assets/generated_images/The_Validator_3D_avatar_dd365c22.png";
 import strategistAvatar from "@assets/generated_images/The_Strategist_3D_avatar_17159bd1.png";
 import builderAvatar from "@assets/generated_images/The_Builder_3D_avatar_0b63a5a7.png";
 import growthHackerAvatar from "@assets/generated_images/The_Growth_Hacker_3D_avatar_3e4042fe.png";
+
+interface CardTransform {
+  rotateX: number;
+  rotateY: number;
+  scale: number;
+}
 
 const aiTeam = [
   {
@@ -71,6 +77,45 @@ const aiTeam = [
 
 export function MeetAITeam() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [cardTransforms, setCardTransforms] = useState<Record<number, CardTransform>>({});
+  const cardRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>, cardId: number) => {
+    const card = cardRefs.current[cardId];
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const cardCenterX = rect.left + rect.width / 2;
+    const cardCenterY = rect.top + rect.height / 2;
+    
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    
+    // Calculate rotation based on mouse position relative to card center
+    const rotateY = ((mouseX - cardCenterX) / (rect.width / 2)) * 15; // Max 15deg
+    const rotateX = -((mouseY - cardCenterY) / (rect.height / 2)) * 15; // Max 15deg (negative for natural feel)
+    
+    setCardTransforms(prev => ({
+      ...prev,
+      [cardId]: {
+        rotateX,
+        rotateY,
+        scale: 1.05
+      }
+    }));
+  };
+
+  const handleMouseLeave = (cardId: number) => {
+    setCardTransforms(prev => ({
+      ...prev,
+      [cardId]: {
+        rotateX: 0,
+        rotateY: 0,
+        scale: 1
+      }
+    }));
+    setHoveredCard(null);
+  };
 
   return (
     <section className="relative py-32 border-t border-gray-200 dark:border-white/10">
@@ -89,54 +134,81 @@ export function MeetAITeam() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {aiTeam.map((coFounder) => {
             const isHovered = hoveredCard === coFounder.id;
+            const transform = cardTransforms[coFounder.id] || { rotateX: 0, rotateY: 0, scale: 1 };
 
             return (
               <Card
                 key={coFounder.id}
+                ref={(el) => (cardRefs.current[coFounder.id] = el)}
                 className={`
-                  relative overflow-hidden transition-all duration-500 border-0
+                  relative overflow-hidden border-0
                   ${coFounder.bgColor} cursor-pointer
-                  rounded-3xl shadow-2xl h-[600px] animate-float
+                  rounded-3xl shadow-2xl h-[600px]
                 `}
                 style={{
-                  transform: isHovered ? 'translateY(-8px) rotateY(5deg)' : 'translateY(0) rotateY(0)',
-                  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transform: `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg) scale(${transform.scale})`,
+                  transition: 'all 0.1s cubic-bezier(0.03, 0.98, 0.52, 0.99)',
                   transformStyle: 'preserve-3d',
-                  perspective: '1000px',
-                  animationDelay: `${coFounder.id * 0.2}s`
+                  willChange: 'transform'
                 }}
+                onMouseMove={(e) => handleMouseMove(e, coFounder.id)}
                 onMouseEnter={() => setHoveredCard(coFounder.id)}
-                onMouseLeave={() => setHoveredCard(null)}
+                onMouseLeave={() => handleMouseLeave(coFounder.id)}
                 data-testid={`team-card-${coFounder.id}`}
               >
-                {/* Full-card Avatar Background with 3D Animation */}
+                {/* Full-card Avatar Background with Parallax Depth */}
                 <div 
-                  className="absolute inset-0 transition-all duration-700 animate-subtle-rotate"
+                  className="absolute inset-0"
                   style={{
-                    transform: isHovered ? 'scale(1.15) translateZ(30px)' : 'scale(1.05) translateZ(0)',
-                    transformStyle: 'preserve-3d',
-                    animationDelay: `${coFounder.id * 0.15}s`
+                    transform: `translateZ(${isHovered ? 40 : 20}px) scale(${isHovered ? 1.1 : 1.05})`,
+                    transition: 'all 0.3s ease-out',
+                    transformStyle: 'preserve-3d'
                   }}
                 >
                   <img 
                     src={coFounder.avatarImage} 
                     alt={coFounder.name}
                     className="w-full h-full object-cover object-center"
+                    style={{
+                      transform: `translateX(${transform.rotateY * 0.5}px) translateY(${-transform.rotateX * 0.5}px)`,
+                      transition: 'transform 0.1s ease-out'
+                    }}
                   />
                 </div>
 
-                {/* Gradient Overlay for text readability - neutral gray */}
+                {/* Dynamic Gradient Overlay - shifts with tilt */}
                 <div 
-                  className="absolute inset-0 bg-gradient-to-b"
+                  className="absolute inset-0 bg-gradient-to-b pointer-events-none"
                   style={{
-                    background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.3), rgba(51, 65, 85, 0.5), rgba(51, 65, 85, 0.95))'
+                    background: `linear-gradient(${135 + transform.rotateY}deg, rgba(51, 65, 85, 0.3), rgba(51, 65, 85, 0.5), rgba(51, 65, 85, 0.95))`,
+                    transition: 'background 0.1s ease-out'
                   }}
                 ></div>
 
-                <CardContent className="relative z-10 p-8 h-full flex flex-col items-center text-center justify-end">
+                {/* Dynamic highlight based on tilt */}
+                {isHovered && (
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: `radial-gradient(circle at ${50 + transform.rotateY}% ${50 - transform.rotateX}%, rgba(255,255,255,0.1) 0%, transparent 70%)`,
+                      transition: 'background 0.1s ease-out'
+                    }}
+                  ></div>
+                )}
+
+                <CardContent 
+                  className="relative p-8 h-full flex flex-col items-center text-center justify-end"
+                  style={{
+                    transform: 'translateZ(60px)',
+                    transformStyle: 'preserve-3d'
+                  }}
+                >
                   {/* Name & Role */}
                   <div className="mb-4">
-                    <h3 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
+                    <h3 className="text-4xl font-bold text-white mb-2 drop-shadow-lg"
+                        style={{
+                          textShadow: `${-transform.rotateY * 0.2}px ${transform.rotateX * 0.2}px 20px rgba(0,0,0,0.5)`
+                        }}>
                       {coFounder.name}
                     </h3>
                     <p className="text-lg font-medium text-white drop-shadow-md">
@@ -179,34 +251,6 @@ export function MeetAITeam() {
         </div>
       </div>
 
-      {/* 3D Animations */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { 
-            transform: translateY(0) rotateX(0deg);
-          }
-          50% { 
-            transform: translateY(-10px) rotateX(2deg);
-          }
-        }
-        
-        @keyframes subtle-rotate {
-          0%, 100% { 
-            transform: rotateY(-2deg) rotateX(1deg) scale(1.05);
-          }
-          50% { 
-            transform: rotateY(2deg) rotateX(-1deg) scale(1.05);
-          }
-        }
-        
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-        
-        .animate-subtle-rotate {
-          animation: subtle-rotate 6s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 }
