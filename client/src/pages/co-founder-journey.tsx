@@ -15,54 +15,78 @@ import ThemeBackgroundEffects from "@/components/theme-background-effects";
 import { CypherpunkEffects } from "@/components/cypherpunk-effects";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import MobileNavigation from "@/components/mobile-navigation";
+import validatorAvatar from "@assets/generated_images/The_Validator_3D_avatar_dd365c22.png";
+import strategistAvatar from "@assets/generated_images/The_Strategist_3D_avatar_17159bd1.png";
+import builderAvatar from "@assets/generated_images/The_Builder_3D_avatar_0b63a5a7.png";
+import growthHackerAvatar from "@assets/generated_images/The_Growth_Hacker_3D_avatar_3e4042fe.png";
 
-// Co-Founder personas with distinct identities
+// Co-Founder personas with distinct identities inspired by Sintra.ai
 const coFounders = [
   {
     id: 1,
-    name: "The Validator",
+    name: "Vale",
+    role: "The Validator",
+    tagline: "I analyze 8 dimensions so you build the right thing",
     title: "Is this idea worth pursuing?",
     description: "Market analysis, competitive landscape, risk assessment, and validation score",
+    personality: "Analytical data detective who won't let you skip validation",
+    traits: ["Evidence-based", "Thorough", "Data-driven", "Protective"],
     icon: Search,
-    color: "from-blue-500 to-purple-600",
+    color: "from-blue-500 to-cyan-600",
+    glowColor: "rgba(59, 130, 246, 0.5)",
     locked: false,
-    avatar: "👩‍🔬", // Analytical scientist
+    avatarImage: validatorAvatar,
     unlockCondition: "Always unlocked",
     route: "/co-founder-validator"
   },
   {
     id: 2,
-    name: "The Strategist", 
+    name: "Stratos",
+    role: "The Strategist",
+    tagline: "Customer discovery before code. Every time.",
     title: "What should we build first?",
     description: "Customer discovery, feature prioritization, MVP scope, and go-to-market strategy",
+    personality: "Wise strategic mastermind who plans your path to market",
+    traits: ["Strategic", "Methodical", "Customer-focused", "Wise"],
     icon: Target,
-    color: "from-purple-500 to-pink-600",
+    color: "from-green-500 to-emerald-600",
+    glowColor: "rgba(34, 197, 94, 0.5)",
     locked: true,
-    avatar: "👨‍💼", // Strategic thinker
+    avatarImage: strategistAvatar,
     unlockCondition: "Complete validation with score > 60",
     route: "/co-founder-strategist"
   },
   {
     id: 3,
-    name: "The Builder",
+    name: "Archie",
+    role: "The Builder",
+    tagline: "From pitch deck to MVP, I've got the blueprints",
     title: "Let's create the deliverables",
     description: "Business plan, pitch deck, financial model, and investor materials",
+    personality: "Innovative architect who transforms ideas into reality",
+    traits: ["Creative", "Execution-focused", "Innovative", "Builder mindset"],
     icon: Rocket,
-    color: "from-pink-500 to-orange-600", 
+    color: "from-purple-500 to-violet-600", 
+    glowColor: "rgba(168, 85, 247, 0.5)",
     locked: true,
-    avatar: "👩‍💻", // Creative builder
+    avatarImage: builderAvatar,
     unlockCondition: "Complete strategic planning",
     route: "/co-founder-builder"
   },
   {
     id: 4,
-    name: "The Growth Hacker",
+    name: "Blaze",
+    role: "The Growth Hacker",
+    tagline: "Let's find your first 1000 customers and investors",
     title: "Now let's get traction",
     description: "Investor matching, customer acquisition, MVP iteration, and funding strategy",
+    personality: "Dynamic growth catalyst who scales your success",
+    traits: ["Ambitious", "Growth-obsessed", "Resourceful", "Charismatic"],
     icon: TrendingUp,
-    color: "from-orange-500 to-red-600",
+    color: "from-orange-500 to-amber-600",
+    glowColor: "rgba(249, 115, 22, 0.5)",
     locked: true,
-    avatar: "🚀", // Growth expert
+    avatarImage: growthHackerAvatar,
     unlockCondition: "Complete investor materials",
     route: "/co-founder-growth"
   }
@@ -175,7 +199,7 @@ export default function CoFounderJourney() {
             to={{ opacity: 1, y: 0, rotationX: 0 }}
           />
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Four expert co-founders who won't let you build the wrong thing
+            Meet your AI co-founder team with distinct personalities and expertise
           </p>
         </div>
 
@@ -218,8 +242,10 @@ export default function CoFounderJourney() {
                     ? `cofounder-unlocked bg-gradient-to-br ${coFounder.color} hover:scale-105 hover:shadow-2xl cursor-pointer` 
                     : 'cofounder-locked opacity-60 cursor-not-allowed'
                   }
-                  ${isHovered && unlocked ? 'shadow-[0_0_30px_rgba(168,85,247,0.5)]' : ''}
                 `}
+                style={isHovered && unlocked ? {
+                  boxShadow: `0 0 30px ${coFounder.glowColor}`
+                } : undefined}
                 data-unlocked={unlocked}
                 onMouseEnter={() => setHoveredCard(coFounder.id)}
                 onMouseLeave={() => setHoveredCard(null)}
@@ -231,15 +257,20 @@ export default function CoFounderJourney() {
                 
                 <CardContent className="relative p-6">
                   {/* Header with Avatar & Status */}
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      {/* Avatar */}
+                      {/* 3D Character Avatar */}
                       <div className={`
-                        text-5xl transition-transform duration-300
-                        ${isHovered && unlocked ? 'scale-110' : ''}
-                        ${!unlocked ? 'grayscale opacity-50' : ''}
+                        relative w-24 h-24 rounded-2xl overflow-hidden transition-all duration-300 border-2
+                        ${unlocked ? 'border-primary/50' : 'border-muted'}
+                        ${isHovered && unlocked ? 'scale-110 shadow-lg' : ''}
+                        ${!unlocked ? 'grayscale opacity-40' : ''}
                       `}>
-                        {coFounder.avatar}
+                        <img 
+                          src={coFounder.avatarImage} 
+                          alt={coFounder.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       
                       {/* Icon Badge */}
@@ -261,15 +292,46 @@ export default function CoFounderJourney() {
 
                   {/* Content */}
                   <div>
-                    <h3 className={`text-2xl font-bold mb-2 ${unlocked ? '' : 'text-muted-foreground'}`}>
-                      {coFounder.name}
-                    </h3>
-                    <p className={`text-sm mb-3 ${unlocked ? 'text-foreground/90' : 'text-muted-foreground'}`}>
+                    {/* Name & Role */}
+                    <div className="mb-3">
+                      <h3 className={`text-2xl font-bold mb-1 ${unlocked ? '' : 'text-muted-foreground'}`}>
+                        {coFounder.name}
+                      </h3>
+                      <p className={`text-xs font-medium ${unlocked ? 'text-primary' : 'text-muted-foreground'}`}>
+                        {coFounder.role}
+                      </p>
+                    </div>
+                    
+                    {/* Tagline - Only show on hover for unlocked */}
+                    {isHovered && unlocked && (
+                      <p className={`text-sm italic mb-3 ${unlocked ? 'text-foreground/90' : 'text-muted-foreground'} animate-fade-in`}>
+                        "{coFounder.tagline}"
+                      </p>
+                    )}
+                    
+                    {/* Title */}
+                    <p className={`text-sm font-semibold mb-2 ${unlocked ? 'text-foreground/90' : 'text-muted-foreground'}`}>
                       {coFounder.title}
                     </p>
+                    
+                    {/* Description */}
                     <p className={`text-sm mb-4 ${unlocked ? 'text-foreground/70' : 'text-muted-foreground/70'}`}>
                       {coFounder.description}
                     </p>
+                    
+                    {/* Personality Traits - Show on hover */}
+                    {isHovered && unlocked && (
+                      <div className="mb-4 animate-fade-in">
+                        <p className="text-xs text-muted-foreground mb-2">Personality:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {coFounder.traits.map((trait, idx) => (
+                            <Badge key={idx} variant="secondary" className="text-xs">
+                              {trait}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Action Button / Unlock Condition */}
                     {unlocked ? (
@@ -317,11 +379,18 @@ export default function CoFounderJourney() {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
           }
+          @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
           .animate-float {
             animation: float linear infinite;
           }
           .animate-shimmer {
             animation: shimmer 2s ease-in-out infinite;
+          }
+          .animate-fade-in {
+            animation: fade-in 0.3s ease-out forwards;
           }
         `}</style>
       </div>

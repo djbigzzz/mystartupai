@@ -38,6 +38,7 @@ import MobileNavigation from "@/components/mobile-navigation";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ThemeBackgroundEffects from "@/components/theme-background-effects";
 import { CypherpunkEffects } from "@/components/cypherpunk-effects";
+import validatorAvatar from "@assets/generated_images/The_Validator_3D_avatar_dd365c22.png";
 
 interface ValidationResult {
   idea: string;
@@ -361,33 +362,71 @@ export default function CoFounderValidator() {
         {/* Page Content */}
         <div className="relative z-10 flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 overflow-auto">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
+            {/* Header with Character Avatar */}
             <div className="text-center mb-12">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <span className="text-6xl">🎯</span>
-                <SplitText
-                  text="The Validator"
-                  tag="h1"
-                  className={`text-5xl font-bold ${
-                    theme === "cypherpunk" 
-                      ? "text-primary" 
-                      : "bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-transparent bg-clip-text"
-                  }`}
-                  splitType="chars"
-                  delay={25}
-                  duration={0.5}
-                />
+              <div className="flex flex-col items-center gap-6 mb-6">
+                {/* Vale's Avatar */}
+                <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-4 border-blue-500/50 shadow-2xl">
+                  <img 
+                    src={validatorAvatar} 
+                    alt="Vale - The Validator"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                
+                {/* Name and Title */}
+                <div>
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <SplitText
+                      text="Vale"
+                      tag="h1"
+                      className={`text-6xl font-bold ${
+                        theme === "cypherpunk" 
+                          ? "text-primary" 
+                          : "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-transparent bg-clip-text"
+                      }`}
+                      splitType="chars"
+                      delay={25}
+                      duration={0.5}
+                    />
+                  </div>
+                  <p className="text-lg font-medium text-blue-600 dark:text-blue-400 mb-3">
+                    The Validator
+                  </p>
+                </div>
               </div>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Data-driven validation across 8 critical dimensions with real-time market research
-              </p>
-              
-              {validationResult?.marketResearch?.hasData && (
-                <Badge variant="outline" className="mt-4">
-                  <Globe className="w-3 h-3 mr-1" />
-                  Market Research: {validationResult.marketResearch.totalSources} sources analyzed
+
+              {/* Welcome Message from Vale */}
+              <Card className="max-w-3xl mx-auto mb-6 border-2 border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-cyan-500/5">
+                <CardContent className="p-6">
+                  <p className="text-lg text-foreground/90 italic">
+                    "Hey there! I'm Vale, your analytical co-founder who won't let you skip validation. 
+                    I'll analyze 8 critical dimensions with real-time market research so you build the right thing. 
+                    Let's make sure your idea is worth pursuing."
+                  </p>
+                </CardContent>
+              </Card>
+
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Badge variant="secondary" className="text-sm">
+                  <Target className="w-3 h-3 mr-1" />
+                  Evidence-based
                 </Badge>
-              )}
+                <Badge variant="secondary" className="text-sm">
+                  <BarChart3 className="w-3 h-3 mr-1" />
+                  Data-driven
+                </Badge>
+                <Badge variant="secondary" className="text-sm">
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  Thorough
+                </Badge>
+                {validationResult?.marketResearch?.hasData && (
+                  <Badge variant="outline" className="text-sm border-green-500/50 bg-green-500/10">
+                    <Globe className="w-3 h-3 mr-1" />
+                    Market Research: {validationResult.marketResearch.totalSources} sources
+                  </Badge>
+                )}
+              </div>
             </div>
 
             {!showResults || !validationResult ? (

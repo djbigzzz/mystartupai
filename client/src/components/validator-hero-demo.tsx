@@ -91,7 +91,7 @@ export function ValidatorHeroDemo() {
             <Target className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">The Validator</h3>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">Vale, The Validator</h3>
             <p className="text-xs text-gray-600 dark:text-gray-400">60-second AI validation</p>
           </div>
         </div>
@@ -147,12 +147,12 @@ export function ValidatorHeroDemo() {
             {phase === "complete" && (
               <div className="space-y-2 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                  <div className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">Market Size</div>
+                  <div className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">Market Size ✓</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">$12.5B TAM, growing 14.3% annually</div>
                 </div>
                 <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                  <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Timing</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">Post-pandemic health trends accelerating</div>
+                  <div className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Competitive Edge ✓</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">Vale says: Strong differentiation potential</div>
                 </div>
               </div>
             )}

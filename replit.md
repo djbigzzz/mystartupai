@@ -3,6 +3,8 @@
 ## Overview
 MyStartup.ai is an AI-powered platform designed to guide startup founders from idea to investor-readiness. It automates the creation of detailed business plans, pitch decks, and financial models, adhering to Y Combinator standards. The platform aims to transform raw ideas into viable businesses through intelligent analysis and content generation, providing a comprehensive toolkit for early-stage entrepreneurs. It offers a 10-step guided workflow, an agentic AI platform for autonomous task execution, and tools for MVP development, investor matching, and grant applications.
 
+**Character-Driven Branding (Sintra.ai-inspired):** The platform features 4 named AI co-founders with distinct personalities, 3D avatars, and color themes: Vale (The Validator - blue/cyan), Stratos (The Strategist - green/emerald), Archie (The Builder - purple/violet), and Blaze (The Growth Hacker - orange/amber). Each character has unique personality traits, taglines, and first-person messaging to create emotional connection and engagement.
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 

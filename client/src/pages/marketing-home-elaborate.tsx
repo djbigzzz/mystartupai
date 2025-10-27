@@ -4,35 +4,40 @@ import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ValidatorHeroDemo } from "@/components/validator-hero-demo";
 import { LayeredBackground } from "@/components/layered-background";
+import { MeetAITeam } from "@/components/meet-ai-team";
 import { ArrowRight, CheckCircle, Target, Users, FileText, TrendingUp } from "lucide-react";
 
 const STAGES = [
   {
     id: 1,
-    name: "The Validator",
+    name: "Vale",
+    role: "The Validator",
     icon: Target,
     color: "from-blue-500 to-cyan-500",
     description: "AI validation with real-time market research"
   },
   {
     id: 2,
-    name: "The Strategist",
+    name: "Stratos",
+    role: "The Strategist",
     icon: Users,
     color: "from-green-500 to-emerald-500",
     description: "Customer discovery & interview scripts"
   },
   {
     id: 3,
-    name: "The Builder",
+    name: "Archie",
+    role: "The Builder",
     icon: FileText,
-    color: "from-purple-500 to-pink-500",
+    color: "from-purple-500 to-violet-500",
     description: "Business plans, pitch decks & financial models"
   },
   {
     id: 4,
-    name: "The Growth Hacker",
+    name: "Blaze",
+    role: "The Growth Hacker",
     icon: TrendingUp,
-    color: "from-orange-500 to-red-500",
+    color: "from-orange-500 to-amber-500",
     description: "Investor matching & growth strategies"
   }
 ];
@@ -136,34 +141,8 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* Features Section - 4-Stage Journey */}
-      <section className="relative py-32 border-t border-gray-200 dark:border-white/10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              4-Stage Journey
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              From validation to investor-ready
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {STAGES.map((stage, i) => (
-              <div key={i} className="group relative">
-                <div className="p-6 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/10 transition-all h-full">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stage.color} flex items-center justify-center mb-4`}>
-                    <stage.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="text-xs text-gray-500 mb-2">Stage {i + 1}</div>
-                  <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">{stage.name}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{stage.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Meet Your AI Team Section */}
+      <MeetAITeam />
 
       {/* How It Works */}
       <section className="relative py-32 border-t border-gray-200 dark:border-white/10">
