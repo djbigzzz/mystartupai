@@ -12,44 +12,60 @@ const aiTeam = [
     name: "Vale",
     role: "The Validator",
     tagline: "I analyze 8 dimensions so you build the right thing",
-    personality: "Analytical data detective who won't let you skip validation",
-    traits: ["Evidence-based", "Thorough", "Data-driven", "Protective"],
-    color: "from-blue-500 to-cyan-600",
-    glowColor: "rgba(59, 130, 246, 0.3)",
+    bgColor: "bg-blue-500",
     avatarImage: validatorAvatar,
+    capabilities: [
+      "Real-time market research",
+      "8-dimension validation scoring",
+      "Competitor analysis",
+      "Market size assessment",
+      "GO/REFINE/PIVOT verdicts"
+    ]
   },
   {
     id: 2,
     name: "Stratos",
     role: "The Strategist",
     tagline: "Customer discovery before code. Every time.",
-    personality: "Wise strategic mastermind who plans your path to market",
-    traits: ["Strategic", "Methodical", "Customer-focused", "Wise"],
-    color: "from-green-500 to-emerald-600",
-    glowColor: "rgba(34, 197, 94, 0.3)",
+    bgColor: "bg-green-500",
     avatarImage: strategistAvatar,
+    capabilities: [
+      "Customer interview scripts",
+      "Target audience mapping",
+      "Feature prioritization",
+      "Product-market fit guidance",
+      "Go-to-market strategy"
+    ]
   },
   {
     id: 3,
     name: "Archie",
     role: "The Builder",
     tagline: "From pitch deck to MVP, I've got the blueprints",
-    personality: "Innovative architect who transforms ideas into reality",
-    traits: ["Creative", "Execution-focused", "Innovative", "Builder mindset"],
-    color: "from-purple-500 to-violet-600",
-    glowColor: "rgba(168, 85, 247, 0.3)",
+    bgColor: "bg-purple-500",
     avatarImage: builderAvatar,
+    capabilities: [
+      "Professional pitch decks",
+      "Detailed business plans",
+      "Financial models & projections",
+      "MVP blueprints",
+      "Investor-ready documents"
+    ]
   },
   {
     id: 4,
     name: "Blaze",
     role: "The Growth Hacker",
     tagline: "Let's find your first 1000 customers and investors",
-    personality: "Dynamic growth catalyst who scales your success",
-    traits: ["Ambitious", "Growth-obsessed", "Resourceful", "Charismatic"],
-    color: "from-orange-500 to-amber-600",
-    glowColor: "rgba(249, 115, 22, 0.3)",
+    bgColor: "bg-orange-500",
     avatarImage: growthHackerAvatar,
+    capabilities: [
+      "Investor matching",
+      "Customer acquisition strategies",
+      "Growth channel recommendations",
+      "Fundraising preparation",
+      "Launch campaign planning"
+    ]
   }
 ];
 
@@ -78,74 +94,72 @@ export function MeetAITeam() {
               <Card
                 key={coFounder.id}
                 className={`
-                  relative overflow-hidden transition-all duration-300 border-2
-                  bg-gradient-to-br ${coFounder.color} hover:scale-105 cursor-pointer
-                  group
+                  relative overflow-hidden transition-all duration-500 border-0
+                  ${coFounder.bgColor} hover:scale-105 cursor-pointer
+                  rounded-3xl shadow-2xl
                 `}
-                style={isHovered ? {
-                  boxShadow: `0 0 40px ${coFounder.glowColor}, 0 20px 40px rgba(0,0,0,0.2)`
-                } : {
-                  boxShadow: `0 10px 30px rgba(0,0,0,0.1)`
+                style={{
+                  transform: isHovered ? 'translateY(-8px) rotateX(2deg)' : 'translateY(0) rotateX(0)',
+                  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                 }}
                 onMouseEnter={() => setHoveredCard(coFounder.id)}
                 onMouseLeave={() => setHoveredCard(null)}
                 data-testid={`team-card-${coFounder.id}`}
               >
-                {/* Glass morphism overlay */}
-                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-
-                <CardContent className="relative p-6 h-full flex flex-col">
+                <CardContent className="relative p-8 h-full flex flex-col items-center text-center">
                   {/* Avatar */}
-                  <div className="mb-6 flex justify-center">
+                  <div className="mb-6">
                     <div className={`
-                      relative w-32 h-32 rounded-2xl overflow-hidden transition-all duration-300 border-2 border-white/50
-                      ${isHovered ? 'scale-110 shadow-2xl' : ''}
-                    `}>
+                      relative w-40 h-40 rounded-3xl overflow-hidden transition-all duration-500 
+                      border-4 border-black/20 shadow-xl bg-black/10
+                      ${isHovered ? 'scale-110 rotate-3' : 'scale-100 rotate-0'}
+                    `}
+                    style={{
+                      transformStyle: 'preserve-3d',
+                      perspective: '1000px'
+                    }}>
                       <img 
                         src={coFounder.avatarImage} 
                         alt={coFounder.name}
                         className="w-full h-full object-cover"
+                        style={{
+                          transform: isHovered ? 'translateZ(20px)' : 'translateZ(0)'
+                        }}
                       />
                     </div>
                   </div>
 
                   {/* Name & Role */}
-                  <div className="text-center mb-4">
-                    <h3 className="text-2xl font-bold text-white mb-1">
+                  <div className="mb-4">
+                    <h3 className="text-3xl font-bold text-white mb-2">
                       {coFounder.name}
                     </h3>
-                    <p className="text-sm font-medium text-white/80">
+                    <p className="text-base font-medium text-white/90">
                       {coFounder.role}
                     </p>
                   </div>
 
                   {/* Tagline */}
-                  <p className="text-sm text-white/90 italic text-center mb-4 min-h-[3rem] flex items-center justify-center">
+                  <p className="text-sm text-white/95 italic mb-6 min-h-[2.5rem]">
                     "{coFounder.tagline}"
                   </p>
 
-                  {/* Personality Traits */}
-                  <div className={`
-                    transition-all duration-300 mt-auto
-                    ${isHovered ? 'opacity-100 max-h-40' : 'opacity-0 max-h-0'}
-                  `}>
-                    <div className="flex flex-wrap gap-1 justify-center">
-                      {coFounder.traits.map((trait, idx) => (
-                        <Badge 
-                          key={idx} 
-                          variant="secondary" 
-                          className="text-xs bg-white/20 text-white border-white/30"
-                        >
-                          {trait}
-                        </Badge>
-                      ))}
+                  {/* Capabilities List */}
+                  <div className="w-full mt-auto">
+                    <div className="bg-black/10 rounded-2xl p-4 backdrop-blur-sm border border-white/20">
+                      <ul className="space-y-2 text-left">
+                        {coFounder.capabilities.map((capability, idx) => (
+                          <li 
+                            key={idx} 
+                            className="text-xs text-white/90 flex items-start gap-2"
+                          >
+                            <span className="text-white/60 mt-0.5">•</span>
+                            <span>{capability}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
-
-                  {/* Animated glow */}
-                  {isHovered && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer pointer-events-none"></div>
-                  )}
                 </CardContent>
               </Card>
             );
