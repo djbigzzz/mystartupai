@@ -339,6 +339,34 @@ export default function CoFounderValidator() {
     validationType: string;
   } | null>(null);
 
+  // Persist selected result to localStorage
+  useEffect(() => {
+    if (selectedResult && viewerOpen) {
+      localStorage.setItem('lastViewedValidationResult', JSON.stringify(selectedResult));
+    }
+  }, [selectedResult, viewerOpen]);
+
+  // Restore last viewed result from localStorage on mount
+  useEffect(() => {
+    const storedResult = localStorage.getItem('lastViewedValidationResult');
+    if (storedResult && !selectedResult) {
+      try {
+        const parsed = JSON.parse(storedResult);
+        // Only restore if the validation points have loaded and the result still exists
+        if (validationPoints.length > 0) {
+          const matchingPoint = validationPoints.find(p => p.id === parsed.validationType);
+          if (matchingPoint && matchingPoint.result && matchingPoint.status === 'completed') {
+            setSelectedResult(parsed);
+            setViewerOpen(true);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to restore last viewed result:', e);
+        localStorage.removeItem('lastViewedValidationResult');
+      }
+    }
+  }, [validationPoints, selectedResult]);
+
   // Fetch user's existing startup idea data
   const { data: existingIdea, isLoading: isLoadingIdea } = useQuery<any>({
     queryKey: ['/api/ideas'],
@@ -1533,7 +1561,13 @@ export default function CoFounderValidator() {
       {selectedResult && (
         <ValidationResultViewer
           open={viewerOpen}
-          onOpenChange={setViewerOpen}
+          onOpenChange={(open) => {
+            setViewerOpen(open);
+            // Clear stored result when modal is closed
+            if (!open) {
+              localStorage.removeItem('lastViewedValidationResult');
+            }
+          }}
           title={selectedResult.title}
           result={selectedResult.result}
           sources={selectedResult.sources}
