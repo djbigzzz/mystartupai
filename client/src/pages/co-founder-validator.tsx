@@ -25,7 +25,15 @@ import {
   ChevronDown,
   ChevronUp,
   Zap,
-  Award
+  Award,
+  Shield,
+  Compass,
+  Brain,
+  Rocket,
+  PlayCircle,
+  Loader2,
+  CheckCircle,
+  XCircle
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { AuroraBackground } from "@/components/react-bits/aurora-background";
@@ -106,6 +114,32 @@ interface ValidationResult {
   };
 }
 
+// Granular validation types
+type ValidationStatus = 'pending' | 'running' | 'completed' | 'error';
+
+interface GranularValidationResult {
+  status: ValidationStatus;
+  result?: string;
+  sources?: string[];
+  creditsUsed?: number;
+  timestamp?: string;
+  error?: string;
+  score?: number;
+  verdict?: string;
+}
+
+interface ValidationPoint {
+  id: string;
+  title: string;
+  description: string;
+  credits: number;
+  endpoint: string;
+  icon: any;
+  status: ValidationStatus;
+  result?: GranularValidationResult;
+  color: string;
+}
+
 export default function CoFounderValidator() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
@@ -125,6 +159,112 @@ export default function CoFounderValidator() {
   
   const [showResults, setShowResults] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  
+  // Granular validation state
+  const [validationMode, setValidationMode] = useState<'classic' | 'granular'>('granular');
+  const [validationPoints, setValidationPoints] = useState<ValidationPoint[]>([
+    {
+      id: 'competitor-analysis',
+      title: 'Competitor Analysis',
+      description: 'Live research on direct/indirect competitors, funding, and market positioning',
+      credits: 75,
+      endpoint: '/api/validation/competitor-analysis',
+      icon: Swords,
+      status: 'pending',
+      color: 'red'
+    },
+    {
+      id: 'market-size',
+      title: 'Market Size Research',
+      description: 'TAM/SAM/SOM analysis, growth rates, and market trends',
+      credits: 75,
+      endpoint: '/api/validation/market-size',
+      icon: BarChart3,
+      status: 'pending',
+      color: 'blue'
+    },
+    {
+      id: 'funding-landscape',
+      title: 'Funding Landscape',
+      description: 'Recent funding rounds, active investors, and check sizes',
+      credits: 75,
+      endpoint: '/api/validation/funding-landscape',
+      icon: DollarSign,
+      status: 'pending',
+      color: 'green'
+    },
+    {
+      id: 'customer-pain-points',
+      title: 'Customer Pain Points',
+      description: 'Real customer feedback from Reddit, forums, and reviews',
+      credits: 75,
+      endpoint: '/api/validation/customer-pain-points',
+      icon: Users,
+      status: 'pending',
+      color: 'orange'
+    },
+    {
+      id: 'target-audience',
+      title: 'Target Audience Insights',
+      description: 'Demographics, psychographics, and online behavior patterns',
+      credits: 75,
+      endpoint: '/api/validation/target-audience',
+      icon: Target,
+      status: 'pending',
+      color: 'purple'
+    },
+    {
+      id: 'industry-trends',
+      title: 'Industry Trends',
+      description: 'Emerging technologies, regulatory changes, and market dynamics',
+      credits: 75,
+      endpoint: '/api/validation/industry-trends',
+      icon: TrendingUp,
+      status: 'pending',
+      color: 'cyan'
+    },
+    {
+      id: 'tech-stack',
+      title: 'Tech Stack Assessment',
+      description: 'Recommended technologies, build vs buy analysis, and team requirements',
+      credits: 100,
+      endpoint: '/api/validation/tech-stack',
+      icon: Beaker,
+      status: 'pending',
+      color: 'indigo'
+    },
+    {
+      id: 'competitive-advantage',
+      title: 'Competitive Advantage',
+      description: 'Defensibility analysis, moats, and strategic positioning',
+      credits: 100,
+      endpoint: '/api/validation/competitive-advantage',
+      icon: Shield,
+      status: 'pending',
+      color: 'pink'
+    },
+    {
+      id: 'business-model',
+      title: 'Business Model Viability',
+      description: 'Revenue models, unit economics, and go-to-market fit',
+      credits: 100,
+      endpoint: '/api/validation/business-model',
+      icon: Compass,
+      status: 'pending',
+      color: 'emerald'
+    },
+    {
+      id: 'final-report',
+      title: 'Final Validation Report',
+      description: 'Comprehensive analysis combining all insights with score and verdict',
+      credits: 150,
+      endpoint: '/api/validation/final-report',
+      icon: Rocket,
+      status: 'pending',
+      color: 'amber'
+    }
+  ]);
+  const [isRunningAll, setIsRunningAll] = useState(false);
 
   // Fetch validation result if exists
   const { data: validationResult, isLoading: isLoadingResult } = useQuery<ValidationResult>({
@@ -211,6 +351,151 @@ export default function CoFounderValidator() {
     }
     
     aiImproveMutation.mutate({ text: currentText, fieldType });
+  };
+
+  // Granular validation mutation
+  const granularValidationMutation = useMutation({
+    mutationFn: async ({ endpoint, payload }: { endpoint: string; payload: any }) => {
+      const response = await apiRequest(endpoint, {
+        method: 'POST',
+        body: payload,
+      });
+      return response;
+    },
+    onSuccess: (data, variables) => {
+      const endpoint = variables.endpoint;
+      const pointId = endpoint.split('/').pop() || '';
+      
+      // Update the specific validation point with results
+      setValidationPoints(prev => prev.map(point => 
+        point.id === pointId 
+          ? { ...point, status: 'completed' as ValidationStatus, result: data }
+          : point
+      ));
+      
+      toast({
+        title: "✅ Validation Complete",
+        description: `${data.creditsUsed} credits used`,
+      });
+    },
+    onError: (error: any, variables) => {
+      const endpoint = variables.endpoint;
+      const pointId = endpoint.split('/').pop() || '';
+      
+      setValidationPoints(prev => prev.map(point => 
+        point.id === pointId 
+          ? { ...point, status: 'error' as ValidationStatus, result: { status: 'error', error: error.message } }
+          : point
+      ));
+      
+      toast({
+        title: "Validation Failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Run individual validation
+  const runValidation = async (pointId: string) => {
+    const point = validationPoints.find(p => p.id === pointId);
+    if (!point) return;
+    
+    // Update status to running
+    setValidationPoints(prev => prev.map(p => 
+      p.id === pointId ? { ...p, status: 'running' as ValidationStatus } : p
+    ));
+    
+    // Prepare payload based on what fields are filled
+    const payload = {
+      ideaTitle,
+      ideaDescription,
+      industry,
+      targetMarket,
+      problemStatement,
+      solutionApproach,
+      businessModel: competitiveEdge,
+      uniqueValueProp: competitiveEdge,
+      competitors
+    };
+    
+    granularValidationMutation.mutate({ endpoint: point.endpoint, payload });
+  };
+
+  // Run all validations sequentially
+  const runAllValidations = async () => {
+    if (!ideaTitle || !ideaDescription) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in at least Idea Title and Description",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsRunningAll(true);
+    
+    // Calculate total credits needed
+    const totalCredits = validationPoints.reduce((sum, point) => sum + point.credits, 0);
+    
+    toast({
+      title: "🚀 Running All Validations",
+      description: `Total: ${totalCredits} credits for 10 validation points`,
+    });
+    
+    // Run validations sequentially (one at a time)
+    for (const point of validationPoints) {
+      if (point.status !== 'completed') {
+        await new Promise<void>((resolve) => {
+          setValidationPoints(prev => prev.map(p => 
+            p.id === point.id ? { ...p, status: 'running' as ValidationStatus } : p
+          ));
+          
+          const payload = {
+            ideaTitle,
+            ideaDescription,
+            industry,
+            targetMarket,
+            problemStatement,
+            solutionApproach,
+            businessModel: competitiveEdge,
+            uniqueValueProp: competitiveEdge,
+            competitors
+          };
+          
+          apiRequest(point.endpoint, {
+            method: 'POST',
+            body: payload,
+          })
+            .then((data) => {
+              setValidationPoints(prev => prev.map(p => 
+                p.id === point.id 
+                  ? { ...p, status: 'completed' as ValidationStatus, result: data }
+                  : p
+              ));
+              resolve();
+            })
+            .catch((error) => {
+              setValidationPoints(prev => prev.map(p => 
+                p.id === point.id 
+                  ? { ...p, status: 'error' as ValidationStatus, result: { status: 'error', error: error.message } }
+                  : p
+              ));
+              resolve();
+            });
+        });
+        
+        // Small delay between validations to avoid rate limits
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+    
+    setIsRunningAll(false);
+    
+    toast({
+      title: "✅ All Validations Complete",
+      description: "Check each card for detailed results",
+    });
   };
 
   // Validate idea mutation
@@ -727,53 +1012,199 @@ export default function CoFounderValidator() {
                     </CardContent>
                   </Card>
 
-                  {/* Validate Button */}
-                  <Card className={`border-2 backdrop-blur-sm ${
-                    theme === "cypherpunk" 
-                      ? "border-primary bg-primary/5" 
-                      : "bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/30 dark:to-purple-950/30 border-blue-200 dark:border-blue-800"
-                  }`}>
-                    <CardContent className="pt-6">
-                      <div className="text-center space-y-4">
-                        <div>
-                          <h3 className="text-lg font-semibold mb-2">Ready for Validation?</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Our AI will analyze your idea across 8 dimensions with real-time market research via Perplexity AI
-                          </p>
-                        </div>
-                        
-                        <Button
-                          onClick={handleValidate}
-                          disabled={validateMutation.isPending || !ideaTitle || !ideaDescription}
-                          size="lg"
-                          className={`w-full sm:w-auto px-8 ${
-                            theme === "cypherpunk"
-                              ? "bg-primary hover:bg-primary/90"
-                              : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                          }`}
-                          data-testid="button-validate"
-                        >
-                          {validateMutation.isPending ? (
-                            <>
-                              <RefreshCcw className="w-5 h-5 mr-2 animate-spin" />
-                              Analyzing with AI...
-                            </>
-                          ) : (
-                            <>
-                              <Zap className="w-5 h-5 mr-2" />
-                              Validate My Idea
-                            </>
+                  {/* Granular Validation Section */}
+                  <div className="space-y-6">
+                    {/* Header with Run All Button */}
+                    <Card className={`border-2 backdrop-blur-sm ${
+                      theme === "cypherpunk" 
+                        ? "border-primary bg-primary/5" 
+                        : "bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-950/30 dark:to-purple-950/30 border-blue-200 dark:border-blue-800"
+                    }`}>
+                      <CardContent className="pt-6">
+                        <div className="text-center space-y-4">
+                          <div>
+                            <h3 className="text-2xl font-bold mb-2">Granular Validation System</h3>
+                            <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+                              Run 10 separate validation points individually (75-150 credits each) or all at once (975 credits total). 
+                              Each validation uses real-time market research (Perplexity AI) or advanced analysis (Claude 4.5).
+                            </p>
+                          </div>
+                          
+                          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                            <Button
+                              onClick={runAllValidations}
+                              disabled={isRunningAll || !ideaTitle || !ideaDescription}
+                              size="lg"
+                              className={`px-8 ${
+                                theme === "cypherpunk"
+                                  ? "bg-primary hover:bg-primary/90"
+                                  : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                              }`}
+                              data-testid="button-run-all-validations"
+                            >
+                              {isRunningAll ? (
+                                <>
+                                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                  Running All...
+                                </>
+                              ) : (
+                                <>
+                                  <Rocket className="w-5 h-5 mr-2" />
+                                  Run All Validations (975 credits)
+                                </>
+                              )}
+                            </Button>
+                            
+                            <div className="text-xs text-muted-foreground">
+                              {validationPoints.filter(p => p.status === 'completed').length}/10 completed
+                            </div>
+                          </div>
+                          
+                          {isRunningAll && (
+                            <div className="space-y-2">
+                              <Progress 
+                                value={(validationPoints.filter(p => p.status === 'completed').length / validationPoints.length) * 100} 
+                                className="h-2 max-w-md mx-auto" 
+                              />
+                              <p className="text-xs text-muted-foreground animate-pulse">
+                                Running validations sequentially... {validationPoints.filter(p => p.status === 'completed').length}/{validationPoints.length}
+                              </p>
+                            </div>
                           )}
-                        </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* 10 Validation Cards Grid */}
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {validationPoints.map((point) => {
+                        const PointIcon = point.icon;
+                        const isRunning = point.status === 'running';
+                        const isCompleted = point.status === 'completed';
+                        const isError = point.status === 'error';
                         
-                        {validateMutation.isPending && (
-                          <p className="text-xs text-muted-foreground animate-pulse">
-                            Conducting live market research and analyzing across 8 dimensions...
+                        return (
+                          <Card 
+                            key={point.id} 
+                            className={`border-2 backdrop-blur-sm transition-all ${
+                              isCompleted ? 'border-green-500 dark:border-green-700' : 
+                              isError ? 'border-red-500 dark:border-red-700' : 
+                              isRunning ? 'border-blue-500 dark:border-blue-700' : 
+                              'border-border'
+                            }`}
+                            data-testid={`card-validation-${point.id}`}
+                          >
+                            <CardHeader className="pb-3">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-start gap-2 flex-1">
+                                  <PointIcon className={`w-5 h-5 mt-0.5 text-${point.color}-600 dark:text-${point.color}-400`} />
+                                  <div className="flex-1">
+                                    <CardTitle className="text-base leading-tight">{point.title}</CardTitle>
+                                    <CardDescription className="text-xs mt-1">{point.description}</CardDescription>
+                                  </div>
+                                </div>
+                                
+                                {/* Status Icon */}
+                                {isCompleted && <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />}
+                                {isError && <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />}
+                                {isRunning && <Loader2 className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin flex-shrink-0" />}
+                              </div>
+                            </CardHeader>
+                            
+                            <CardContent className="space-y-3">
+                              {/* Credits Badge */}
+                              <div className="flex items-center justify-between">
+                                <Badge variant="outline" className="text-xs">
+                                  {point.credits} credits
+                                </Badge>
+                                
+                                <Badge 
+                                  variant={
+                                    isCompleted ? 'default' : 
+                                    isError ? 'destructive' : 
+                                    isRunning ? 'secondary' : 
+                                    'outline'
+                                  }
+                                  className="text-xs capitalize"
+                                >
+                                  {point.status}
+                                </Badge>
+                              </div>
+                              
+                              {/* Run Button */}
+                              <Button
+                                onClick={() => runValidation(point.id)}
+                                disabled={isRunning || isRunningAll || !ideaTitle || !ideaDescription}
+                                size="sm"
+                                className="w-full"
+                                variant={isCompleted ? "outline" : "default"}
+                                data-testid={`button-run-${point.id}`}
+                              >
+                                {isRunning ? (
+                                  <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Running...
+                                  </>
+                                ) : isCompleted ? (
+                                  <>
+                                    <RefreshCcw className="w-4 h-4 mr-2" />
+                                    Re-run
+                                  </>
+                                ) : (
+                                  <>
+                                    <PlayCircle className="w-4 h-4 mr-2" />
+                                    Run Validation
+                                  </>
+                                )}
+                              </Button>
+                              
+                              {/* Results Preview */}
+                              {point.result && (
+                                <div className="mt-3 p-3 bg-muted rounded-lg">
+                                  {isCompleted && point.result.result && (
+                                    <div className="space-y-2">
+                                      <div className="text-xs font-semibold flex items-center gap-2">
+                                        <CheckCircle className="w-3 h-3 text-green-600" />
+                                        Results:
+                                      </div>
+                                      <p className="text-xs text-muted-foreground line-clamp-3">
+                                        {point.result.result.substring(0, 150)}...
+                                      </p>
+                                      {point.result.sources && point.result.sources.length > 0 && (
+                                        <Badge variant="secondary" className="text-xs">
+                                          {point.result.sources.length} sources
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  )}
+                                  {isError && point.result.error && (
+                                    <div className="text-xs text-destructive flex items-start gap-2">
+                                      <XCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                                      <span>{point.result.error}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+
+                    {/* Final Report Call-to-Action */}
+                    {validationPoints.filter(p => p.status === 'completed').length >= 9 && (
+                      <Card className="border-2 border-amber-500 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/30">
+                        <CardContent className="pt-6 text-center">
+                          <Award className="w-12 h-12 mx-auto mb-3 text-amber-600 dark:text-amber-400" />
+                          <h3 className="text-lg font-bold mb-2">Almost Complete!</h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            You've completed {validationPoints.filter(p => p.status === 'completed').length}/10 validations. 
+                            Run the Final Validation Report to get your comprehensive score and verdict!
                           </p>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
                 </div>
               </div>
             ) : (
