@@ -641,13 +641,13 @@ export default function CoFounderValidator() {
         }`}></div>
 
         {/* Page Content */}
-        <div className="relative z-10 flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 overflow-auto">
+        <div className="relative z-10 flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
-            {/* Header with Character Avatar */}
-            <div className="text-center mb-12">
-              <div className="flex flex-col items-center gap-6 mb-6">
-                {/* Vale's Avatar */}
-                <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-4 border-blue-500/50 shadow-2xl">
+            {/* Header with Character Avatar - Compact */}
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                {/* Vale's Avatar - Smaller */}
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-500/50 shadow-lg">
                   <img 
                     src={validatorAvatar} 
                     alt="Vale - The Validator"
@@ -655,54 +655,41 @@ export default function CoFounderValidator() {
                   />
                 </div>
                 
-                {/* Name and Title */}
-                <div>
-                  <div className="flex items-center justify-center gap-3 mb-2">
-                    <SplitText
-                      text="Vale"
-                      tag="h1"
-                      className={`text-6xl font-bold ${
-                        theme === "cypherpunk" 
-                          ? "text-primary" 
-                          : "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-transparent bg-clip-text"
-                      }`}
-                      splitType="chars"
-                      delay={25}
-                      duration={0.5}
-                    />
-                  </div>
-                  <p className="text-lg font-medium text-blue-600 dark:text-blue-400 mb-3">
+                {/* Name and Title - Inline */}
+                <div className="text-left">
+                  <h1 className={`text-3xl font-bold ${
+                    theme === "cypherpunk" 
+                      ? "text-primary" 
+                      : "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-transparent bg-clip-text"
+                  }`}>
+                    Vale
+                  </h1>
+                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
                     The Validator
                   </p>
                 </div>
               </div>
 
-              {/* Welcome Message from Vale */}
-              <Card className="max-w-3xl mx-auto mb-6 border-2 border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-cyan-500/5">
-                <CardContent className="p-6">
-                  <p className="text-lg text-foreground/90 italic">
-                    "Hey there! I'm Vale, your analytical co-founder who won't let you skip validation. 
-                    I'll analyze 8 critical dimensions with real-time market research so you build the right thing. 
-                    Let's make sure your idea is worth pursuing."
+              {/* Welcome Message from Vale - Compact */}
+              <Card className="max-w-3xl mx-auto mb-3 border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-cyan-500/5">
+                <CardContent className="p-3">
+                  <p className="text-sm text-foreground/90 italic">
+                    "I'll analyze your idea with real-time market research across 8 critical dimensions. Let's make sure it's worth pursuing."
                   </p>
                 </CardContent>
               </Card>
 
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Badge variant="secondary" className="text-sm">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Badge variant="secondary" className="text-xs">
                   <Target className="w-3 h-3 mr-1" />
                   Evidence-based
                 </Badge>
-                <Badge variant="secondary" className="text-sm">
+                <Badge variant="secondary" className="text-xs">
                   <BarChart3 className="w-3 h-3 mr-1" />
                   Data-driven
                 </Badge>
-                <Badge variant="secondary" className="text-sm">
-                  <CheckCircle2 className="w-3 h-3 mr-1" />
-                  Thorough
-                </Badge>
                 {validationResult?.marketResearch?.hasData && (
-                  <Badge variant="outline" className="text-sm border-green-500/50 bg-green-500/10">
+                  <Badge variant="outline" className="text-xs border-green-500/50 bg-green-500/10">
                     <Globe className="w-3 h-3 mr-1" />
                     Market Research: {validationResult.marketResearch.totalSources} sources
                   </Badge>
@@ -713,20 +700,20 @@ export default function CoFounderValidator() {
             {!showResults || !validationResult ? (
               /* ========== VALIDATION FORM ========== */
               <div className="max-w-5xl mx-auto">
-                <div className="grid gap-6">
+                <div className="grid gap-3">
                   {/* Step 1: Idea Overview */}
-                  <Card className="border-2 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold">
+                  <Card className="border backdrop-blur-sm">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-sm">
                           1
                         </div>
-                        <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <Lightbulb className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                         Idea Overview
                       </CardTitle>
-                      <CardDescription>What's your startup about?</CardDescription>
+                      <CardDescription className="text-xs">What's your startup about?</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-3 pt-0">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label>Idea Title *</Label>
@@ -817,18 +804,18 @@ export default function CoFounderValidator() {
                   </Card>
 
                   {/* Step 2: Problem & Solution */}
-                  <Card className="border-2 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold">
+                  <Card className="border backdrop-blur-sm">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold text-sm">
                           2
                         </div>
-                        <Target className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        <Target className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                         Problem & Solution
                       </CardTitle>
-                      <CardDescription>Define the problem and your approach</CardDescription>
+                      <CardDescription className="text-xs">Define the problem and your approach</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-3 pt-0">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label className="flex items-center gap-2">
@@ -850,7 +837,7 @@ export default function CoFounderValidator() {
                           placeholder="What specific problem are you solving? Who faces this problem and why does it matter?"
                           value={problemStatement}
                           onChange={(e) => setProblemStatement(e.target.value)}
-                          rows={4}
+                          rows={2}
                           className="resize-none"
                           data-testid="input-problem-statement"
                         />
@@ -874,7 +861,7 @@ export default function CoFounderValidator() {
                           placeholder="How does your solution work? What makes it unique and 10x better?"
                           value={solutionApproach}
                           onChange={(e) => setSolutionApproach(e.target.value)}
-                          rows={4}
+                          rows={2}
                           className="resize-none"
                           data-testid="input-solution-approach"
                         />
@@ -883,18 +870,18 @@ export default function CoFounderValidator() {
                   </Card>
 
                   {/* Step 3: Market & Customers */}
-                  <Card className="border-2 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-500/20 text-green-600 dark:text-green-400 font-bold">
+                  <Card className="border backdrop-blur-sm">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-600 dark:text-green-400 font-bold text-sm">
                           3
                         </div>
-                        <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        <Users className="w-4 h-4 text-green-600 dark:text-green-400" />
                         Market & Customers
                       </CardTitle>
-                      <CardDescription>Who are you building this for?</CardDescription>
+                      <CardDescription className="text-xs">Who are you building this for?</CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-3 pt-0">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <Label>Target Customer</Label>
@@ -913,7 +900,7 @@ export default function CoFounderValidator() {
                           placeholder="Describe your ideal customer: demographics, behaviors, pain points, and why they'll love your solution."
                           value={targetMarket}
                           onChange={(e) => setTargetMarket(e.target.value)}
-                          rows={3}
+                          rows={2}
                           className="resize-none"
                           data-testid="input-target-market"
                         />
