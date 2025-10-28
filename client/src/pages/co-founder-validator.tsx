@@ -1337,58 +1337,58 @@ export default function CoFounderValidator() {
             ) : (
               /* ========== VALIDATION RESULTS ========== */
               <div className="max-w-6xl mx-auto space-y-8">
-                {/* Score Overview Card */}
+                {/* Score Overview Card - Compact Design */}
                 <Card className="border-2 backdrop-blur-sm">
-                  <CardContent className="pt-8">
-                    <div className="text-center space-y-6">
-                      {/* Score */}
-                      <div>
-                        <div className={`text-8xl font-bold mb-2 ${getScoreColor(validationResult.score)}`}>
-                          {validationResult.score}
-                          <span className="text-4xl text-muted-foreground">/100</span>
+                  <CardContent className="pt-6 pb-6">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                      {/* Left Side: Score */}
+                      <div className="flex flex-col items-center md:items-start gap-3">
+                        <div className="flex items-baseline gap-2">
+                          <span className={`text-6xl font-bold ${getScoreColor(validationResult.score)}`}>
+                            {validationResult.score}
+                          </span>
+                          <span className="text-2xl text-muted-foreground font-medium">/100</span>
                         </div>
-                        <Progress value={validationResult.score} className="h-3 max-w-md mx-auto" />
+                        <Progress value={validationResult.score} className="h-2 w-48" />
                       </div>
 
-                      {/* Verdict Badge */}
-                      <div className="flex justify-center">
+                      {/* Center: Verdict & Description */}
+                      <div className="flex-1 text-center md:text-left space-y-2">
                         {(() => {
                           const config = getVerdictConfig(validationResult.verdict);
                           const VerdictIcon = config.icon;
                           return (
                             <Badge 
-                              className={`px-6 py-3 text-lg font-bold ${config.bg} ${config.border} border-2`}
+                              className={`px-4 py-2 text-sm font-bold ${config.bg} ${config.border} border-2`}
                             >
-                              <VerdictIcon className="w-5 h-5 mr-2" />
-                              VERDICT: {validationResult.verdict}
+                              <VerdictIcon className="w-4 h-4 mr-1.5" />
+                              {validationResult.verdict}
                             </Badge>
                           );
                         })()}
+                        <p className="text-sm text-muted-foreground">
+                          {validationResult.score >= 70 && "Strong potential! Address minor concerns and move forward."}
+                          {validationResult.score >= 60 && validationResult.score < 70 && "Has potential but needs refinement in key areas."}
+                          {validationResult.score >= 40 && validationResult.score < 60 && "Needs significant refinement before proceeding."}
+                          {validationResult.score < 40 && "Consider pivoting or major changes to your approach."}
+                        </p>
                       </div>
 
-                      {/* Description */}
-                      <p className="text-muted-foreground max-w-2xl mx-auto">
-                        {validationResult.score >= 70 && "Your idea shows strong potential! Address minor concerns and move forward."}
-                        {validationResult.score >= 60 && validationResult.score < 70 && "Your idea has potential but needs refinement in key areas."}
-                        {validationResult.score >= 40 && validationResult.score < 60 && "Your idea needs significant refinement before proceeding."}
-                        {validationResult.score < 40 && "Consider pivoting or major changes to your approach."}
-                      </p>
-
-                      {/* Unlock Status */}
-                      <div className="inline-flex items-center gap-3 px-6 py-3 bg-muted rounded-lg">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Required to Unlock:</span>
-                          <span className="ml-2 font-bold">60/100</span>
+                      {/* Right Side: Unlock Status */}
+                      <div className="flex flex-col items-center gap-2 px-6 py-3 bg-muted rounded-lg">
+                        <div className="text-xs text-muted-foreground whitespace-nowrap">
+                          Required to Unlock
                         </div>
+                        <div className="text-2xl font-bold">60/100</div>
                         {validationResult.score >= 60 ? (
                           <Badge variant="default" className="bg-green-600">
                             <CheckCircle2 className="w-3 h-3 mr-1" />
                             Unlocked
                           </Badge>
                         ) : (
-                          <Badge variant="secondary">
+                          <Badge variant="secondary" className="text-xs">
                             <Target className="w-3 h-3 mr-1" />
-                            {60 - validationResult.score} points needed
+                            {60 - validationResult.score} pts needed
                           </Badge>
                         )}
                       </div>
