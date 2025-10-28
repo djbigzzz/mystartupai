@@ -3113,6 +3113,76 @@ Make it actionable, specific, and data-driven based on all research conducted.`;
 
   // ========== END GRANULAR VALIDATION ENDPOINTS ==========
 
+  // Update validation result (for editing)
+  app.put("/api/validation/:type",
+    requireAuth,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { type } = req.params;
+        const { result } = req.body;
+
+        if (!result) {
+          return res.status(400).json({ message: "Result content is required" });
+        }
+
+        // Get user's startup idea
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
+        if (!idea) {
+          return res.status(404).json({ message: "No startup idea found" });
+        }
+
+        // Map validation type to database field
+        const fieldMapping: Record<string, string> = {
+          'competitor-analysis': 'competitorAnalysis',
+          'market-size': 'marketSizeResearch',
+          'funding-landscape': 'fundingLandscape',
+          'customer-pain-points': 'customerPainPoints',
+          'target-audience': 'targetAudienceInsights',
+          'industry-trends': 'industryTrends',
+          'tech-stack': 'techStackAssessment',
+          'competitive-advantage': 'competitiveAdvantageAnalysis',
+          'business-model': 'businessModelViability',
+          'final-report': 'finalValidationReport',
+        };
+
+        const fieldName = fieldMapping[type];
+        if (!fieldName) {
+          return res.status(400).json({ message: "Invalid validation type" });
+        }
+
+        // Get existing validation data
+        const existingData = (idea as any)[fieldName];
+        if (!existingData) {
+          return res.status(404).json({ message: "Validation not found" });
+        }
+
+        // Update with new result, preserving other fields
+        const updatedData = {
+          ...existingData,
+          result,
+          lastEdited: new Date().toISOString(),
+        };
+
+        await storage.updateStartupIdea(idea.id, {
+          [fieldName]: updatedData
+        });
+
+        res.json({ 
+          message: "Validation result updated successfully",
+          data: updatedData
+        });
+      } catch (error) {
+        console.error("Update validation error:", error);
+        res.status(500).json({ 
+          message: "Failed to update validation result",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
   // AI Suggest field content - generates intelligent suggestions based on context
   app.post("/api/journey/suggest-field", 
     requireAuth,
