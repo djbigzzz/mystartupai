@@ -2339,7 +2339,13 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
         });
 
         if (!response.ok) {
-          throw new Error(`Perplexity API error: ${response.status}`);
+          const errorData = await response.json().catch(() => null);
+          console.error("Perplexity API error details:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorData
+          });
+          throw new Error(`Perplexity API error: ${response.status} - ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
@@ -2404,7 +2410,13 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
         });
 
         if (!response.ok) {
-          throw new Error(`Perplexity API error: ${response.status}`);
+          const errorData = await response.json().catch(() => null);
+          console.error("Perplexity API error details:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorData
+          });
+          throw new Error(`Perplexity API error: ${response.status} - ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
@@ -2465,7 +2477,13 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
         });
 
         if (!response.ok) {
-          throw new Error(`Perplexity API error: ${response.status}`);
+          const errorData = await response.json().catch(() => null);
+          console.error("Perplexity API error details:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorData
+          });
+          throw new Error(`Perplexity API error: ${response.status} - ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
@@ -2526,7 +2544,13 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
         });
 
         if (!response.ok) {
-          throw new Error(`Perplexity API error: ${response.status}`);
+          const errorData = await response.json().catch(() => null);
+          console.error("Perplexity API error details:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorData
+          });
+          throw new Error(`Perplexity API error: ${response.status} - ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
@@ -2587,7 +2611,13 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
         });
 
         if (!response.ok) {
-          throw new Error(`Perplexity API error: ${response.status}`);
+          const errorData = await response.json().catch(() => null);
+          console.error("Perplexity API error details:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorData
+          });
+          throw new Error(`Perplexity API error: ${response.status} - ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
@@ -2648,7 +2678,13 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
         });
 
         if (!response.ok) {
-          throw new Error(`Perplexity API error: ${response.status}`);
+          const errorData = await response.json().catch(() => null);
+          console.error("Perplexity API error details:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorData
+          });
+          throw new Error(`Perplexity API error: ${response.status} - ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
