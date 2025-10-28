@@ -322,8 +322,9 @@ export default function CoFounderValidatorProgressive() {
 
   const handleDeleteIdea = async () => {
     try {
-      await apiRequest("/api/ideas", { method: "DELETE" });
+      await apiRequest("/api/journey/delete-draft", { method: "DELETE" });
       queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/journey/validation"] });
       toast({
         title: "Idea Deleted",
         description: "Your previous idea has been archived. Start fresh!",
