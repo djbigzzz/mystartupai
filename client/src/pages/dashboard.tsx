@@ -291,78 +291,6 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Next Action */}
-            <Card className="mb-8 border-2 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20" data-testid="card-next-action">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <nextAction.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      Next Step: {nextAction.title}
-                    </CardTitle>
-                    <CardDescription className="mt-1">{nextAction.description}</CardDescription>
-                  </div>
-                  <Link href={nextAction.route}>
-                    <Button className="gap-2" data-testid="button-next-action">
-                      Continue
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </CardHeader>
-            </Card>
-
-            {/* Validation Score (if validated) */}
-            {validation && validation.score !== undefined && (
-              <Card className="mb-8 border-2" data-testid="card-validation-score">
-                <CardHeader>
-                  <CardTitle>Your Validation Score</CardTitle>
-                  <CardDescription>Based on 8-dimension analysis by Vale</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-6">
-                    <div className="relative">
-                      <div className={`w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold ${
-                        validation.score >= 80 
-                          ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-                          : validation.score >= 60 
-                          ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
-                          : 'bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400'
-                      }`}>
-                        {validation.score}
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant={
-                          validation.verdict === 'GO' 
-                            ? 'default' 
-                            : validation.verdict === 'REFINE' 
-                            ? 'secondary' 
-                            : 'destructive'
-                        } className="text-sm">
-                          {validation.verdict}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {validation.score >= 80 
-                            ? 'Excellent potential!' 
-                            : validation.score >= 60 
-                            ? 'Good foundation, keep going!'
-                            : 'Needs refinement'}
-                        </span>
-                      </div>
-                      <Link href="/co-founder-validator">
-                        <Button variant="outline" size="sm" className="gap-2">
-                          View Full Analysis
-                          <ArrowRight className="h-3 w-3" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Co-Founder Journey Stages */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-4">Your AI Co-Founder Team</h2>
@@ -459,6 +387,78 @@ export default function Dashboard() {
                 })}
               </div>
             </div>
+
+            {/* Next Action */}
+            <Card className="mb-8 border-2 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20" data-testid="card-next-action">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <nextAction.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      Next Step: {nextAction.title}
+                    </CardTitle>
+                    <CardDescription className="mt-1">{nextAction.description}</CardDescription>
+                  </div>
+                  <Link href={nextAction.route}>
+                    <Button className="gap-2" data-testid="button-next-action">
+                      Continue
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+            </Card>
+
+            {/* Validation Score (if validated) */}
+            {validation && validation.score !== undefined && (
+              <Card className="mb-8 border-2" data-testid="card-validation-score">
+                <CardHeader>
+                  <CardTitle>Your Validation Score</CardTitle>
+                  <CardDescription>Based on 8-dimension analysis by Vale</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-6">
+                    <div className="relative">
+                      <div className={`w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold ${
+                        validation.score >= 80 
+                          ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                          : validation.score >= 60 
+                          ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                          : 'bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400'
+                      }`}>
+                        {validation.score}
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant={
+                          validation.verdict === 'GO' 
+                            ? 'default' 
+                            : validation.verdict === 'REFINE' 
+                            ? 'secondary' 
+                            : 'destructive'
+                        } className="text-sm">
+                          {validation.verdict}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {validation.score >= 80 
+                            ? 'Excellent potential!' 
+                            : validation.score >= 60 
+                            ? 'Good foundation, keep going!'
+                            : 'Needs refinement'}
+                        </span>
+                      </div>
+                      <Link href="/co-founder-validator">
+                        <Button variant="outline" size="sm" className="gap-2">
+                          View Full Analysis
+                          <ArrowRight className="h-3 w-3" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Quick Links */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
