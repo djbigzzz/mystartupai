@@ -168,17 +168,19 @@ export default function CoFounderValidatorProgressive() {
       setLastSavedAt(null);
       setCurrentStep(1);
       setShowSummary(false);
-      setHasLoadedInitialData(false); // Allow re-loading after delete
-      queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
+      setHasLoadedInitialData(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/ideas"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/journey/validation"], refetchType: 'all' });
+      queryClient.removeQueries({ queryKey: ["/api/ideas"] });
       toast({
-        title: "Draft Cleared",
-        description: "Your draft has been deleted. Starting fresh!",
+        title: "Idea Deleted",
+        description: "Your idea has been deleted successfully. Start fresh!",
       });
     },
     onError: () => {
       toast({
         title: "Delete Failed",
-        description: "Could not delete your draft. Please try again.",
+        description: "Could not delete your idea. Please try again.",
         variant: "destructive",
       });
     },
@@ -320,35 +322,13 @@ export default function CoFounderValidatorProgressive() {
     setShowSummary(false);
   };
 
-  const handleDeleteIdea = async () => {
-    try {
-      await apiRequest("/api/journey/delete-draft", { method: "DELETE" });
-      queryClient.invalidateQueries({ queryKey: ["/api/ideas"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/journey/validation"] });
-      toast({
-        title: "Idea Deleted",
-        description: "Your previous idea has been archived. Start fresh!",
-      });
-      setShowDeleteDialog(false);
-      setIsRefining(false);
-      setCurrentStep(1);
-      setShowSummary(false);
-      setFormData({
-        ideaTitle: "",
-        problemStatement: "",
-        solutionApproach: "",
-        targetMarket: "",
-        competitiveLandscape: "",
-        businessModel: "",
-        uniqueValueProp: "",
-      });
-    } catch (error) {
-      toast({
-        title: "Delete Failed",
-        description: "Could not delete your idea. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleDeleteIdea = () => {
+    deleteDraftMutation.mutate(undefined, {
+      onSuccess: () => {
+        setShowDeleteDialog(false);
+        setIsRefining(false);
+      }
+    });
   };
 
   const hasValidatedIdea = savedIdea && savedIdea.validationScore > 0;
