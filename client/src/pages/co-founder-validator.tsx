@@ -48,6 +48,10 @@ import ThemeBackgroundEffects from "@/components/theme-background-effects";
 import { CypherpunkEffects } from "@/components/cypherpunk-effects";
 import { ValidationResultViewer } from "@/components/validation-result-viewer";
 import validatorAvatar from "@assets/generated_images/The_Validator_3D_avatar_dd365c22.png";
+import strategistAvatar from "@assets/generated_images/The_Strategist_3D_avatar_17159bd1.png";
+import builderAvatar from "@assets/generated_images/The_Builder_3D_avatar_0b63a5a7.png";
+import growthHackerAvatar from "@assets/generated_images/The_Growth_Hacker_3D_avatar_3e4042fe.png";
+import { Lock, Search } from "lucide-react";
 
 interface ValidationResult {
   idea: string;
@@ -117,6 +121,65 @@ interface ValidationResult {
 
 // Granular validation types
 type ValidationStatus = 'pending' | 'running' | 'completed' | 'error';
+
+// Co-founder team data
+const coFounders = [
+  {
+    id: 1,
+    name: "Vale",
+    role: "The Validator",
+    tagline: "I analyze 8 dimensions so you build the right thing",
+    icon: Search,
+    color: "from-blue-500 to-cyan-600",
+    bgColor: "bg-blue-50 dark:bg-blue-950/20",
+    borderColor: "border-blue-200 dark:border-blue-800",
+    avatarImage: validatorAvatar,
+    route: "/co-founder-validator",
+    isActive: true,
+  },
+  {
+    id: 2,
+    name: "Stratos",
+    role: "The Strategist",
+    tagline: "Customer discovery before code. Every time.",
+    icon: Target,
+    color: "from-green-500 to-emerald-600",
+    bgColor: "bg-green-50 dark:bg-green-950/20",
+    borderColor: "border-green-200 dark:border-green-800",
+    avatarImage: strategistAvatar,
+    route: "/co-founder-strategist",
+    isActive: false,
+    unlockCondition: "Complete validation with score > 60"
+  },
+  {
+    id: 3,
+    name: "Archie",
+    role: "The Builder",
+    tagline: "From pitch deck to MVP, I've got the blueprints",
+    icon: Rocket,
+    color: "from-purple-500 to-violet-600", 
+    bgColor: "bg-purple-50 dark:bg-purple-950/20",
+    borderColor: "border-purple-200 dark:border-purple-800",
+    avatarImage: builderAvatar,
+    route: "/co-founder-builder",
+    isActive: false,
+    unlockCondition: "Complete strategic planning"
+  },
+  {
+    id: 4,
+    name: "Blaze",
+    role: "The Growth Hacker",
+    tagline: "Let's find your first 1000 customers and investors",
+    icon: TrendingUp,
+    color: "from-orange-500 to-amber-600",
+    bgColor: "bg-orange-50 dark:bg-orange-950/20",
+    borderColor: "border-orange-200 dark:border-orange-800",
+    avatarImage: growthHackerAvatar,
+    route: "/co-founder-growth",
+    isActive: false,
+    unlockCondition: "Complete investor materials"
+  }
+];
 
 interface GranularValidationResult {
   status: ValidationStatus;
@@ -279,7 +342,6 @@ export default function CoFounderValidator() {
   // Fetch user's existing startup idea data
   const { data: existingIdea, isLoading: isLoadingIdea } = useQuery<any>({
     queryKey: ['/api/ideas'],
-    enabled: !!user,
   });
 
   // Fetch validation result if exists
@@ -690,11 +752,11 @@ export default function CoFounderValidator() {
         {/* Page Content */}
         <div className="relative z-10 flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
-            {/* Header with Character Avatar - Compact */}
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                {/* Vale's Avatar - Smaller */}
-                <div className="relative w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-500/50 shadow-lg">
+            {/* Header - Ultra Compact */}
+            <div className="text-center mb-4">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                {/* Vale's Avatar - Tiny */}
+                <div className="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-blue-500/50">
                   <img 
                     src={validatorAvatar} 
                     alt="Vale - The Validator"
@@ -704,43 +766,88 @@ export default function CoFounderValidator() {
                 
                 {/* Name and Title - Inline */}
                 <div className="text-left">
-                  <h1 className={`text-3xl font-bold ${
+                  <h1 className={`text-2xl font-bold ${
                     theme === "cypherpunk" 
                       ? "text-primary" 
                       : "bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 text-transparent bg-clip-text"
                   }`}>
-                    Vale
+                    Vale's Validation Workshop
                   </h1>
-                  <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                    The Validator
+                  <p className="text-xs text-muted-foreground">
+                    Real-time market research across 8 critical dimensions
                   </p>
                 </div>
               </div>
+            </div>
 
-              {/* Welcome Message from Vale - Compact */}
-              <Card className="max-w-3xl mx-auto mb-3 border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-cyan-500/5">
-                <CardContent className="p-3">
-                  <p className="text-sm text-foreground/90 italic">
-                    "I'll analyze your idea with real-time market research across 8 critical dimensions. Let's make sure it's worth pursuing."
-                  </p>
-                </CardContent>
-              </Card>
+            {/* AI Co-Founder Team - Prominent Display */}
+            <div className="mb-6">
+              <h2 className="text-xl font-bold mb-3 text-center">Your AI Co-Founder Team</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {coFounders.map((coFounder) => {
+                  const IconComponent = coFounder.icon;
+                  const isActive = coFounder.isActive;
 
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <Badge variant="secondary" className="text-xs">
-                  <Target className="w-3 h-3 mr-1" />
-                  Evidence-based
-                </Badge>
-                <Badge variant="secondary" className="text-xs">
-                  <BarChart3 className="w-3 h-3 mr-1" />
-                  Data-driven
-                </Badge>
-                {validationResult?.marketResearch?.hasData && (
-                  <Badge variant="outline" className="text-xs border-green-500/50 bg-green-500/10">
-                    <Globe className="w-3 h-3 mr-1" />
-                    Market Research: {validationResult.marketResearch.totalSources} sources
-                  </Badge>
-                )}
+                  return (
+                    <Card
+                      key={coFounder.id}
+                      className={`relative overflow-hidden border-2 transition-all duration-300 ${
+                        isActive 
+                          ? `${coFounder.borderColor} shadow-lg` 
+                          : 'border-gray-200 dark:border-gray-800 opacity-60'
+                      }`}
+                      data-testid={`card-cofounder-${coFounder.id}`}
+                    >
+                      {/* Status Badge */}
+                      <div className="absolute top-2 right-2 z-10">
+                        {isActive ? (
+                          <Badge className="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
+                            <Zap className="h-3 w-3 mr-1" />
+                            Active
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-xs">
+                            <Lock className="h-3 w-3 mr-1" />
+                            Locked
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Avatar Background */}
+                      <div className={`h-32 ${coFounder.bgColor} flex items-center justify-center overflow-hidden`}>
+                        <img 
+                          src={coFounder.avatarImage} 
+                          alt={coFounder.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+
+                      <CardContent className="p-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <IconComponent className={`h-4 w-4 bg-gradient-to-r ${coFounder.color} text-transparent`} style={{
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              backgroundClip: 'text'
+                            }} />
+                            <h3 className="font-bold text-sm">{coFounder.name}</h3>
+                          </div>
+                          <p className={`text-xs font-medium bg-gradient-to-r ${coFounder.color} text-transparent bg-clip-text`}>
+                            {coFounder.role}
+                          </p>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {coFounder.tagline}
+                          </p>
+                          {!isActive && coFounder.unlockCondition && (
+                            <p className="text-xs text-muted-foreground italic mt-2">
+                              {coFounder.unlockCondition}
+                            </p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
 
