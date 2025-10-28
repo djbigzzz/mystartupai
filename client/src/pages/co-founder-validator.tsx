@@ -154,8 +154,6 @@ export default function CoFounderValidator() {
   const [solutionApproach, setSolutionApproach] = useState("");
   const [targetMarket, setTargetMarket] = useState("");
   const [marketSize, setMarketSize] = useState("");
-  const [competitors, setCompetitors] = useState("");
-  const [competitiveEdge, setCompetitiveEdge] = useState("");
   
   const [showResults, setShowResults] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -318,12 +316,6 @@ export default function CoFounderValidator() {
         case 'market-size':
           setMarketSize(improvedText);
           break;
-        case 'competitors':
-          setCompetitors(improvedText);
-          break;
-        case 'edge':
-          setCompetitiveEdge(improvedText);
-          break;
       }
       
       toast({
@@ -413,10 +405,7 @@ export default function CoFounderValidator() {
       industry,
       targetMarket,
       problemStatement,
-      solutionApproach,
-      businessModel: competitiveEdge,
-      uniqueValueProp: competitiveEdge,
-      competitors
+      solutionApproach
     };
     
     granularValidationMutation.mutate({ endpoint: point.endpoint, payload });
@@ -457,10 +446,7 @@ export default function CoFounderValidator() {
             industry,
             targetMarket,
             problemStatement,
-            solutionApproach,
-            businessModel: competitiveEdge,
-            uniqueValueProp: competitiveEdge,
-            competitors
+            solutionApproach
           };
           
           apiRequest(point.endpoint, {
@@ -511,9 +497,7 @@ export default function CoFounderValidator() {
           problemStatement,
           solutionApproach,
           targetMarket,
-          marketSize,
-          competitors,
-          competitiveEdge
+          marketSize
         },
       });
       return response;
@@ -944,69 +928,6 @@ export default function CoFounderValidator() {
                           rows={2}
                           className="resize-none"
                           data-testid="input-market-size"
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Step 4: Competition */}
-                  <Card className="border-2 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-400 font-bold">
-                          4
-                        </div>
-                        <Swords className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                        Competition & Edge
-                      </CardTitle>
-                      <CardDescription>What alternatives exist and why are you different?</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>Existing Competitors</Label>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleAIImprove('competitors', competitors)}
-                            disabled={aiImproveMutation.isPending || !competitors}
-                            className="h-8 text-xs"
-                          >
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            AI Enhance
-                          </Button>
-                        </div>
-                        <Textarea
-                          placeholder="List direct and indirect competitors. AI will conduct live market research to find more."
-                          value={competitors}
-                          onChange={(e) => setCompetitors(e.target.value)}
-                          rows={2}
-                          className="resize-none"
-                          data-testid="input-competitors"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label>Your Competitive Advantage</Label>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleAIImprove('edge', competitiveEdge)}
-                            disabled={aiImproveMutation.isPending || !competitiveEdge}
-                            className="h-8 text-xs"
-                          >
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            AI Enhance
-                          </Button>
-                        </div>
-                        <Textarea
-                          placeholder="What makes you different? Why will customers choose you over alternatives?"
-                          value={competitiveEdge}
-                          onChange={(e) => setCompetitiveEdge(e.target.value)}
-                          rows={3}
-                          className="resize-none"
-                          data-testid="input-competitive-edge"
                         />
                       </div>
                     </CardContent>
