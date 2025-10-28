@@ -46,6 +46,7 @@ import MobileNavigation from "@/components/mobile-navigation";
 import SidebarNavigation from "@/components/dashboard/sidebar-navigation";
 import ThemeBackgroundEffects from "@/components/theme-background-effects";
 import { CypherpunkEffects } from "@/components/cypherpunk-effects";
+import { ValidationResultViewer } from "@/components/validation-result-viewer";
 import validatorAvatar from "@assets/generated_images/The_Validator_3D_avatar_dd365c22.png";
 
 interface ValidationResult {
@@ -263,6 +264,17 @@ export default function CoFounderValidator() {
     }
   ]);
   const [isRunningAll, setIsRunningAll] = useState(false);
+  
+  // Result viewer modal state
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [selectedResult, setSelectedResult] = useState<{
+    title: string;
+    result: string;
+    sources?: string[];
+    creditsUsed?: number;
+    timestamp?: string;
+    validationType: string;
+  } | null>(null);
 
   // Fetch validation result if exists
   const { data: validationResult, isLoading: isLoadingResult } = useQuery<ValidationResult>({
@@ -1081,27 +1093,52 @@ export default function CoFounderValidator() {
                               
                               {/* Results Preview */}
                               {point.result && (
-                                <div className="mt-3 p-3 bg-muted rounded-lg">
+                                <div className="mt-3 space-y-2">
                                   {isCompleted && point.result.result && (
-                                    <div className="space-y-2">
-                                      <div className="text-xs font-semibold flex items-center gap-2">
-                                        <CheckCircle className="w-3 h-3 text-green-600" />
-                                        Results:
+                                    <>
+                                      <div className="p-3 bg-muted rounded-lg">
+                                        <div className="space-y-2">
+                                          <div className="text-xs font-semibold flex items-center gap-2">
+                                            <CheckCircle className="w-3 h-3 text-green-600" />
+                                            Results:
+                                          </div>
+                                          <p className="text-xs text-muted-foreground line-clamp-3">
+                                            {point.result.result.substring(0, 200)}...
+                                          </p>
+                                          {point.result.sources && point.result.sources.length > 0 && (
+                                            <Badge variant="secondary" className="text-xs">
+                                              {point.result.sources.length} sources
+                                            </Badge>
+                                          )}
+                                        </div>
                                       </div>
-                                      <p className="text-xs text-muted-foreground line-clamp-3">
-                                        {point.result.result.substring(0, 150)}...
-                                      </p>
-                                      {point.result.sources && point.result.sources.length > 0 && (
-                                        <Badge variant="secondary" className="text-xs">
-                                          {point.result.sources.length} sources
-                                        </Badge>
-                                      )}
-                                    </div>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-full"
+                                        onClick={() => {
+                                          setSelectedResult({
+                                            title: point.title,
+                                            result: point.result!.result!,
+                                            sources: point.result!.sources,
+                                            creditsUsed: point.result!.creditsUsed,
+                                            timestamp: point.result!.timestamp,
+                                            validationType: point.id,
+                                          });
+                                          setViewerOpen(true);
+                                        }}
+                                        data-testid={`button-view-full-${point.id}`}
+                                      >
+                                        View Full Results
+                                      </Button>
+                                    </>
                                   )}
                                   {isError && point.result.error && (
-                                    <div className="text-xs text-destructive flex items-start gap-2">
-                                      <XCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                                      <span>{point.result.error}</span>
+                                    <div className="p-3 bg-muted rounded-lg">
+                                      <div className="text-xs text-destructive flex items-start gap-2">
+                                        <XCircle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                                        <span>{point.result.error}</span>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
@@ -1350,6 +1387,30 @@ export default function CoFounderValidator() {
           </div>
         </div>
       </div>
+      
+      {/* Result Viewer Modal */}
+      {selectedResult && (
+        <ValidationResultViewer
+          open={viewerOpen}
+          onOpenChange={setViewerOpen}
+          title={selectedResult.title}
+          result={selectedResult.result}
+          sources={selectedResult.sources}
+          creditsUsed={selectedResult.creditsUsed}
+          timestamp={selectedResult.timestamp}
+          validationType={selectedResult.validationType}
+          onSave={(newResult) => {
+            // Update the validation point with new result
+            setValidationPoints(prev =>
+              prev.map(p =>
+                p.id === selectedResult.validationType && p.result
+                  ? { ...p, result: { ...p.result, result: newResult } }
+                  : p
+              )
+            );
+          }}
+        />
+      )}
     </div>
   );
 }
