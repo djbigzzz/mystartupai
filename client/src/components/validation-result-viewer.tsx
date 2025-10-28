@@ -23,6 +23,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ValidationResultViewerProps {
   open: boolean;
@@ -216,10 +218,10 @@ export function ValidationResultViewer({
                   data-testid="textarea-edit-result"
                 />
               ) : (
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed bg-muted/50 p-4 rounded-lg border border-border">
+                <div className="prose prose-sm dark:prose-invert max-w-none bg-muted/50 p-6 rounded-lg border border-border">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {result}
-                  </pre>
+                  </ReactMarkdown>
                 </div>
               )}
             </div>
