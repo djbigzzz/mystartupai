@@ -2328,7 +2328,7 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'sonar-pro',
             messages: [{
               role: 'user',
               content: question
@@ -2358,7 +2358,8 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
         };
 
         // Save to database
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, {
             competitorAnalysis: result
@@ -2402,7 +2403,7 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'sonar-pro',
             messages: [{ role: 'user', content: question }],
             temperature: 0.2,
             max_tokens: 1500,
@@ -2428,7 +2429,8 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { marketSizeResearch: result });
         }
@@ -2469,7 +2471,7 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'sonar-pro',
             messages: [{ role: 'user', content: question }],
             temperature: 0.2,
             max_tokens: 1500,
@@ -2495,7 +2497,8 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { fundingLandscape: result });
         }
@@ -2536,7 +2539,7 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'sonar-pro',
             messages: [{ role: 'user', content: question }],
             temperature: 0.2,
             max_tokens: 1500,
@@ -2562,7 +2565,8 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { customerPainPoints: result });
         }
@@ -2603,7 +2607,7 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'sonar-pro',
             messages: [{ role: 'user', content: question }],
             temperature: 0.2,
             max_tokens: 1500,
@@ -2629,7 +2633,8 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { targetAudienceInsights: result });
         }
@@ -2670,7 +2675,7 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'llama-3.1-sonar-large-128k-online',
+            model: 'sonar-pro',
             messages: [{ role: 'user', content: question }],
             temperature: 0.2,
             max_tokens: 1500,
@@ -2696,7 +2701,8 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { industryTrends: result });
         }
@@ -2770,7 +2776,8 @@ Format as actionable, specific recommendations with justifications.`;
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { techStackAssessment: result });
         }
@@ -2843,7 +2850,8 @@ Provide specific, actionable insights with competitive intelligence.`;
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { competitiveAdvantageAnalysis: result });
         }
@@ -2919,7 +2927,8 @@ Provide specific numbers, benchmarks, and actionable recommendations.`;
           timestamp: new Date().toISOString(),
         };
 
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (idea) {
           await storage.updateStartupIdea(idea.id, { businessModelViability: result });
         }
@@ -2947,7 +2956,8 @@ Provide specific numbers, benchmarks, and actionable recommendations.`;
         const userId = (req.user as any).id;
         
         // Get all previous validation results from database
-        const idea = await storage.getStartupIdeaByUserId(userId);
+        const ideas = await storage.getStartupIdeasByUserId(userId);
+        const idea = ideas[0];
         if (!idea) {
           return res.status(404).json({ message: "No startup idea found. Please save your idea first." });
         }
