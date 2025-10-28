@@ -90,6 +90,7 @@ export interface IStorage {
   updateStartupIdea(id: number, updates: Partial<StartupIdea>): Promise<StartupIdea | undefined>;
   updateStartupIdeaDraft(userId: number, draftData: any): Promise<StartupIdea | undefined>;
   deleteStartupIdea(id: number): Promise<boolean>;
+  deleteStartupIdeasByUserId(userId: number): Promise<boolean>;
   getStartupIdeasByEmail(email: string): Promise<StartupIdea[]>;
   getStartupIdeasByUserId(userId: number): Promise<StartupIdea[]>;
   
@@ -339,6 +340,11 @@ export class DatabaseStorage implements IStorage {
 
   async deleteStartupIdea(id: number): Promise<boolean> {
     const result = await db.delete(startupIdeas).where(eq(startupIdeas.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async deleteStartupIdeasByUserId(userId: number): Promise<boolean> {
+    const result = await db.delete(startupIdeas).where(eq(startupIdeas.userId, userId));
     return result.rowCount !== null && result.rowCount > 0;
   }
 

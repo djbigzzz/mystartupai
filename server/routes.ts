@@ -2282,13 +2282,22 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
     try {
       const userId = (req.user as any).id;
       
-      // Delete the user's startup idea (draft or validated)
-      await storage.deleteStartupIdea(userId);
+      // Delete the user's startup idea (draft or validated) by userId
+      const deleted = await storage.deleteStartupIdeasByUserId(userId);
       
-      res.json({ 
-        success: true,
-        message: "Draft deleted successfully"
-      });
+      if (deleted) {
+        console.log(`✅ Successfully deleted idea(s) for user ${userId}`);
+        res.json({ 
+          success: true,
+          message: "Draft deleted successfully"
+        });
+      } else {
+        console.log(`⚠️ No ideas found to delete for user ${userId}`);
+        res.json({ 
+          success: true,
+          message: "No draft to delete"
+        });
+      }
     } catch (error) {
       console.error("Error deleting draft:", error);
       res.status(500).json({ message: "Failed to delete draft" });
