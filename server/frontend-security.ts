@@ -249,6 +249,20 @@ export function validateFrontendInputs(req: Request, res: Response, next: NextFu
     return next();
   }
   
+  // Exempt API routes that handle user-generated content for AI analysis
+  const exemptRoutes = [
+    '/api/journey/validate',
+    '/api/journey/suggest-field',
+    '/api/journey/auto-save',
+    '/api/validation/',
+    '/api/startup-ideas'
+  ];
+  
+  const isExempt = exemptRoutes.some(route => req.path.startsWith(route));
+  if (isExempt) {
+    return next();
+  }
+  
   function validateInput(key: string, value: any): string | null {
     if (typeof value !== 'string') {
       return null;
