@@ -276,10 +276,57 @@ export default function CoFounderValidator() {
     validationType: string;
   } | null>(null);
 
+  // Fetch user's existing startup idea data
+  const { data: existingIdea, isLoading: isLoadingIdea } = useQuery<any>({
+    queryKey: ['/api/ideas'],
+    enabled: !!user,
+  });
+
   // Fetch validation result if exists
   const { data: validationResult, isLoading: isLoadingResult } = useQuery<ValidationResult>({
     queryKey: ['/api/journey/validation'],
   });
+
+  // Auto-populate form fields when existing idea data is loaded
+  useEffect(() => {
+    if (existingIdea) {
+      setIdeaTitle(existingIdea.ideaTitle || '');
+      setIdeaDescription(existingIdea.description || '');
+      setProblemStatement(existingIdea.problemStatement || '');
+      setSolutionApproach(existingIdea.solutionApproach || '');
+      setTargetMarket(existingIdea.targetMarket || '');
+      setMarketSize(existingIdea.marketSize || '');
+      setIndustry(existingIdea.industry || '');
+      setStage(existingIdea.stage || '');
+      
+      // Load granular validation results if they exist
+      const points = validationPoints.map(point => {
+        const fieldMapping: Record<string, string> = {
+          'competitor-analysis': 'competitorAnalysis',
+          'market-size': 'marketSizeResearch',
+          'funding-landscape': 'fundingLandscape',
+          'customer-pain-points': 'customerPainPoints',
+          'target-audience': 'targetAudienceInsights',
+          'industry-trends': 'industryTrends',
+          'tech-stack': 'techStackAssessment',
+          'competitive-advantage': 'competitiveAdvantageAnalysis',
+          'business-model': 'businessModelViability',
+          'final-report': 'finalValidationReport',
+        };
+        
+        const fieldName = fieldMapping[point.id];
+        const savedData = fieldName ? existingIdea[fieldName] : null;
+        
+        return {
+          ...point,
+          status: savedData?.status || 'pending',
+          result: savedData || undefined,
+        };
+      });
+      
+      setValidationPoints(points);
+    }
+  }, [existingIdea]);
 
   // Auto-show results when validation data is loaded
   useEffect(() => {
