@@ -1319,14 +1319,15 @@ export default function CoFounderValidator() {
                     </div>
 
                     {/* Final Report Call-to-Action */}
-                    {validationPoints.filter(p => p.status === 'completed').length >= 9 && (
+                    {validationPoints.filter(p => p.status === 'completed').length >= 9 && 
+                     validationPoints.find(p => p.id === 'final-report')?.status !== 'completed' && (
                       <Card className="border-2 border-amber-500 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/30">
                         <CardContent className="pt-6 text-center">
                           <Award className="w-12 h-12 mx-auto mb-3 text-amber-600 dark:text-amber-400" />
                           <h3 className="text-lg font-bold mb-2">Almost Complete!</h3>
                           <p className="text-sm text-muted-foreground mb-4">
                             You've completed {validationPoints.filter(p => p.status === 'completed').length}/10 validations. 
-                            Run the Final Validation Report to get your comprehensive score and verdict!
+                            Scroll up to find the "Final Validation Report" card and click "Run Validation" to get your comprehensive score and verdict!
                           </p>
                         </CardContent>
                       </Card>
