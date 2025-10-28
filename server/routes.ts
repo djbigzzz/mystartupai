@@ -2295,6 +2295,769 @@ Be thorough, analytical, and provide specific, actionable insights. Calculate sc
     }
   });
 
+  // ========== GRANULAR VALIDATION ENDPOINTS (10 Points) ==========
+  
+  // 1. Competitor Analysis (75 credits) - Perplexity AI
+  app.post("/api/validation/competitor-analysis",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.COMPETITOR_ANALYSIS, 'Competitor Analysis'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaTitle, ideaDescription, industry } = req.body;
+        
+        if (!PERPLEXITY_API_KEY) {
+          return res.status(503).json({ message: "Market research service temporarily unavailable" });
+        }
+
+        const question = `Find the top 5-10 direct and indirect competitors for "${ideaTitle}" (${ideaDescription}) in the ${industry} industry. Include: 1) Company names with URLs, 2) Recent funding amounts (2024-2025), 3) Key product features, 4) Target customers, 5) Their main differentiators. Provide specific, recent data.`;
+
+        const response = await fetch(PERPLEXITY_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [{
+              role: 'user',
+              content: question
+            }],
+            temperature: 0.2,
+            max_tokens: 1500,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Perplexity API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const result = {
+          status: 'completed',
+          result: data.choices[0].message.content,
+          sources: data.citations || [],
+          creditsUsed: CREDIT_COSTS.COMPETITOR_ANALYSIS,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Save to database
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, {
+            competitorAnalysis: result
+          });
+        }
+
+        // Deduct credits
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.COMPETITOR_ANALYSIS, 'Competitor Analysis', 'validation_competitor_analysis');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Competitor analysis error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to analyze competitors",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 2. Market Size Research (75 credits) - Perplexity AI
+  app.post("/api/validation/market-size",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.MARKET_SIZE_RESEARCH, 'Market Size Research'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaTitle, industry, targetMarket } = req.body;
+        
+        if (!PERPLEXITY_API_KEY) {
+          return res.status(503).json({ message: "Market research service temporarily unavailable" });
+        }
+
+        const question = `What is the TAM (Total Addressable Market), SAM (Serviceable Addressable Market), and SOM (Serviceable Obtainable Market) for ${ideaTitle} in the ${industry} industry targeting ${targetMarket}? Include: 1) Current market size in dollars, 2) Annual growth rate (CAGR), 3) Market trends for 2024-2025, 4) Geographic distribution, 5) Key market drivers. Provide specific numbers and recent data.`;
+
+        const response = await fetch(PERPLEXITY_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [{ role: 'user', content: question }],
+            temperature: 0.2,
+            max_tokens: 1500,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Perplexity API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const result = {
+          status: 'completed',
+          result: data.choices[0].message.content,
+          sources: data.citations || [],
+          creditsUsed: CREDIT_COSTS.MARKET_SIZE_RESEARCH,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { marketSizeResearch: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.MARKET_SIZE_RESEARCH, 'Market Size Research', 'validation_market_size');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Market size research error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to research market size",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 3. Funding Landscape (75 credits) - Perplexity AI
+  app.post("/api/validation/funding-landscape",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.FUNDING_LANDSCAPE, 'Funding Landscape'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaTitle, industry } = req.body;
+        
+        if (!PERPLEXITY_API_KEY) {
+          return res.status(503).json({ message: "Market research service temporarily unavailable" });
+        }
+
+        const question = `What are the recent funding rounds (2024-2025) for startups similar to "${ideaTitle}" in the ${industry} industry? Include: 1) Company names and funding amounts, 2) Investors and VC firms involved, 3) Typical seed/Series A check sizes, 4) Most active investors in this space, 5) Funding trends and investor appetite. Provide specific, recent data.`;
+
+        const response = await fetch(PERPLEXITY_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [{ role: 'user', content: question }],
+            temperature: 0.2,
+            max_tokens: 1500,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Perplexity API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const result = {
+          status: 'completed',
+          result: data.choices[0].message.content,
+          sources: data.citations || [],
+          creditsUsed: CREDIT_COSTS.FUNDING_LANDSCAPE,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { fundingLandscape: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.FUNDING_LANDSCAPE, 'Funding Landscape', 'validation_funding');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Funding landscape error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to research funding landscape",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 4. Customer Pain Points (75 credits) - Perplexity AI
+  app.post("/api/validation/customer-pain-points",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.CUSTOMER_PAIN_POINTS, 'Customer Pain Points'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaDescription, targetMarket, industry } = req.body;
+        
+        if (!PERPLEXITY_API_KEY) {
+          return res.status(503).json({ message: "Market research service temporarily unavailable" });
+        }
+
+        const question = `What are customers saying about products/services similar to "${ideaDescription}" for ${targetMarket} in ${industry}? Search Reddit, forums, reviews, and social media for: 1) Top 5-7 pain points and frustrations, 2) Common complaints about existing solutions, 3) Unmet needs and feature requests, 4) Willingness to pay indicators, 5) Real customer quotes. Focus on 2024-2025 feedback.`;
+
+        const response = await fetch(PERPLEXITY_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [{ role: 'user', content: question }],
+            temperature: 0.2,
+            max_tokens: 1500,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Perplexity API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const result = {
+          status: 'completed',
+          result: data.choices[0].message.content,
+          sources: data.citations || [],
+          creditsUsed: CREDIT_COSTS.CUSTOMER_PAIN_POINTS,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { customerPainPoints: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.CUSTOMER_PAIN_POINTS, 'Customer Pain Points', 'validation_customer_pain');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Customer pain points error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to research customer pain points",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 5. Target Audience Insights (75 credits) - Perplexity AI
+  app.post("/api/validation/target-audience",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.TARGET_AUDIENCE_INSIGHTS, 'Target Audience Insights'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaTitle, targetMarket, industry } = req.body;
+        
+        if (!PERPLEXITY_API_KEY) {
+          return res.status(503).json({ message: "Market research service temporarily unavailable" });
+        }
+
+        const question = `Provide detailed insights about the target audience for "${ideaTitle}" (${targetMarket}) in ${industry}: 1) Demographics (age, income, location, education), 2) Psychographics (values, interests, lifestyle), 3) Online behavior (where they spend time, influencers they follow), 4) Purchasing behavior and decision factors, 5) Size and characteristics of early adopter segment. Use 2024-2025 data.`;
+
+        const response = await fetch(PERPLEXITY_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [{ role: 'user', content: question }],
+            temperature: 0.2,
+            max_tokens: 1500,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Perplexity API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const result = {
+          status: 'completed',
+          result: data.choices[0].message.content,
+          sources: data.citations || [],
+          creditsUsed: CREDIT_COSTS.TARGET_AUDIENCE_INSIGHTS,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { targetAudienceInsights: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.TARGET_AUDIENCE_INSIGHTS, 'Target Audience Insights', 'validation_target_audience');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Target audience insights error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to research target audience",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 6. Industry Trends (75 credits) - Perplexity AI
+  app.post("/api/validation/industry-trends",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.INDUSTRY_TRENDS, 'Industry Trends'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { industry, ideaDescription } = req.body;
+        
+        if (!PERPLEXITY_API_KEY) {
+          return res.status(503).json({ message: "Market research service temporarily unavailable" });
+        }
+
+        const question = `What are the top industry trends in ${industry} relevant to "${ideaDescription}"? Include: 1) Emerging technologies and innovations (2024-2025), 2) Regulatory changes and compliance requirements, 3) Consumer behavior shifts, 4) Market dynamics and disruptions, 5) Future outlook and predictions for 2025-2026. Provide specific, data-backed insights.`;
+
+        const response = await fetch(PERPLEXITY_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.1-sonar-large-128k-online',
+            messages: [{ role: 'user', content: question }],
+            temperature: 0.2,
+            max_tokens: 1500,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Perplexity API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const result = {
+          status: 'completed',
+          result: data.choices[0].message.content,
+          sources: data.citations || [],
+          creditsUsed: CREDIT_COSTS.INDUSTRY_TRENDS,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { industryTrends: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.INDUSTRY_TRENDS, 'Industry Trends', 'validation_industry_trends');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Industry trends error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to research industry trends",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 7. Tech Stack Assessment (100 credits) - Claude AI
+  app.post("/api/validation/tech-stack",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.TECH_STACK_ASSESSMENT, 'Tech Stack Assessment'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaTitle, ideaDescription, industry, solutionApproach } = req.body;
+        
+        const prompt = `As a technical advisor, recommend the optimal technology stack for "${ideaTitle}":
+
+PRODUCT DETAILS:
+Description: ${ideaDescription}
+Industry: ${industry}
+Solution: ${solutionApproach}
+
+PROVIDE:
+1. **Recommended Tech Stack**:
+   - Frontend technologies and frameworks
+   - Backend technologies and frameworks
+   - Database solutions
+   - Cloud/hosting recommendations
+   - Essential third-party services/APIs
+
+2. **Build vs Buy Analysis**:
+   - What to build in-house
+   - What to use existing solutions for
+   - Estimated development timeline
+
+3. **Scalability Considerations**:
+   - Architecture recommendations
+   - Performance considerations
+   - Cost implications at scale
+
+4. **Development Team Requirements**:
+   - Required technical skills
+   - Recommended team size
+   - Hiring priorities
+
+Format as actionable, specific recommendations with justifications.`;
+
+        const completion = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          temperature: 0.3,
+          messages: [{ role: 'user', content: prompt }]
+        });
+
+        const result = {
+          status: 'completed',
+          result: completion.content[0].type === 'text' ? completion.content[0].text : '',
+          creditsUsed: CREDIT_COSTS.TECH_STACK_ASSESSMENT,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { techStackAssessment: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.TECH_STACK_ASSESSMENT, 'Tech Stack Assessment', 'validation_tech_stack');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Tech stack assessment error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to assess tech stack",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 8. Competitive Advantage Analysis (100 credits) - Claude AI
+  app.post("/api/validation/competitive-advantage",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.COMPETITIVE_ADVANTAGE_ANALYSIS, 'Competitive Advantage'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaTitle, ideaDescription, competitors, uniqueValueProp, solutionApproach } = req.body;
+        
+        const prompt = `Analyze the competitive advantage and defensibility of "${ideaTitle}":
+
+STARTUP DETAILS:
+Description: ${ideaDescription}
+Solution: ${solutionApproach}
+Unique Value Prop: ${uniqueValueProp}
+Known Competitors: ${competitors || 'Not specified'}
+
+ANALYZE:
+1. **Competitive Moats**:
+   - What sustainable competitive advantages can this startup build?
+   - How defensible is this business against competition?
+   - Score defensibility: 1-10 with explanation
+
+2. **Differentiation Factors**:
+   - Key differentiators vs competitors
+   - Unique capabilities or approaches
+   - Barriers to entry for competitors
+
+3. **Strategic Positioning**:
+   - Market positioning recommendations
+   - Blue ocean opportunities
+   - Red flags or vulnerabilities
+
+4. **Competitive Strategy**:
+   - How to compete and win
+   - Partnership opportunities
+   - Timing advantages
+
+Provide specific, actionable insights with competitive intelligence.`;
+
+        const completion = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          temperature: 0.3,
+          messages: [{ role: 'user', content: prompt }]
+        });
+
+        const result = {
+          status: 'completed',
+          result: completion.content[0].type === 'text' ? completion.content[0].text : '',
+          creditsUsed: CREDIT_COSTS.COMPETITIVE_ADVANTAGE_ANALYSIS,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { competitiveAdvantageAnalysis: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.COMPETITIVE_ADVANTAGE_ANALYSIS, 'Competitive Advantage Analysis', 'validation_competitive_advantage');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Competitive advantage analysis error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to analyze competitive advantage",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 9. Business Model Viability (100 credits) - Claude AI
+  app.post("/api/validation/business-model",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.BUSINESS_MODEL_VIABILITY, 'Business Model Viability'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const { ideaTitle, ideaDescription, businessModel, targetMarket, industry } = req.body;
+        
+        const prompt = `Assess the business model viability for "${ideaTitle}":
+
+BUSINESS DETAILS:
+Description: ${ideaDescription}
+Target Market: ${targetMarket}
+Industry: ${industry}
+Proposed Business Model: ${businessModel || 'Not specified'}
+
+ANALYZE:
+1. **Revenue Model Assessment**:
+   - Evaluate proposed revenue streams
+   - Suggest alternative/additional revenue models
+   - Estimate realistic pricing range
+   - Score revenue potential: 1-10
+
+2. **Unit Economics**:
+   - Customer Acquisition Cost (CAC) estimates
+   - Lifetime Value (LTV) projections
+   - LTV:CAC ratio feasibility
+   - Path to profitability
+
+3. **Business Model Validation**:
+   - Proven models in similar markets
+   - Risk factors and assumptions to test
+   - Critical metrics to track
+   - Scalability assessment
+
+4. **Go-to-Market Fit**:
+   - Best distribution channels
+   - Customer acquisition strategies
+   - Sales cycle considerations
+
+Provide specific numbers, benchmarks, and actionable recommendations.`;
+
+        const completion = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          temperature: 0.3,
+          messages: [{ role: 'user', content: prompt }]
+        });
+
+        const result = {
+          status: 'completed',
+          result: completion.content[0].type === 'text' ? completion.content[0].text : '',
+          creditsUsed: CREDIT_COSTS.BUSINESS_MODEL_VIABILITY,
+          timestamp: new Date().toISOString(),
+        };
+
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (idea) {
+          await storage.updateStartupIdea(idea.id, { businessModelViability: result });
+        }
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.BUSINESS_MODEL_VIABILITY, 'Business Model Viability', 'validation_business_model');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Business model viability error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to assess business model",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // 10. Final Validation Report (150 credits) - Claude AI combines all results
+  app.post("/api/validation/final-report",
+    requireAuth,
+    checkCredits(CREDIT_COSTS.FINAL_VALIDATION_REPORT, 'Final Validation Report'),
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        
+        // Get all previous validation results from database
+        const idea = await storage.getStartupIdeaByUserId(userId);
+        if (!idea) {
+          return res.status(404).json({ message: "No startup idea found. Please save your idea first." });
+        }
+
+        const prompt = `Generate a comprehensive final validation report based on all research conducted:
+
+COMPETITOR ANALYSIS:
+${idea.competitorAnalysis ? JSON.stringify(idea.competitorAnalysis) : 'Not completed'}
+
+MARKET SIZE RESEARCH:
+${idea.marketSizeResearch ? JSON.stringify(idea.marketSizeResearch) : 'Not completed'}
+
+FUNDING LANDSCAPE:
+${idea.fundingLandscape ? JSON.stringify(idea.fundingLandscape) : 'Not completed'}
+
+CUSTOMER PAIN POINTS:
+${idea.customerPainPoints ? JSON.stringify(idea.customerPainPoints) : 'Not completed'}
+
+TARGET AUDIENCE:
+${idea.targetAudienceInsights ? JSON.stringify(idea.targetAudienceInsights) : 'Not completed'}
+
+INDUSTRY TRENDS:
+${idea.industryTrends ? JSON.stringify(idea.industryTrends) : 'Not completed'}
+
+TECH STACK:
+${idea.techStackAssessment ? JSON.stringify(idea.techStackAssessment) : 'Not completed'}
+
+COMPETITIVE ADVANTAGE:
+${idea.competitiveAdvantageAnalysis ? JSON.stringify(idea.competitiveAdvantageAnalysis) : 'Not completed'}
+
+BUSINESS MODEL:
+${idea.businessModelViability ? JSON.stringify(idea.businessModelViability) : 'Not completed'}
+
+CREATE A COMPREHENSIVE REPORT WITH:
+1. **Executive Summary** (2-3 paragraphs)
+2. **Overall Validation Score** (0-100) with breakdown
+3. **Verdict**: GO (score 70+), REFINE (50-69), or PIVOT (<50)
+4. **Top 5 Strengths**
+5. **Top 5 Risks/Concerns**
+6. **Critical Next Steps** (prioritized list of 7-10 actions)
+7. **Key Metrics to Track**
+8. **Estimated Timeline to MVP**
+
+Make it actionable, specific, and data-driven based on all research conducted.`;
+
+        const completion = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 3000,
+          temperature: 0.3,
+          messages: [{ role: 'user', content: prompt }]
+        });
+
+        const reportText = completion.content[0].type === 'text' ? completion.content[0].text : '';
+        
+        // Extract score and verdict from the report (simple pattern matching)
+        const scoreMatch = reportText.match(/(?:score|rating).*?(\d{1,3})/i);
+        const score = scoreMatch ? Math.min(100, parseInt(scoreMatch[1])) : 65;
+        
+        let verdict = 'REFINE';
+        if (score >= 70) verdict = 'GO';
+        if (score < 50) verdict = 'PIVOT';
+
+        const result = {
+          status: 'completed',
+          result: reportText,
+          score,
+          verdict,
+          creditsUsed: CREDIT_COSTS.FINAL_VALIDATION_REPORT,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Update startup idea with final report and scores
+        await storage.updateStartupIdea(idea.id, { 
+          finalValidationReport: result,
+          validationScore: score,
+          validationVerdict: verdict,
+          analysisStatus: 'completed'
+        });
+
+        // Update journey progress
+        await storage.updateJourneyProgress(userId, {
+          stage1Completed: score >= 60,
+          currentStage: score >= 60 ? 2 : 1,
+          progressPercentage: score >= 60 ? 25 : Math.floor(score / 4)
+        });
+
+        await deductCreditsWithTracking(req, userId, CREDIT_COSTS.FINAL_VALIDATION_REPORT, 'Final Validation Report', 'validation_final_report');
+
+        res.json(result);
+      } catch (error) {
+        console.error("Final validation report error:", error);
+        res.status(500).json({ 
+          status: 'error',
+          message: "Failed to generate final report",
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+  );
+
+  // Run All Validations - Sequential execution of all 10 points
+  app.post("/api/validation/run-all",
+    requireAuth,
+    async (req, res) => {
+      try {
+        const userId = (req.user as any).id;
+        const formData = req.body;
+        
+        // Check if user has enough credits for all validations (total: 975 credits)
+        const totalCreditsNeeded = 
+          CREDIT_COSTS.COMPETITOR_ANALYSIS +
+          CREDIT_COSTS.MARKET_SIZE_RESEARCH +
+          CREDIT_COSTS.FUNDING_LANDSCAPE +
+          CREDIT_COSTS.CUSTOMER_PAIN_POINTS +
+          CREDIT_COSTS.TARGET_AUDIENCE_INSIGHTS +
+          CREDIT_COSTS.INDUSTRY_TRENDS +
+          CREDIT_COSTS.TECH_STACK_ASSESSMENT +
+          CREDIT_COSTS.COMPETITIVE_ADVANTAGE_ANALYSIS +
+          CREDIT_COSTS.BUSINESS_MODEL_VIABILITY +
+          CREDIT_COSTS.FINAL_VALIDATION_REPORT;
+
+        const user = await storage.getUserById(userId);
+        if (!user || user.credits < totalCreditsNeeded) {
+          return res.status(403).json({ 
+            message: `Insufficient credits. Need ${totalCreditsNeeded} credits for all validations.`,
+            required: totalCreditsNeeded,
+            available: user?.credits || 0
+          });
+        }
+
+        res.json({ 
+          message: "Run All validation started. Execute each validation endpoint sequentially from the frontend.",
+          totalCreditsNeeded,
+          validationOrder: [
+            { endpoint: '/api/validation/competitor-analysis', credits: CREDIT_COSTS.COMPETITOR_ANALYSIS },
+            { endpoint: '/api/validation/market-size', credits: CREDIT_COSTS.MARKET_SIZE_RESEARCH },
+            { endpoint: '/api/validation/funding-landscape', credits: CREDIT_COSTS.FUNDING_LANDSCAPE },
+            { endpoint: '/api/validation/customer-pain-points', credits: CREDIT_COSTS.CUSTOMER_PAIN_POINTS },
+            { endpoint: '/api/validation/target-audience', credits: CREDIT_COSTS.TARGET_AUDIENCE_INSIGHTS },
+            { endpoint: '/api/validation/industry-trends', credits: CREDIT_COSTS.INDUSTRY_TRENDS },
+            { endpoint: '/api/validation/tech-stack', credits: CREDIT_COSTS.TECH_STACK_ASSESSMENT },
+            { endpoint: '/api/validation/competitive-advantage', credits: CREDIT_COSTS.COMPETITIVE_ADVANTAGE_ANALYSIS },
+            { endpoint: '/api/validation/business-model', credits: CREDIT_COSTS.BUSINESS_MODEL_VIABILITY },
+            { endpoint: '/api/validation/final-report', credits: CREDIT_COSTS.FINAL_VALIDATION_REPORT },
+          ]
+        });
+      } catch (error) {
+        console.error("Run all validations error:", error);
+        res.status(500).json({ message: "Failed to initiate run all validations" });
+      }
+    }
+  );
+
+  // ========== END GRANULAR VALIDATION ENDPOINTS ==========
+
   // AI Suggest field content - generates intelligent suggestions based on context
   app.post("/api/journey/suggest-field", 
     requireAuth,

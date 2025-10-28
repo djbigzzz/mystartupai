@@ -61,6 +61,20 @@ export const CREDIT_COSTS = {
   INVESTOR_MATCHING: 80,
   MVP_GENERATION: 150,
   AI_ANALYSIS: 50,
+  
+  // Granular validation points (Perplexity AI research - 50-75 credits each)
+  COMPETITOR_ANALYSIS: 75,
+  MARKET_SIZE_RESEARCH: 75,
+  FUNDING_LANDSCAPE: 75,
+  CUSTOMER_PAIN_POINTS: 75,
+  TARGET_AUDIENCE_INSIGHTS: 75,
+  INDUSTRY_TRENDS: 75,
+  
+  // Granular validation points (Claude AI analysis - 100-150 credits)
+  TECH_STACK_ASSESSMENT: 100,
+  COMPETITIVE_ADVANTAGE_ANALYSIS: 100,
+  BUSINESS_MODEL_VIABILITY: 100,
+  FINAL_VALIDATION_REPORT: 150,
 } as const;
 
 // Feature descriptions for users
