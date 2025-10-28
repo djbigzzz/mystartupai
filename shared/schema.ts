@@ -79,6 +79,19 @@ export const startupIdeas = pgTable("startup_ideas", {
   validationVerdict: text("validation_verdict"), // GO, REFINE, PIVOT
   validationResult: jsonb("validation_result"), // Full 8-dimension validation data
   validationHistory: jsonb("validation_history"), // Array of {score, timestamp, changes} for iteration tracking
+  
+  // Granular validation points (10 separate validation steps)
+  competitorAnalysis: jsonb("competitor_analysis"), // {status, result, creditsUsed, timestamp, error}
+  marketSizeResearch: jsonb("market_size_research"), 
+  fundingLandscape: jsonb("funding_landscape"),
+  customerPainPoints: jsonb("customer_pain_points"),
+  targetAudienceInsights: jsonb("target_audience_insights"),
+  industryTrends: jsonb("industry_trends"),
+  techStackAssessment: jsonb("tech_stack_assessment"),
+  competitiveAdvantageAnalysis: jsonb("competitive_advantage_analysis"),
+  businessModelViability: jsonb("business_model_viability"),
+  finalValidationReport: jsonb("final_validation_report"),
+  
   analysisStatus: text("analysis_status").default("pending"),
   status: text("status").default("active"), // active, archived, deleted
   deletedAt: timestamp("deleted_at"),
