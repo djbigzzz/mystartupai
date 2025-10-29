@@ -1,4 +1,4 @@
-# MyStartup.ai 🚀
+# MyStartup.ai
 
 **Agentic AI co-founder that validates startup ideas before founders waste time and money.**
 
@@ -20,20 +20,26 @@ Building got faster. Validation didn't. That's the gap we're filling.
 
 ## Our Solution
 
-**Your AI co-founder who won't let you build the wrong thing.**
+**Four AI co-founders who guide you from idea to investor-ready.**
 
-Meet Vale, The Validator. Before you write a single line of code, Vale runs real-time market research using Perplexity AI to analyze competitors, market size, customer pain points, and funding landscape. You get a comprehensive validation report with a clear verdict: GO, REFINE, or PIVOT.
+**Vale (The Validator)** stops you from building the wrong thing. She runs real-time market research using Perplexity AI—analyzing competitors, market size, customer pain points, and funding landscape. You get a validation report with a clear verdict: GO, REFINE, or PIVOT. No expensive consultants. No waiting weeks. Just honest feedback in minutes.
 
-No expensive consultants. No waiting weeks for research reports. Just honest feedback in minutes, powered by live web data and Y Combinator-inspired methodology.
+Once Vale validates your idea, the team takes over:
 
-**The workflow:**
-1. Tell Vale your idea (3-minute form)
-2. Vale conducts live market research across the web
-3. Get scored across 10 dimensions with actionable recommendations
-4. Refine and re-validate until your score is strong
-5. Then—and only then—build it with Replit Agent or Lovable
+**Stratos (The Strategist)** helps you talk to customers. He generates interview scripts, analyzes feedback, and prioritizes features based on what real users actually want.
 
-Think of us as the sanity check before you start building. We're not here to tell you your idea is great. We're here to tell you the truth.
+**Archie (The Builder)** creates the documents investors expect. Business plans following Y Combinator standards, pitch decks that tell your story, and financial models that make sense.
+
+**Blaze (The Growth Hacker)** connects you with the right people. He matches you with investors in your space and develops customer acquisition strategies that scale.
+
+**The full journey:**
+1. Vale validates your idea with live market research
+2. Stratos guides customer discovery and feature prioritization  
+3. Archie generates business plans and pitch decks
+4. Blaze matches you with investors and growth channels
+5. Now you're ready to build with Replit Agent or raise funding
+
+We're not here to tell you your idea is great. We're here to tell you the truth, then help you build something that actually works.
 
 ---
 
