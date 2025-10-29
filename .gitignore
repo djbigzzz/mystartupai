@@ -106,3 +106,12 @@ dist-python/
 
 # Testing
 .nyc_output/
+
+# Vite cache
+.vite/
+client/.vite/
+**/.vite/
+
+# Generated files
+*.tgz
+package-lock.json.bak
