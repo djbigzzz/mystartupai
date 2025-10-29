@@ -198,9 +198,10 @@ Ready to implement when needed:
 ## 📸 Demo & Access
 
 ### Live URLs
-- **Platform**: https://mystartup.ai
-- **Gateway Monitor**: https://mystartup.ai/gateway-monitor
-- **API Base**: https://mystartup.ai/api/gateway/
+- **Platform**: [Coming Soon - Deploying for Hackathon]
+- **Gateway Monitor**: [Available after deployment]
+- **API Base**: [Available after deployment]
+- **GitHub**: https://github.com/djbigzzz/mystartupai
 
 ### Test Account
 Create account at https://mystartup.ai and:
@@ -213,7 +214,7 @@ Create account at https://mystartup.ai and:
 - **Gateway Docs**: https://gateway.sanctum.so/docs
 - **Gateway Dashboard**: https://gateway.sanctum.so/dashboard
 - **Solana Explorer**: https://explorer.solana.com
-- **MyStartup.ai Repo**: [Your repo URL]
+- **MyStartup.ai Repo**: https://github.com/djbigzzz/mystartupai
 
 ## 🎯 Value Proposition
 MyStartup.ai integrates Sanctum Gateway to provide:
@@ -226,7 +227,9 @@ This integration demonstrates Gateway's power in production fintech applications
 
 ---
 
-**Submission Date**: October 7, 2025  
+**Submission Date**: October 30, 2025  
 **Platform**: MyStartup.ai  
-**Developer**: [Your Name]  
-**Bounty**: Sanctum Gateway Integration - $10,000
+**Developer**: Galin Dimitrov (@djbigzzz)  
+**Location**: Ireland 🇮🇪  
+**Bounty**: Sanctum Gateway Integration - $10,000 USDC  
+**GitHub**: https://github.com/djbigzzz/mystartupai
