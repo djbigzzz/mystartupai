@@ -32,7 +32,7 @@ Nine out of ten startups fail because founders build products nobody wants.
 
 ## 💡 Our Solution
 
-### Four AI co-founders who guide you from idea to investor-ready.
+### Four AI co-founders designed to validate and refine your startup idea.
 
 <table>
 <tr>
@@ -59,19 +59,20 @@ Connects you with investors and growth strategies
 </tr>
 </table>
 
-### The Journey
+### What's Working Now
 
-**Vale (The Validator)** runs real-time market research using Perplexity AI—analyzing competitors, market size, customer pain points, and funding landscape. You get a validation report with a clear verdict: **GO, REFINE, or PIVOT**. No expensive consultants. No waiting weeks. Just honest feedback in minutes.
+**Vale (The Validator)** is live and validating startup ideas. She runs real-time market research using Perplexity AI—analyzing competitors, market size, customer pain points, and funding landscape. You get a validation report with a clear verdict: **GO, REFINE, or PIVOT**. No expensive consultants. No waiting weeks. Just honest feedback in minutes.
 
-Once Vale validates your idea, the team takes over:
+### The Vision
 
-1. **Vale** validates your idea with live market research
-2. **Stratos** guides customer discovery and feature prioritization  
-3. **Archie** generates business plans and pitch decks
-4. **Blaze** matches you with investors and growth channels
-5. Now you're ready to build with Replit Agent or raise funding
+The platform is designed as a complete co-founder journey with four specialized AI agents:
 
-> We're not here to tell you your idea is great. We're here to tell you the truth, then help you build something that actually works.
+1. **Vale** validates your idea with live market research ✅ **(Live)**
+2. **Stratos** will guide customer discovery and feature prioritization
+3. **Archie** will generate business plans and pitch decks
+4. **Blaze** will help with investor matching and growth strategies
+
+> Right now, Vale is the co-founder you need most: the one who stops you from building the wrong thing. The rest of the team is coming.
 
 ---
 
