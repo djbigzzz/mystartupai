@@ -159,7 +159,7 @@ Claude AI analyzes form data + live market research to score:
 **ASI Agents Track**
 - Multi-agent orchestration with Fetch.ai uAgents
 - Autonomous agent-to-agent communication
-- See [`agents/README.md`](./agents/README.md)
+- See [`ASI_AGENTS.md`](./ASI_AGENTS.md)
 
 **Sanctum Gateway Track**
 - Complete transaction optimization integration
