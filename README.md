@@ -10,49 +10,30 @@ Built for the **Solana Colosseum Cypherpunk Hackathon**
 
 ---
 
-## 🎯 The Problem
+## The Problem
 
-**9 out of 10 startups fail.** The #1 reason? Founders waste months and thousands of dollars building products nobody wants.
+Nine out of ten startups fail because founders build products nobody wants.
 
-### The AI Coding Paradox
+**The AI Coding Paradox:** Tools like Replit Agent, Lovable, Bolt.new, and v0.dev can now build a full app in under an hour. But validation still takes weeks and costs thousands. So instead of wasting months building one wrong idea, founders now waste days building ten wrong ideas.
 
-AI tools like **Replit Agent, Lovable, Bolt.new, and v0.dev** can now build full-stack apps in minutes. But this creates a dangerous new problem:
+Building got faster. Validation didn't. That's the gap we're filling.
 
-- 🚀 **Building is faster than ever** - AI can scaffold a complete app in under an hour
-- ⚠️ **But validation is still slow and expensive:**
-  - Market research firms: $5,000-$50,000
-  - Consultants: $150-$300/hour
-  - DIY surveys: Weeks of work with uncertain results
-- 💸 **The cost shifted** - Instead of wasting months building one wrong idea, founders now waste days building 10 wrong ideas
-- 🔄 **Faster failure** - AI makes it easier to build the wrong thing, faster
-- ❌ **Result:** 90% still fail, but now in days instead of months
+## Our Solution
 
-**MyStartup.ai solves this:** Validate your idea in minutes with AI-powered market research *before* you use Replit Agent or Lovable to build it.
+**Your AI co-founder who won't let you build the wrong thing.**
 
-## 💡 Our Solution
+Meet Vale, The Validator. Before you write a single line of code, Vale runs real-time market research using Perplexity AI to analyze competitors, market size, customer pain points, and funding landscape. You get a comprehensive validation report with a clear verdict: GO, REFINE, or PIVOT.
 
-MyStartup.ai is an **AI-powered startup accelerator** featuring 4 specialized AI co-founders that guide founders from idea to investor-readiness in minutes, not months:
+No expensive consultants. No waiting weeks for research reports. Just honest feedback in minutes, powered by live web data and Y Combinator-inspired methodology.
 
-### Meet Your AI Co-Founders
+**The workflow:**
+1. Tell Vale your idea (3-minute form)
+2. Vale conducts live market research across the web
+3. Get scored across 10 dimensions with actionable recommendations
+4. Refine and re-validate until your score is strong
+5. Then—and only then—build it with Replit Agent or Lovable
 
-🔵 **Vale (The Validator)** - Validates ideas through real-time market research  
-🟢 **Stratos (The Strategist)** - Customer discovery and feature prioritization  
-🟣 **Archie (The Builder)** - Business plans, pitch decks, financial models  
-🟠 **Blaze (The Growth Hacker)** - Investor matching and growth strategies
-
-### The Validator - Our Flagship Feature
-
-Before founders write a single line of code, they get comprehensive validation:
-
-- ✅ **10-dimension scoring** with Y Combinator-inspired methodology
-- ✅ **Real-time market research** via Perplexity AI analyzing live web data
-- ✅ **Competitor analysis** with funding rounds and market positioning
-- ✅ **Market size estimation** with TAM/SAM/SOM calculations
-- ✅ **Customer insights** from real user feedback and pain points
-- ✅ **GO/REFINE/PIVOT verdicts** with actionable recommendations
-- ✅ **Iterative refinement** to improve validation scores over time
-
-**Result:** Founders know if their idea is viable *before* wasting time and money.
+Think of us as the sanity check before you start building. We're not here to tell you your idea is great. We're here to tell you the truth.
 
 ---
 
