@@ -2,222 +2,241 @@
 
 **Agentic AI co-founder that validates startup ideas before founders waste time and money.**
 
-Built for **Solana Colosseum Cypherpunk Hackathon** | Competing for **$40,000 across 3 side tracks**
+Built for the **Solana Colosseum Cypherpunk Hackathon**
 
-[![ASI Agents Track](https://img.shields.io/badge/ASI_Agents_Track-$20K-3D8BD3?style=for-the-badge)](https://earn.superteam.fun/listing/asi-agents-track)
-[![Sanctum Gateway Track](https://img.shields.io/badge/Sanctum_Gateway_Track-$10K-5F43F1?style=for-the-badge)](https://earn.superteam.fun/listing/sanctum-gateway-track)
-[![Superteam Ireland](https://img.shields.io/badge/Superteam_Ireland-$10K-00D084?style=for-the-badge)](https://earn.superteam.fun/listing/superteam-ireland-or-dogpatch-labs-side-track)
+[![Solana](https://img.shields.io/badge/Built_on-Solana-14F195?style=for-the-badge&logo=solana&logoColor=white)](https://solana.com)
+[![PWA](https://img.shields.io/badge/Mobile_Optimized-PWA-5A0FC8?style=for-the-badge)](https://web.dev/progressive-web-apps/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 ---
 
-## 🎯 What is MyStartup.ai?
-
-MyStartup.ai is an AI-powered startup accelerator featuring **4 specialized AI co-founders** that guide founders from idea to investor-readiness:
-
-- **Vale (The Validator)** - Validates ideas through real-time market research
-- **Stratos (The Strategist)** - Customer discovery and feature prioritization
-- **Archie (The Builder)** - Business plans, pitch decks, financial models
-- **Blaze (The Growth Hacker)** - Investor matching and growth strategies
-
-### The Problem We Solve
+## 🎯 The Problem
 
 **9 out of 10 startups fail.** The #1 reason? Founders waste months and thousands of dollars building products nobody wants.
 
-### Our Solution
+Traditional validation is expensive:
+- ❌ Market research firms cost $5,000-$50,000
+- ❌ Consultants charge $150-$300/hour
+- ❌ Most founders skip validation entirely and just build
+- ❌ Result: 90% failure rate, billions in wasted capital
 
-MyStartup.ai uses **AI-powered validation** with real-time market research to prevent founders from building the wrong thing. Before writing a single line of code, founders get:
-- ✅ 10-dimension validation scoring
-- ✅ Live competitor analysis via Perplexity AI
-- ✅ Market size estimation
-- ✅ Customer insights from real web data
-- ✅ GO/REFINE/PIVOT verdicts with actionable feedback
+## 💡 Our Solution
 
----
+MyStartup.ai is an **AI-powered startup accelerator** featuring 4 specialized AI co-founders that guide founders from idea to investor-readiness in minutes, not months:
 
-## 🏆 Hackathon Side Track Submissions
+### Meet Your AI Co-Founders
 
-### 1️⃣ ASI Agents Track ($20,000 USDC) 
+🔵 **Vale (The Validator)** - Validates ideas through real-time market research  
+🟢 **Stratos (The Strategist)** - Customer discovery and feature prioritization  
+🟣 **Archie (The Builder)** - Business plans, pitch decks, financial models  
+🟠 **Blaze (The Growth Hacker)** - Investor matching and growth strategies
 
-**Multi-Agent Orchestration with Fetch.ai uAgents Framework**
+### The Validator - Our Flagship Feature
 
-We've built a **truly autonomous multi-agent system** where specialized AI agents communicate directly with each other to deliver comprehensive startup analysis:
+Before founders write a single line of code, they get comprehensive validation:
 
-#### 🤖 Our Agents
+- ✅ **10-dimension scoring** with Y Combinator-inspired methodology
+- ✅ **Real-time market research** via Perplexity AI analyzing live web data
+- ✅ **Competitor analysis** with funding rounds and market positioning
+- ✅ **Market size estimation** with TAM/SAM/SOM calculations
+- ✅ **Customer insights** from real user feedback and pain points
+- ✅ **GO/REFINE/PIVOT verdicts** with actionable recommendations
+- ✅ **Iterative refinement** to improve validation scores over time
 
-**Market Research Agent** (`agents/market_research_agent.py`)
-- Analyzes startup ideas using AI-powered insights
-- Provides competitive landscape analysis
-- Identifies market opportunities and threats
-- ASI:One compatible with Chat Protocol ✅
-
-**Business Plan Agent** (`agents/business_plan_agent.py`)
-- Generates comprehensive business plans
-- **Coordinates directly with Market Research Agent** via agent-to-agent communication
-- Compiles market research into investor-ready documents
-- ASI:One compatible with Chat Protocol ✅
-
-#### 🔗 Agent-to-Agent Communication Protocol
-
-```
-User → Business Plan Agent → Market Research Agent → AI Analysis → Business Plan
-```
-
-**Protocol Format:**
-```
-AGENT_REQUEST:<request_id>:<startup_idea>
-AGENT_RESPONSE:<request_id>:SUCCESS:<analysis_data>
-```
-
-This demonstrates **true autonomous collaboration** - agents communicate directly, not just through a shared backend.
-
-#### ✅ ASI Alliance Compliance
-- ✅ Built with uAgents framework v0.22.9
-- ✅ Registered on Agentverse
-- ✅ Chat Protocol enabled for ASI:One discovery
-- ✅ Multi-agent orchestration with asynchronous coordination
-- ✅ Innovation Lab categorized
-
-**📂 See Full Documentation:** [`agents/README.md`](./agents/README.md)
+**Result:** Founders know if their idea is viable *before* wasting time and money.
 
 ---
 
-### 2️⃣ Sanctum Gateway Track ($10,000 USDC)
+## ⚡ Solana Integration
 
-**Complete Integration of Sanctum's Transaction Optimization & Delivery API**
+MyStartup.ai is built natively on Solana with multiple integrations:
 
-MyStartup.ai integrates **Sanctum Gateway** for high-performance Solana transaction processing with automatic optimization and multi-channel delivery.
+### 🔐 Phantom Wallet Authentication
+- Seamless wallet connection (Phantom, Solflare, etc.)
+- Sign-in with Ethereum (SIWE) protocol adapted for Solana
+- No passwords, just your wallet
 
-#### 🚀 What We Built
+### 💳 Solana Pay Integration
+- **Pay with SOL or USDC** for credit packages
+- QR code payments for mobile users
+- Real-time transaction verification on Solana blockchain
+- Devnet testing + Mainnet ready
 
-**Gateway Service** (`server/gateway-service.ts`)
-- `optimizeTransaction()` - Automatic compute unit and priority fee optimization
-- `sendTransaction()` - Multi-channel delivery (RPC, Triton, Paladin, Jito)
-- `getTransactionStatus()` - Real-time transaction monitoring
-- Configurable tip ranges and expiry controls
+### ⚡ Sanctum Gateway (Transaction Optimization)
+- Automatic compute unit optimization
+- Multi-channel delivery (RPC, Jito, Triton, Paladin)
+- Real-time transaction monitoring dashboard
+- Cost savings through automatic Jito tip refunds
 
-**API Endpoints** (`server/routes.ts`)
-- `GET /api/gateway/status` - Gateway configuration status
-- `GET /api/gateway/transaction/:signature` - Transaction lookup
-- `GET /api/gateway/transactions` - User transaction history
+### 🤖 ASI Agents (Multi-Agent System)
+- Built with Fetch.ai uAgents framework
+- Autonomous agent-to-agent communication
+- ASI:One compatible with Chat Protocol
+- Market research + business plan generation agents
 
-**Gateway Monitor Dashboard** (`client/src/pages/gateway-monitor.tsx`)
-- 📊 Real-time Gateway status display
-- 🔍 Transaction signature lookup with Solana Explorer integration
-- 📈 Recent transactions with status badges (Completed/Pending/Failed)
-- 🎨 Beautiful dark theme UI optimized for production monitoring
-
-#### 💎 Key Features
-- **Cost Savings**: Automatic Jito tip refunds when RPC lands first
-- **Reliability**: Multi-channel delivery ensures maximum success rate
-- **Observability**: Real-time transaction monitoring and metrics
-- **Scalability**: Ready for programmatic operations and batch transactions
-
-**📂 See Full Documentation:** [`GATEWAY_INTEGRATION.md`](./GATEWAY_INTEGRATION.md)
-
----
-
-### 3️⃣ Superteam Ireland | Dogpatch Labs ($10,000 USDC)
-
-**Ireland-Based Solana Startup Accelerator**
-
-MyStartup.ai is proudly **built and operated in Ireland**, empowering Irish entrepreneurs to build on Solana and access global funding opportunities.
-
-#### 🇮🇪 Ireland Impact
-- **Location**: Republic of Ireland
-- **Mission**: Democratize access to AI-powered startup validation for Irish founders
-- **Solana Integration**: Phantom wallet authentication, Solana Pay credit system
-- **Mobile-First**: PWA-optimized for accessibility across Ireland
+### 📱 Mobile-Optimized PWA
+- Responsive design for all screen sizes
+- Touch-optimized UI for mobile interactions
+- Progressive Web App features
+- Works seamlessly on Phantom mobile browser
 
 ---
 
 ## 🛠️ Tech Stack
 
+### Blockchain & Payments
+- **Blockchain**: Solana (devnet + mainnet-beta ready)
+- **Wallet Integration**: Phantom, Solflare (via @solana/wallet-adapter)
+- **Payments**: Solana Pay (SOL + USDC)
+- **Transaction Optimization**: Sanctum Gateway
+- **Libraries**: @solana/web3.js v1.98.4, @solana/pay v0.2.6
+
+### AI & Intelligence
+- **Primary AI**: Claude 4.5 Sonnet (Anthropic) - Advanced reasoning and analysis
+- **Market Research**: Perplexity AI (llama-3.1-sonar-large-128k-online) - Real-time web research
+- **Multi-Agent Framework**: Fetch.ai uAgents v0.22.9 - Autonomous agent orchestration
+- **Fallback AI**: OpenAI GPT-4o - Additional AI capabilities
+
 ### Frontend
 - **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
+- **Build Tool**: Vite 5
 - **UI Library**: shadcn/ui (Radix UI primitives)
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS with custom design system
 - **State Management**: TanStack Query v5
-- **Routing**: Wouter
+- **Routing**: Wouter (lightweight React router)
 - **Forms**: React Hook Form + Zod validation
+- **Animations**: Framer Motion, GSAP
 
 ### Backend
 - **Runtime**: Node.js + Express.js
 - **Language**: TypeScript (ES modules)
 - **Database**: PostgreSQL (Neon serverless)
-- **ORM**: Drizzle ORM
-- **AI**: Claude 4.5 Sonnet (Anthropic), Perplexity AI (real-time web research)
-- **Security**: Helmet, express-validator, rate limiting
-
-### Blockchain & Payments
-- **Blockchain**: Solana (devnet + mainnet-beta)
-- **Wallet**: Phantom wallet integration
-- **Payments**: Solana Pay (SOL + USDC)
-- **Transaction Optimization**: Sanctum Gateway
-- **Libraries**: @solana/web3.js, @solana/pay
-
-### AI & Agents
-- **Multi-Agent Framework**: Fetch.ai uAgents v0.22.9
-- **AI Models**: Claude Sonnet 4, OpenAI GPT-4
-- **Market Research**: Perplexity AI (llama-3.1-sonar-large-128k-online)
-- **Agent Protocol**: Chat Protocol (ASI Alliance)
+- **ORM**: Drizzle ORM with Zod integration
+- **Security**: Helmet, express-validator, rate limiting, input sanitization
+- **Session Management**: PostgreSQL-backed sessions
 
 ---
 
 ## 🎨 Key Features
 
-### 🔍 The Validator (Stage 1)
-**Progressive Multi-Step Validation Form**
-- 3-stage guided input: Foundation → Solution → Strategy
-- Auto-expanding textareas with character count (2000 max)
-- AI suggestion buttons powered by Claude 4.5
-- Auto-save system with 500ms debouncing
-- Visual progress stepper (1/3, 2/3, 3/3)
+### 🔍 Progressive Multi-Step Validation
 
-**Real-Time Market Research via Perplexity AI**
-- Live web research across 4 dimensions:
-  - Competitive landscape (competitors, funding rounds)
-  - Market trends (size, growth, TAM)
-  - Customer insights (pain points, feedback)
-  - Funding landscape (recent rounds, active investors)
-- Animated progress visualization (60-90 second research)
+**3-Stage Guided Form:**
+1. **Foundation** - Idea title + problem statement
+2. **Solution** - Solution approach + target market
+3. **Strategy** - Competition + business model + unique value prop
+
+**Enhanced UX:**
+- Auto-expanding textareas with character count (2000 max)
+- Focus glow effects with glass morphism backgrounds
+- Smooth Framer Motion animations between steps
+- Visual progress stepper (1/3, 2/3, 3/3)
+- Summary review screen before validation
+
+**AI Assistance:**
+- AI suggestion buttons powered by Claude 4.5
+- Context-aware content generation for each field
+- Learns from already-filled data for better suggestions
+
+**Auto-Save System:**
+- 500ms debounced saving to database
+- Visual "Saving.../Saved" indicators
+- Never lose your work
+
+### 🌐 Live Market Research (Powered by Perplexity AI)
+
+Real-time web research across 4 dimensions:
+1. **Competitive Landscape** - Competitors, funding rounds, market leaders
+2. **Market Trends** - Size, growth rate, TAM analysis
+3. **Customer Insights** - Pain points, feedback, user behavior
+4. **Funding Landscape** - Recent rounds, active investors, valuations
+
+**Live Research Visualization:**
+- Animated progress for each dimension
+- Status indicators (pending → in-progress → complete)
+- Progress bar during 60-90 second research cycle
 - Integration with Claude AI for comprehensive analysis
 
-**10-Dimension Validation Scoring**
-- Problem clarity and market need
-- Solution viability and innovation
-- Target market size and accessibility
-- Competitive differentiation
-- Business model feasibility
-- Revenue potential and scalability
-- Team capability assessment
-- Market timing and trends
-- Execution complexity
-- Risk factors and mitigation
+### 📊 10-Dimension Validation Scoring
 
-**Iterative Refinement System**
-- "Refine & Re-Validate" for continuous improvement
+Claude AI analyzes both structured form data + live market data:
+
+1. Problem clarity and market need
+2. Solution viability and innovation  
+3. Target market size and accessibility
+4. Competitive differentiation
+5. Business model feasibility
+6. Revenue potential and scalability
+7. Team capability assessment
+8. Market timing and trends
+9. Execution complexity
+10. Risk factors and mitigation
+
+**Scoring System:**
+- 0-100 score for each dimension
+- Overall validation score (average)
+- Clear GO (≥75) / REFINE (60-74) / PIVOT (<60) verdicts
+- Actionable recommendations for improvement
+
+### 🔄 Iterative Refinement
+
+**Continuous Improvement:**
+- "Refine & Re-Validate" button for score improvement
+- Form pre-populates with existing data
 - Score comparison with improvement tracking
-- Complete validation history in database (jsonb array)
-- Progressive unlock when score ≥ 60
+- Toast notifications show "+10 improvement" or "-5 decline"
 
-### 🎯 Additional AI Co-Founders
-- **The Strategist** - Customer discovery, interview scripts (unlocks at score > 60)
-- **The Builder** - Business plans, pitch decks, financial models
-- **The Growth Hacker** - Investor matching, acquisition strategies
+**Validation History:**
+- Complete history stored in database (jsonb array)
+- Track score progression across refinement cycles
+- See what changed between validations
+- Learn from iteration patterns
 
-### 💳 Subscription System
-- **Usage-based billing** with monthly subscriptions
-- **Credit allocation**: Core ($10/month - 500 credits), Pro ($50/month - 3000 credits)
-- **Solana Pay integration**: SOL + USDC payments
-- **Overage tracking** and usage alerts
+**Progressive Unlock:**
+- "Continue to The Strategist" appears at score ≥ 60
+- Prevents progression with unvalidated ideas
+- Ensures quality before moving forward
 
-### 🎨 Design System
-- **Themes**: Light, Dark, Cypherpunk (Matrix terminal aesthetic)
-- **Brand gradients**: Blue → Purple → Cyan
-- **Typography scale**: Responsive headings (H1-H6)
-- **Spacing tokens**: Consistent section/card/grid spacing
-- **Accessibility**: prefers-reduced-motion support
+### 🗑️ Data Safety
+
+**Destructive Delete Confirmation:**
+- Red "Start Over" button with AlertTriangle icon
+- Two-step confirmation dialog
+- Strong warning: "This will permanently delete your idea and all validation data"
+- Red "Yes, Delete Forever" button prevents accidental deletion
+
+### 💳 Credit System & Subscriptions
+
+**Usage-Based Billing:**
+- **Core Plan**: $10/month - 500 credits
+- **Pro Plan**: $50/month - 3000 credits
+- Pay with SOL or USDC via Solana Pay
+
+**Credit Usage:**
+- Idea validation: 50 credits
+- AI suggestions: 5 credits each
+- Business plan generation: 100 credits
+- Pitch deck creation: 75 credits
+
+**Smart Tracking:**
+- Real-time credit balance display
+- Usage alerts at 80% and 95%
+- Overage tracking for monthly billing
+- Subscription management (cancel/reactivate)
+
+### 🎨 Design System & Themes
+
+**3 Beautiful Themes:**
+1. **Light Mode** - Clean, professional
+2. **Dark Mode** - Modern, sleek
+3. **Cypherpunk** - Matrix terminal aesthetic with neon green, glow effects
+
+**Comprehensive Design System:**
+- Typography scale (H1-H6 responsive)
+- Brand gradients (Blue → Purple → Cyan)
+- Consistent spacing tokens
+- Glass morphism effects
+- Accessibility features (prefers-reduced-motion)
 
 ---
 
@@ -225,27 +244,31 @@ MyStartup.ai is proudly **built and operated in Ireland**, empowering Irish entr
 
 ```
 mystartupai/
-├── agents/                          # ASI Agents ($20K Track)
-│   ├── market_research_agent.py     # Market analysis agent
-│   ├── business_plan_agent.py       # Business plan generator
-│   ├── requirements.txt             # Python dependencies
-│   └── README.md                    # Agent documentation
 ├── client/                          # React frontend
 │   └── src/
 │       ├── pages/
-│       │   ├── co-founder-validator.tsx    # Vale (The Validator)
+│       │   ├── co-founder-validator.tsx    # The Validator
 │       │   ├── gateway-monitor.tsx         # Sanctum Gateway dashboard
+│       │   ├── landing.tsx                 # Landing page
 │       │   └── ...
-│       └── components/
+│       ├── components/
+│       │   ├── ui/                         # shadcn/ui components
+│       │   └── ...
+│       └── lib/
 ├── server/                          # Express backend
-│   ├── gateway-service.ts           # Sanctum Gateway integration
 │   ├── routes.ts                    # API endpoints
+│   ├── gateway-service.ts           # Sanctum Gateway integration
 │   ├── anthropic.ts                 # Claude AI integration
-│   ├── storage.ts                   # Database layer
+│   ├── storage.ts                   # Database layer (Drizzle ORM)
+│   ├── auth.ts                      # Solana wallet authentication
 │   └── ...
 ├── shared/                          # Shared TypeScript types
-│   └── schema.ts                    # Drizzle ORM schemas
-├── GATEWAY_INTEGRATION.md           # Sanctum Gateway docs
+│   └── schema.ts                    # Drizzle ORM schemas + Zod validation
+├── agents/                          # ASI multi-agent system
+│   ├── market_research_agent.py     # Market analysis agent
+│   ├── business_plan_agent.py       # Business plan generator
+│   └── README.md                    # Agent documentation
+├── GATEWAY_INTEGRATION.md           # Sanctum Gateway documentation
 └── README.md                        # This file
 ```
 
@@ -256,7 +279,7 @@ mystartupai/
 ### Prerequisites
 - Node.js 20+
 - PostgreSQL database
-- Python 3.11+ (for ASI agents)
+- Solana wallet (Phantom recommended)
 
 ### Installation
 
@@ -265,101 +288,93 @@ mystartupai/
 git clone https://github.com/djbigzzz/mystartupai.git
 cd mystartupai
 
-# Install Node.js dependencies
+# Install dependencies
 npm install
-
-# Install Python dependencies for agents
-pip install -r agents/requirements.txt
 ```
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file:
 
 ```env
 # Database
-DATABASE_URL=your_postgres_connection_string
+DATABASE_URL=postgresql://...
 
 # AI Services
-ANTHROPIC_API_KEY=your_anthropic_api_key
-OPENAI_API_KEY=your_openai_api_key
-PERPLEXITY_API_KEY=your_perplexity_api_key
+ANTHROPIC_API_KEY=sk-ant-...
+PERPLEXITY_API_KEY=pplx-...
 
 # Solana
-SOLANA_NETWORK=devnet  # or mainnet-beta
+SOLANA_NETWORK=devnet
 SOLANA_RECIPIENT_WALLET=your_wallet_address
-GATEWAY_API_KEY=your_sanctum_gateway_api_key
-
-# ASI Agents
-AGENTVERSE_MAILBOX_KEY=your_agentverse_mailbox_key
+GATEWAY_API_KEY=your_sanctum_gateway_key
 
 # Session
-SESSION_SECRET=your_random_session_secret
+SESSION_SECRET=your_random_secret
 ```
 
 ### Run the Application
 
-**Start the web application:**
 ```bash
 npm run dev
 ```
 
-**Start the ASI agents:**
-```bash
-cd agents
-./start_agents.sh
-```
-
-The application will be available at `http://localhost:5000`
+Visit `http://localhost:5000`
 
 ---
 
-## 🧪 Testing
-
-### Gateway Monitor
-Visit `/gateway-monitor` to test Sanctum Gateway integration:
-- Check Gateway configuration status
-- Look up transaction signatures
-- View recent Solana Pay transactions
-
-### ASI Agents
-Test agent communication via ASI:One Chat Protocol after deploying to Agentverse.
-
----
-
-## 📊 Demo & Screenshots
+## 🎥 Demo
 
 **Live Platform**: Coming soon  
 **Demo Video**: Coming soon  
-**Gateway Monitor**: `/gateway-monitor`
 
 ---
 
-## 🏅 Why MyStartup.ai Qualifies for Each Track
+## 🏆 Why This Matters for Solana
 
-### ASI Agents Track
-✅ **Multi-agent orchestration** with direct agent-to-agent communication  
-✅ **Chat Protocol** for ASI:One compatibility  
-✅ **Autonomous collaboration** between Market Research and Business Plan agents  
-✅ **Real-world use case** solving actual startup validation problems  
+### 1. Real-World Problem Solving
+MyStartup.ai addresses a $100B+ problem (startup failure) using Solana's speed and low costs to make validation accessible to everyone.
 
-### Sanctum Gateway Track
-✅ **Complete Gateway integration** with optimization and delivery  
-✅ **Production monitoring dashboard** for transaction observability  
-✅ **Real Solana Pay integration** for credit purchases  
-✅ **Future-ready architecture** for programmatic operations  
+### 2. Native Solana Integration
+- Not just "accepts SOL" - deeply integrated with Solana ecosystem
+- Phantom wallet as primary authentication
+- Solana Pay for seamless payments
+- Sanctum Gateway for transaction optimization
+- Mobile-optimized for Phantom mobile browser
 
-### Superteam Ireland Track
-✅ **Built in Ireland** (Republic)  
-✅ **Empowering Irish founders** with AI-powered validation  
-✅ **Solana-native** payment and authentication  
-✅ **Mobile-optimized PWA** for accessibility  
+### 3. Bringing Web2 Users to Solana
+- Founders don't need crypto experience
+- Phantom wallet onboarding is part of the flow
+- Real utility drives adoption, not speculation
+
+### 4. Scalability Showcase
+- Credit system requires high-throughput, low-cost transactions
+- Solana's speed enables real-time credit allocation
+- Gateway optimization reduces costs for programmatic operations
+
+### 5. Consumer dApp Excellence
+- Mobile-first PWA design
+- Intuitive UX that hides blockchain complexity
+- Real value delivered in <5 minutes
+
+---
+
+## 🎖️ Also Qualifying For Side Tracks
+
+### ASI Agents Track ($20,000 USDC)
+Multi-agent orchestration with Fetch.ai uAgents framework. See [`agents/README.md`](./agents/README.md)
+
+### Sanctum Gateway Track ($10,000 USDC)  
+Complete transaction optimization and delivery integration. See [`GATEWAY_INTEGRATION.md`](./GATEWAY_INTEGRATION.md)
+
+### Superteam Ireland | Dogpatch Labs ($10,000 USDC)
+Built and operated in Ireland, empowering Irish founders.
 
 ---
 
 ## 📝 License
 
-MIT License - see LICENSE file for details
+MIT License
 
 ---
 
@@ -373,15 +388,14 @@ MIT License - see LICENSE file for details
 
 ## 🙏 Acknowledgments
 
-- **Solana Foundation** for the Colosseum hackathon
-- **Artificial Superintelligence Alliance** for the ASI Agents track
-- **Sanctum** for the Gateway integration track
-- **Superteam Ireland** for supporting Irish builders
-- **Anthropic** for Claude 4.5 Sonnet
-- **Perplexity AI** for real-time market research
+- Solana Foundation for the Colosseum hackathon
+- Anthropic for Claude 4.5 Sonnet
+- Perplexity AI for real-time market research
+- Sanctum for Gateway transaction optimization
+- Artificial Superintelligence Alliance for the uAgents framework
 
 ---
 
-**Built with ❤️ in Ireland for the Solana Colosseum Cypherpunk Hackathon**
+**Built with ❤️ in Ireland for the Solana ecosystem**
 
-*Preventing founders from wasting time and money on unvalidated ideas, one startup at a time.* 🚀
+*Preventing founders from wasting time and money on unvalidated ideas.* 🚀
