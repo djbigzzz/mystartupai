@@ -2,7 +2,7 @@
 
 **Your AI co-founder who won't let you build the wrong thing.**
 
-Built for the Solana Colosseum Cypherpunk Hackathon | Qualifying for 3 side tracks ($40k total bounties)
+Built for the Solana Colosseum Cypherpunk Hackathon
 
 ---
 
@@ -154,19 +154,19 @@ Claude AI analyzes form data + live market research to score:
 
 ---
 
-## Side Track Qualifications
+## Also Submitted For
 
-**ASI Agents Track** ($20,000 USDC)
+**ASI Agents Track**
 - Multi-agent orchestration with Fetch.ai uAgents
 - Autonomous agent-to-agent communication
 - See [`agents/README.md`](./agents/README.md)
 
-**Sanctum Gateway Track** ($10,000 USDC)
+**Sanctum Gateway Track**
 - Complete transaction optimization integration
 - Real-time monitoring dashboard
 - See [`GATEWAY_INTEGRATION.md`](./GATEWAY_INTEGRATION.md)
 
-**Superteam Ireland** ($10,000 USDC)
+**Superteam Ireland**
 - Built and operated in Ireland
 - Empowering Irish founders
 
